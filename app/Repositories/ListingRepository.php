@@ -1,0 +1,296 @@
+<?php
+
+namespace App\Repositories;
+use Illuminate\Http\Request;
+use App\Models\Bus;
+use App\Models\Location;
+use App\Models\BusOperator;
+use App\Models\BoardingDroping;
+use App\Models\BusStoppageTiming;
+use App\Models\BusType;
+use App\Models\BusClass;
+use App\Models\Amenities;
+use App\Models\BusSeats;
+use DateTime;
+use Illuminate\Support\Facades\Log;
+use DB;
+
+class ListingRepository
+{
+    protected $bus;
+    protected $location;
+    protected $busOperator;
+    protected $busStoppageTiming;
+    protected $busType;
+    protected $busClass;
+    protected $amenities;
+    protected $boardingDroping;
+    protected $busSeats;
+    
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,BusSeats $busSeats)
+    {
+        $this->bus = $bus;
+        $this->location = $location;
+        $this->busOperator = $busOperator;
+        $this->busStoppageTiming = $busStoppageTiming;
+        $this->busType = $busType;
+        $this->amenities = $amenities;
+        $this->boardingDroping = $boardingDroping;
+        $this->busClass = $busClass;
+        $this->busSeats = $busSeats;
+     }   
+    
+    public function getAll($request)
+    { 
+        $source = $request['source'];
+        $destination = $request['destination'];
+        $entry_date = $request['entry_date'];
+        $entry_date = date("Y-m-d", strtotime($entry_date));
+
+        $sourceID =  $this->location->where("name", $source)->get('id');
+        $destinationID =  $this->location->where("name", $destination)->get('id');
+        if($sourceID->count()==0|| $destinationID->count()==0)
+           return "";
+        $sourceID =  $this->location->where("name", $source)->first()->id;
+        $destinationID =  $this->location->where("name", $destination)->first()->id;      
+    
+        $records = $this->bus->with('ticketPrice')
+        ->with('busOperator')->with('BusType')->with('BusSitting')->with('busAmenities.amenities')->with('BusType')->with('BusSitting')->with('busSeats')
+        ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
+            $query->where('entry_date', $entry_date);            
+            })
+        ->whereHas('ticketPrice', function($query ) use ($sourceID,$destinationID)  {
+            $query->where('source_id', $sourceID)
+                  ->where('destination_id', $destinationID);               
+                }) 
+        ->get();
+        //return $records;
+        $ListingRecords = array();
+            foreach($records as $record){
+                $busId = $record->id; 
+                $busName = $record->name;
+                $popularity = $record->popularity;
+                $busNumber = $record->bus_number;
+                $via = $record->via;
+                $operatorId = $record->busOperator->id;
+                $operatorName = $record->busOperator->operator_name;
+                $sittingType = $record->BusSitting->name;
+                $busType = $record->BusType->busClass->class_name;
+                $busTypeName = $record->BusType->name;
+                $ticketPriceDatas = $record->ticketPrice;
+                $totalSeats = $record->busSeats->count('id');
+                $seater = $record->busSeats->where('seat_type',1)->count();
+                $sleeper = $record->busSeats->where('seat_type',2)->count();
+                $amenitiesDatas = $record->busAmenities;
+
+                $ticketPriceRecords = array();
+                foreach($ticketPriceDatas as $ticketPriceData) 
+                {  
+                   $startingFromPrice = $ticketPriceData->base_seat_fare;   
+                   $departureTime = $ticketPriceData->dep_time; 
+                   $arrivalTime = $ticketPriceData->arr_time; 
+                   $arr_time = new DateTime($arrivalTime);
+                   $dep_time = new DateTime($departureTime);
+                   $totalTravelTime = $dep_time->diff($arr_time);
+                   $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
+                   $ticketPriceRecords[] = array(
+                                          "departureTime" =>$departureTime,
+                                          "arrivalTime" => $arrivalTime,
+                                          "startingFromPrice" => $startingFromPrice,
+                                          "totalJourneyTime" => $totalJourneyTime,
+                                         );  
+                }
+                $amenitiesRecords = array();
+                foreach($amenitiesDatas as $amenitiesData) 
+                {  
+                    
+                    $amenityName = $amenitiesData->amenities->name; 
+                    $amenityIcon = $amenitiesData->amenities->icon;  
+                    $amenitiesRecords[] = array(
+                        "amenityName" =>$amenityName,
+                        "amenityIcon" => $amenityIcon,
+                       );  
+                }
+                $ListingRecords[] = array(
+                    "busId" => $busId, 
+                    "busName" => $busName,
+                    "popularity" => $popularity,
+                    "busNumber" => $busNumber, 
+                    "operatorId" => $operatorId,
+                    "operatorName" => $operatorName,
+                    "sittingType" => $sittingType,
+                    "busType" => $busType,
+                    "busTypeName" => $busTypeName,
+                    "totalSeats" => $totalSeats, 
+                    "seater" => $seater, 
+                    "sleeper" => $sleeper,
+                    "startingFromPrice" => $startingFromPrice,
+                    "departureTime" =>$departureTime,
+                    "arrivalTime" =>$arrivalTime,
+                    "totalJourneyTime" =>$totalJourneyTime,
+                    "amenityName" =>$amenityName,
+                    "amenityIcon" =>$amenityIcon,
+                );
+                        
+            }
+        return $ListingRecords;
+    }
+
+
+    public function getFilterOptions($request)
+    {
+        $sourceID = $request['sourceID'];
+        $destinationID = $request['destinationID']; 
+
+        $busTypes =  $this->busClass->get(['id','class_name']);
+        //$seatTypes = $this->busSeats->where('seat_type',1)->get(['id','seat_type']);
+        $boardingPoints = $this->boardingDroping->where('location_id', $sourceID)->get(['id','boarding_point']);
+        $dropingPoints = $this->boardingDroping->where('location_id', $destinationID)->get(['id','boarding_point']);
+        $busOperator = $this->busOperator->get(['id','operator_name']);
+        $amenities = $this->amenities->get(['id','icon','name']);
+        
+
+        $filterOptions[] = array(
+           "busTypes" => $busTypes,
+           //"seatTypes" => $seatTypes,  
+           "boardingPoints" => $boardingPoints,
+           "dropingPoints"=> $dropingPoints,
+           "busOperator"=>$busOperator,
+           "amenities"=>$amenities   
+        );
+        return  $filterOptions;
+
+    }
+
+    public function filter($request)
+    {           
+        $sourceID = $request['sourceID'];      
+        $destinationID = $request['destinationID']; 
+        $entry_date = $request['entry_date'];   
+        if($sourceID==null ||  $destinationID==null || $entry_date==null)
+        return ""; 
+        $entry_date = date("Y-m-d", strtotime($entry_date));
+        $price = $request['price'];  
+        $busType = $request['busType'];
+        $seatType = $request['seatType'];        
+        $boardingPointId = $request['boardingPointId'];
+        $dropingingPointId = $request['dropingingPointId'];
+        $operatorId = $request['operatorId'];
+        $amenityId = $request['amenityId'];
+        //DB::enableQueryLog(); 
+        $records = $this->bus->with('busOperator')->with('ticketPrice')
+        ->with('busAmenities.amenities')->with('BusType.busClass')->with('BusSitting')
+            ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
+                $query->where('entry_date', $entry_date);            
+              })
+            ->whereHas('ticketPrice', function($query ) use ($sourceID,$destinationID)  {
+                $query->where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID);               
+                })          
+            ->whereHas('BusType.busClass', function ($query) use ($busType){
+                $query->whereIn('class_name', (array)$busType);            
+                })
+            ->whereHas('busSeats', function ($query) use ($seatType){
+                $query->whereIn('seat_type', (array)$seatType);            
+                })
+            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)           {                 
+                $query->whereIn('id', (array)$boardingPointId);
+                  })    
+            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){ 
+                $query->whereIn('id', (array)$dropingingPointId);
+                 })       
+            ->whereHas('busOperator', function ($query) use ($operatorId){
+                $query->whereIn('id', (array)$operatorId);            
+                })
+            ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
+                $query->whereIn('id', (array)$amenityId);            
+                })  
+            ->get();
+            //return $records;     
+            $FilterRecords = array();
+            foreach($records as $record){
+                $busId = $record->id; 
+                $busName = $record->name;
+                $popularity = $record->popularity;
+                $busNumber = $record->bus_number;
+                $via = $record->via;
+                $operatorId = $record->busOperator->id;
+                $operatorName = $record->busOperator->operator_name;
+                $sittingType = $record->BusSitting->name;
+                $busType = $record->BusType->busClass->class_name;
+                $busTypeName = $record->BusType->name;
+                $ticketPriceDatas = $record->ticketPrice;
+                $totalSeats = $record->busSeats->count('id');
+                $seater = $record->busSeats->where('seat_type',1)->count();
+                $sleeper = $record->busSeats->where('seat_type',2)->count();
+                $amenitiesDatas = $record->busAmenities;
+
+                $ticketPriceRecords = array();
+                foreach($ticketPriceDatas as $ticketPriceData) 
+                {  
+                   $startingFromPrice = $ticketPriceData->base_seat_fare;   
+                   $departureTime = $ticketPriceData->dep_time; 
+                   $arrivalTime = $ticketPriceData->arr_time; 
+                   $arr_time = new DateTime($arrivalTime);
+                   $dep_time = new DateTime($departureTime);
+                   $totalTravelTime = $dep_time->diff($arr_time);
+                   $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
+                   $ticketPriceRecords[] = array(
+                                          "departureTime" =>$departureTime,
+                                          "arrivalTime" => $arrivalTime,
+                                          "startingFromPrice" => $startingFromPrice,
+                                          "totalJourneyTime" => $totalJourneyTime,
+                                         );  
+                }
+                $amenitiesRecords = array();
+                foreach($amenitiesDatas as $amenitiesData) 
+                {  
+                    
+                    $amenityName = $amenitiesData->amenities->name; 
+                    $amenityIcon = $amenitiesData->amenities->icon;  
+                    $amenitiesRecords[] = array(
+                        "amenityName" =>$amenityName,
+                        "amenityIcon" => $amenityIcon,
+                       );  
+                }
+                $FilterRecords[] = array(
+                    "busId" => $busId, 
+                    "busName" => $busName,
+                    "popularity" => $popularity,
+                    "busNumber" => $busNumber, 
+                    "operatorId" => $operatorId,
+                    "operatorName" => $operatorName,
+                    "sittingType" => $sittingType,
+                    "busType" => $busType,
+                    "busTypeName" => $busTypeName,
+                    "totalSeats" => $totalSeats, 
+                    "seater" => $seater, 
+                    "sleeper" => $sleeper,
+                    "startingFromPrice" => $startingFromPrice,
+                    "departureTime" =>$departureTime,
+                    "arrivalTime" =>$arrivalTime,
+                    "totalJourneyTime" =>$totalJourneyTime,
+                    "amenityName" =>$amenityName,
+                    "amenityIcon" =>$amenityIcon,
+                );
+                        
+            }
+        return $FilterRecords;
+
+
+
+
+
+
+            ////need to do later for enhanced code//////////
+            // $filterDatas->each(function($item, $key) { 
+            //     //Log::info("*******************    ".$key);
+            //    // Log::info("*******************    ".$item->id);
+            //    $busRecords[] = array(
+            //     $id = $item->id,                
+            //    );   
+            // });         
+    
+    }
+
+}

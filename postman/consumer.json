@@ -1,0 +1,96 @@
+{
+	"info": {
+		"_postman_id": "3309568e-eed4-4512-b410-04e6de64d4d0",
+		"name": "ODBUSBE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Listing",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"source_id\":\"1294\",\r\n    \"destination_id\":\"1301\",\r\n    \"entry_date\":\"2021-05-01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/listing",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"listing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Seats",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"busId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/viewSeats",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"viewSeats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPriceOn seatsSelection",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n   \r\n     {\r\n         \"busId\": 1,\r\n         \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n         \"seater\": [2,3,4],\r\n          \"sleeper\": []\r\n     }\r\n   \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/PriceOnSeatsSelection",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"PriceOnSeatsSelection"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
