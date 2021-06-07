@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
-use App\Models\SeatClass;
+use App\Models\Seats;
+
 
 class BusSeats extends Model
 {
@@ -16,8 +17,9 @@ class BusSeats extends Model
     {
     	return $this->belongsTo(Bus::class);
     }
-    public function seatClass()
+    public function seats()
     {
-    	return $this->belongsTo(SeatClass::class);
+    	return $this->belongsTo(Seats::class);
     }
+    
 }

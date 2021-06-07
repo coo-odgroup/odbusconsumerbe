@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\BusSeats;
+use App\Models\Seats;
 
 class SeatClass extends Model
 {
@@ -13,9 +13,9 @@ class SeatClass extends Model
     protected $fillable = [
         'name', 
     ];
-    public function busSeats()
+    public function seats()
     {
-    	return $this->hasMany(BusSeats::class);
+    	return $this->hasMany(Seats::class);
     }
 
 }

@@ -42,7 +42,12 @@ class ListingRepository
         $this->busClass = $busClass;
         $this->seatClass = $seatClass;
      }   
-    
+
+     public function getLocation()
+     {
+         return $this->location->orderBy('name','ASC')->get('name');
+     }
+ 
     public function getAll($request)
     { 
         $source = $request['source'];
@@ -273,8 +278,7 @@ class ListingRepository
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
                     "amenityName" =>$amenityName,
-                    "amenityIcon" => $amenityIcon,
-                        
+                    "amenityIcon" => $amenityIcon,       
                 );
                         
             }
