@@ -31,8 +31,8 @@ class ViewSeatsRepository
         $busId = $request['busId'];
         $viewSeats_arr =  $this->bus
         ->with('busSeatLayout.seats')
-        ->with('busSeats')
         ->where('id', $busId)
+        //->groupBy('seatType')
         ->get();
         return $viewSeats_arr;
     }

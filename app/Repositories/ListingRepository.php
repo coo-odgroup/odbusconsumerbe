@@ -9,6 +9,7 @@ use App\Models\BoardingDroping;
 use App\Models\BusStoppageTiming;
 use App\Models\BusType;
 use App\Models\BusClass;
+use App\Models\SeatClass;
 use App\Models\Amenities;
 use App\Models\BusSeats;
 use DateTime;
@@ -23,11 +24,12 @@ class ListingRepository
     protected $busStoppageTiming;
     protected $busType;
     protected $busClass;
+    protected $seatClass;
     protected $amenities;
     protected $boardingDroping;
     protected $busSeats;
     
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,BusSeats $busSeats)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -37,7 +39,8 @@ class ListingRepository
         $this->amenities = $amenities;
         $this->boardingDroping = $boardingDroping;
         $this->busClass = $busClass;
-        $this->busSeats = $busSeats;
+        $this->busClass = $busClass;
+        $this->seatClass = $seatClass;
      }   
     
     public function getAll($request)
@@ -143,7 +146,7 @@ class ListingRepository
         $destinationID = $request['destinationID']; 
 
         $busTypes =  $this->busClass->get(['id','class_name']);
-        //$seatTypes = $this->busSeats->where('seat_type',1)->get(['id','seat_type']);
+        $seatTypes = $this->seatClass->where('id',1)->orWhere('id',2)->get(['id','name']);
         $boardingPoints = $this->boardingDroping->where('location_id', $sourceID)->get(['id','boarding_point']);
         $dropingPoints = $this->boardingDroping->where('location_id', $destinationID)->get(['id','boarding_point']);
         $busOperator = $this->busOperator->get(['id','operator_name']);
@@ -152,7 +155,7 @@ class ListingRepository
 
         $filterOptions[] = array(
            "busTypes" => $busTypes,
-           //"seatTypes" => $seatTypes,  
+           "seatTypes" => $seatTypes,  
            "boardingPoints" => $boardingPoints,
            "dropingPoints"=> $dropingPoints,
            "busOperator"=>$busOperator,
@@ -172,14 +175,14 @@ class ListingRepository
         $entry_date = date("Y-m-d", strtotime($entry_date));
         $price = $request['price'];  
         $busType = $request['busType'];
-        $seatType = $request['seatType'];        
+        $seatType = $request['seatType'];    
         $boardingPointId = $request['boardingPointId'];
         $dropingingPointId = $request['dropingingPointId'];
         $operatorId = $request['operatorId'];
         $amenityId = $request['amenityId'];
         //DB::enableQueryLog(); 
         $records = $this->bus->with('busOperator')->with('ticketPrice')
-        ->with('busAmenities.amenities')->with('BusType.busClass')->with('BusSitting')
+        ->with('busAmenities.amenities')->with('BusType.busClass')->with('busSeats.seatClass')->with('BusSitting')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
@@ -190,10 +193,10 @@ class ListingRepository
             ->whereHas('BusType.busClass', function ($query) use ($busType){
                 $query->whereIn('class_name', (array)$busType);            
                 })
-            ->whereHas('busSeats', function ($query) use ($seatType){
-                $query->whereIn('seat_type', (array)$seatType);            
-                })
-            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)           {                 
+            // ->whereHas('busSeats.seatClass', function ($query) use ($seatType){
+            //     $query->whereIn('name', (array)$seatType);            
+            //     })
+            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)        {                       
                 $query->whereIn('id', (array)$boardingPointId);
                   })    
             ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){ 
@@ -206,7 +209,7 @@ class ListingRepository
                 $query->whereIn('id', (array)$amenityId);            
                 })  
             ->get();
-            //return $records;     
+           //return $records;     
             $FilterRecords = array();
             foreach($records as $record){
                 $busId = $record->id; 
@@ -245,9 +248,8 @@ class ListingRepository
                 $amenitiesRecords = array();
                 foreach($amenitiesDatas as $amenitiesData) 
                 {  
-                    
                     $amenityName = $amenitiesData->amenities->name; 
-                    $amenityIcon = $amenitiesData->amenities->icon;  
+                    $amenityIcon = $amenitiesData->amenities->icon;   
                     $amenitiesRecords[] = array(
                         "amenityName" =>$amenityName,
                         "amenityIcon" => $amenityIcon,
@@ -271,7 +273,8 @@ class ListingRepository
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
                     "amenityName" =>$amenityName,
-                    "amenityIcon" =>$amenityIcon,
+                    "amenityIcon" => $amenityIcon,
+                        
                 );
                         
             }
