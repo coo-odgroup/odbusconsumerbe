@@ -43,10 +43,12 @@ class ListingRepository
         $this->seatClass = $seatClass;
      }   
 
-     public function getLocation()
+     public function getLocation($request)
      {
+        $searchValue = $request['locationName'];
          return $this->location
-         ->orderBy('name','ASC')
+         //->orderBy('name','ASC')
+         ->where('name', 'like', '%' .$searchValue . '%')
          ->get(['id','name']);
      }
  
