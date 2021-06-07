@@ -45,7 +45,9 @@ class ListingRepository
 
      public function getLocation()
      {
-         return $this->location->orderBy('name','ASC')->get('name');
+         return $this->location
+         ->orderBy('name','ASC')
+         ->get(['id','name']);
      }
  
     public function getAll($request)
