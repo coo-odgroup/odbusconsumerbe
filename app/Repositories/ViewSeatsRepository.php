@@ -7,6 +7,7 @@ use App\Models\TicketPrice;
 use App\Models\BoardingDroping;
 use App\Models\Location;
 use App\Models\BusSeats;
+use App\Models\Seats;
 use Illuminate\Support\Facades\Log;
 
 class ViewSeatsRepository
@@ -17,24 +18,49 @@ class ViewSeatsRepository
     protected $location;
     protected $busSeats;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
         $this->boardingDroping = $boardingDroping;
         $this->location = $location;
         $this->busSeats = $busSeats;
+        $this->seats=$seats;
     }   
     
     public function getAllViewSeats($request)
     { 
+
         $busId = $request['busId'];
-        $viewSeats_arr =  $this->bus
-        ->with('busSeats.seats')
-        ->where('id', $busId)
-        
+        // $viewSeats_arr =  $this->bus
+        // ->with('busSeatLayout.seats')
+        // //->select('seats.seat_class_id')
+        // ->groupBy('seats.seat_class_id')
+        // ->where('id', $busId)
+        // ->get();
+
+
+        $result['bus']=$busData=$this->bus->where('id',$busId)->get();
+        $result['seater']=$this->seats
+        ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
+        ->where('seat_class_id','1')
+        ->with('busSeats')
         ->get();
-        return $viewSeats_arr;
+        $result['sleeper']=$this->seats
+        ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
+        ->where(function($query){
+            $query->where('seat_class_id', '2');
+            $query->orWhere('seat_class_id', '3');
+        })
+        ->with('busSeats')
+        ->get();
+
+
+
+        // $request['routes']=$this->busStoppageTiming->select('location_id')->groupBy('location_id')->where('bus_id', $bus_id)->get();
+
+
+        return $result;
     }
     
     public function getPriceOnSeatsSelection($request)

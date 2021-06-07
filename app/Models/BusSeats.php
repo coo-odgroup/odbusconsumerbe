@@ -12,7 +12,7 @@ class BusSeats extends Model
 {
     use HasFactory;
     protected $table = 'bus_seats';
-    protected $fillable = ['bus_id','seat_class_id','category','berth_type','seat_number','duration','bookStatus','created_by'];
+    protected $fillable = ['bus_id','ticket_price_id','seats_id','category','bookStatus','duration','newfare','created_by'];
     public function bus()
     {
     	return $this->belongsTo(Bus::class);

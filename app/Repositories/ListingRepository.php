@@ -12,6 +12,7 @@ use App\Models\BusClass;
 use App\Models\SeatClass;
 use App\Models\Amenities;
 use App\Models\BusSeats;
+use App\Models\Seats;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use DB;
@@ -39,16 +40,16 @@ class ListingRepository
         $this->amenities = $amenities;
         $this->boardingDroping = $boardingDroping;
         $this->busClass = $busClass;
-        $this->busClass = $busClass;
         $this->seatClass = $seatClass;
+        
      }   
 
      public function getLocation($request)
      {
         $searchValue = $request['locationName'];
          return $this->location
-         //->orderBy('name','ASC')
          ->where('name', 'like', '%' .$searchValue . '%')
+         ->orWhere('synonym', 'like', '%' .$searchValue . '%')
          ->get(['id','name']);
      }
  
@@ -140,8 +141,8 @@ class ListingRepository
                     "departureTime" =>$departureTime,
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
-                    "amenityName" =>$amenityName,
-                    "amenityIcon" =>$amenityIcon,
+                    "name" =>$amenityName,
+                    "icon" =>$amenityIcon,
                 );
                         
             }
@@ -191,7 +192,7 @@ class ListingRepository
         $amenityId = $request['amenityId'];
         //DB::enableQueryLog(); 
         $records = $this->bus->with('busOperator')->with('ticketPrice')
-        ->with('busAmenities.amenities')->with('BusType.busClass')->with('busSeats.seatClass')->with('BusSitting')
+        ->with('busAmenities.amenities')->with('BusType.busClass')->with('busSeats.seats.seatClass')->with('BusSitting')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
@@ -202,7 +203,7 @@ class ListingRepository
             ->whereHas('BusType.busClass', function ($query) use ($busType){
                 $query->whereIn('class_name', (array)$busType);            
                 })
-            // ->whereHas('busSeats.seatClass', function ($query) use ($seatType){
+            // ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
             //     $query->whereIn('name', (array)$seatType);            
             //     })
             ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)        {                       
@@ -281,8 +282,8 @@ class ListingRepository
                     "departureTime" =>$departureTime,
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
-                    "amenityName" =>$amenityName,
-                    "amenityIcon" => $amenityIcon,       
+                    "name" =>$amenityName,
+                    "icon" => $amenityIcon,       
                 );
                         
             }

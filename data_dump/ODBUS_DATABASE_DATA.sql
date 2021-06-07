@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 07, 2021 at 04:26 AM
+-- Generation Time: Jun 07, 2021 at 02:50 PM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -565,12 +565,10 @@ INSERT INTO `bus_schedule_date` (`id`, `bus_schedule_id`, `entry_date`, `created
 CREATE TABLE `bus_seats` (
   `id` int UNSIGNED NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
-  `seat_class_id` int NOT NULL,
   `ticket_price_id` int UNSIGNED NOT NULL,
+  `seats_id` int NOT NULL,
   `category` int UNSIGNED NOT NULL COMMENT '0-odbus 1-conductor',
-  `berth_type` int NOT NULL DEFAULT '1' COMMENT '1 - Lower Berth \r\n2- Upper Berth',
   `bookStatus` int NOT NULL DEFAULT '0' COMMENT '0=Not Booked,\r\n1= Booked,\r\n2=Reserved',
-  `seat_number` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `duration` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT 'if grater than 0 its additional seats/ sleepers in minutes THE  gap after which full seats will be given to odbus',
   `new_fare` double(8,2) NOT NULL DEFAULT '0.00',
   `created_at` datetime NOT NULL,
@@ -583,11 +581,13 @@ CREATE TABLE `bus_seats` (
 -- Dumping data for table `bus_seats`
 --
 
-INSERT INTO `bus_seats` (`id`, `bus_id`, `seat_class_id`, `ticket_price_id`, `category`, `berth_type`, `bookStatus`, `seat_number`, `duration`, `new_fare`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, 1, 1, 0, 1, 1, 'ST1', '0', 0.00, '2021-04-30 09:42:46', '2021-05-24 12:02:27', 'Admin', 0),
-(2, 1, 2, 4, 0, 1, 0, 'SL2', '0', 0.00, '2021-06-06 23:08:17', '2021-06-06 23:08:17', 'Admin', 1),
-(3, 4, 1, 4, 0, 1, 0, 'ST2', '0', 0.00, '2021-06-06 23:08:17', '2021-06-06 23:08:17', 'Admin', 1),
-(9, 4, 2, 4, 0, 1, 0, 'SL1', '0', 0.00, '2021-06-08 17:46:33', '2021-06-08 17:46:33', 'Admin', 0);
+INSERT INTO `bus_seats` (`id`, `bus_id`, `ticket_price_id`, `seats_id`, `category`, `bookStatus`, `duration`, `new_fare`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 1, 1, 1, 0, 1, '0', 0.00, '2021-04-30 09:42:46', '2021-05-24 12:02:27', 'Admin', 0),
+(2, 1, 2, 2, 0, 1, '0', 0.00, '2021-06-06 23:08:17', '2021-06-06 23:08:17', 'Admin', 1),
+(3, 4, 1, 5, 0, 1, '0', 0.00, '2021-06-06 23:08:17', '2021-06-06 23:08:17', 'Admin', 1),
+(4, 1, 1, 3, 0, 1, '0', 0.00, '2021-06-07 14:01:36', '2021-06-07 14:01:36', 'Admin', 0),
+(5, 1, 1, 6, 0, 0, '0', 0.00, '2021-06-07 14:02:51', '2021-06-07 14:02:51', 'Admin', 0),
+(9, 4, 2, 4, 0, 1, '0', 0.00, '2021-06-08 17:46:33', '2021-06-08 17:46:33', 'Admin', 0);
 
 -- --------------------------------------------------------
 
@@ -1689,7 +1689,7 @@ CREATE TABLE `safety` (
 CREATE TABLE `seats` (
   `id` int NOT NULL,
   `bus_seat_layout_id` int UNSIGNED NOT NULL,
-  `seatType` enum('1','2','3','4') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '1=Seater       \r\n2 = Sleeper     \r\n3=Vertical Sleeper\r\n4=None',
+  `seat_class_id` int NOT NULL,
   `berthType` enum('1','2') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '1=Lower Berth\r\n2=Upper Berth',
   `seatText` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rowNumber` int NOT NULL,
@@ -1704,37 +1704,16 @@ CREATE TABLE `seats` (
 -- Dumping data for table `seats`
 --
 
-INSERT INTO `seats` (`id`, `bus_seat_layout_id`, `seatType`, `berthType`, `seatText`, `rowNumber`, `colNumber`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, '1', '1', '1', 0, 0, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(2, 1, '1', '1', '2', 0, 1, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(3, 1, '1', '1', '3', 0, 2, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(4, 1, '1', '1', '4', 0, 3, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(5, 1, '2', '1', '5', 1, 0, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(6, 1, '2', '1', '6', 1, 1, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(7, 1, '2', '1', '7', 1, 2, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(8, 1, '2', '1', '8', 1, 3, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(9, 1, '4', '1', 'NULL', 2, 0, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(10, 1, '4', '1', 'NULL', 2, 1, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(11, 1, '1', '1', '9', 2, 2, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(12, 1, '1', '1', '10', 2, 3, '2021-04-29 11:40:07', '2021-04-29 11:40:07', NULL, 1),
-(13, 2, '2', '2', 'SL1', 0, 0, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(14, 2, '2', '2', 'SL2', 0, 1, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(15, 2, '2', '2', 'SL3', 0, 2, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(16, 2, '2', '2', 'SL4', 0, 3, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(17, 2, '2', '2', 'SL5', 0, 4, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(18, 2, '2', '2', 'SL6', 0, 5, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(19, 2, '4', '2', 'SL7', 1, 0, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(20, 2, '4', '2', 'NULL', 1, 1, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(21, 2, '4', '2', 'NULL', 1, 2, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(22, 2, '4', '2', 'NULL', 1, 3, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(23, 2, '4', '2', 'NULL', 1, 4, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(24, 2, '3', '2', NULL, 1, 5, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(25, 2, '2', '2', 'SL8', 2, 0, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(26, 2, '2', '2', 'SL9', 2, 1, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(27, 2, '2', '2', 'SL10', 2, 2, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(28, 2, '2', '2', 'SL11', 2, 3, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(29, 2, '2', '2', 'SL12', 2, 4, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1),
-(30, 2, '2', '2', 'SL13', 2, 5, '2021-04-29 12:10:30', '2021-04-29 12:10:30', NULL, 1);
+INSERT INTO `seats` (`id`, `bus_seat_layout_id`, `seat_class_id`, `berthType`, `seatText`, `rowNumber`, `colNumber`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
+(1, 1, 1, '1', 'ST1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(2, 1, 1, '1', 'ST2', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(3, 1, 2, '1', 'SL1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(4, 1, 2, '1', 'SL2', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(5, 1, 1, '1', 'VS1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(6, 1, 1, '1', 'ST3', 1, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(7, 1, 2, '1', 'SL3', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(8, 1, 1, '1', 'ST4', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(9, 1, 3, '1', 'SL4', 1, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1);
 
 -- --------------------------------------------------------
 
@@ -2142,7 +2121,7 @@ ALTER TABLE `bus_seats`
   ADD PRIMARY KEY (`id`),
   ADD KEY `bus_seats_ibfk_1` (`bus_id`),
   ADD KEY `ticket_price_FK` (`ticket_price_id`),
-  ADD KEY `seat_type_fk` (`seat_class_id`);
+  ADD KEY `seats_id_fk` (`seats_id`);
 
 --
 -- Indexes for table `bus_seats_extra`
@@ -2326,7 +2305,8 @@ ALTER TABLE `safety`
 --
 ALTER TABLE `seats`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `seats_ibfk_1` (`bus_seat_layout_id`);
+  ADD KEY `seats_ibfk_1` (`bus_seat_layout_id`),
+  ADD KEY `seats_ibfk_12` (`seat_class_id`);
 
 --
 -- Indexes for table `seat_class`
@@ -2520,7 +2500,7 @@ ALTER TABLE `bus_schedule_date`
 -- AUTO_INCREMENT for table `bus_seats`
 --
 ALTER TABLE `bus_seats`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `bus_seat_layout`
@@ -2676,7 +2656,7 @@ ALTER TABLE `safety`
 -- AUTO_INCREMENT for table `seats`
 --
 ALTER TABLE `seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `seat_class`
@@ -2816,7 +2796,7 @@ ALTER TABLE `bus_schedule_date`
 --
 ALTER TABLE `bus_seats`
   ADD CONSTRAINT `bus_seats_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`id`),
-  ADD CONSTRAINT `seat_type_fk` FOREIGN KEY (`seat_class_id`) REFERENCES `seat_class` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `seats_id_fk` FOREIGN KEY (`seats_id`) REFERENCES `seats` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `ticket_price_FK` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
@@ -2835,8 +2815,8 @@ ALTER TABLE `bus_slots`
 -- Constraints for table `bus_stoppage_additional_fare`
 --
 ALTER TABLE `bus_stoppage_additional_fare`
-  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_1` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`),
-  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_2` FOREIGN KEY (`bus_seats_id`) REFERENCES `bus_seats` (`id`);
+  ADD CONSTRAINT `bus_seats_id_fk` FOREIGN KEY (`bus_seats_id`) REFERENCES `bus_seats` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `bus_stoppage_additional_fare_ibfk_1` FOREIGN KEY (`ticket_price_id`) REFERENCES `ticket_price` (`id`);
 
 --
 -- Constraints for table `bus_stoppage_timing`
@@ -2908,7 +2888,8 @@ ALTER TABLE `review`
 -- Constraints for table `seats`
 --
 ALTER TABLE `seats`
-  ADD CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `seats_ibfk_1` FOREIGN KEY (`bus_seat_layout_id`) REFERENCES `bus_seat_layout` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `seats_ibfk_12` FOREIGN KEY (`seat_class_id`) REFERENCES `seat_class` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `special_fare`
