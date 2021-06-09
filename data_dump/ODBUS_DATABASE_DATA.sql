@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 07, 2021 at 02:50 PM
+-- Generation Time: Jun 09, 2021 at 06:36 AM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -446,8 +446,8 @@ CREATE TABLE `bus_safety` (
   `id` int NOT NULL,
   `bus_id` int UNSIGNED NOT NULL,
   `safety_id` int NOT NULL,
-  `created_date` datetime NOT NULL,
-  `updated_date` tinyint NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
   `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1675,9 +1675,11 @@ CREATE TABLE `review` (
 CREATE TABLE `safety` (
   `id` int NOT NULL,
   `name` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_date` datetime NOT NULL,
-  `updated_date` datetime NOT NULL,
-  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL
+  `icon` mediumblob,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `created_by` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1705,15 +1707,20 @@ CREATE TABLE `seats` (
 --
 
 INSERT INTO `seats` (`id`, `bus_seat_layout_id`, `seat_class_id`, `berthType`, `seatText`, `rowNumber`, `colNumber`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, 1, '1', 'ST1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(2, 1, 1, '1', 'ST2', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(3, 1, 2, '1', 'SL1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(4, 1, 2, '1', 'SL2', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(5, 1, 1, '1', 'VS1', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(6, 1, 1, '1', 'ST3', 1, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(7, 1, 2, '1', 'SL3', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(8, 1, 1, '1', 'ST4', 0, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
-(9, 1, 3, '1', 'SL4', 1, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1);
+(1, 1, 1, '1', 'ST1', 1, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(2, 1, 1, '1', 'ST2', 1, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(3, 1, 3, '1', 'st', 1, 3, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(4, 1, 1, '1', 'ST3', 1, 4, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(5, 1, 1, '1', 'ST4', 1, 5, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(6, 1, 2, '1', 'ST5', 2, 1, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(7, 1, 1, '1', 'ST6', 2, 2, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(8, 1, 3, '1', 'vip', 2, 3, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(9, 1, 1, '1', 'ST7', 2, 4, '2021-06-07 12:36:11', '2021-06-07 12:36:11', 'ADMIN', 1),
+(10, 1, 1, '1', 'ST8', 2, 5, '2021-06-08 14:43:54', '2021-06-08 14:43:54', 'admin', 1),
+(11, 1, 2, '2', 'SL1', 1, 1, '2021-06-08 14:44:49', '2021-06-08 14:44:49', 'admin', 1),
+(12, 1, 2, '2', 'SL2', 1, 2, '2021-06-08 14:48:34', '2021-06-08 14:48:34', 'admin', 1),
+(13, 4, 2, '2', 'SL3', 1, 3, '2021-06-08 14:48:34', '2021-06-08 14:48:34', 'admin', 1),
+(14, 1, 2, '2', 'SL4', 1, 4, '2021-06-08 14:48:34', '2021-06-08 14:48:34', 'admin', 1);
 
 -- --------------------------------------------------------
 
@@ -2656,7 +2663,7 @@ ALTER TABLE `safety`
 -- AUTO_INCREMENT for table `seats`
 --
 ALTER TABLE `seats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `seat_class`

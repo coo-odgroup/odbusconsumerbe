@@ -33,60 +33,35 @@ class ViewSeatsRepository
     { 
 
         $busId = $request['busId'];
-        $result['viewSeats_arr'] =  $this->bus
-        ->with('busSeatLayout.seats.busSeats')
-        ->where('id', $busId)
+        // $result['viewSeats_arr'] =  $this->bus
+        // ->with('busSeatLayout.seats.busSeats')
+        // ->where('id', $busId)
+        // ->get();
+        $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
+        $result['lower_berth']=$this->seats
+        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+        ->where('berthType','1')
+        ->with('busSeats')
         ->get();
-        $result['lowerBerth:total_rows']=$this->seats
-        ->where('berthType', '1')
-        ->max('rowNumber');
-        $result['lowerBerth:total_columns']=$this->seats 
-        ->where('berthType', '1')
-        ->max('colNumber');
-        $result['upperBerth:total_rows']=$this->seats
-        ->where('berthType', '2')
-        ->max('rowNumber');
-        $result['upperBerth:total_columns']=$this->seats 
-        ->where('berthType', '2')
-        ->max('colNumber');
+
+        $rowsColumns  =$this->seats
+        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+        ->where('berthType', '1');
+        $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber');       
+        $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber');
+
+        $result['upper_berth']=$this->seats
+        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+        ->where('berthType','2')
+        ->with('busSeats')
+        ->get();
+
+        $rowsColumns  =$this->seats
+        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+        ->where('berthType', '2');
+        $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber');       
+        $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber');
         return $result;
-
-
-        // $result['bus']=$busData=$this->bus->where('id',$busId)->get();
-
-        // $result['lower_berth']=$this->seats
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType','1')
-        // ->with('busSeats')
-        // ->get();
-        // $result['upper_berth']=$this->seats
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType','2')
-        // ->with('busSeats')
-        // ->get();
-
-        // $result['lowerBerth:total_rows']=$this->seats
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType', '1')
-        // //->selectRaw("max('rowNumber') as total_row")
-        // //->get();
-        // ->max('rowNumber');
-        // //DB::enableQueryLog();
-        // $result['lowerBerth:total_columns']=$this->seats 
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType', '1')
-        // ->max('colNumber');
-
-        // $result['upperBerth:total_rows']=$this->seats
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType', '2')
-        // ->max('rowNumber');
-        // $result['upperBerth:total_columns']=$this->seats 
-        // ->where('bus_seat_layout_id',$busData[0]->bus_seat_layout_id)
-        // ->where('berthType', '2')
-        // ->max('colNumber');
-        
-        // return $result;
     }
     
     public function getPriceOnSeatsSelection($request)

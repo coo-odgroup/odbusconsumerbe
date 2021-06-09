@@ -192,7 +192,9 @@ class ListingRepository
         $amenityId = $request['amenityId'];
         //DB::enableQueryLog(); 
         $records = $this->bus->with('busOperator')->with('ticketPrice')
-        ->with('busAmenities.amenities')->with('BusType.busClass')->with('busSeats.seats.seatClass')->with('BusSitting')
+        ->with('busAmenities.amenities')->with('BusType.busClass')
+        ->with('busSeats.seats.seatClass')
+        ->with('BusSitting')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
@@ -200,7 +202,7 @@ class ListingRepository
                 $query->where('source_id', $sourceID)
                         ->where('destination_id', $destinationID);               
                 })          
-            ->whereHas('BusType.busClass', function ($query) use ($busType){
+            ->whereHas('busType.busClass', function ($query) use ($busType){
                 $query->whereIn('class_name', (array)$busType);            
                 })
             // ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
@@ -234,8 +236,10 @@ class ListingRepository
                 $busTypeName = $record->BusType->name;
                 $ticketPriceDatas = $record->ticketPrice;
                 $totalSeats = $record->busSeats->count('id');
-                $seater = $record->busSeats->where('seat_type',1)->count();
-                $sleeper = $record->busSeats->where('seat_type',2)->count();
+                //$seater = $record->busSeats->where('seat_type',1)->count();
+                //$sleeper = $record->busSeats->where('seat_type',2,3)->count();
+                $seatDatas = $record->busSeats;
+                //return $seatDatas; 
                 $amenitiesDatas = $record->busAmenities;
 
                 $ticketPriceRecords = array();
@@ -255,6 +259,19 @@ class ListingRepository
                                           "totalJourneyTime" => $totalJourneyTime,
                                          );  
                 }
+                $seatRecords = array();
+                foreach($seatDatas as $seatData) 
+                {  
+                   //$seater = $seatData->where('seat_class_id',1)->count();   
+                   $seater = $seatData->seats->where('seat_class_id',1)->count();
+                   $sleeper = $seatData->seats->where('seat_class_id',2)->orWhere('seat_class_id',3)->count();
+                   $seatRecords[] = array(
+                                  "seater" =>$seater,
+                                  "sleeper" => $sleeper,
+                               );
+                }
+              
+                
                 $amenitiesRecords = array();
                 foreach($amenitiesDatas as $amenitiesData) 
                 {  
