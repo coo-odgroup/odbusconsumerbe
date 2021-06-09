@@ -25,7 +25,7 @@ class Seats extends Model
     ];
     public function busSeats()
     {
-    	return $this->hasMany(BusSeats::class);
+    	return $this->hasOne(BusSeats::class);
     }
     public function seatClass()
     {
