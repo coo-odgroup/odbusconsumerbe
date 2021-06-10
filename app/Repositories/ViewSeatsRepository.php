@@ -8,6 +8,7 @@ use App\Models\BoardingDroping;
 use App\Models\Location;
 use App\Models\BusSeats;
 use App\Models\Seats;
+use App\Models\BusStoppageTiming;
 use Illuminate\Support\Facades\Log;
 use DB;
 
@@ -18,8 +19,9 @@ class ViewSeatsRepository
     protected $boardingDroping;
     protected $location;
     protected $busSeats;
+    protected $busStoppageTiming;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats, BusStoppageTiming $busStoppageTiming)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -27,6 +29,7 @@ class ViewSeatsRepository
         $this->location = $location;
         $this->busSeats = $busSeats;
         $this->seats=$seats;
+        $this->busStoppageTiming=$busStoppageTiming;
     }   
     
     public function getAllViewSeats($request)
@@ -92,11 +95,28 @@ class ViewSeatsRepository
 
     public function getBoardingDroppingPoints($request)
     { 
-        $locationId = $request['locationId'];
-        $boardingPoints =  $this->boardingDroping
-        ->where('location_id', $locationId)
+        $busId = $request['busId'];
+        $sourceId = $request['sourceId'];
+        $destinationId = $request['destinationId'];
+        $Records =  $this->busStoppageTiming->with('boardingDroping')
+        ->where('bus_id', $busId)
         ->get();
-        return $boardingPoints;
+        //return $Records;
+
+        foreach($Records as $Record){
+            $boardingDatas = $Record->boardingDroping;
+            $boardingPoints = $boardingDatas->where('location_id', $sourceId)->get(['id','boarding_point']);
+            //->pluck('boarding_point','id');
+            //$boardingPoints = $boardingDatas->groupBy('location_id')->pluck('boarding_point');
+            $droppingPoints = $boardingDatas->where('location_id', $destinationId)->get(['id','boarding_point']);
+            //->pluck('id','boarding_point');
+            //return $boardingDroppingPoints;
+       } 
+        $boardingDroppings[] = array(
+            "boardingPoints" => $boardingPoints,
+            "droppoingPoints" => $droppingPoints,  
+         );
+        return $boardingDroppings;
 
     }
 

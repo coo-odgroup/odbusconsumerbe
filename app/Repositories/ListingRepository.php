@@ -67,8 +67,11 @@ class ListingRepository
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;      
     
-        $records = $this->bus->with('ticketPrice')
-        ->with('busOperator')->with('BusType')->with('BusSitting')->with('busAmenities.amenities')->with('BusType')->with('BusSitting')->with('busSeats')
+        $records = $this->bus->with('busOperator')->with('ticketPrice')
+        ->with('busAmenities.amenities')
+        ->with('BusType.busClass')
+        ->with('busSeats.seats')
+        ->with('BusSitting')
         ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
             $query->where('entry_date', $entry_date);            
             })
@@ -79,73 +82,66 @@ class ListingRepository
         ->get();
         //return $records;
         $ListingRecords = array();
-            foreach($records as $record){
-                $busId = $record->id; 
-                $busName = $record->name;
-                $popularity = $record->popularity;
-                $busNumber = $record->bus_number;
-                $via = $record->via;
-                $operatorId = $record->busOperator->id;
-                $operatorName = $record->busOperator->operator_name;
-                $sittingType = $record->BusSitting->name;
-                $busType = $record->BusType->busClass->class_name;
-                $busTypeName = $record->BusType->name;
-                $ticketPriceDatas = $record->ticketPrice;
-                $totalSeats = $record->busSeats->count('id');
-                $seater = $record->busSeats->where('seat_type',1)->count();
-                $sleeper = $record->busSeats->where('seat_type',2)->count();
-                $amenitiesDatas = $record->busAmenities;
-
-                $ticketPriceRecords = array();
-                foreach($ticketPriceDatas as $ticketPriceData) 
-                {  
-                   $startingFromPrice = $ticketPriceData->base_seat_fare;   
-                   $departureTime = $ticketPriceData->dep_time; 
-                   $arrivalTime = $ticketPriceData->arr_time; 
-                   $arr_time = new DateTime($arrivalTime);
-                   $dep_time = new DateTime($departureTime);
-                   $totalTravelTime = $dep_time->diff($arr_time);
-                   $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
-                   $ticketPriceRecords[] = array(
-                                          "departureTime" =>$departureTime,
-                                          "arrivalTime" => $arrivalTime,
-                                          "startingFromPrice" => $startingFromPrice,
-                                          "totalJourneyTime" => $totalJourneyTime,
-                                         );  
-                }
-                $amenitiesRecords = array();
-                foreach($amenitiesDatas as $amenitiesData) 
-                {  
-                    
-                    $amenityName = $amenitiesData->amenities->name; 
-                    $amenityIcon = $amenitiesData->amenities->icon;  
-                    $amenitiesRecords[] = array(
-                        "amenityName" =>$amenityName,
-                        "amenityIcon" => $amenityIcon,
-                       );  
-                }
-                $ListingRecords[] = array(
-                    "busId" => $busId, 
-                    "busName" => $busName,
-                    "popularity" => $popularity,
-                    "busNumber" => $busNumber, 
-                    "operatorId" => $operatorId,
-                    "operatorName" => $operatorName,
-                    "sittingType" => $sittingType,
-                    "busType" => $busType,
-                    "busTypeName" => $busTypeName,
-                    "totalSeats" => $totalSeats, 
-                    "seater" => $seater, 
-                    "sleeper" => $sleeper,
-                    "startingFromPrice" => $startingFromPrice,
-                    "departureTime" =>$departureTime,
-                    "arrivalTime" =>$arrivalTime,
-                    "totalJourneyTime" =>$totalJourneyTime,
-                    "name" =>$amenityName,
-                    "icon" =>$amenityIcon,
-                );
-                        
+        foreach($records as $record){
+            $busId = $record->id; 
+            $busName = $record->name;
+            $popularity = $record->popularity;
+            $busNumber = $record->bus_number;
+            $via = $record->via;
+            $operatorId = $record->busOperator->id;
+            $operatorName = $record->busOperator->operator_name;
+            $sittingType = $record->BusSitting->name;
+            $busType = $record->BusType->busClass->class_name;
+            $busTypeName = $record->BusType->name;
+            $ticketPriceDatas = $record->ticketPrice;
+            $totalSeats = $record->busSeats->count('id');
+            $seatDatas = $record->busSeats;
+            $amenityDatas = $record->busAmenities;
+            $amenityName = $amenityDatas->pluck('amenities.name');
+            $amenityIcon = $amenityDatas->pluck('amenities.icon');
+            foreach($ticketPriceDatas as $ticketPriceData) 
+            {  
+               $startingFromPrice = $ticketPriceData->base_seat_fare;   
+               $departureTime = $ticketPriceData->dep_time; 
+               $arrivalTime = $ticketPriceData->arr_time; 
+               $arr_time = new DateTime($arrivalTime);
+               $dep_time = new DateTime($departureTime);
+               $totalTravelTime = $dep_time->diff($arr_time);
+               $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
             }
+             $seatClassRecords = 0;
+             $sleeperClassRecords = 0;
+            foreach($seatDatas as $seatData) {  
+                 $seatclass = $seatData->seats->seat_class_id;
+                 if($seatclass==1){
+                     $seatClassRecords ++;
+                 }
+                 elseif($seatclass==2 || $seatclass==3){
+                     $sleeperClassRecords ++;
+                }
+            }
+            $ListingRecords[] = array(
+                "busId" => $busId, 
+                "busName" => $busName,
+                "popularity" => $popularity,
+                "busNumber" => $busNumber, 
+                "operatorId" => $operatorId,
+                "operatorName" => $operatorName,
+                "sittingType" => $sittingType,
+                "busType" => $busType,
+                "busTypeName" => $busTypeName,
+                "totalSeats" => $totalSeats,
+                "seaters" => $seatClassRecords,
+                "sleepers" => $sleeperClassRecords,
+                "startingFromPrice" => $startingFromPrice,
+                "departureTime" =>$departureTime,
+                "arrivalTime" =>$arrivalTime,
+                "totalJourneyTime" =>$totalJourneyTime,
+                "name" =>$amenityName,
+                "icon" => $amenityIcon,     
+            );
+                    
+        }
         return $ListingRecords;
     }
 
@@ -160,8 +156,7 @@ class ListingRepository
         $boardingPoints = $this->boardingDroping->where('location_id', $sourceID)->get(['id','boarding_point']);
         $dropingPoints = $this->boardingDroping->where('location_id', $destinationID)->get(['id','boarding_point']);
         $busOperator = $this->busOperator->get(['id','operator_name']);
-        $amenities = $this->amenities->get(['id','icon','name']);
-        
+        $amenities = $this->amenities->get();
 
         $filterOptions[] = array(
            "busTypes" => $busTypes,
@@ -176,7 +171,7 @@ class ListingRepository
     }
 
     public function filter($request)
-    {           
+    {      
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID']; 
         $entry_date = $request['entry_date'];   
@@ -192,8 +187,9 @@ class ListingRepository
         $amenityId = $request['amenityId'];
         //DB::enableQueryLog(); 
         $records = $this->bus->with('busOperator')->with('ticketPrice')
-        ->with('busAmenities.amenities')->with('BusType.busClass')
-        ->with('busSeats.seats.seatClass')
+        ->with('busAmenities.amenities')
+        ->with('BusType.busClass')
+        ->with('busSeats.seats')
         ->with('BusSitting')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
@@ -205,9 +201,9 @@ class ListingRepository
             ->whereHas('busType.busClass', function ($query) use ($busType){
                 $query->whereIn('class_name', (array)$busType);            
                 })
-            // ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
-            //     $query->whereIn('name', (array)$seatType);            
-            //     })
+            ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
+                $query->whereIn('id', (array)$seatType);            
+                })
             ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)        {                       
                 $query->whereIn('id', (array)$boardingPointId);
                   })    
@@ -221,7 +217,7 @@ class ListingRepository
                 $query->whereIn('id', (array)$amenityId);            
                 })  
             ->get();
-           //return $records;     
+          // return $records;  
             $FilterRecords = array();
             foreach($records as $record){
                 $busId = $record->id; 
@@ -237,12 +233,11 @@ class ListingRepository
                 $ticketPriceDatas = $record->ticketPrice;
                 $totalSeats = $record->busSeats->count('id');
                 //$seater = $record->busSeats->where('seat_type',1)->count();
-                //$sleeper = $record->busSeats->where('seat_type',2,3)->count();
+                //$sleeper = $record->busSeats->where('seat_type',2)->orWhere('seat_type',3)->count();
                 $seatDatas = $record->busSeats;
-                //return $seatDatas; 
-                $amenitiesDatas = $record->busAmenities;
-
-                $ticketPriceRecords = array();
+                $amenityDatas = $record->busAmenities;
+                $amenityName = $amenityDatas->pluck('amenities.name');
+                $amenityIcon = $amenityDatas->pluck('amenities.icon');
                 foreach($ticketPriceDatas as $ticketPriceData) 
                 {  
                    $startingFromPrice = $ticketPriceData->base_seat_fare;   
@@ -252,35 +247,17 @@ class ListingRepository
                    $dep_time = new DateTime($departureTime);
                    $totalTravelTime = $dep_time->diff($arr_time);
                    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
-                   $ticketPriceRecords[] = array(
-                                          "departureTime" =>$departureTime,
-                                          "arrivalTime" => $arrivalTime,
-                                          "startingFromPrice" => $startingFromPrice,
-                                          "totalJourneyTime" => $totalJourneyTime,
-                                         );  
                 }
-                $seatRecords = array();
-                foreach($seatDatas as $seatData) 
-                {  
-                   //$seater = $seatData->where('seat_class_id',1)->count();   
-                   $seater = $seatData->seats->where('seat_class_id',1)->count();
-                   $sleeper = $seatData->seats->where('seat_class_id',2)->orWhere('seat_class_id',3)->count();
-                   $seatRecords[] = array(
-                                  "seater" =>$seater,
-                                  "sleeper" => $sleeper,
-                               );
-                }
-              
-                
-                $amenitiesRecords = array();
-                foreach($amenitiesDatas as $amenitiesData) 
-                {  
-                    $amenityName = $amenitiesData->amenities->name; 
-                    $amenityIcon = $amenitiesData->amenities->icon;   
-                    $amenitiesRecords[] = array(
-                        "amenityName" =>$amenityName,
-                        "amenityIcon" => $amenityIcon,
-                       );  
+                 $seatClassRecords = 0;
+                 $sleeperClassRecords = 0;
+                foreach($seatDatas as $seatData) {  
+                     $seatclass = $seatData->seats->seat_class_id;
+                     if($seatclass==1){
+                         $seatClassRecords ++;
+                     }
+                     elseif($seatclass==2 || $seatclass==3){
+                         $sleeperClassRecords ++;
+                    }
                 }
                 $FilterRecords[] = array(
                     "busId" => $busId, 
@@ -292,23 +269,19 @@ class ListingRepository
                     "sittingType" => $sittingType,
                     "busType" => $busType,
                     "busTypeName" => $busTypeName,
-                    "totalSeats" => $totalSeats, 
-                    "seater" => $seater, 
-                    "sleeper" => $sleeper,
+                    "totalSeats" => $totalSeats,
+                    "seaters" => $seatClassRecords,
+                    "sleepers" => $sleeperClassRecords,
                     "startingFromPrice" => $startingFromPrice,
                     "departureTime" =>$departureTime,
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
                     "name" =>$amenityName,
-                    "icon" => $amenityIcon,       
+                    "icon" => $amenityIcon,     
                 );
                         
             }
         return $FilterRecords;
-
-
-
-
 
 
             ////need to do later for enhanced code//////////
