@@ -21,22 +21,38 @@ class ChannelController extends Controller
         }
     public function sendSms(Request $request)
     {
-        $data = $request->only([
-            'number','smsprovider','sender','receiver','contents','channel_type','acknowledgement'
-           ]);  
+        // $data = $request->only([
+        //     'number','smsprovider','sender','receiver','contents','channel_type','acknowledgement'
+        //    ]);  
           try {
-           $response = $this->channelService->sendSms($data); 
+           $response = $this->channelService->sendSms($request); 
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
- 
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }    
-        
+          }       
+    }
+
+    public function sendEmail(Request $request)
+    {
+        try {
+            $response = $this->channelService->sendEmail($request); 
+             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }   
     }
     
       public function makePayment(Request $request)
     {   
+        try {
+            $response = $this->channelService->makePayment($request); 
+             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }  
         
     }
 

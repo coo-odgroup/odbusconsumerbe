@@ -35,9 +35,6 @@ class ChannelRepository
         $response = curl_exec($ch);
         curl_close($ch);
         return $response;
-	
-	// Process your response here
-    //return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
     public function sendSmsIndiaHub($data)
@@ -82,14 +79,8 @@ class ChannelRepository
             'msg' => "Test Message from API",
             'fl' =>"0",
         );
-        $url = "http://cloud.smsindiahub.in/vendorsms/pushsms.aspx";
+        $url = env('TEXT_SMS_INDIA_HUB_URL');
         list($header, $content) = PostRequest($url,$data);
-    
-        // the url to post to "http://www.yourdomain.com/sms.php",
-        // its your url
-        
-        //echo $content;
-       // return $this->successResponse($content,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     
     public function sendSms($data) {
@@ -97,7 +88,6 @@ class ChannelRepository
         $response = $this->sendSmstextLocal($data);
         else
         $this->sendSmsIndiaHub($data);
-        //$response =   $this->sendSmstextLocal($request);
         $sms = new $this->customerNotification;
         $sms->sender = $data['sender'];
         $sms->receiver = $data['receiver'];
@@ -105,19 +95,18 @@ class ChannelRepository
         $sms->channel_type = $data['channel_type'];
         $sms->acknowledgement = $response;
         $sms->save();
-
         return $sms;
            
       }
 
-      public function sendEmail(Request $request) {
+      public function sendEmail($data) {
 
         $email = new \SendGrid\Mail\Mail();
-        $email->sender = $request['sender'];
-        $email->receiver = $request['receiver'];
-        $email->contents = $request['contents'];
-        $email->channel_type = $request['channel_type'];
-        $email->acknowledgement = $request['acknowledgement'];
+        $email->sender = $data['sender'];
+        $email->receiver = $data['receiver'];
+        $email->contents = $data['contents'];
+        $email->channel_type = $data['channel_type'];
+        $email->acknowledgement = $data['acknowledgement'];
 
         // $email->setFrom = $request['setFrom'];
         // $email->setSubject = $request['setSubject'];
@@ -127,13 +116,9 @@ class ChannelRepository
         //     "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
        // );
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
-        try {
-            $response = $sendgrid->send($email);
-            return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-        }
-        catch(Exception $e){
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }  
+        $email->save();
+        return $email;
+
       }
 
       public function makePayment(Request $request)

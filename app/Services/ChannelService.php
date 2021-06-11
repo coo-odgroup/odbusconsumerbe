@@ -27,5 +27,29 @@ class ChannelService
         }
         return $sendSms;
     }   
+
+    public function sendEmail($data)
+    {
+        try {
+            $sendEmail = $this->channelRepository->sendEmail($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $sendEmail;
+    }   
+
+    public function makePayment($data)
+    {
+        try {
+            $payment = $this->channelRepository->makePayment($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $sendEmail;
+    }   
    
 }
