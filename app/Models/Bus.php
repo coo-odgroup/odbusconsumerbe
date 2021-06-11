@@ -25,6 +25,10 @@ class Bus extends Model
     {
         return $this->hasMany(BusAmenities::class);        
     } 
+    public function busSafety()
+    {
+        return $this->hasMany(BusSafety::class);        
+    }
     public function review()
     {        
         return $this->hasMany(Review::class);        
