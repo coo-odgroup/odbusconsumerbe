@@ -20,7 +20,7 @@ Route::post('/Filter', [ListingController::class, 'filter']);
 Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::get('/AllLocations', [ViewSeatsController::class, 'getAllLocations']);
 Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
-Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
+Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
