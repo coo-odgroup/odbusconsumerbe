@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 12, 2021 at 02:12 AM
+-- Generation Time: Jun 12, 2021 at 07:36 AM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -2090,7 +2090,7 @@ CREATE TABLE `ticket_price` (
   `base_seat_fare` double(8,2) UNSIGNED NOT NULL,
   `base_sleeper_fare` double(8,2) UNSIGNED NOT NULL,
   `dep_time` datetime DEFAULT NULL,
-  `arr_time` timestamp NULL DEFAULT NULL,
+  `arr_time` datetime DEFAULT NULL,
   `start_j_days` int NOT NULL DEFAULT '0',
   `j_day` int NOT NULL DEFAULT '0' COMMENT '0-same day 1- next day so on.. ',
   `created_at` datetime NOT NULL,
@@ -2104,9 +2104,9 @@ CREATE TABLE `ticket_price` (
 --
 
 INSERT INTO `ticket_price` (`id`, `user_id`, `bus_operator_id`, `bus_id`, `source_id`, `destination_id`, `base_seat_fare`, `base_sleeper_fare`, `dep_time`, `arr_time`, `start_j_days`, `j_day`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, 2, 1, 1291, 1294, 400.00, 450.00, '2021-06-11 20:00:00', '2021-06-12 01:30:00', 1, 2, '2021-06-11 15:23:51', '2021-06-11 15:23:51', 'Admin', 0),
-(2, 1, 2, 2, 1291, 1294, 350.00, 400.00, '2021-06-11 21:00:00', '2021-06-12 01:00:00', 1, 2, '2021-06-11 15:38:37', '2021-06-11 15:38:37', 'Admin', 0),
-(3, 1, 5, 3, 1291, 1294, 420.00, 490.00, '2021-06-11 22:00:00', '2021-06-11 23:30:00', 1, 2, '2021-06-11 15:43:18', '2021-06-11 15:43:18', 'Admin', 0);
+(1, 1, 2, 1, 1291, 1294, 400.00, 450.00, '2021-06-11 20:00:00', '2021-06-12 07:00:00', 1, 2, '2021-06-11 15:23:51', '2021-06-11 15:23:51', 'Admin', 0),
+(2, 1, 2, 2, 1291, 1294, 350.00, 400.00, '2021-06-11 21:00:00', '2021-06-12 06:30:00', 1, 2, '2021-06-11 15:38:37', '2021-06-11 15:38:37', 'Admin', 0),
+(3, 1, 5, 3, 1291, 1294, 420.00, 490.00, '2021-06-11 22:00:00', '2021-06-12 05:00:00', 1, 2, '2021-06-11 15:43:18', '2021-06-11 15:43:18', 'Admin', 0);
 
 -- --------------------------------------------------------
 

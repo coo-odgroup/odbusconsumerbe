@@ -102,21 +102,34 @@ class ViewSeatsRepository
         ->where('bus_id', $busId)
         ->get();
         //return $Records;
-    foreach($Records as $Record){
 
-            $boardingPoints = $Record->boardingDroping->where('location_id', $sourceId)
-            ->get(['id','boarding_point']);
-            $droppingPoints = $Record->boardingDroping->where('location_id', $destinationId)
-            ->get(['id','boarding_point']);
+        $boardingDroppings = array();  
+        foreach($Records as $Record){  
+            $boardingPoints = $Record->boardingDroping->boarding_point;
+            $locationId = $Record->boardingDroping->location_id;
+            $boardDropId = $Record->boardingDroping->id;
+            if($locationId==$sourceId)
+            {
+                $boardingArray[] = array(
+                    "id" =>  $boardDropId,
+                    "boardingPoints" => $boardingPoints,
+                );
+            }
+            elseif($locationId==$destinationId)
+            {
+                $droppingArray[] = array(
+                    "id" =>  $boardDropId,
+                    "droppoingPoints" => $boardingPoints,
+            );
+            }
+    }
+    $boardingDroppings[] = array(   
+        "boardingPoints" => $boardingArray,
+        "droppingPoints" => $droppingArray,
+    );  
 
-       } 
-    
-        $boardingDroppings[] = array(
-            "boardingPoints" => $boardingPoints,
-            "droppoingPoints" => $droppingPoints,  
-         );
-        return $boardingDroppings;
 
+    return $boardingDroppings;
     }
 
     public function getAllLocations()
