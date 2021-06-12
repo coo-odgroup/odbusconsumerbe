@@ -142,8 +142,8 @@ class ListingRepository
                 "departureTime" =>$departureTime,
                 "arrivalTime" =>$arrivalTime,
                 "totalJourneyTime" =>$totalJourneyTime,
-                "name" =>$amenityName,
-                "icon" => $amenityIcon,
+                "amenityName" =>$amenityName,
+                "amenityIcon" => $amenityIcon,
                 "safetyIconName" =>$safetyName,
                 "safetyIcon" => $safetyIcon,        
             );
@@ -179,6 +179,7 @@ class ListingRepository
 
     public function filter($request)
     {      
+        $price = $request['price'];
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID']; 
         $entry_date = $request['entry_date'];   
@@ -287,14 +288,20 @@ class ListingRepository
                     "departureTime" =>$departureTime,
                     "arrivalTime" =>$arrivalTime,
                     "totalJourneyTime" =>$totalJourneyTime,
-                    "name" =>$amenityName,
-                    "icon" => $amenityIcon, 
+                    "amenityName" =>$amenityName,
+                    "amenityIcon" => $amenityIcon, 
                     "safetyIconName" =>$safetyName,
                     "safetyIcon" => $safetyIcon,    
                 );            
             }
-            $sorted = collect($FilterRecords)->sortBy('startingFromPrice')->all();
-            return $sorted;
+            if($price == 0){
+                $sorted = $FilterRecords;  
+            }elseif($price == 1){
+                $sortByPrice = collect($FilterRecords)->sortBy('startingFromPrice')->all();
+                $sorted = $sortByPrice; 
+           }
+            
+           return $sorted;
 
 
             ////need to do later for enhanced code//////////

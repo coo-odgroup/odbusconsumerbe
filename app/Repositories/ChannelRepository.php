@@ -95,8 +95,7 @@ class ChannelRepository
         $sms->channel_type = $data['channel_type'];
         $sms->acknowledgement = $response;
         $sms->save();
-        return $sms;
-           
+        return $sms;     
       }
 
       public function sendEmail($data) {

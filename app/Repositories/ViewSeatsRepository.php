@@ -102,16 +102,15 @@ class ViewSeatsRepository
         ->where('bus_id', $busId)
         ->get();
         //return $Records;
+    foreach($Records as $Record){
 
-        foreach($Records as $Record){
-            $boardingDatas = $Record->boardingDroping;
-            $boardingPoints = $boardingDatas->where('location_id', $sourceId)->get(['id','boarding_point']);
-            //->pluck('boarding_point','id');
-            //$boardingPoints = $boardingDatas->groupBy('location_id')->pluck('boarding_point');
-            $droppingPoints = $boardingDatas->where('location_id', $destinationId)->get(['id','boarding_point']);
-            //->pluck('id','boarding_point');
-            //return $boardingDroppingPoints;
+            $boardingPoints = $Record->boardingDroping->where('location_id', $sourceId)
+            ->get(['id','boarding_point']);
+            $droppingPoints = $Record->boardingDroping->where('location_id', $destinationId)
+            ->get(['id','boarding_point']);
+
        } 
+    
         $boardingDroppings[] = array(
             "boardingPoints" => $boardingPoints,
             "droppoingPoints" => $droppingPoints,  
