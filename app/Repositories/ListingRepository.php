@@ -203,27 +203,33 @@ class ListingRepository
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
-            ->whereHas('ticketPrice', function($query ) use ($sourceID,$destinationID)  {
+            ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
                 $query->where('source_id', $sourceID)
                         ->where('destination_id', $destinationID);               
                 })          
             ->whereHas('busType.busClass', function ($query) use ($busType){
-                $query->orwhereIn('class_name', (array)$busType);            
+                if($busType)
+                $query->whereIn('id', (array)$busType);            
                 })
             ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
-                $query->orwhereIn('id', (array)$seatType);            
+                if($seatType)
+                $query->whereIn('id', (array)$seatType);            
                 })
-            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId)        {                       
-                $query->orwhereIn('id', (array)$boardingPointId);
+            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
+                if($boardingPointId)                   
+                $query->whereIn('id', (array)$boardingPointId);
                   })    
-            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){ 
-                $query->orwhereIn('id', (array)$dropingingPointId);
+            ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){
+                if($dropingingPointId)  
+                $query->whereIn('id', (array)$dropingingPointId);
                  })       
             ->whereHas('busOperator', function ($query) use ($operatorId){
-                $query->orwhereIn('id', (array)$operatorId);            
+                if($operatorId)
+                $query->whereIn('id', (array)$operatorId);            
                 })
             ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
-                $query->orwhereIn('id', (array)$amenityId);            
+                if($amenityId)
+                $query->whereIn('id', (array)$amenityId);            
                 })  
             ->get();
          // return $records;  

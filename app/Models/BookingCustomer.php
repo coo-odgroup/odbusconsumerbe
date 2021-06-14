@@ -3,6 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Booking;
 
 class BookingCustomer extends Model
 {
@@ -21,5 +22,9 @@ class BookingCustomer extends Model
         'email',
         'created_by',
     ];
+    public function booking()
+      {
+            return $this->hasOne(Booking::class);   
+      } 
 
 }

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\Booking;
+use App\Models\BookingCustomer;
+
 class BookingDetail extends Model
 {
     use HasFactory;
@@ -21,5 +23,9 @@ class BookingDetail extends Model
       public function booking()
       {
             return $this->belongsTo(Booking::class);
+      }
+      public function bookingCustomer()
+      {
+            return $this->belongsTo(BookingCustomer::class);
       }
 }

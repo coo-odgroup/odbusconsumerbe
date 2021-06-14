@@ -33,10 +33,10 @@ class BookTicketController extends Controller
  
     public function bookTicket(Request $request) {
          $data = $request->only([
-            'seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
+            'email','phone','seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
            ]);   
           try {
-           $response =  $this->bookTicketService->bookTicket($data);  
+           $response =  $this->bookTicketService->bookTicket($request);  
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) {

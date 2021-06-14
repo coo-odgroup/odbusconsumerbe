@@ -8,7 +8,7 @@ use App\Models\BookingCustomer;
 use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\BookingDetail;
-use App\Models\BusSeatsStatus;
+use App\Models\BusSeats;
 
 class BookTicketRepository
 {
@@ -16,30 +16,39 @@ class BookTicketRepository
     protected $location;
     protected $bookingCustomer;
     protected $booking;
-    protected $busSeatsStatus;
+    protected $busSeats;
     protected $bookingDetail;
 
-    public function __construct(Bus $bus,Location $location,BookingCustomer $bookingCustomer,BusSeatsStatus $busSeatsStatus,Booking $booking,BookingDetail $bookingDetail)
+    public function __construct(Bus $bus,Location $location,BookingCustomer $bookingCustomer,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
     {
         $this->bus = $bus;
         $this->location = $location;
         $this->bookingCustomer = $bookingCustomer;
-        $this->busSeatsStatus = $busSeatsStatus;
+        $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->bookingDetail = $bookingDetail;
     }   
     
     public function bookTicket($request)
     { 
+      $MailId = $request['email'];
+      $phone = $request['phone'];
+
+        //find customer_id using email or phone no
+       $customerId = $this->bookingCustomer->where('email', $MailId)->orWhere('phone', $phone)->find('id');
+       return $customerId;
+         
+        ////return customer_info if record found
+        //else create a custmer and return custumer_info
         //$customerInfo = $request['customerInfo'];
+
         $bookingInfo = $request['bookingInfo'];
 
-        //Update Ticket Status in bus_seats_status Change bookStatus to 1(Booked)
+        //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
-        $this->busSeatsStatus->whereIn('id', $seatIds)->update(array('bookStatus' => $bookStatus));
-    
-        //Update Booking 
+        $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => $bookStatus));
+        //Save Booking 
         $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -53,7 +62,8 @@ class BookTicketRepository
         $booking->destination_id =  $bookingInfo['destination_id'];
         $booking->j_day = $bookingInfo['j_day'];
         $booking->journey_dt = $bookingInfo['journey_dt'];
-        $booking->boarding_droping_id = $bookingInfo['boarding_droping_id'];
+        $booking->boarding_point = $bookingInfo['boarding_point'];
+        $booking->dropping_point = $bookingInfo['dropping_point'];
         $booking->boarding_time = $bookingInfo['boarding_time'];
         $booking->dropping_time =  $bookingInfo['dropping_time'];
         $booking->total_fare = $bookingInfo['total_fare'];

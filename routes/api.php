@@ -12,6 +12,8 @@ use App\Http\Controllers\ChannelController;
 use App\Http\Middleware\LogRoute;
 use Laravel\Passport\Passport;
 
+//Route::middleware([LogRoute::class])->group(function () {
+
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/BusOperators', [ListingController::class, 'getBusOpertors']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -25,6 +27,9 @@ Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
+
+
+//});
 
 
 
