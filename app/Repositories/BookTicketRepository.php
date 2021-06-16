@@ -31,19 +31,25 @@ class BookTicketRepository
     
     public function bookTicket($request)
     { 
-      $MailId = $request['email'];
-      $phone = $request['phone'];
-
+        $customerInfo = $request['customerInfo']; 
         //find customer_id using email or phone no
-       $customerId = $this->bookingCustomer->where('email', $MailId)->orWhere('phone', $phone)->find('id');
-       return $customerId;
-         
-        ////return customer_info if record found
-        //else create a custmer and return custumer_info
-        //$customerInfo = $request['customerInfo'];
+        
+        $existingCustomer = $this->bookingCustomer->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])
+        ->exists();
 
+        if( $existingCustomer == true){
+        // Update existing Customer information
+            $bookingId = $this->bookingCustomer->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
+            $this->bookingCustomer->whereIn('id', $bookingId)->update($request['customerInfo']);
+
+        }
+
+        //create New Customer information
+        else{
+            $this->bookingCustomer->create($request['customerInfo']);
+
+        }
         $bookingInfo = $request['bookingInfo'];
-
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
@@ -77,6 +83,7 @@ class BookTicketRepository
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->created_by = $bookingInfo['created_by'];
         $booking->save();
+        //$booking->create($request['bookingInfo']);
 
         //Update Booking Details
 
@@ -87,17 +94,5 @@ class BookTicketRepository
         }
         $booking->bookingDetail()->saveMany($bookingDetailModels);
         return $booking; 
-        
-
-         //Save Customer Data
-        //  $customer = new $this->bookingCustomer;
-        //  $customer->first_name = $customerInfo['first_name'];
-        //  $customer->last_name =  $customerInfo['last_name'];
-        //  $customer->age = $customerInfo['age'];
-        //  $customer->email = $customerInfo['email'];
-        //  $customer->phone = $customerInfo['phone'];
-        //  $customer->created_by = $customerInfo['created_by'];
-        //  $customer->save();
-
     }
 }

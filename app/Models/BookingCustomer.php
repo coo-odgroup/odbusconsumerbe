@@ -14,6 +14,7 @@ class BookingCustomer extends Model
      *
      * @var array
      */
+    protected $table = 'booking_customer';
     protected $fillable = [
         'first_name',
         'last_name',
