@@ -11,7 +11,6 @@ class ChannelRepository
     {
         $this->customerNotification = $customerNotification; 
     }   
-    
     public function sendSmstextLocal($data)
     {
         $apiKey = env('SMS_TEXTLOCAL_KEY');
@@ -28,7 +27,8 @@ class ChannelRepository
         // Send the POST request with cURL
         
         $textLocalUrl = env('TEXT_LOCAL_SMS_URL');
-        $ch = curl_init($textLocalUrl);       
+        $ch = curl_init($textLocalUrl); 
+        //$ch = curl_init('https://api.textlocal.in/send/');      
         curl_setopt($ch, CURLOPT_POST, true);      
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -36,6 +36,7 @@ class ChannelRepository
         curl_close($ch);
         return $response;
     }
+   
 
     public function sendSmsIndiaHub($data)
     {

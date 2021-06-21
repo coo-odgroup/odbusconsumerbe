@@ -11,4 +11,7 @@ return [
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
     'ALL_RECORDS'=>10000,
     'PAYMENT_DONE' => 'Payment successfully done',
+    'REGISTERED' => 'Registered Successfully',
+    'LOGIN' => 'Login Successful',
+    'OTP_VERIFIED' => 'OTP sent Successfully',
 ];

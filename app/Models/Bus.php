@@ -13,6 +13,7 @@ use App\Models\Review;
 use App\Models\BusSchedule;
 use App\Models\BusOperator;
 use App\Models\BusCancelled;
+use App\Models\BusGallery;
 
 class Bus extends Model
 {
@@ -80,6 +81,10 @@ class Bus extends Model
     public function busSeats()
     {        
         return $this->hasMany(BusSeats::class);        
+    }
+    public function busGallery()
+    {        
+        return $this->hasMany(BusGallery::class);        
     }
     
 }

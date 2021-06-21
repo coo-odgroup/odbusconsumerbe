@@ -51,6 +51,7 @@ class ListingRepository
          return $this->location
          ->where('name', 'like', '%' .$searchValue . '%')
          ->orWhere('synonym', 'like', '%' .$searchValue . '%')
+         ->orderBy('name','ASC')
          ->get(['id','name']);
      }
  
@@ -74,6 +75,7 @@ class ListingRepository
         ->with('BusType.busClass')
         ->with('busSeats.seats')
         ->with('BusSitting')
+        ->with('busGallery')
         ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
             $query->where('entry_date', $entry_date);            
             })
@@ -104,6 +106,8 @@ class ListingRepository
             $safetyDatas = $record->busSafety;
             $safetyName = $safetyDatas->pluck('safety.name');
             $safetyIcon = $safetyDatas->pluck('safety.icon');
+            $busPhotoDatas = $record->busGallery;
+            $busPhotos = $busPhotoDatas->pluck('image');
             foreach($ticketPriceDatas as $ticketPriceData) 
             {  
                $startingFromPrice = $ticketPriceData->base_seat_fare;   
@@ -145,7 +149,8 @@ class ListingRepository
                 "amenityName" =>$amenityName,
                 "amenityIcon" => $amenityIcon,
                 "safetyIconName" =>$safetyName,
-                "safetyIcon" => $safetyIcon,        
+                "safetyIcon" => $safetyIcon,
+                "busPhotos" => $busPhotos,        
             );
                     
         }
@@ -200,6 +205,7 @@ class ListingRepository
         ->with('BusType.busClass')
         ->with('busSeats.seats')
         ->with('BusSitting')
+        ->with('busGallery')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
@@ -256,6 +262,8 @@ class ListingRepository
                 $safetyDatas = $record->busSafety;
                 $safetyName = $safetyDatas->pluck('safety.name');
                 $safetyIcon = $safetyDatas->pluck('safety.icon');
+                $busPhotoDatas = $record->busGallery;
+                $busPhotos = $busPhotoDatas->pluck('image');
                 foreach($ticketPriceDatas as $ticketPriceData) 
                 {  
                    $startingFromPrice = $ticketPriceData->base_seat_fare;   
@@ -297,7 +305,8 @@ class ListingRepository
                     "amenityName" =>$amenityName,
                     "amenityIcon" => $amenityIcon, 
                     "safetyIconName" =>$safetyName,
-                    "safetyIcon" => $safetyIcon,    
+                    "safetyIcon" => $safetyIcon,
+                    "busPhotos" => $busPhotos,     
                 );            
             }
             if($price == 0){

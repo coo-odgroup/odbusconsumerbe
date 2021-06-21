@@ -12,10 +12,9 @@ class BookingDetail extends Model
 {
     use HasFactory;
     protected $table = 'booking_detail';
-    protected $fillable = ['booking_id','pnr','jrny_dt','j_day','bus_id','seat_no',
-                            'passenger_name','passenger_gender','passenger_age',
-                            'created_by'];
-
+    protected $fillable = ['booking_id','pnr','bus_id','seat_no', 'passenger_name','passenger_gender','passenger_age', 'created_by'];
+                            
+                            
      public function bus()
       {
             return $this->belongsTo(Bus::class);

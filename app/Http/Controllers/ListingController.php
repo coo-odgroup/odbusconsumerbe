@@ -36,7 +36,72 @@ class ListingController extends Controller
         $this->listingService = $listingService;
         $this->listingValidator = $listingValidator;       
     }
- 
+/**
+ * @OA\Info(title="ODBUS Consumer APIs", version="0.1",
+ * description="L5 Swagger OpenApi description for ODBUS Consumer APIs",
+ * )
+ * 
+ */
+/**
+ * @OA\Get(
+ *     path="/api/getLocation",
+ *     tags={"Locations with SearchValue params"},
+ *     description="get all Locations",
+ *     summary="Get List of Locations",
+ *     @OA\Parameter(
+ *          name="locationName",
+ *          description="name or synonym of Location",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="all locations")
+ * )
+ * 
+ */
+    public function getLocation(Request $request) {
+        $location = $this->listingService->getLocation($request);
+        return $this->successResponse($location,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+/**
+ * @OA\Post(
+ *     path="/api/Listing",
+ *     tags={"Listing API"},
+ *     description="Listing",
+ *     summary="Get List of Buses",
+ *     @OA\Parameter(
+ *          name="source",
+ *          description="name of source",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="destination",
+ *          description="name of destination",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="entry_date",
+ *          description="journey date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="List of Buses")
+ * )
+ * 
+ */
     public function getAllListing(Request $request) {
         $data = $request->only([
             'source',
@@ -54,10 +119,101 @@ class ListingController extends Controller
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function getLocation(Request $request) {
-        $location = $this->listingService->getLocation($request);
-        return $this->successResponse($location,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
+/**
+ * @OA\Post(
+ *     path="/api/Filter",
+ *     tags={"Filter API"},
+ *     description="Filter",
+ *     summary="Get List of Buses with Filter Params",
+ *     @OA\Parameter(
+ *          name="price",
+ *          description="Buses sort by price:0-without sorting, 1- ascending order sorting",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="sourceID",
+ *          description="source Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="destinationID",
+ *          description="destination Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="entry_date",
+ *          description="journey date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="busType",
+ *          description="AC or NONAC type Bus:1-AC, 2-NONAC",
+ *          in="query",
+ *          @OA\Schema( 
+ *              type= "array",
+ *          @OA\Items()
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="seatType",
+ *          description="Seater or Sleeper type Bus",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="boardingPointId",
+ *          description="Boarding point Id",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="dropingingPointId",
+ *          description="Dropping point Id",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="operatorId",
+ *          description="Operator Id",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="amenityId",
+ *          description="Amenity Id",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="List of Buses")
+ * )
+ * 
+ */ 
 
     public function filter(Request $request) {
         $filterData = $this->listingService->filter($request);

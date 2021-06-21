@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
+//use Ixudra\Curl\Facades\Curl;
+use Illuminate\Support\Facades\Log;
 
 class ChannelController extends Controller
 {
@@ -55,5 +57,8 @@ class ChannelController extends Controller
            }  
         
     }
+
+   
+
 
 }

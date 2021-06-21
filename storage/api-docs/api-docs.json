@@ -1,0 +1,185 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "ODBUS Consumer APIs",
+        "description": "L5 Swagger OpenApi description for ODBUS Consumer APIs",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/getLocation": {
+            "get": {
+                "tags": [
+                    "Locations with SearchValue params"
+                ],
+                "summary": "Get List of Locations",
+                "description": "get all Locations",
+                "operationId": "App\\Http\\Controllers\\ListingController::getLocation",
+                "parameters": [
+                    {
+                        "name": "locationName",
+                        "in": "query",
+                        "description": "name or synonym of Location",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "all locations"
+                    }
+                }
+            }
+        },
+        "/api/Listing": {
+            "post": {
+                "tags": [
+                    "Listing API"
+                ],
+                "summary": "Get List of Buses",
+                "description": "Listing",
+                "operationId": "App\\Http\\Controllers\\ListingController::getAllListing",
+                "parameters": [
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "name of source",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "description": "name of destination",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Buses"
+                    }
+                }
+            }
+        },
+        "/api/Filter": {
+            "post": {
+                "tags": [
+                    "Filter API"
+                ],
+                "summary": "Get List of Buses with Filter Params",
+                "description": "Filter",
+                "operationId": "App\\Http\\Controllers\\ListingController::filter",
+                "parameters": [
+                    {
+                        "name": "price",
+                        "in": "query",
+                        "description": "Buses sort by price:0-without sorting, 1- ascending order sorting",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceID",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationID",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "busType",
+                        "in": "query",
+                        "description": "AC or NONAC type Bus:1-AC, 2-NONAC",
+                        "schema": {
+                            "type": "array",
+                            "items": {}
+                        }
+                    },
+                    {
+                        "name": "seatType",
+                        "in": "query",
+                        "description": "Seater or Sleeper type Bus",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "boardingPointId",
+                        "in": "query",
+                        "description": "Boarding point Id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dropingingPointId",
+                        "in": "query",
+                        "description": "Dropping point Id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "operatorId",
+                        "in": "query",
+                        "description": "Operator Id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "amenityId",
+                        "in": "query",
+                        "description": "Amenity Id",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Buses"
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}
