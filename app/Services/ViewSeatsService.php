@@ -29,9 +29,5 @@ class ViewSeatsService
     {
         return $this->viewSeatsRepository->getBoardingDroppingPoints($request);
     }
-    public function getAllLocations()
-    {
-        return $this->viewSeatsRepository->getAllLocations();
-    }
 
 }

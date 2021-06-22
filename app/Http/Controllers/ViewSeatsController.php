@@ -46,9 +46,4 @@ class ViewSeatsController extends Controller
         return $this->successResponse($boardingPoints,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
-    public function getAllLocations() {
-
-        $locations = $this->viewSeatsService->getAllLocations();
-        return $this->successResponse($locations,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
 }

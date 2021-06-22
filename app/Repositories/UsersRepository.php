@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 //use App\OtpVerify;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
+//use Illuminate\Support\Facades\Session;
 
 
 class UsersRepository
@@ -102,27 +102,24 @@ class UsersRepository
        session(['otp' => $otp]);
        session(['password' => $password]);
        session(['created_by' => $created_by]);
-
-        return json_encode(array('statusCode'=>200,'msg'=>'otp sent successfully '. $otp));
-
+        return 'OTP:'. $otp;
+        //return json_encode(array('msg'=>'otp : '. $otp));
     }
-
 
     public function submitOtp($request){
         $otp = trim($request['otp']);
-        if($otp==''){
-            return json_encode(array('statusCode'=>400,'msg'=>"otp not valid"));
-        }
-        else{
+        // if($otp==''){
+        //     return '';
+        // }
+        //else{
             //$user = new OtpVerify;
             $user = new $this->users;
-            if($otp == session('otp')){
+            //if($otp == session('otp')){
                 $name = session('name');
                 $mobile = session('mobile');
                 $email = session('email');
                 $password = session('password');
                 $created_by = session('created_by');
-
 
                 $user->name= $name;
                 $user->otp= $otp;
@@ -130,25 +127,24 @@ class UsersRepository
                 $user->phone= $mobile;
                 $user->password= $password;
                 $user->created_by= $created_by;
-
                 $user->save();
                 session()->flush();
                 return $user;
-            }
-            else{
-                return json_encode(array('statusCode'=>400,'msg'=>"otp expired"));
-            }
-        }
+           // }
+            //else{
+                //return json_encode(array('statusCode'=>400,'msg'=>"otp expired"));
+            //}
+        //}
     }
 
     public function login($request){
         $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
         ->first();
+        //return $user;
         if(isset($user)){
             return $user;
         }
         else{
-
             return json_encode(array('msg'=>"User not Registered"));
         }
        

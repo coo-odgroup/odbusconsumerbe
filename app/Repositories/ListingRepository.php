@@ -52,7 +52,7 @@ class ListingRepository
          ->where('name', 'like', '%' .$searchValue . '%')
          ->orWhere('synonym', 'like', '%' .$searchValue . '%')
          ->orderBy('name','ASC')
-         ->where('status','1')
+         ->where('status','1')  
          ->get(['id','name']);
      }
  

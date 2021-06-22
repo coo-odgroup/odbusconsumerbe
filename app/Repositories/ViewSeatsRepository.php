@@ -132,9 +132,4 @@ class ViewSeatsRepository
     return $boardingDroppings;
     }
 
-    // public function getAllLocations()
-    // {
-    //     return $this->location->orderBy('name','ASC')->get('name');
-    // }
-
 }

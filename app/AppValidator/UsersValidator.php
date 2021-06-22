@@ -12,7 +12,7 @@ class UsersValidator
         $rules = [
             'name' => 'required|max:50',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'required|numeric',
+            'phone' => 'required|numeric|digits:10|unique:users',
             'password' => 'required|alpha_num|min:5',
             'created_by' => 'required',
         ];      

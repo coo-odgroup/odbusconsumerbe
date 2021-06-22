@@ -13,5 +13,7 @@ return [
     'PAYMENT_DONE' => 'Payment successfully done',
     'REGISTERED' => 'Registered Successfully',
     'LOGIN' => 'Login Successful',
-    'OTP_VERIFIED' => 'OTP sent Successfully',
+    'OTP_GEN' => 'OTP generated',
+    'OTP_NULL' => 'No Value provided in OTP',
+    'OTP_EXPIRED' => 'Invalid OTP',
 ];
