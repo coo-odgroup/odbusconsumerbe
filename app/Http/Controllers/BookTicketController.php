@@ -32,9 +32,9 @@ class BookTicketController extends Controller
     }
  
     public function bookTicket(Request $request) {
-         $data = $request->only([
-            'email','phone','seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
-           ]);   
+        //  $data = $request->only([
+        //     'seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
+        //    ]);   
           try {
            $response =  $this->bookTicketService->bookTicket($request);  
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);

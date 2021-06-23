@@ -4,7 +4,7 @@ namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Location;
-use App\Models\BookingCustomer;
+use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -14,16 +14,16 @@ class BookTicketRepository
 {
     protected $bus;
     protected $location;
-    protected $bookingCustomer;
+    protected $users;
     protected $booking;
     protected $busSeats;
     protected $bookingDetail;
 
-    public function __construct(Bus $bus,Location $location,BookingCustomer $bookingCustomer,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
+    public function __construct(Bus $bus,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
     {
         $this->bus = $bus;
         $this->location = $location;
-        $this->bookingCustomer = $bookingCustomer;
+        $this->users = $users;
         $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->bookingDetail = $bookingDetail;
@@ -31,29 +31,31 @@ class BookTicketRepository
     
     public function bookTicket($request)
     { 
-        $customerInfo = $request['customerInfo']; 
+        //$customerInfo = $request['customerInfo'];
+        $email = $request['email'];
+        $phone = $request['phone'];
         //find customer_id using email or phone no
-        
-        $existingCustomer = $this->bookingCustomer->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])
-        ->exists();
+        $userId = $this->users->where('email',$email)->orWhere('phone',$phone)->find('id');
 
-        if( $existingCustomer == true){
-        // Update existing Customer information
-            $bookingId = $this->bookingCustomer->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
-            $this->bookingCustomer->whereIn('id', $bookingId)->update($request['customerInfo']);
-
-        }
-
-        //create New Customer information
-        else{
-            $this->bookingCustomer->create($request['customerInfo']);
-
-        }
-        $bookingInfo = $request['bookingInfo'];
+        // if( $existingCustomer == true){
+        //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
+        //     return $userId;
+        // //     $this->users->whereIn('id', $userId)->update($request['customerInfo']);
+        // }
+        // //create New Customer information
+        // else{
+        //     $newuserid = $this->users->create($request['customerInfo']);
+        //     //return  $newuserid;
+        // }
+   
+        if($userId){
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
         $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => $bookStatus));
+        //Log::info('ssssssss');
+        $bookingInfo = $request['bookingInfo'];
+       
         //Save Booking 
         $booking = new $this->booking;
         do {
@@ -61,8 +63,7 @@ class BookTicketRepository
            } while ( $booking ->where( 'transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
         $booking->pnr =  $bookingInfo['pnr'];
-        $booking->booking_customer_id = $bookingInfo['booking_customer_id'];
-        $booking->bus_operator_id = $bookingInfo['bus_operator_id'];
+        //$booking->users_id = $bookingInfo['users_id'];
         $booking->bus_id = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
@@ -72,17 +73,13 @@ class BookTicketRepository
         $booking->dropping_point = $bookingInfo['dropping_point'];
         $booking->boarding_time = $bookingInfo['boarding_time'];
         $booking->dropping_time =  $bookingInfo['dropping_time'];
-        $booking->total_fare = $bookingInfo['total_fare'];
-        $booking->ownr_fare = $bookingInfo['ownr_fare'];
-        $booking->is_coupon = $bookingInfo['is_coupon'];
-        $booking->coupon_code = $bookingInfo['coupon_code'];
-        $booking->coupon_discount = $bookingInfo['coupon_discount'];
-        $booking->discounted_fare =  $bookingInfo['discounted_fare'];
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->created_by = $bookingInfo['created_by'];
-        $booking->save();
+        $userId->booking()->save($booking);
+           
+        //$booking->save();
         //$booking->create($request['bookingInfo']);
 
         //Update Booking Details
@@ -93,6 +90,10 @@ class BookTicketRepository
         $bookingDetailModels[] = new BookingDetail($bDetail);
         }
         $booking->bookingDetail()->saveMany($bookingDetailModels);
-        return $booking; 
+        return $booking;
+        }
+        else{
+            return 'User not Registered';
+        } 
     }
 }

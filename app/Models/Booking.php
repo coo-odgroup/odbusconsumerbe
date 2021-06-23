@@ -4,21 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\Models\Users;
 use App\Models\Bus;
 class Booking extends Model
 {
     use HasFactory;
     protected $table = 'booking';
-    protected $fillable = ['transaction_id','pnr','booking_customer_id','bus_operator_id','bus_id','source_id',
-                            'destination_id','j_day','journey_dt','boarding_id','dropping_id',
-                            'boarding_time','dropping_time',
-                            'total_fare','ownr_fare','is_coupon','coupon_code','coupon_discount',
-                            'discounted_fare','origin','app_type','typ_id','created_by'];
+    protected $fillable = ['transaction_id','pnr','users_id','bus_id','source_id',
+                            'destination_id','j_day','journey_dt','boarding_point','dropping_point',
+                            'boarding_time','dropping_time','origin','app_type','typ_id','created_by'];
 
-      public function bookingCustomer()
+      public function users()
       {
-            return $this->belongsTo(BookingCustomer::class);
+            return $this->belongsTo(Users::class);
       }
 
       public function bus()

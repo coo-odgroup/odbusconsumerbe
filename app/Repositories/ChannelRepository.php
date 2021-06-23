@@ -19,22 +19,24 @@ class ChannelRepository
         $number = urlencode($number);
         $sender = $data['sender'];
         $sender = urlencode($sender);
+       //$sender = urlencode('ODTKTS');
         $message = $data['message'];
         $message = rawurlencode($message);
-        // Prepare data for POST request
-        $data = array('apikey' => $apiKey, 'number' => $number, "sender" => $sender, "message" => $message);
-    
-        // Send the POST request with cURL
-        
+        //$message = rawurlencode('PNR: 12345, Bus Details: gajanan, DOJ: 23-12-21, Route: cuttack, Dep: 12.30, Name: deepak, Gender: M, Seat: 1A, Fare: 230, Conductor Mob: 9987563412 - OD RPBOA');
+        $route_no = 4; 
+        $response_type = "json"; 
+        $data = array('apikey' => $apiKey, 'numbers' => $number, "sender" => $sender, "message" => $message);
         $textLocalUrl = env('TEXT_LOCAL_SMS_URL');
-        $ch = curl_init($textLocalUrl); 
-        //$ch = curl_init('https://api.textlocal.in/send/');      
-        curl_setopt($ch, CURLOPT_POST, true);      
+        $ch = curl_init($textLocalUrl);     
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
-        curl_close($ch);
-        return $response;
+            return $response;
+
     }
    
 
