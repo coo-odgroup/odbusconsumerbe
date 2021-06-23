@@ -163,52 +163,86 @@ class ListingController extends Controller
  *      ),
  *   @OA\Parameter(
  *      name="busType[]",
- *      in="query",
  *      description="AC or NONAC type Bus:1-AC, 2-NONAC",
+ *      in="query",
  *      required=false,
  *      @OA\Schema(
  *        type="array",
- *        @OA\Items(type="integer")
- *      )
- *    ),             
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
+ *          )
+ *    ),            
  *     @OA\Parameter(
- *          name="seatType",
- *          description="Seater or Sleeper type Bus",
+ *          name="seatType[]",
+ *          description="Seater or Sleeper type Bus:1-seater, 2&3-sleeper",
  *          in="query",
+ *          required=false,
  *          @OA\Schema(
- *              type="integer"
+ *          type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="boardingPointId",
- *          description="Boarding point Id",
+ *          name="boardingPointId[]",
+ *          description="Boarding point Ids",
  *          in="query",
+ *          required=false,
  *          @OA\Schema(
- *              type="integer"
+ *          type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="dropingingPointId",
- *          description="Dropping point Id",
+ *          name="dropingingPointId[]",
+ *          description="Dropping point Ids",
  *          in="query",
+ *          required=false,
  *          @OA\Schema(
- *              type="integer"
+ *          type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="operatorId",
- *          description="Operator Id",
+ *          name="operatorId[]",
+ *          description="Operator Ids",
  *          in="query",
+ *          required=false,
  *          @OA\Schema(
- *              type="integer"
+ *           type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="amenityId",
- *          description="Amenity Id",
+ *          name="amenityId[]",
+ *          description="Amenity Ids",
  *          in="query",
+ *          required=false,
  *          @OA\Schema(
- *              type="integer"
+ *          type="array",
+*          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
  *          )
  *      ),
  *     @OA\Response(response="200", description="List of Buses")
@@ -220,11 +254,36 @@ class ListingController extends Controller
         $filterData = $this->listingService->filter($request);
         return $this->successResponse($filterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
+/**
+ * @OA\Get(
+ *     path="/api/FilterOptions",
+ *     tags={"get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities"},
+ *     description="get all Filter Options",
+ *     summary="Get all Filter options",
+ *     @OA\Parameter(
+ *          name="sourceID",
+ *          description="source Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="destinationID",
+ *          description="destination Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="get all Filter Options")
+ * )
+ * 
+ */
     public function getFilterOptions(Request $request) {
         $FilterData = $this->listingService->getFilterOptions($request);
         return $this->successResponse($FilterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-
-    
+    }   
 }

@@ -10,9 +10,6 @@ class LoginValidator
     public function validate($data) { 
 
         $rules = [
-
-            //'email' => 'required|email|unique:users,email',
-            //'phone' => 'required|numeric|digits:10',
             'email' => 'required_without:phone',
             'phone' => 'required_without:email',
             'password' => 'required|alpha_num|min:5'

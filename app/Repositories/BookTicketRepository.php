@@ -31,11 +31,9 @@ class BookTicketRepository
     
     public function bookTicket($request)
     { 
-        //$customerInfo = $request['customerInfo'];
-        $email = $request['email'];
-        $phone = $request['phone'];
+        $customerInfo = $request['customerInfo'];
         //find customer_id using email or phone no
-        $userId = $this->users->where('email',$email)->orWhere('phone',$phone)->find('id');
+        $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->find('id');
 
         // if( $existingCustomer == true){
         //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
@@ -53,7 +51,6 @@ class BookTicketRepository
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
         $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => $bookStatus));
-        //Log::info('ssssssss');
         $bookingInfo = $request['bookingInfo'];
        
         //Save Booking 
@@ -80,10 +77,8 @@ class BookTicketRepository
         $userId->booking()->save($booking);
            
         //$booking->save();
-        //$booking->create($request['bookingInfo']);
 
         //Update Booking Details
-
         $bookingDetailModels = [];
          //TOD Latter,Write Enhanced Query
         foreach ($bookingInfo['bookingDetail'] as $bDetail) {

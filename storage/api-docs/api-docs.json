@@ -129,46 +129,113 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "integer"
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
                             }
                         }
                     },
                     {
-                        "name": "seatType",
+                        "name": "seatType[]",
                         "in": "query",
-                        "description": "Seater or Sleeper type Bus",
+                        "description": "Seater or Sleeper type Bus:1-seater, 2&3-sleeper",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "boardingPointId[]",
+                        "in": "query",
+                        "description": "Boarding point Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "dropingingPointId[]",
+                        "in": "query",
+                        "description": "Dropping point Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "operatorId[]",
+                        "in": "query",
+                        "description": "Operator Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "amenityId[]",
+                        "in": "query",
+                        "description": "Amenity Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of Buses"
+                    }
+                }
+            }
+        },
+        "/api/FilterOptions": {
+            "get": {
+                "tags": [
+                    "get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities"
+                ],
+                "summary": "Get all Filter options",
+                "description": "get all Filter Options",
+                "operationId": "App\\Http\\Controllers\\ListingController::getFilterOptions",
+                "parameters": [
+                    {
+                        "name": "sourceID",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
                     },
                     {
-                        "name": "boardingPointId",
+                        "name": "destinationID",
                         "in": "query",
-                        "description": "Boarding point Id",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "dropingingPointId",
-                        "in": "query",
-                        "description": "Dropping point Id",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "operatorId",
-                        "in": "query",
-                        "description": "Operator Id",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "amenityId",
-                        "in": "query",
-                        "description": "Amenity Id",
+                        "description": "destination Id",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -176,7 +243,149 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of Buses"
+                        "description": "get all Filter Options"
+                    }
+                }
+            }
+        },
+        "/api/viewSeats": {
+            "get": {
+                "tags": [
+                    "get all seat Information for a Bus"
+                ],
+                "summary": "Get seat information for a Bus with seat layout",
+                "description": "get all seat Information  for a Bus",
+                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getAllViewSeats",
+                "parameters": [
+                    {
+                        "name": "busId",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": " get all seats information"
+                    }
+                }
+            }
+        },
+        "/api/PriceOnSeatsSelection": {
+            "post": {
+                "tags": [
+                    "get total price on seat selection"
+                ],
+                "summary": "get total price on seat selection",
+                "description": "get total price on seat selection",
+                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getPriceOnSeatsSelection",
+                "parameters": [
+                    {
+                        "name": "busId",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "seater[]",
+                        "in": "query",
+                        "description": "seater Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "sleeper[]",
+                        "in": "query",
+                        "description": "sleeper Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": " get Total Price on seats selection"
+                    }
+                }
+            }
+        },
+        "/api/BoardingDroppingPoints": {
+            "get": {
+                "tags": [
+                    "get all Boarding Dropping Points"
+                ],
+                "summary": "get all Boarding Dropping Points",
+                "description": "get all Boarding Dropping Points for source and destination",
+                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getBoardingDroppingPoints",
+                "parameters": [
+                    {
+                        "name": "busId",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": " get all Boarding Dropping Points"
                     }
                 }
             }
