@@ -161,15 +161,16 @@ class ListingController extends Controller
  *              type="string"
  *          )
  *      ),
- *     @OA\Parameter(
- *          name="busType",
- *          description="AC or NONAC type Bus:1-AC, 2-NONAC",
- *          in="query",
- *          @OA\Schema( 
- *              type= "array",
- *          @OA\Items()
- *          )
- *      ),
+ *   @OA\Parameter(
+ *      name="busType[]",
+ *      in="query",
+ *      description="AC or NONAC type Bus:1-AC, 2-NONAC",
+ *      required=false,
+ *      @OA\Schema(
+ *        type="array",
+ *        @OA\Items(type="integer")
+ *      )
+ *    ),             
  *     @OA\Parameter(
  *          name="seatType",
  *          description="Seater or Sleeper type Bus",

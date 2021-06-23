@@ -122,12 +122,15 @@
                         }
                     },
                     {
-                        "name": "busType",
+                        "name": "busType[]",
                         "in": "query",
                         "description": "AC or NONAC type Bus:1-AC, 2-NONAC",
+                        "required": false,
                         "schema": {
                             "type": "array",
-                            "items": {}
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     },
                     {
