@@ -47,6 +47,61 @@ class UsersController extends Controller
         }       
    } 
 
+/**
+ * @OA\Post(
+ *     path="/api/RegisterSession",
+ *     tags={"RegisterSession API"},
+ *     description="All user information taken and generarted OTP sent to users",
+ *     summary="send OTP to user for registration",
+ *     @OA\Parameter(
+ *          name="name",
+ *          description="name of user",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="email",
+ *          description="email of user",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="phone",
+ *          description="mobile number of user",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="password",
+ *          description="password given by user",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="created_by",
+ *          description="created by",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="OTP generated and sent to user for registration")
+ * )
+ * 
+ */
    public function RegisterSession(Request $request) {
     $data = $request->only([
       'name','email','phone','password','created_by'
@@ -63,20 +118,41 @@ class UsersController extends Controller
     }
      catch (Exception $e) {
       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    }  
-     
+    }       
 } 
+
+/**
+ * @OA\Post(
+ *     path="/api/submitOtp",
+ *     tags={"submitOtp API"},
+ *     description="user Registration with OTP verification sent by user",
+ *     summary="user Registration with OTP verification",
+ *     @OA\Parameter(
+ *          name="otp",
+ *          description="otp sent by user",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Response(response="201", description="Registered successfully"),
+ *     @OA\Response(response="404", description="Not Found")
+ * )
+ * 
+ */
   public function submitOtp(Request $request) 
     {
-      $recvOtp = $request['otp'];  
     try {
+      $recvOtp = $request['otp'];
       if(is_null($recvOtp)){
         return $this->successResponse($recvOtp,Config::get('constants.OTP_NULL'),Response::HTTP_NOT_FOUND);
     }  
       elseif($recvOtp == session('otp')){
       $response =  $this->usersService->submitOtp($request);  
         return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
-      }else{
+      }
+      else{
         return $this->successResponse($recvOtp,Config::get('constants.OTP_EXPIRED'),Response::HTTP_NOT_FOUND);
         }
     }
@@ -84,7 +160,46 @@ class UsersController extends Controller
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
     }
-
+    
+    /**
+ * @OA\Post(
+ *     path="/api/Login",
+ *     tags={"Login API"},
+ *     description="user Login entering either phone no or email",
+ *     summary="user Login input either phone no or email",
+ *     @OA\Parameter(
+ *          name="phone",
+ *          description="phone no of user",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="email",
+ *          description="email of user",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *       @OA\Parameter(
+ *          name="password",
+ *          description="password given by user",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="Login Successful"),
+ *     @OA\Response(response="206", description="phone no or email of user required"),
+ *     @OA\Response(response="404", description="not a registerd user")
+ * )
+ * 
+ */  
    public function login(Request $request) 
    {
     $data = $request->only([
@@ -97,12 +212,14 @@ class UsersController extends Controller
        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
      }
      try {
-     // if(isset($data)){
-      $response =  $this->usersService->login($request);  
-       return $this->successResponse($response,Config::get('constants.LOGIN'),Response::HTTP_OK);
-      //}elseif()){
-        //return json_encode(array('msg'=>"User not Registered"));
-      //}
+      $user = Users::where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
+      ->first();
+      if(isset($user)){
+      //$response =  $this->usersService->login($request);  
+       return $this->successResponse($user,Config::get('constants.LOGIN'),Response::HTTP_OK);
+      }else{
+        return $this->successResponse($user,Config::get('constants.USER_NOTREG'),Response::HTTP_NOT_FOUND);
+      }
    }
    catch (Exception $e) {
        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

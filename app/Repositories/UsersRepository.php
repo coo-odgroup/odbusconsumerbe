@@ -108,6 +108,7 @@ class UsersRepository
 
     public function submitOtp($request){
         $otp = trim($request['otp']);
+        //return $otp;
         // if($otp==''){
         //     return '';
         // }
@@ -141,12 +142,12 @@ class UsersRepository
         $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
         ->first();
         //return $user;
-        if(isset($user)){
+       // if(isset($user)){
             return $user;
-        }
-        else{
-            return json_encode(array('msg'=>"User not Registered"));
-        }
+       // }
+        //else{
+        //    return json_encode(array('msg'=>"User not Registered"));
+       // }
        
     }
 

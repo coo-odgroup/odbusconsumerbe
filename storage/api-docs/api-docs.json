@@ -9,10 +9,10 @@
         "/api/getLocation": {
             "get": {
                 "tags": [
-                    "Locations with SearchValue params"
+                    "getLocation API"
                 ],
                 "summary": "Get List of Locations",
-                "description": "get all Locations",
+                "description": "Locations with SearchValue params",
                 "operationId": "App\\Http\\Controllers\\ListingController::getLocation",
                 "parameters": [
                     {
@@ -216,10 +216,10 @@
         "/api/FilterOptions": {
             "get": {
                 "tags": [
-                    "get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities"
+                    "FilterOptions API"
                 ],
                 "summary": "Get all Filter options",
-                "description": "get all Filter Options",
+                "description": "get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities",
                 "operationId": "App\\Http\\Controllers\\ListingController::getFilterOptions",
                 "parameters": [
                     {
@@ -248,10 +248,151 @@
                 }
             }
         },
+        "/api/RegisterSession": {
+            "post": {
+                "tags": [
+                    "RegisterSession API"
+                ],
+                "summary": "send OTP to user for registration",
+                "description": "All user information taken and generarted OTP sent to users",
+                "operationId": "App\\Http\\Controllers\\UsersController::RegisterSession",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "name of user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email of user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "mobile number of user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password given by user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "created by",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP generated and sent to user for registration"
+                    }
+                }
+            }
+        },
+        "/api/submitOtp": {
+            "post": {
+                "tags": [
+                    "submitOtp API"
+                ],
+                "summary": "user Registration with OTP verification",
+                "description": "user Registration with OTP verification sent by user",
+                "operationId": "App\\Http\\Controllers\\UsersController::submitOtp",
+                "parameters": [
+                    {
+                        "name": "otp",
+                        "in": "query",
+                        "description": "otp sent by user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Registered successfully"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/api/Login": {
+            "post": {
+                "tags": [
+                    "Login API"
+                ],
+                "summary": "user Login input either phone no or email",
+                "description": "user Login entering either phone no or email",
+                "operationId": "App\\Http\\Controllers\\UsersController::login",
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "phone no of user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email of user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password given by user",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login Successful"
+                    },
+                    "206": {
+                        "description": "phone no or email of user required"
+                    },
+                    "404": {
+                        "description": "not a registerd user"
+                    }
+                }
+            }
+        },
         "/api/viewSeats": {
             "get": {
                 "tags": [
-                    "get all seat Information for a Bus"
+                    "viewSeats API"
                 ],
                 "summary": "Get seat information for a Bus with seat layout",
                 "description": "get all seat Information  for a Bus",
@@ -277,7 +418,7 @@
         "/api/PriceOnSeatsSelection": {
             "post": {
                 "tags": [
-                    "get total price on seat selection"
+                    "PriceOnSeatsSelection API"
                 ],
                 "summary": "get total price on seat selection",
                 "description": "get total price on seat selection",
@@ -349,7 +490,7 @@
         "/api/BoardingDroppingPoints": {
             "get": {
                 "tags": [
-                    "get all Boarding Dropping Points"
+                    "BoardingDroppingPoints API"
                 ],
                 "summary": "get all Boarding Dropping Points",
                 "description": "get all Boarding Dropping Points for source and destination",

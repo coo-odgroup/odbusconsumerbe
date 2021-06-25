@@ -57,10 +57,14 @@ class BookTicketRepository
         $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
-           } while ( $booking ->where( 'transaction_id', $transactionId )->exists());
+           } while ( $booking ->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
-        $booking->pnr =  $bookingInfo['pnr'];
-        //$booking->users_id = $bookingInfo['users_id'];
+        do {
+            $PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
+            } while ( $booking ->where('pnr', $PNR )->exists());
+        
+        $booking->pnr =  $PNR;
+        //$booking->pnr = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
         $booking->bus_id = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];

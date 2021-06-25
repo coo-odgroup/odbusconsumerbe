@@ -45,8 +45,8 @@ class ListingController extends Controller
 /**
  * @OA\Get(
  *     path="/api/getLocation",
- *     tags={"Locations with SearchValue params"},
- *     description="get all Locations",
+ *     tags={"getLocation API"},
+ *     description="Locations with SearchValue params",
  *     summary="Get List of Locations",
  *     @OA\Parameter(
  *          name="locationName",
@@ -257,8 +257,8 @@ class ListingController extends Controller
 /**
  * @OA\Get(
  *     path="/api/FilterOptions",
- *     tags={"get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities"},
- *     description="get all Filter Options",
+ *     tags={"FilterOptions API"},
+ *     description="get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities",
  *     summary="Get all Filter options",
  *     @OA\Parameter(
  *          name="sourceID",

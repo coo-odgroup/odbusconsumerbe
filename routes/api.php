@@ -16,7 +16,7 @@ use Laravel\Passport\Passport;
 //Route::middleware([LogRoute::class])->group(function () {
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
-Route::get('/BusOperators', [ListingController::class, 'getBusOpertors']);
+//Route::get('/BusOperators', [ListingController::class, 'getBusOpertors']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::post('/Listing', [ListingController::class, 'getAllListing']);
 Route::post('/Filter', [ListingController::class, 'filter']);
@@ -27,7 +27,7 @@ Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
-Route::post('/Register', [UsersController::class, 'Register']);
+//Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
 Route::post('/Login', [UsersController::class, 'login']);
 Route::post('/submitOtp', [UsersController::class, 'submitOtp']);

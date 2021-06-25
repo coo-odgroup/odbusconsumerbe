@@ -16,4 +16,5 @@ return [
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_EXPIRED' => 'Invalid OTP',
+    'USER_NOTREG' => 'Not a registered user',
 ];

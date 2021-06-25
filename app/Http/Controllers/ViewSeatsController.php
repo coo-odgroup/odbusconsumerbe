@@ -36,7 +36,7 @@ class ViewSeatsController extends Controller
 /**
  * @OA\Get(
  *     path="/api/viewSeats",
- *     tags={"get all seat Information for a Bus"},
+ *     tags={"viewSeats API"},
  *     description="get all seat Information  for a Bus",
  *     summary="Get seat information for a Bus with seat layout",
  *     @OA\Parameter(
@@ -60,7 +60,7 @@ class ViewSeatsController extends Controller
 /**
  * @OA\Post(
  *     path="/api/PriceOnSeatsSelection",
- *     tags={"get total price on seat selection"},
+ *     tags={"PriceOnSeatsSelection API"},
  *     description="get total price on seat selection",
  *     summary="get total price on seat selection",
  *     @OA\Parameter(
@@ -131,7 +131,7 @@ class ViewSeatsController extends Controller
       /**
  * @OA\Get(
  *     path="/api/BoardingDroppingPoints",
- *     tags={"get all Boarding Dropping Points"},
+ *     tags={"BoardingDroppingPoints API"},
  *     description="get all Boarding Dropping Points for source and destination",
  *     summary="get all Boarding Dropping Points",
  *     @OA\Parameter(
