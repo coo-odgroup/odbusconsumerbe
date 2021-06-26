@@ -56,7 +56,7 @@ class ListingRepository
          ->orWhere('synonym', 'like', '%' .$searchValue . '%')
          ->orderBy('name','ASC')
          ->where('status','1')  
-         ->get(['id','name']);
+         ->get(['id','name','synonym']);
      }
  
     public function getAll($request)
