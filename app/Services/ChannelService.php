@@ -16,6 +16,17 @@ class ChannelService
     {
         $this->channelRepository = $channelRepository;
     }
+    public function storeGWInfo($data)
+    {
+        try {
+            $gwInfo = $this->channelRepository->storeGWInfo($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $gwInfo;
+    }   
     public function sendSms($data)
     {
         try {

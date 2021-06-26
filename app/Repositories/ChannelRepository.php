@@ -4,13 +4,25 @@ namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\CustomerNotification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 class ChannelRepository
 {
     protected $customerNotification;
     public function __construct(CustomerNotification $customerNotification)
     {
         $this->customerNotification = $customerNotification; 
-    }   
+    } 
+    
+    public function storeGWInfo($data) {
+        $gwinfo = new $this->customerNotification;
+        $gwinfo->sender = $data['sender'];
+        $gwinfo->receiver = $data['receiver'];
+        $gwinfo->contents = $data['contents'];
+        $gwinfo->channel_type = $data['channel_type'];
+        $gwinfo->acknowledgement = $data['acknowledgement'];
+        $gwinfo->save();
+        return $gwinfo;     
+      }
     public function sendSmstextLocal($data)
     {
         $apiKey = env('SMS_TEXTLOCAL_KEY');
@@ -87,18 +99,44 @@ class ChannelRepository
     }
     
     public function sendSms($data) {
-        if($data['smsprovider']='textLocal') 
-        $response = $this->sendSmstextLocal($data);
-        else
-        $this->sendSmsIndiaHub($data);
-        $sms = new $this->customerNotification;
-        $sms->sender = $data['sender'];
-        $sms->receiver = $data['receiver'];
-        $sms->contents = $data['contents'];
-        $sms->channel_type = $data['channel_type'];
-        $sms->acknowledgement = $response;
-        $sms->save();
-        return $sms;     
+        $SmsGW = $data['smsprovider'];
+        if($SmsGW=='textLocal'){
+            $apiKey = config('services.textlocal.key');
+            //$apiKey = env('SMS_TEXTLOCAL_KEY'); 
+            //$apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
+            $otp = $data['otp'];
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            $sender = urlencode($data['sender']);
+            $name = $data['name'];
+            $message = $data['message'];
+            $message = str_replace("<otp>",$otp,$message);
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            //$textLocalUrl = 'https://api.textlocal.in/send/';
+            //$textLocalUrl = env('TEXT_LOCAL_SMS_URL','null');
+            $textLocalUrl = config('services.textlocal.url');
+             $ch = curl_init($textLocalUrl);   
+             return $ch;
+            // curl_setopt($ch, CURLOPT_POST, true);
+            // curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            // //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            return $response;
+            $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $err = curl_error($ch);
+            curl_close($ch);
+            if ($err) {
+                return "cURL Error #:" . $err;
+            } 
+        }elseif($SmsGW=='IndiaHUB'){
+            return 'Inside India HUB';
+
+        }
       }
 
       public function sendEmail($data) {

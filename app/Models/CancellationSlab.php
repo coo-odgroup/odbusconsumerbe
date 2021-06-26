@@ -2,12 +2,22 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Bus;
+use App\Models\CancellationSlabInfo;
 class CancellationSlab extends Model
 {
     use HasFactory;
     protected $table = 'cancellationslabs';
     protected $fillable = [ 
-        'rule_name', 'duration', 'deduction', 'status'
+        'api_id','rule_name','status'
     ];
 
+    public function slabInfo()
+    {
+        return $this->hasMany(CancellationSlabInfo::class);        
+    }
+    public function bus()
+    {
+    	return $this->hasOne(Bus::class);
+    }
 }

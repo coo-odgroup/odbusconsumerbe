@@ -21,6 +21,17 @@ class ChannelController extends Controller
         {
             $this->channelService = $channelService; 
         }
+
+    public function storeGWInfo(Request $request)
+        {
+          try {
+           $response = $this->channelService->storeGWInfo($request); 
+            return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        }
+          catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        }       
+    }
     public function sendSms(Request $request)
     {
         // $data = $request->only([

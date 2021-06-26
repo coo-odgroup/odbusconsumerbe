@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Users;
 //use App\OtpVerify;
 use Illuminate\Support\Facades\Log;
-//use Illuminate\Support\Facades\Session;
+use App\Repositories\ChannelRepository;
 
 
 class UsersRepository
@@ -14,10 +14,12 @@ class UsersRepository
      * @var Users
      */
     protected $users;
+    protected $channelRepository;
 
-    public function __construct(Users $users)
+    public function __construct(Users $users,ChannelRepository $channelRepository)
     {
-        $this->users = $users;    
+        $this->users = $users;
+        $this->channelRepository = $channelRepository;   
     }
   
     public function Register($request)
@@ -77,33 +79,16 @@ class UsersRepository
         $email = $request['email'];
         $password= $request['password'];
         $created_by= $request['created_by'];
-
-    //    $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
-    //    //$sender = urlencode('ODTKTS');
-    //    $sender = urlencode('ODBUSS');
-    //    $message = rawurlencode('Dear $name,Your OTP is $otp, to login ODBUS. Thanks - ODBUS');
-    //    //$message = rawurlencode('PNR: 12345, Bus Details: gajanan, DOJ: 23-12-21, Route: cuttack, Dep: 12.30, Name: deepak, Gender: M, Seat: 1A, Fare: 230, Conductor Mob: 9987563412 - OD RPBOA');
-    //    $route_no = 4; 
-    //    $response_type = "json"; 
-    //    $data = array('apikey' => $apiKey, 'numbers' => $mobile, "sender" => $sender, "message" => $message);
-    //    $ch = curl_init('https://api.textlocal.in/send/');
-    //    curl_setopt($ch, CURLOPT_POST, true);
-    //    curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
-    //    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    //    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //    //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    //    //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    //    $response = curl_exec($ch);
-    //     return $response;
-
-       session(['name'=> $name]);
-       session(['mobile'=> $mobile]);
-       session(['email'=> $email]);
-       session(['otp' => $otp]);
-       session(['password' => $password]);
-       session(['created_by' => $created_by]);
+        $request->request->add(['otp' => $otp]);
+        $sendsms = $this->channelRepository->sendSms($request);
+        return $sendsms;
+        session(['name'=> $name]);
+        session(['mobile'=> $mobile]);
+        session(['email'=> $email]);
+        session(['otp' => $otp]);
+        session(['password' => $password]);
+        session(['created_by' => $created_by]);
         return 'OTP:'. $otp;
-        //return json_encode(array('msg'=>'otp : '. $otp));
     }
 
     public function submitOtp($request){

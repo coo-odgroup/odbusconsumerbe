@@ -14,6 +14,8 @@ use App\Models\BusSchedule;
 use App\Models\BusOperator;
 use App\Models\BusCancelled;
 use App\Models\BusGallery;
+use App\Models\CancellationSlabInfo;
+use App\Models\CancellationSlab;
 
 class Bus extends Model
 {
@@ -85,6 +87,10 @@ class Bus extends Model
     public function busGallery()
     {        
         return $this->hasMany(BusGallery::class);        
+    }
+    public function cancelationSlab()
+    {        
+        return $this->belongsTo(CancellationSlab::class);        
     }
     
 }

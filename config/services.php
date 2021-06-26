@@ -29,5 +29,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'textlocal' => [
+        'key' => env('SMS_TEXTLOCAL_KEY'),
+        'url' => env('TEXT_LOCAL_SMS_URL'),
+    ],
 
 ];

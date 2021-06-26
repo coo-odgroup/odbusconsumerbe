@@ -31,7 +31,7 @@ Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
 Route::post('/Login', [UsersController::class, 'login']);
 Route::post('/submitOtp', [UsersController::class, 'submitOtp']);
-
+Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 
 //});
 //Route::post('/sendSmstextLocal', [ChannelController::class, 'sendSmstextLocal']);

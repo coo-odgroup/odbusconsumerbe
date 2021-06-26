@@ -13,6 +13,8 @@ use App\Models\SeatClass;
 use App\Models\Amenities;
 use App\Models\BusSeats;
 use App\Models\Seats;
+use App\Models\CancellationSlab;
+use App\Models\CancellationSlabInfo;
 
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -70,13 +72,16 @@ class ListingRepository
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;      
     
-        $records = $this->bus->with('busOperator')->with('ticketPrice')
+        $records = $this->bus
+        ->with('busOperator')->with('ticketPrice')
         ->with('busAmenities.amenities')
         ->with('busSafety.safety')
         ->with('BusType.busClass')
         ->with('busSeats.seats')
         ->with('BusSitting')
         ->with('busGallery')
+        ->with('cancelationSlab')
+        ->where('status','1')
         ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
             $query->where('entry_date', $entry_date);            
             })
