@@ -101,9 +101,9 @@ class ChannelRepository
     public function sendSms($data) {
         $SmsGW = $data['smsprovider'];
         if($SmsGW=='textLocal'){
-            $apiKey = config('services.textlocal.key');
+            //$apiKey = config('services.textlocal.key');
             //$apiKey = env('SMS_TEXTLOCAL_KEY'); 
-            //$apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
+            $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
             $otp = $data['otp'];
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($data['phone']);
@@ -114,11 +114,10 @@ class ChannelRepository
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            //$textLocalUrl = 'https://api.textlocal.in/send/';
+            $textLocalUrl = 'https://api.textlocal.in/send/';
             //$textLocalUrl = env('TEXT_LOCAL_SMS_URL','null');
-            $textLocalUrl = config('services.textlocal.url');
+            //$textLocalUrl = config('services.textlocal.url');
              $ch = curl_init($textLocalUrl);   
-             return $ch;
             // curl_setopt($ch, CURLOPT_POST, true);
             // curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
             // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -126,7 +125,7 @@ class ChannelRepository
             // //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             // //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $response = curl_exec($ch);
-            return $response;
+            //return $response;
             $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err = curl_error($ch);
             curl_close($ch);
@@ -134,7 +133,25 @@ class ChannelRepository
                 return "cURL Error #:" . $err;
             } 
         }elseif($SmsGW=='IndiaHUB'){
-            return 'Inside India HUB';
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
+                $otp = $data['otp'];
+                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
+                // //$channel = 'transactional';
+                // //$route =  '4';
+                // //$dcs = '0';
+                // //$flashsms = '0';
+                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
+                // $receiver = urlencode($data['phone']);
+                // $sender_id = urlencode($data['sender']);
+                // $name = $data['name'];
+                // $message = $data['message'];
+                // $message = str_replace("<otp>",$otp,$message);
+                // $message = rawurlencode($message);
+    
+                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
+    
+                // $response = file_get_contents($api);
+                //return $response;
 
         }
       }

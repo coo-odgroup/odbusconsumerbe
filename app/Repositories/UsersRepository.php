@@ -38,33 +38,6 @@ class UsersRepository
         $user->otp = $otp;
         $user->save();
         return  $user;   
-        
-    //    $mobile = $request['phone'];
-    //    $name = $request['name'];
-    //    $email = $request['email'];
-    //    $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
-    //    //$sender = urlencode('ODTKTS');
-    //    $sender = urlencode('ODBUSS');
-    // //    $message = rawurlencode('PNR: 12345, Bus Details: gajanan, DOJ: 23-12-21, Route: cuttack, Dep: 12.30, Name: deepak, Gender: M, Seat: 1A, Fare: 230, Conductor Mob: 9987563412 - OD RPBOA');
-    //    $message = rawurlencode('Dear $name,Your OTP is $otp, to login ODBUS. Thanks - ODBUS');
-    //    $route_no = 4; 
-    //    $response_type = "json"; 
-    //    //$message = rawurlencode("Hello" . $user . "Your OTP is " . $otp );
-    //    $data = array('apikey' => $apiKey, 'numbers' => $mobile, "sender" => $sender, "message" => $message);
-    //    $ch = curl_init('https://api.textlocal.in/send/');
-    //    curl_setopt($ch, CURLOPT_POST, true);
-    //    curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
-    //    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    //    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    //    //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    //    //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    //    $response = curl_exec($ch);
-    //    return $response;
-
-    //    if (curl_errno($ch)) {
-    //        $isError = true;
-    //        $errorMessage = curl_error($ch);
-    //    }
 
     }
 
@@ -81,7 +54,7 @@ class UsersRepository
         $created_by= $request['created_by'];
         $request->request->add(['otp' => $otp]);
         $sendsms = $this->channelRepository->sendSms($request);
-        return $sendsms;
+        //return $sendsms;
         session(['name'=> $name]);
         session(['mobile'=> $mobile]);
         session(['email'=> $email]);
@@ -93,14 +66,7 @@ class UsersRepository
 
     public function submitOtp($request){
         $otp = trim($request['otp']);
-        //return $otp;
-        // if($otp==''){
-        //     return '';
-        // }
-        //else{
-            //$user = new OtpVerify;
             $user = new $this->users;
-            //if($otp == session('otp')){
                 $name = session('name');
                 $mobile = session('mobile');
                 $email = session('email');
@@ -116,26 +82,12 @@ class UsersRepository
                 $user->save();
                 session()->flush();
                 return $user;
-           // }
-            //else{
-                //return json_encode(array('statusCode'=>400,'msg'=>"otp expired"));
-            //}
-        //}
     }
 
     public function login($request){
         $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
         ->first();
-        //return $user;
-       // if(isset($user)){
             return $user;
-       // }
-        //else{
-        //    return json_encode(array('msg'=>"User not Registered"));
-       // }
-       
     }
-
-
 }
  

@@ -52,6 +52,7 @@ class ListingRepository
         $searchValue = $request['locationName'];
          return $this->location
          ->where('name', 'like', '%' .$searchValue . '%')
+         ->where('status','1')  
          ->orWhere('synonym', 'like', '%' .$searchValue . '%')
          ->orderBy('name','ASC')
          ->where('status','1')  
