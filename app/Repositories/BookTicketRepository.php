@@ -33,7 +33,12 @@ class BookTicketRepository
     { 
         $customerInfo = $request['customerInfo'];
         //find customer_id using email or phone no
-        $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->find('id');
+        $userId = $this->users
+        //->where('is_verified','1') 
+        ->where('email', $customerInfo['email'])
+        ->orWhere('phone', $customerInfo['phone']) 
+         ->get('id');
+         $userId = $userId[0];
         // if( $existingCustomer == true){
         //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
         //     return $userId;
@@ -60,10 +65,8 @@ class BookTicketRepository
         $booking->transaction_id =  $transactionId;
         do {
             $PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
-            } while ( $booking ->where('pnr', $PNR )->exists());
-        
+            } while ( $booking ->where('pnr', $PNR )->exists()); 
         $booking->pnr =  $PNR;
-        //$booking->pnr = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
         $booking->bus_id = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];

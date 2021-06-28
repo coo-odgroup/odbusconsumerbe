@@ -202,7 +202,6 @@ class ListingRepository
         if($sourceID==null ||  $destinationID==null || $entry_date==null)
         return ""; 
         $entry_date = date("Y-m-d", strtotime($entry_date));
-        //$price = $request['price'];  
         $busType = $request['busType'];
         $seatType = $request['seatType'];    
         $boardingPointId = $request['boardingPointId'];
@@ -249,8 +248,8 @@ class ListingRepository
                 $query->whereIn('id', (array)$amenityId);            
                 })  
             ->get();
-         // return $records;  
-            $FilterRecords = array();
+             //return $records;  
+            //$FilterRecords = array();
             foreach($records as $record){
                 $busId = $record->id; 
                 $busName = $record->name;
@@ -329,6 +328,7 @@ class ListingRepository
                 $sorted = $sortByPrice; 
            }
             
+           $sorted = array_values($sorted);
            return $sorted;
 
 
