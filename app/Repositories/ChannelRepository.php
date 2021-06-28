@@ -121,30 +121,31 @@ class ChannelRepository
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
             $textLocalUrl = 'https://api.textlocal.in/send/';   
 
-            $ch = curl_init($textLocalUrl);   
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            $response = curl_exec($ch);
-            curl_close($ch);
-            $response = json_decode($response);
-            return $response;
-
-            // $response = '{"status":"1","message":"OTP generated","data":{"balance":19810,"batch_id":1836303487,"cost":1,"num_messages":1,"message":{"num_parts":1,"sender":"ODBUSS","content":"Dear P, Your OTP is 25561 to login ODBUS. Thanks - ODBUS"},"receipt_url":"","custom":"","messages":[{"id":"12567377353","recipient":919916457575}],"status":"success"}}';
+            // $ch = curl_init($textLocalUrl);   
+            // curl_setopt($ch, CURLOPT_POST, true);
+            // curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            // //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            // $response = curl_exec($ch);
+            // curl_close($ch);
             // $response = json_decode($response);
-
-            $messageId = $response['data']['messages'][0]['id'];
-            //$messageId = $response->data->messages[0]->id;
-            $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $err = curl_error($ch);
             
-            if ($err) { 
-                return "cURL Error #:" . $err;
-            } 
-            $messageStatus = $this->smsDeliveryStatus($messageId);
+            
+            //return $response;
+
+            $msgId = $response->messages[0]->id;
+            // return $msgId;
+
+        
+            //$curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // $err = curl_error($ch);
+            
+            // if ($err) { 
+            //     return "cURL Error #:" . $err;
+            // } 
+            $messageStatus = $this->smsDeliveryStatus($msgId);
             return $messageStatus;
 
         }elseif($SmsGW=='IndiaHUB'){
@@ -173,25 +174,26 @@ class ChannelRepository
 
       public function smsDeliveryStatus($request)  
       {
-        //$data = json_decode($data);   
-        //$messageId = $data->data; 
-        //$request = json_decode($request,true);
-        $arr =  $request->messages;
-        foreach($arr as $item) { //foreach element in $arr
-            return $item['id']; //etc
-        }
-
-
-        $messageId = $data->data->messages[0]->id;
+        $response = 'D';
         $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
-        $data = array('apikey' => $apiKey, 'message_id' => $data);
+        $data = array('apikey' => $apiKey, 'message_id' => $request);
         $ch = curl_init('https://api.textlocal.in/status_message/');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $response = curl_exec($ch);
+
+       // $response = curl_exec($ch);
+        for($i=0;$i<20;$i++){
+            $response = curl_exec($ch);
+            if (str_contains($response, 'D')) { 
+                return $response->message->status;
+            }
+            sleep(3);
+
+        }
+
         curl_close($ch);
         $response = json_decode($response);
         $response = $response->message->status;
