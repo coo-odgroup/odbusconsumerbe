@@ -54,8 +54,8 @@ class UsersRepository
         $password= $request['password'];
         $created_by= $request['created_by'];
         $request->request->add(['otp' => $otp]);
-        $sendsms = $this->channelRepository->sendSms($request);
-        return $sendsms;
+        //$sendsms = $this->channelRepository->sendSms($request);
+        //return $sendsms;
         session(['name'=> $name]);
         session(['mobile'=> $mobile]);
         session(['email'=> $email]);
