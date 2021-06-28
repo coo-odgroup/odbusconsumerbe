@@ -32,6 +32,7 @@ return [
     'textlocal' => [
         'key' => env('SMS_TEXTLOCAL_KEY'),
         'url' => env('TEXT_LOCAL_SMS_URL'),
+        'url_msg' => env('TEXT_LOCAL_MESSEGE_URL'),
     ],
 
 ];

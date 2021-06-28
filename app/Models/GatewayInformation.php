@@ -10,6 +10,6 @@ class GatewayInformation extends Model
     use HasFactory;
     protected $table = 'gateway_information'; 
     protected $fillable = [
-        'sender', 'contents','channel_type','service_provider','contents','created_by','status'
+        'sender', 'contents','channel_type','service_provider','contents','created_by'
     ];
 }

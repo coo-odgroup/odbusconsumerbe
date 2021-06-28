@@ -17,9 +17,9 @@ class ChannelRepository
         $gwinfo = new $this->gatewayInformation;
         $gwinfo->sender = $data['sender'];
         $gwinfo->channel_type = $data['channel_type'];
+        $gwinfo->service_provider = $data['service_provider'];
         $gwinfo->contents = $data['contents'];
         $gwinfo->created_by = $data['created_by'];
-        $gwinfo->status = $data['status'];
         $gwinfo->save();
         return $gwinfo;     
       }
@@ -131,14 +131,10 @@ class ChannelRepository
             // $response = curl_exec($ch);
             // curl_close($ch);
             // $response = json_decode($response);
-            
-            
-            //return $response;
-
+             
+            // return $response;
             $msgId = $response->messages[0]->id;
             // return $msgId;
-
-        
             //$curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
             
@@ -174,26 +170,37 @@ class ChannelRepository
 
       public function smsDeliveryStatus($request)  
       {
+        $apiKey = config('services.textlocal.key');
+        $textLocalUrl = config('services.textlocal.url_msg');
+        $ch = curl_init($textLocalUrl);
+        // return $ch;
+        // $arrs = $request->messages;
+        // return $arrs;
+        // foreach($arrs as $arr){
+        //     $msgId = $arr[0]->id;
+        //     return $msgId;
+        // }
+        // $msgId = $arr[0]->id;
+        $msgId = $request->messages[0]['id'];
         $response = 'D';
-        $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
-        $data = array('apikey' => $apiKey, 'message_id' => $request);
-        $ch = curl_init('https://api.textlocal.in/status_message/');
+        //$apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
+        $data = array('apikey' => $apiKey, 'message_id' => $msgId);
+        //$ch = curl_init('https://api.textlocal.in/status_message/');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
-       // $response = curl_exec($ch);
-        for($i=0;$i<20;$i++){
-            $response = curl_exec($ch);
-            if (str_contains($response, 'D')) { 
-                return $response->message->status;
-            }
-            sleep(3);
-
-        }
-
+        $response = curl_exec($ch);
+        return $response;
+        // for($i=0;$i<20;$i++){
+        //     $response = curl_exec($ch);
+        //     if (str_contains($response, 'D')) { 
+        //         return $response->message->status;
+        //     }
+        //     sleep(3);
+        // }
         curl_close($ch);
         $response = json_decode($response);
         $response = $response->message->status;
