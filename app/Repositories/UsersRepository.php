@@ -68,18 +68,15 @@ class UsersRepository
     public function submitOtp($request){
         $otp = trim($request['otp']);
             $user = new $this->users;
-                $name = session('name');
-                $mobile = session('mobile');
-                $email = session('email');
-                $password = session('password');
-                $created_by = session('created_by');
 
-                $user->name= $name;
+
+                $user->name= session('name');
                 $user->otp= $otp;
-                $user->email= $email;
-                $user->phone= $mobile;
-                $user->password= $password;
-                $user->created_by= $created_by;
+                $user->email= session('email');
+                $user->phone= session('mobile');
+                $user->password= session('password');
+                $user->created_by= session('created_by');
+                $user->msg_id= session('msgId');
                 $user->is_verified= '1';
                 $user->save();
                

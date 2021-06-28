@@ -29,10 +29,22 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-    'textlocal' => [
-        'key' => env('SMS_TEXTLOCAL_KEY'),
-        'url' => env('TEXT_LOCAL_SMS_URL'),
-        'url_msg' => env('TEXT_LOCAL_MESSEGE_URL'),
-    ],
+
+    'sms' => [
+        'otpservice' => env('OTP_SERVICE','textLocal'),
+        'otp_service_enabled' => true,
+        'textlocal' => [
+            'key' => env('SMS_TEXTLOCAL_KEY'),
+            'url_send' => env('TXTLOCAL_SEND_SMS_URL'),
+            'url_status' => env('TXTLOCAL_STATUS_SMS_URL'),
+            'message' => env('SMS_TEMPLATE'),
+            'senderid' => env('SENDER_ID'),
+        ],
+        'indiaHub' => [
+            'key' => env('SMS_TEXTLOCAL_KEY'),
+            'url' => env('TEXT_LOCAL_SMS_URL'),
+            'url_msg' => env('TEXT_LOCAL_MESSAGE_URL'),
+        ]
+    ]
 
 ];
