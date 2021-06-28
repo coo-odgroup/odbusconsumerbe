@@ -2,24 +2,24 @@
 
 namespace App\Repositories;
 use Illuminate\Http\Request;
-use App\Models\CustomerNotification;
+use App\Models\GatewayInformation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 class ChannelRepository
 {
-    protected $customerNotification;
-    public function __construct(CustomerNotification $customerNotification)
+    protected $gatewayInformation;
+    public function __construct(GatewayInformation $gatewayInformation)
     {
-        $this->customerNotification = $customerNotification; 
+        $this->gatewayInformation = $gatewayInformation; 
     } 
     
     public function storeGWInfo($data) {
-        $gwinfo = new $this->customerNotification;
+        $gwinfo = new $this->gatewayInformation;
         $gwinfo->sender = $data['sender'];
-        $gwinfo->receiver = $data['receiver'];
-        $gwinfo->contents = $data['contents'];
         $gwinfo->channel_type = $data['channel_type'];
-        $gwinfo->acknowledgement = $data['acknowledgement'];
+        $gwinfo->contents = $data['contents'];
+        $gwinfo->created_by = $data['created_by'];
+        $gwinfo->status = $data['status'];
         $gwinfo->save();
         return $gwinfo;     
       }
@@ -101,37 +101,52 @@ class ChannelRepository
     public function sendSms($data) {
         $SmsGW = $data['smsprovider'];
         if($SmsGW=='textLocal'){
+
             //$apiKey = config('services.textlocal.key');
             //$apiKey = env('SMS_TEXTLOCAL_KEY'); 
+            // $textLocalUrl = env('TEXT_LOCAL_SMS_URL','null');
+            // $textLocalUrl = config('services.textlocal.url');
+
             $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
-            $otp = $data['otp'];
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($data['phone']);
             $sender = urlencode($data['sender']);
+            $otp = $data['otp'];
             $name = $data['name'];
             $message = $data['message'];
             $message = str_replace("<otp>",$otp,$message);
+            $message = str_replace("<name>",$name,$message);
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            $textLocalUrl = 'https://api.textlocal.in/send/';
-            //$textLocalUrl = env('TEXT_LOCAL_SMS_URL','null');
-            //$textLocalUrl = config('services.textlocal.url');
-             $ch = curl_init($textLocalUrl);   
-            // curl_setopt($ch, CURLOPT_POST, true);
-            // curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
-            // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            // //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            // //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $textLocalUrl = 'https://api.textlocal.in/send/';   
+
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $response = curl_exec($ch);
-            //return $response;
+            curl_close($ch);
+            $response = json_decode($response);
+            return $response;
+
+            // $response = '{"status":"1","message":"OTP generated","data":{"balance":19810,"batch_id":1836303487,"cost":1,"num_messages":1,"message":{"num_parts":1,"sender":"ODBUSS","content":"Dear P, Your OTP is 25561 to login ODBUS. Thanks - ODBUS"},"receipt_url":"","custom":"","messages":[{"id":"12567377353","recipient":919916457575}],"status":"success"}}';
+            // $response = json_decode($response);
+
+            $messageId = $response['data']['messages'][0]['id'];
+            //$messageId = $response->data->messages[0]->id;
             $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err = curl_error($ch);
-            curl_close($ch);
-            if ($err) {
+            
+            if ($err) { 
                 return "cURL Error #:" . $err;
             } 
+            $messageStatus = $this->smsDeliveryStatus($messageId);
+            return $messageStatus;
+
         }elseif($SmsGW=='IndiaHUB'){
                 $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
                 $otp = $data['otp'];
@@ -155,6 +170,35 @@ class ChannelRepository
 
         }
       }
+
+      public function smsDeliveryStatus($request)  
+      {
+        //$data = json_decode($data);   
+        //$messageId = $data->data; 
+        //$request = json_decode($request,true);
+        $arr =  $request->messages;
+        foreach($arr as $item) { //foreach element in $arr
+            return $item['id']; //etc
+        }
+
+
+        $messageId = $data->data->messages[0]->id;
+        $apiKey = urlencode('aCFowBsUJ8k-KB0egbyZ1Af6IAgX9Gvux2WBp6w2uP');
+        $data = array('apikey' => $apiKey, 'message_id' => $data);
+        $ch = curl_init('https://api.textlocal.in/status_message/');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $response = json_decode($response);
+        $response = $response->message->status;
+        return $response;
+
+      }
+
 
       public function sendEmail($data) {
 

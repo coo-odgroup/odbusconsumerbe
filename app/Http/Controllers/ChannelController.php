@@ -46,6 +46,17 @@ class ChannelController extends Controller
           }       
     }
 
+    public function smsDeliveryStatus(Request $request)
+    {
+          try {
+           $response = $this->channelService->smsDeliveryStatus($request); 
+            return $this->successResponse($response,Config::get('constants.SMS_DELIVERED'),Response::HTTP_OK);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+          }       
+    }
+
     public function sendEmail(Request $request)
     {
         try {

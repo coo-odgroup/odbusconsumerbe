@@ -18,6 +18,6 @@ class CancellationSlab extends Model
     }
     public function bus()
     {
-    	return $this->hasOne(Bus::class);
+    	return $this->hasMany(Bus::class);
     }
 }

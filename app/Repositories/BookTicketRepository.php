@@ -34,7 +34,6 @@ class BookTicketRepository
         $customerInfo = $request['customerInfo'];
         //find customer_id using email or phone no
         $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->find('id');
-
         // if( $existingCustomer == true){
         //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
         //     return $userId;

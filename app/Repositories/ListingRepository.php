@@ -74,6 +74,8 @@ class ListingRepository
         $destinationID =  $this->location->where("name", $destination)->first()->id;      
     
         $records = $this->bus
+        //->with('cancelationSlab')->get();
+        //return $records;
         ->with('busOperator')->with('ticketPrice')
         ->with('busAmenities.amenities')
         ->with('busSafety.safety')
@@ -118,8 +120,10 @@ class ListingRepository
             foreach($ticketPriceDatas as $ticketPriceData) 
             {  
                $startingFromPrice = $ticketPriceData->base_seat_fare;   
-               $departureTime = $ticketPriceData->dep_time; 
-               $arrivalTime = $ticketPriceData->arr_time; 
+               $departureTime = $ticketPriceData->dep_time;
+               $depTime = date("H:i",strtotime($departureTime)); 
+               $arrivalTime = $ticketPriceData->arr_time;
+               $arrTime = date("H:i",strtotime($arrivalTime)); 
                $arr_time = new DateTime($arrivalTime);
                $dep_time = new DateTime($departureTime);
                $totalTravelTime = $dep_time->diff($arr_time);
@@ -150,8 +154,8 @@ class ListingRepository
                 "seaters" => $seatClassRecords,
                 "sleepers" => $sleeperClassRecords,
                 "startingFromPrice" => $startingFromPrice,
-                "departureTime" =>$departureTime,
-                "arrivalTime" =>$arrivalTime,
+                "departureTime" =>$depTime,
+                "arrivalTime" =>$arrTime,
                 "totalJourneyTime" =>$totalJourneyTime,
                 "amenityName" =>$amenityName,
                 "amenityIcon" => $amenityIcon,
@@ -275,7 +279,9 @@ class ListingRepository
                 {  
                    $startingFromPrice = $ticketPriceData->base_seat_fare;   
                    $departureTime = $ticketPriceData->dep_time; 
+                   $depTime = date("H:i",strtotime($departureTime)); 
                    $arrivalTime = $ticketPriceData->arr_time; 
+                   $arrTime = date("H:i",strtotime($arrivalTime)); 
                    $arr_time = new DateTime($arrivalTime);
                    $dep_time = new DateTime($departureTime);
                    $totalTravelTime = $dep_time->diff($arr_time);
@@ -306,8 +312,8 @@ class ListingRepository
                     "seaters" => $seatClassRecords,
                     "sleepers" => $sleeperClassRecords,
                     "startingFromPrice" => $startingFromPrice,
-                    "departureTime" =>$departureTime,
-                    "arrivalTime" =>$arrivalTime,
+                    "departureTime" =>$depTime,
+                    "arrivalTime" =>$arrTime,
                     "totalJourneyTime" =>$totalJourneyTime,
                     "amenityName" =>$amenityName,
                     "amenityIcon" => $amenityIcon, 

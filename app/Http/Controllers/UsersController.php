@@ -40,12 +40,29 @@ class UsersController extends Controller
           }
           try {
             $response = $this->usersService->Register($request);
-            return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED); 
+            return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
         }
          catch (Exception $e) {
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
         }       
    } 
+
+   public function verifyOtp(Request $request) 
+    {
+    try {
+      $recvOtp = $request['otp'];
+      if(is_null($recvOtp)){
+        return $this->successResponse($recvOtp,Config::get('constants.OTP_NULL'),Response::HTTP_NOT_FOUND);
+    }  
+      else{
+      $response =  $this->usersService->verifyOtp($request);  
+      return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
+      }
+    }
+    catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }   
+    }
 
 /**
  * @OA\Post(
@@ -213,6 +230,7 @@ class UsersController extends Controller
      }
      try {
       $user = Users::where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
+      ->where('is_verified','1') 
       ->first();
       if(isset($user)){
       //$response =  $this->usersService->login($request);  

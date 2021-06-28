@@ -24,28 +24,29 @@ class UsersRepository
   
     public function Register($request)
     {
-        $isError = 0;
-        $errorMessage = true;
-
         $user = new $this->users;
         $user->name= $request['name'];
         $user->email= $request['email'];
         $user->phone= $request['phone'];
         $user->password= $request['password'];
         $user->created_by= $request['created_by'];
-
         $otp = rand(10000, 99999);
         $user->otp = $otp;
         $user->save();
-        return  $user;   
-
+        return  $otp;   
     }
+    public function verifyOtp($request){
 
+        $otp = trim($request['otp']);
+        $this->users->where('otp', $otp)->update(array('is_verified' => '1'));
+        $user = $this->users->where('otp', $otp)->get();
+        return $user;
+    }
 
     public function RegisterSession($request)
     {
-        $isError = 0;
-        $errorMessage = true;
+        //$isError = 0;
+        //$errorMessage = true;
         $otp = rand(10000, 99999);
         $mobile = $request['phone'];
         $name = $request['name'];
@@ -54,7 +55,7 @@ class UsersRepository
         $created_by= $request['created_by'];
         $request->request->add(['otp' => $otp]);
         $sendsms = $this->channelRepository->sendSms($request);
-        //return $sendsms;
+        return $sendsms;
         session(['name'=> $name]);
         session(['mobile'=> $mobile]);
         session(['email'=> $email]);
@@ -79,7 +80,9 @@ class UsersRepository
                 $user->phone= $mobile;
                 $user->password= $password;
                 $user->created_by= $created_by;
+                $user->is_verified= '1';
                 $user->save();
+               
                 session()->flush();
                 return $user;
     }

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CustomerNotification extends Model
+class GatewayInformation extends Model
 {
     use HasFactory;
-    protected $table = 'customer_notification'; 
+    protected $table = 'gateway_information'; 
     protected $fillable = [
-        'sender', 'receiver', 'contents','channel_type','acknowledgement'
+        'sender', 'contents','channel_type','service_provider','contents','created_by','status'
     ];
 }

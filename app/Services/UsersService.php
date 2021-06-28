@@ -26,6 +26,11 @@ class UsersService
         $user = $this->usersRepository->Register($data);
         return $user;
     }
+    public function verifyOtp($data)
+    {   
+        $user = $this->usersRepository->verifyOtp($data);
+        return $user;
+    }
     public function RegisterSession($data)
     {   
         $user = $this->usersRepository->RegisterSession($data);

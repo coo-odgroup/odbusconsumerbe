@@ -17,7 +17,7 @@ class BusType extends Model
 
     public function Bus()
     {
-    	return $this->hasOne(Bus::class);
+    	return $this->hasMany(Bus::class);
     }
     public function busClass()
     {

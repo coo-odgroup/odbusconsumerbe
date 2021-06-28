@@ -50,8 +50,8 @@ class ViewSeatsRepository
         $rowsColumns  =$this->seats
         ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
         ->where('berthType', '1');
-        $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber');       
-        $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber');
+        $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+        $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
 
         $result['upper_berth']=$this->seats
         ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
@@ -62,8 +62,8 @@ class ViewSeatsRepository
         $rowsColumns  =$this->seats
         ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
         ->where('berthType', '2');
-        $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber');       
-        $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber');
+        $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+        $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
         return $result;
     }
     

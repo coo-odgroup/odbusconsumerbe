@@ -25,9 +25,11 @@ Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingD
 Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
+Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
-//Route::post('/Register', [UsersController::class, 'Register']);
+Route::post('/Register', [UsersController::class, 'Register']);
+Route::post('/verifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
 Route::post('/Login', [UsersController::class, 'login']);
 Route::post('/submitOtp', [UsersController::class, 'submitOtp']);
