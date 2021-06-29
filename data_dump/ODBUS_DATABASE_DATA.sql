@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 26, 2021 at 04:52 AM
+-- Generation Time: Jun 29, 2021 at 08:57 AM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -683,8 +683,8 @@ INSERT INTO `bus_seats` (`id`, `bus_id`, `ticket_price_id`, `seats_id`, `categor
 (2, 1, 1, 36, 0, 1, '0', 0.00, '2021-06-11 15:23:51', '2021-06-14 18:14:17', 'Admin', 0),
 (3, 1, 1, 37, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-06-22 18:50:53', 'Admin', 0),
 (4, 1, 1, 39, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-06-22 18:50:53', 'Admin', 0),
-(5, 1, 1, 40, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-06-25 06:06:24', 'Admin', 0),
-(6, 1, 1, 42, 0, 1, '0', 0.00, '2021-06-11 15:23:53', '2021-06-25 06:06:24', 'Admin', 0),
+(5, 1, 1, 40, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-06-28 10:26:38', 'Admin', 0),
+(6, 1, 1, 42, 0, 1, '0', 0.00, '2021-06-11 15:23:53', '2021-06-28 10:26:38', 'Admin', 0),
 (7, 1, 1, 43, 0, 0, '0', 0.00, '2021-06-11 15:23:53', '2021-06-11 15:23:53', 'Admin', 0),
 (8, 1, 1, 45, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
 (9, 1, 1, 46, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
@@ -951,7 +951,6 @@ CREATE TABLE `bus_type` (
 --
 
 INSERT INTO `bus_type` (`id`, `bus_class_id`, `name`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, 'Delux', '2021-06-06 21:27:35', '2021-06-06 21:27:35', 'Admin', 1),
 (315, 1, 'VOLVO', '2018-07-28 10:38:59', '2021-02-06 06:39:49', 'ty6754yt', 2),
 (316, 2, 'DELUX', '2017-10-05 13:17:21', '2021-02-10 10:55:53', 'ty6754yt', 1);
 
@@ -1086,34 +1085,6 @@ CREATE TABLE `coupon_assigned_bus` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customer_notification`
---
-
-CREATE TABLE `customer_notification` (
-  `id` int NOT NULL,
-  `sender` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `receiver` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `contents` varchar(120) NOT NULL,
-  `channel_type` int DEFAULT NULL COMMENT 'channel | 0-sms 1-email',
-  `acknowledgement` varchar(50) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `customer_notification`
---
-
-INSERT INTO `customer_notification` (`id`, `sender`, `receiver`, `contents`, `channel_type`, `acknowledgement`, `created_at`, `updated_at`) VALUES
-(1, 'odbus', '9437112909', 'hello', 0, '0', '2021-06-11 04:48:58', '2021-06-11 04:48:58'),
-(2, 'swagatikasahu.seofied@gmail.com', 'testing', 'sahu.swagatika@gmail.com', 1, '0', '2021-06-11 06:17:09', '2021-06-11 06:17:09'),
-(3, 'odbus', '9437112909', 'hello', 0, '0', '2021-06-11 07:07:42', '2021-06-11 07:07:42'),
-(4, 'odbus', '9437112909', 'hello', 0, '0', '2021-06-11 16:05:14', '2021-06-11 16:05:14'),
-(5, 'ODTKT', '919916457575', 'Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS', 0, 'textLocal', '2021-06-25 08:12:26', '2021-06-25 08:12:26');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `customer_payment`
 --
 
@@ -1216,6 +1187,30 @@ CREATE TABLE `extended_bus_closing_hours` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gateway_information`
+--
+
+CREATE TABLE `gateway_information` (
+  `id` int NOT NULL,
+  `sender` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `channel_type` int DEFAULT NULL COMMENT 'channel | 0-sms 1-email',
+  `service_provider` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `contents` varchar(250) NOT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `gateway_information`
+--
+
+INSERT INTO `gateway_information` (`id`, `sender`, `channel_type`, `service_provider`, `contents`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 'ODBUSS', 0, 'textLocal', 'Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS', '2021-06-28 11:55:49', '2021-06-28 11:55:49', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -2347,6 +2342,8 @@ CREATE TABLE `users` (
   `phone` varchar(40) NOT NULL,
   `password` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `otp` int DEFAULT NULL,
+  `is_verified` int NOT NULL DEFAULT '0',
+  `msg_id` varchar(50) DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) NOT NULL
@@ -2628,12 +2625,6 @@ ALTER TABLE `coupon_assigned_bus`
   ADD KEY `coupon_assigned_id_fk` (`coupon_id`);
 
 --
--- Indexes for table `customer_notification`
---
-ALTER TABLE `customer_notification`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
@@ -2668,6 +2659,12 @@ ALTER TABLE `custom_pages`
 -- Indexes for table `extended_bus_closing_hours`
 --
 ALTER TABLE `extended_bus_closing_hours`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `gateway_information`
+--
+ALTER TABLE `gateway_information`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -3010,12 +3007,6 @@ ALTER TABLE `coupon_assigned_bus`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `customer_notification`
---
-ALTER TABLE `customer_notification`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
@@ -3050,6 +3041,12 @@ ALTER TABLE `custom_pages`
 --
 ALTER TABLE `extended_bus_closing_hours`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `gateway_information`
+--
+ALTER TABLE `gateway_information`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `location`
