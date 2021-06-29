@@ -236,7 +236,7 @@ class UsersController extends Controller
       //$response =  $this->usersService->login($request);  
        return $this->successResponse($user,Config::get('constants.LOGIN'),Response::HTTP_OK);
       }else{
-        return $this->successResponse($user,Config::get('constants.USER_NOTREG'),Response::HTTP_NOT_FOUND);
+        return $this->errorResponse(Config::get('constants.USER_NOTREG'),Response::HTTP_PARTIAL_CONTENT);
       }
    }
    catch (Exception $e) {
