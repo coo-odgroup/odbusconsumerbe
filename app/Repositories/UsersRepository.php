@@ -33,6 +33,8 @@ class UsersRepository
         $otp = rand(10000, 99999);
         $user->otp = $otp;
         $user->save();
+        //$sendsms = $this->channelRepository->sendSms($request,$otp);
+        //return  $sendsms;
         return  $otp;   
     }
     public function verifyOtp($request){
@@ -53,9 +55,9 @@ class UsersRepository
         $email = $request['email'];
         $password= $request['password'];
         $created_by= $request['created_by'];
-        $request->request->add(['otp' => $otp]);
-        //$sendsms = $this->channelRepository->sendSms($request);
-        //return $sendsms;
+        ////$request->request->add(['otp' => $otp]);
+        $sendsms = $this->channelRepository->sendSms($request,$otp);
+        return $sendsms;
         session(['name'=> $name]);
         session(['mobile'=> $mobile]);
         session(['email'=> $email]);
