@@ -163,14 +163,14 @@ class UsersController extends Controller
     try {
       $recvOtp = $request['otp'];
       if(is_null($recvOtp)){
-        return $this->successResponse($recvOtp,Config::get('constants.OTP_NULL'),Response::HTTP_NOT_FOUND);
+        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_PARTIAL_CONTENT);
     }  
       elseif($recvOtp == session('otp')){
       $response =  $this->usersService->submitOtp($request);  
         return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
       }
       else{
-        return $this->successResponse($recvOtp,Config::get('constants.OTP_EXPIRED'),Response::HTTP_NOT_FOUND);
+        return $this->errorResponse(Config::get('constants.OTP_EXPIRED'),Response::HTTP_PARTIAL_CONTENT);
         }
     }
     catch (Exception $e) {
@@ -236,7 +236,7 @@ class UsersController extends Controller
       //$response =  $this->usersService->login($request);  
        return $this->successResponse($user,Config::get('constants.LOGIN'),Response::HTTP_OK);
       }else{
-        return $this->successResponse($user,Config::get('constants.USER_NOTREG'),Response::HTTP_NOT_FOUND);
+        return $this->errorResponse(Config::get('constants.USER_NOTREG'),Response::HTTP_PARTIAL_CONTENT);
       }
    }
    catch (Exception $e) {
