@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\UsersValidator;
 use App\AppValidator\LoginValidator;
@@ -154,7 +155,8 @@ class UsersController extends Controller
  *          )
  *      ),
  *     @OA\Response(response="201", description="Registered successfully"),
- *     @OA\Response(response="404", description="Not Found")
+ *     @OA\Response(response="206", description="otp not provided"),
+ *     @OA\Response(response="404", description="Invalid otp")
  * )
  * 
  */
@@ -163,7 +165,7 @@ class UsersController extends Controller
     try {
       $recvOtp = $request['otp'];
       if(is_null($recvOtp)){
-        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_PARTIAL_CONTENT);
+        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
       elseif($recvOtp == session('otp')){
       $response =  $this->usersService->submitOtp($request);  

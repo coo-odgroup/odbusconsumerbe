@@ -62,14 +62,14 @@ class UsersRepository
         session(['otp' => $otp]);
         session(['password' => $password]);
         session(['created_by' => $created_by]);
+        //Log::info($otp);
         return 'OTP:'. $otp;
     }
 
     public function submitOtp($request){
         $otp = trim($request['otp']);
             $user = new $this->users;
-
-
+            
                 $user->name= session('name');
                 $user->otp= $otp;
                 $user->email= session('email');

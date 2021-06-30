@@ -333,8 +333,11 @@
                     "201": {
                         "description": "Registered successfully"
                     },
+                    "206": {
+                        "description": "otp not provided"
+                    },
                     "404": {
-                        "description": "Not Found"
+                        "description": "Invalid otp"
                     }
                 }
             }
