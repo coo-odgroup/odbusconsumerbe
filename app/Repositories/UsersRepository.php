@@ -38,16 +38,17 @@ class UsersRepository
     }
     public function verifyOtp($request){
 
-        $otp = trim($request['otp']);
-        $existingOtp = $this->users->get();
+        $rcvOtp = trim($request['otp']);
+        $userId = $request['userId'];
+        $existingOtp = $this->users->where('id', $userId)->get('otp');
         $existingOtp = $existingOtp[0]['otp'];
-        //return  $existingOtp;
-        if($existingOtp==$otp){
-        $this->users->where('otp', $otp)->update(array('is_verified' => '1'));
-        $user = $this->users->where('otp', $otp)->get();
+        if($existingOtp == $rcvOtp){
+        $this->users->where('id', $userId)->update(array('is_verified' => '1'));
+        $user = $this->users->where('id', $userId)->get();
         return $user;
-        }elseif($existingOtp==$otp){
-            return 'invalid otp';
+        }
+        else{
+            return 'otp does not match';
         }
     }
 
