@@ -3,17 +3,16 @@
 namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Users;
-//use App\OtpVerify;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
-
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\Response;
 
 class UsersRepository
 {
     /**
      * @var Users
      */
-    protected $users;
     protected $channelRepository;
 
     public function __construct(Users $users,ChannelRepository $channelRepository)
@@ -40,9 +39,16 @@ class UsersRepository
     public function verifyOtp($request){
 
         $otp = trim($request['otp']);
+        $existingOtp = $this->users->get();
+        $existingOtp = $existingOtp[0]['otp'];
+        //return  $existingOtp;
+        if($existingOtp==$otp){
         $this->users->where('otp', $otp)->update(array('is_verified' => '1'));
         $user = $this->users->where('otp', $otp)->get();
         return $user;
+        }elseif($existingOtp==$otp){
+            return 'invalid otp';
+        }
     }
 
     public function RegisterSession($request)
@@ -56,8 +62,8 @@ class UsersRepository
         $password= $request['password'];
         $created_by= $request['created_by'];
         ////$request->request->add(['otp' => $otp]);
-        $sendsms = $this->channelRepository->sendSms($request,$otp);
-        return $sendsms;
+        //$sendsms = $this->channelRepository->sendSms($request,$otp);
+        //return $sendsms;
         session(['name'=> $name]);
         session(['mobile'=> $mobile]);
         session(['email'=> $email]);
