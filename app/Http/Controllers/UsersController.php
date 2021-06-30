@@ -51,13 +51,21 @@ class UsersController extends Controller
    public function verifyOtp(Request $request) 
     {
     try {
-      $recvOtp = $request['otp'];
-      if(is_null($recvOtp)){
-        return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_NOT_FOUND);
+      $rcvOtp = $request['otp'];
+      $userId = $request['userId'];
+      $existingOtp = Users::where('id', $userId)->get('otp');
+      $existingOtp = $existingOtp[0]['otp'];
+      if(is_null($rcvOtp)){
+        return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
+    elseif($existingOtp == $rcvOtp){
+      Users::where('id', $userId)->update(array('is_verified' => '1'));
+      $user = Users::where('id', $userId)->get();
+      return $this->successResponse($user,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
+    }
       else{
-      $response = $this->usersService->verifyOtp($request);  
-      return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
+      //$response = $this->usersService->verifyOtp($request);  
+      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_FOUND);
       }
     }
     catch (Exception $e) {

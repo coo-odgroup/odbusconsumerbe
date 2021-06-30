@@ -15,7 +15,7 @@ return [
     'LOGIN' => 'Login Successful',
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
-    'OTP_EXPIRED' => 'Invalid OTP',
+    'OTP_INVALID' => 'Invalid OTP',
     'USER_NOTREG' => 'Invalid user or password',
     'SMS_DELIVERED' => 'SMS delivered successfully',
 ];
