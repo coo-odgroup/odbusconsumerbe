@@ -34,7 +34,7 @@ class UsersRepository
         $user->save();
         //$sendsms = $this->channelRepository->sendSms($request,$otp);
         //return  $sendsms;
-        return  $otp;   
+        return  $user;   
     }
     public function verifyOtp($request){
 
