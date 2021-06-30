@@ -102,7 +102,7 @@ class ChannelRepository
         list($header, $content) = PostRequest($url,$data);
     }
     
-    public function sendSms($data) {
+    public function sendSms($data, $otp) {
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW=='textLocal'){
 
@@ -111,17 +111,16 @@ class ChannelRepository
             $textLocalUrl = config('services.sms.textlocal.url_send');
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.message');
-
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($data['phone']);
-            $otp = $data['otp'];
             $name = $data['name'];
             $message = str_replace("<otp>",$otp,$message);
             $message = str_replace("<name>",$name,$message);
+            //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-           
+            
 
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
