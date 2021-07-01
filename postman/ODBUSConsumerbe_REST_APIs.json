@@ -1,0 +1,443 @@
+{
+	"info": {
+		"_postman_id": "3309568e-eed4-4512-b410-04e6de64d4d0",
+		"name": "ODBUSConsumerBE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Listing",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"source\":\"Bhubaneswar\",\r\n    \"destination\":\"Sambalpur\",\r\n    \"entry_date\":\"08-05-2021\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Listing",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Listing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Seats",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"busId\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/viewSeats",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"viewSeats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPriceOn seatsSelection",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n          \"seater\": [2,3],\r\n          \"sleeper\": [15,16]\r\n     }\r\n   \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/PriceOnSeatsSelection",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"PriceOnSeatsSelection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BookTicket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"\",\r\n    \"phone\": \"9916457575\"\r\n    },\r\n    \"seat_id\": [5,6],  \r\n    \"bookStatus\":\"1\",\r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"j_day\": \"1\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/BookTicket",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"BookTicket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetLocation",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"locationName\":\"bbsr\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/getLocation",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"getLocation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\":1,\r\n    \"sourceID\":\"1291\",\r\n    \"destinationID\":\"1294\",\r\n    \"entry_date\":\"08-05-2021\",\r\n    \"busType\":[1,2],\r\n    \"seatType\":[],\r\n    \"boardingPointId\":[],\r\n    \"dropingingPointId\":[],\r\n    \"operatorId\":[],\r\n    \"amenityId\":[]\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Filter",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Filter"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All BoardingDroping Points",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"busId\": \"1\",\r\n    \"sourceId\": \"1291\",\r\n    \"destinationId\": \"1294\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/BoardingDroppingPoints",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"BoardingDroppingPoints"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendSms",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"smsprovider\":\"textLocal\",\r\n    \"sender\": \"odbus\",\r\n    \"receiver\":\"9437112909\",\r\n    \"contents\":\"hello\",\r\n    \"channel_type\":\"0\",\r\n    \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/SendSms",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"SendSms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender\": \"swagatikasahu.seofied@gmail.com\",\r\n    \"receiver\":\"sahu.swagatika@gmail.com\",\r\n    \"contents\":\"testing\",\r\n    \"addContent\":\"ODBUS\",\r\n    \"channel_type\":\"1\",\r\n     \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/SendEmail",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"SendEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Make PAYMENT",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "Knrj6u3sPiEjpImmIzfPPu79",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rzp_live_KQgBHf2DBATAfF",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"contents\":\"booking\",\r\n    \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/MakePayment",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"MakePayment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Bus  Operators",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/BusOperators",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"BusOperators"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get FilterOptions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sourceID\":\"1291\",\r\n    \"destinationID\":\"1294\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/FilterOptions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"FilterOptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "        {  \r\n        \"phone\":\"9916457575\", \r\n        \"email\":\"\",\r\n        \"password\":\"passw\"\r\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Amit\",\r\n    \"email\":\"Amit.def@gmail.com\",\r\n    \"phone\":\"9916457579\",\r\n    \"password\":\"password\",\r\n    \"created_by\":\"Admin\"\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Register",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"88861\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/VerifyOtp",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"VerifyOtp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMS delivery status check",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phone\":\"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/smsDeliveryStatus",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"smsDeliveryStatus"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
