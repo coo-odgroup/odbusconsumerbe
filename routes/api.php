@@ -30,13 +30,15 @@ Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
-Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
 Route::post('/Login', [UsersController::class, 'login']);
-Route::post('/submitOtp', [UsersController::class, 'submitOtp']);
+Route::get('/UserProfile', [UsersController::class, 'userProfile']);
+Route::post('/Logout', [UsersController::class, 'logout']);
+Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
+//Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
+//Route::post('/submitOtp', [UsersController::class, 'submitOtp']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 
 //});
-//Route::post('/sendSmstextLocal', [ChannelController::class, 'sendSmstextLocal']);
 
 
 

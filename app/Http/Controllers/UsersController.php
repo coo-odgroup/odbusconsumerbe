@@ -12,8 +12,11 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\UsersValidator;
 use App\AppValidator\LoginValidator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
 use App\Services\UsersService;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UsersController extends Controller
 {
@@ -27,6 +30,7 @@ class UsersController extends Controller
         $this->usersService = $usersService; 
         $this->usersValidator = $usersValidator; 
         $this->loginValidator = $loginValidator; 
+        //$this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function Register(Request $request) {
@@ -65,7 +69,7 @@ class UsersController extends Controller
     }
       else{
       //$response = $this->usersService->verifyOtp($request);  
-      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_FOUND);
+      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
       }
     }
     catch (Exception $e) {
@@ -227,31 +231,49 @@ class UsersController extends Controller
  * )
  * 
  */  
-   public function login(Request $request) 
-   {
+  public function login(Request $request){  
     $data = $request->only([
       'email','phone','password'
      ]);   
-     $LoginValidation = $this->loginValidator->validate($data);
-   
-     if ($LoginValidation->fails()) {
-       $errors = $LoginValidation->errors();
-       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-     }
-     try {
-      $user = Users::where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
-      ->where('is_verified','1') 
-      ->first();
-      if(isset($user)){
-      //$response =  $this->usersService->login($request);  
-       return $this->successResponse($user,Config::get('constants.LOGIN'),Response::HTTP_OK);
-      }else{
-        return $this->errorResponse(Config::get('constants.USER_NOTREG'),Response::HTTP_PARTIAL_CONTENT);
-      }
-   }
-   catch (Exception $e) {
-       return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-     }   
-  }
+      $LoginValidation = $this->loginValidator->validate($data);
+     
+      if ($LoginValidation->fails()) {
+        $errors = $LoginValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+       }
 
+    if (! $token = auth()->attempt($LoginValidation->validated())) {
+        return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+    }
+    return $this->createNewToken($token);
+}
+
+  protected function createNewToken($token){
+     $loginUser = [  
+          'access_token' => $token,
+          'token_type' => 'bearer',
+          'expires_in' => auth()->factory()->getTTL() * 60,
+          'user' => auth()->user()   
+    ]; 
+    return $this->successResponse($loginUser,Config::get('constants.LOGIN'),Response::HTTP_OK);
+}
+
+public function userProfile() {
+  $user =  response()->json(auth()->user());
+  if(!is_null($user)) {
+    return $user;
+  }
+  else {
+    return 'no user found';
+  }
+}
+
+public function logout() {
+  auth()->logout();
+  return response()->json(['message' => 'User successfully signed out']);
+}
+
+public function refreshToken() {
+  return $this->createNewToken(auth()->refresh());
+}
 }

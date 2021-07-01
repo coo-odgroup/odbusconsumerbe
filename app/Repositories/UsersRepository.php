@@ -4,9 +4,11 @@ namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Auth;
 use App\Repositories\ChannelRepository;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Hash;
 
 class UsersRepository
 {
@@ -27,7 +29,8 @@ class UsersRepository
         $user->name= $request['name'];
         $user->email= $request['email'];
         $user->phone= $request['phone'];
-        $user->password= $request['password'];
+        $user->password= bcrypt($request['password']);
+        //$user->password= Hash::make($request['password']);
         $user->created_by= $request['created_by'];
         $otp = rand(10000, 99999);
         $user->otp = $otp;

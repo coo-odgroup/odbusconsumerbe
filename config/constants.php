@@ -16,6 +16,6 @@ return [
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_INVALID' => 'Invalid OTP',
-    'USER_NOTREG' => 'Invalid user or password',
+    'USER_UNAUTHORIZED' => 'Unauthorized user',
     'SMS_DELIVERED' => 'SMS delivered successfully',
 ];
