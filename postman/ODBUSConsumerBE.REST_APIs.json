@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3309568e-eed4-4512-b410-04e6de64d4d0",
+		"_postman_id": "8f8060d4-cbe7-4d51-93fa-68796ac6f516",
 		"name": "ODBUSConsumerBE",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -341,8 +341,25 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "raw",
-					"raw": "        {  \r\n        \"phone\":\"9916457575\", \r\n        \"email\":\"\",\r\n        \"password\":\"passw\"\r\n        }",
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "phone",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "Prince@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password11",
+							"type": "text"
+						}
+					],
 					"options": {
 						"raw": {
 							"language": "json"
@@ -382,6 +399,58 @@
 					],
 					"path": [
 						"Register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gateway Information",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender\": \"ODBUSS\",\r\n    \"channel_type\":0,\r\n    \"service_provider\":\"textLocal\",\r\n    \"contents\":\"Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS\",\r\n    \"created_by\":\"Admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/storeGWInfo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"storeGWInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User RegiSession-SMS-GW-TextLocal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"P\",\r\n    \"email\":\"prince@gmail.com\",\r\n    \"phone\":\"8249113251\",\r\n    \"password\":\"passw\",\r\n    \"smsprovider\":\"textLocal\",\r\n    \"sender\":\"ODBUSS\",\r\n    \"message\":\"Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS\",\r\n    \"created_by\":\"Admin\"\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/RegisterSession",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"RegisterSession"
 					]
 				}
 			},
@@ -434,6 +503,87 @@
 					],
 					"path": [
 						"smsDeliveryStatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userProfile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL1JlZnJlc2hUb2tlbiIsImlhdCI6MTYyNTE2MjI5MSwiZXhwIjoxNjI1MTY1OTE2LCJuYmYiOjE2MjUxNjIzMTYsImp0aSI6ImJCWlI2TkxiaWZRaVNvUUIiLCJzdWIiOjIsInBydiI6ImY2NGQ0OGE2Y2VjN2JkZmE3ZmJmODk5NDU0YjQ4OGIzZTQ2MjUyMGEifQ.b59tCG4iHTkKHPQkCDOUYQ_eX9hQji2TzO_YpzUlTQo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/UserProfile",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"UserProfile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user Logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MTYwMjIwLCJleHAiOjE2MjUxNjM4MjAsIm5iZiI6MTYyNTE2MDIyMCwianRpIjoiWGZoaW5vUjhYeTZqaDBRTiIsInN1YiI6MiwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.PBbwYDmmC9HaB1R0TEurvvznWPadGyAcl44s4bb1Xo8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RefreshToken for exsting token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MTYyMjkxLCJleHAiOjE2MjUxNjU4OTEsIm5iZiI6MTYyNTE2MjI5MSwianRpIjoiUlZDNGdOMVJPYU43bWZ0RCIsInN1YiI6MiwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.OUvMFBNWlsdXruyrW9V8YYH_-Wk3U7oK0sKuVCVrVTw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/RefreshToken",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"RefreshToken"
 					]
 				}
 			},
