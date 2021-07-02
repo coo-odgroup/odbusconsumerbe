@@ -9,9 +9,7 @@ use App\Http\Controllers\ViewSeatsController;
 use App\Http\Controllers\BookTicketController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\UsersController;
-
 use App\Http\Middleware\LogRoute;
-use Laravel\Passport\Passport;
 
 //Route::middleware([LogRoute::class])->group(function () {
 

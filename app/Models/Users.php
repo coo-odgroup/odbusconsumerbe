@@ -4,26 +4,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
-//use Illuminate\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Auth\Passwords\CanResetPassword;
-// use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-// use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-
-//use Tymon\JWTAuth\Contracts\JWTSubject;
-
-
-//use App\Models\Users;
 use App\Models\Booking;
 
 class Users extends Authenticatable implements JWTSubject 
-// class Users extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
-    //use Authenticatable, CanResetPassword;
-    //use HasFactory, Notifiable;
-
     /**
      * The attributes that are mass assignable.
      *

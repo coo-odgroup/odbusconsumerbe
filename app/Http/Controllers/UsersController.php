@@ -259,20 +259,18 @@ class UsersController extends Controller
 }
 
 public function userProfile() {
-  $user =  response()->json(auth()->user());
+  $user = auth()->user();
   if(!is_null($user)) {
-    return $user;
+    return $this->successResponse($user,Config::get('constants.USER_DETAILS'),Response::HTTP_OK);
   }
   else {
-    return 'no user found';
+    return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
   }
 }
-
 public function logout() {
   auth()->logout();
-  return response()->json(['message' => 'User successfully signed out']);
+  return $this->successResponse(Config::get('constants.USER_LOGGEDOUT'),Response::HTTP_OK);
 }
-
 public function refreshToken() {
   return $this->createNewToken(auth()->refresh());
 }
