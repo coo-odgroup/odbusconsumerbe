@@ -42,6 +42,7 @@ class ListingController extends Controller
  * )
  * 
  */
+
 /**
  * @OA\Get(
  *     path="/api/getLocation",

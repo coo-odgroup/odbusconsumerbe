@@ -16,7 +16,7 @@ return [
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_INVALID' => 'Invalid OTP',
-    'USER_UNAUTHORIZED' => 'Unauthorized user',
+    'WRONG_CREDENTIALS' => 'Wrong credentials',
     'USER_DETAILS' => 'Authorized user details',
     'USER_LOGGEDOUT' => ' User successfully signed out',
     'SMS_DELIVERED' => 'SMS delivered successfully',

@@ -248,14 +248,14 @@
                 }
             }
         },
-        "/api/RegisterSession": {
+        "/api/Register": {
             "post": {
                 "tags": [
-                    "RegisterSession API"
+                    "Register API"
                 ],
                 "summary": "send OTP to user for registration",
-                "description": "All user information taken and generarted OTP sent to users",
-                "operationId": "App\\Http\\Controllers\\UsersController::RegisterSession",
+                "description": "user detatils saved and otp generated",
+                "operationId": "App\\Http\\Controllers\\UsersController::Register",
                 "parameters": [
                     {
                         "name": "name",
@@ -305,20 +305,29 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OTP generated and sent to user for registration"
+                        "description": "user details saved and generaed otp sent to user"
                     }
                 }
             }
         },
-        "/api/submitOtp": {
+        "/api/VerifyOtp": {
             "post": {
                 "tags": [
-                    "submitOtp API"
+                    "VerifyOtp API"
                 ],
                 "summary": "user Registration with OTP verification",
-                "description": "user Registration with OTP verification sent by user",
-                "operationId": "App\\Http\\Controllers\\UsersController::submitOtp",
+                "description": "confirmation of user Registration with OTP verification",
+                "operationId": "App\\Http\\Controllers\\UsersController::verifyOtp",
                 "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "name": "otp",
                         "in": "query",
@@ -336,7 +345,7 @@
                     "206": {
                         "description": "otp not provided"
                     },
-                    "404": {
+                    "406": {
                         "description": "Invalid otp"
                     }
                 }
@@ -345,10 +354,10 @@
         "/api/Login": {
             "post": {
                 "tags": [
-                    "Login API"
+                    "auth"
                 ],
-                "summary": "user Login input either phone no or email",
-                "description": "user Login entering either phone no or email",
+                "summary": "user Login input either phone no or email and password, creating access_token for each user",
+                "description": "Login with email/phone and password to get the authentication token",
                 "operationId": "App\\Http\\Controllers\\UsersController::login",
                 "parameters": [
                     {
@@ -384,12 +393,31 @@
                         "description": "Login Successful"
                     },
                     "206": {
-                        "description": "phone no or email of user required"
+                        "description": "Validation error"
                     },
-                    "404": {
-                        "description": "not a registerd user"
+                    "422": {
+                        "description": "Wrong credentials response"
                     }
                 }
+            }
+        },
+        "/api/UserProfile": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get user details",
+                "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
+                "responses": {
+                    "200": {
+                        "description": "USER DETAILS"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/viewSeats": {
@@ -532,6 +560,17 @@
                         "description": " get all Boarding Dropping Points"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "apiAuth": {
+                "type": "http",
+                "name": "Token based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
