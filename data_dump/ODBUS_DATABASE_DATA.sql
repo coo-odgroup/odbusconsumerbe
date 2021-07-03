@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 29, 2021 at 08:57 AM
+-- Generation Time: Jul 02, 2021 at 08:38 AM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -165,7 +165,7 @@ CREATE TABLE `booking_detail` (
   `passenger_gender` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `passenger_age` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `total_fare` double NOT NULL,
-  `owner_fare` double NOT NULL,
+  `owner_fare` double NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1801,6 +1801,29 @@ INSERT INTO `locationcode` (`id`, `location_id`, `type`, `providerid`, `created_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int UNSIGNED NOT NULL,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `migrations`
+--
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+(1, '2016_06_01_000001_create_oauth_auth_codes_table', 1),
+(2, '2016_06_01_000002_create_oauth_access_tokens_table', 1),
+(3, '2016_06_01_000003_create_oauth_refresh_tokens_table', 1),
+(4, '2016_06_01_000004_create_oauth_clients_table', 1),
+(5, '2016_06_01_000005_create_oauth_personal_access_clients_table', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `owner_fare`
 --
 
@@ -2340,7 +2363,7 @@ CREATE TABLE `users` (
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `email` varchar(120) NOT NULL,
   `phone` varchar(40) NOT NULL,
-  `password` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `otp` int DEFAULT NULL,
   `is_verified` int NOT NULL DEFAULT '0',
   `msg_id` varchar(50) DEFAULT NULL,
@@ -2679,6 +2702,12 @@ ALTER TABLE `location`
 ALTER TABLE `locationcode`
   ADD PRIMARY KEY (`id`),
   ADD KEY `location_id` (`location_id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `owner_fare`
@@ -3059,6 +3088,12 @@ ALTER TABLE `location`
 --
 ALTER TABLE `locationcode`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `owner_fare`
