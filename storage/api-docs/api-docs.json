@@ -354,7 +354,7 @@
         "/api/Login": {
             "post": {
                 "tags": [
-                    "auth"
+                    "JWT Auth"
                 ],
                 "summary": "user Login input either phone no or email and password, creating access_token for each user",
                 "description": "Login with email/phone and password to get the authentication token",
@@ -404,13 +404,16 @@
         "/api/UserProfile": {
             "get": {
                 "tags": [
-                    "auth"
+                    "JWT Auth"
                 ],
                 "summary": "Get user details",
                 "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
                 "responses": {
                     "200": {
-                        "description": "USER DETAILS"
+                        "description": "Authorized User details"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
                 },
                 "security": [

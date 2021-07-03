@@ -202,7 +202,7 @@ class UsersController extends Controller
     /**
  * @OA\Post(
  *     path="/api/Login",
- *     tags={"auth"},
+ *     tags={"JWT Auth"},
  *     description="Login with email/phone and password to get the authentication token",
  *     summary="user Login input either phone no or email and password, creating access_token for each user",
  *     @OA\Parameter(
@@ -285,8 +285,9 @@ class UsersController extends Controller
  * @OA\Get(
  *  path="/api/UserProfile",
  *  summary="Get user details",
- *  tags={"auth"},
- *  @OA\Response(response=200, description="USER DETAILS"),
+ *  tags={"JWT Auth"},
+ *  @OA\Response(response=200, description="Authorized User details"),
+ *  @OA\Response(response=401, description="Unauthorized user"),
  *  security={{ "apiAuth": {} }}
  * )
  */

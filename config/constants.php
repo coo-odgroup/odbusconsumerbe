@@ -18,6 +18,7 @@ return [
     'OTP_INVALID' => 'Invalid OTP',
     'WRONG_CREDENTIALS' => 'Wrong credentials',
     'USER_DETAILS' => 'Authorized user details',
+    'USER_UNAUTHORIZED' => 'Unauthorized user',
     'USER_LOGGEDOUT' => ' User successfully signed out',
     'SMS_DELIVERED' => 'SMS delivered successfully',
 ];
