@@ -119,7 +119,7 @@ class ViewSeatsRepository
             {
                 $droppingArray[] = array(
                     "id" =>  $boardDropId,
-                    "droppoingPoints" => $boardingPoints,
+                    "droppingPoints" => $boardingPoints,
             );
             }
     }
