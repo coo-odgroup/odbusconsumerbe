@@ -127,7 +127,7 @@ class ListingRepository
                $arr_time = new DateTime($arrivalTime);
                $dep_time = new DateTime($departureTime);
                $totalTravelTime = $dep_time->diff($arr_time);
-               $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " hours". $totalTravelTime->format(" %i minutes ");
+               $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format("%h"). " h". $totalTravelTime->format(" %i m ");
             }
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
