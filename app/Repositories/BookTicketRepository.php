@@ -9,19 +9,22 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
+use App\Models\TicketPrice;
 
 class BookTicketRepository
 {
     protected $bus;
+    protected $ticketPrice;
     protected $location;
     protected $users;
     protected $booking;
     protected $busSeats;
     protected $bookingDetail;
 
-    public function __construct(Bus $bus,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
     {
         $this->bus = $bus;
+        $this->ticketPrice = $ticketPrice;
         $this->location = $location;
         $this->users = $users;
         $this->busSeats = $busSeats;
@@ -54,9 +57,8 @@ class BookTicketRepository
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
-        $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => $bookStatus));
+        $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
         $bookingInfo = $request['bookingInfo'];
-       
         //Save Booking 
         $booking = new $this->booking;
         do {
@@ -66,11 +68,14 @@ class BookTicketRepository
         do {
             $PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
             } while ( $booking ->where('pnr', $PNR )->exists()); 
-        $booking->pnr =  $PNR;
+        $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
+        $busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $booking->j_day = $bookingInfo['j_day'];
+        $j_day = $this->ticketPrice->where('bus_id',$busId)->pluck('j_day');
+        $booking->j_day = $j_day[0];
+        //$booking->j_day = $bookingInfo['j_day'];
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];

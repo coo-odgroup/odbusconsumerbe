@@ -75,7 +75,7 @@ class ViewSeatsRepository
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
 
-        $busWithTicketPrice =  $this->bus->with('ticketPrice')
+        $busWithTicketPrice = $this->bus->with('ticketPrice')
         ->whereHas('ticketPrice', function ($query) use ($busId,$sourceId, $destinationId){
             $query->where([
                 ['bus_id', $busId],
@@ -84,13 +84,22 @@ class ViewSeatsRepository
             ]);            
             })      
         ->get();
-      
         //Priyadarshi::Bus and Bustoppage relationships?????
         //Remove hard coding values.
+       $seaterPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare;
+       $sleeperPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare; 
        $totalPrice = count($seaterIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare+
        count($sleeperIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare;
-       
-       return  $totalPrice;
+       //return  $totalPrice;
+
+       $seatWithPriceRecords[] = array(
+        "seaterIds" => $seaterIds, 
+        "seaterPrice" => $seaterPrice,
+        "sleeperIds" => $sleeperIds, 
+        "sleeperPrice" => $sleeperPrice,
+        "totalPrice" => $totalPrice,
+        ); 
+        return  $seatWithPriceRecords;
     }
 
     public function getBoardingDroppingPoints($request)
