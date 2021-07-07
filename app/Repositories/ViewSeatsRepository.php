@@ -93,9 +93,7 @@ class ViewSeatsRepository
        //return  $totalPrice;
 
        $seatWithPriceRecords[] = array(
-        "seaterIds" => $seaterIds, 
         "seaterPrice" => $seaterPrice,
-        "sleeperIds" => $sleeperIds, 
         "sleeperPrice" => $sleeperPrice,
         "totalPrice" => $totalPrice,
         ); 
