@@ -69,12 +69,27 @@ class ViewSeatsRepository
     
     public function getPriceOnSeatsSelection($request)
     {
+        //$seaterIds = collect($request['seater'])->all();
+
+        
+        //Log::info( $seaterIds);
+        //return $seaterIds;
+        //$seaterIds = preg_replace('\ \',$seaterIds);
+        // return $seaterIds;
+        // 
+        // //$aaa = count(array($seaterIds[0]));
+        // $aaa = count($seaterIds);
+        // return $aaa;
+
+
+
         $seaterIds = $request['seater'];
         $sleeperIds = $request['sleeper'];
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
-
+       // Log::info($seaterIds);
+        //return $seaterIds;
         $busWithTicketPrice = $this->bus->with('ticketPrice')
         ->whereHas('ticketPrice', function ($query) use ($busId,$sourceId, $destinationId){
             $query->where([
@@ -84,20 +99,21 @@ class ViewSeatsRepository
             ]);            
             })      
         ->get();
-        //Priyadarshi::Bus and Bustoppage relationships?????
+       
+        //Priyadarshi::Bus and TicketPrice relationships?????
         //Remove hard coding values.
        $seaterPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare;
        $sleeperPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare; 
        $totalPrice = count($seaterIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare+
        count($sleeperIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare;
-       //return  $totalPrice;
 
+       //return $totalPrice;
        $seatWithPriceRecords[] = array(
         "seaterPrice" => $seaterPrice,
         "sleeperPrice" => $sleeperPrice,
         "totalPrice" => $totalPrice,
         ); 
-        return  $seatWithPriceRecords;
+        return $seatWithPriceRecords;
     }
 
     public function getBoardingDroppingPoints($request)
