@@ -31,7 +31,7 @@ Route::post('/Login', [UsersController::class, 'login']);
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 Route::post('/Logout', [UsersController::class, 'logout']);
 Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
-Route::post('/sendEmail', [ChannelController::class, 'sendEmail']);
+Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 
 //Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
 //Route::post('/submitOtp', [UsersController::class, 'submitOtp']);

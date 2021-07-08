@@ -91,7 +91,7 @@ class ViewSeatsController extends Controller
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="seater[]",
+ *          name="seater[string]",
  *          description="seater Ids",
  *          in="query",
  *          required=false,

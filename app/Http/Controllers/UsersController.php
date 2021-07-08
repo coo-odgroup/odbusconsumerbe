@@ -260,6 +260,26 @@ class UsersController extends Controller
       }
     
 }
+/**
+ * @OA\SecurityScheme(
+ *     type="http",
+ *     name="Token based",
+ *     in="header",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     securityScheme="apiAuth",
+ * )
+ */
+ /**
+ * @OA\Get(
+ *  path="/api/UserProfile",
+ *  summary="Get user details",
+ *  tags={"JWT Auth"},
+ *  @OA\Response(response=200, description="Authorized User details"),
+ *  @OA\Response(response=401, description="Unauthorized user"),
+ *  security={{ "apiAuth": {} }}
+ * )
+ */
 
   protected function createNewToken($token){
      $loginUser = [  
