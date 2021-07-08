@@ -271,26 +271,7 @@ class UsersController extends Controller
     return $this->successResponse($loginUser,Config::get('constants.LOGIN'),Response::HTTP_OK);
 }
 
-/**
- * @OA\SecurityScheme(
- *     type="http",
- *     name="Token based",
- *     in="header",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     securityScheme="apiAuth",
- * )
- */
- /**
- * @OA\Get(
- *  path="/api/UserProfile",
- *  summary="Get user details",
- *  tags={"JWT Auth"},
- *  @OA\Response(response=200, description="Authorized User details"),
- *  @OA\Response(response=401, description="Unauthorized user"),
- *  security={{ "apiAuth": {} }}
- * )
- */
+
 public function userProfile() {
   $user = auth()->user();
   if(!is_null($user)) {
