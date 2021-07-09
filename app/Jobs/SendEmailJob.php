@@ -21,13 +21,16 @@ class SendEmailJob implements ShouldQueue
      * @return void
      */
     protected $to;
-    protected $subject;
-    protected $email_body;
-    public function __construct($to, $subject, $email_body)
+    protected $name;
+    protected $email_otp;
+    //protected $email_body;
+    public function __construct($to, $name, $email_otp)
     {
         $this->to = $to;
-        $this->subject = $subject;
-        $this->email_body= $email_body;
+        $this->name = $name;
+        //$this->subject = $subject;
+        //$this->email_body= $email_body;
+        $this->email_otp= $email_otp;
     }
 
     /**
@@ -37,10 +40,21 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        Mail::send('email', ['email_body' => $this->email_body], function ($messageNew) {
-            $messageNew->from(config('mail.contact.address'))
-            ->to($this->to)
-            ->subject($this->subject);
+        $data = [
+            'name' => $this->name,
+            'otp' => $this->email_otp,
+        ];
+        Mail::send('email', $data, function ($messageNew) {
+            //$messageNew->from(config('mail.contact.address'))
+            $messageNew->to($this->to)
+            ->subject(config('services.email.subject'));
         });
+
+        // Mail::send('email', ['email_body' => $this->email_body], function ($messageNew) {
+        //     $messageNew->from(config('mail.contact.address'))
+        //     ->to($this->to)
+        //     ->subject($this->subject);
+        // });
+
     }
 }

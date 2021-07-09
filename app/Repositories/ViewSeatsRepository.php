@@ -68,8 +68,7 @@ class ViewSeatsRepository
     }
     
     public function getPriceOnSeatsSelection($request)
-    {
-       
+    { 
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
         $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
         // $seaterIds = $request['seater'];

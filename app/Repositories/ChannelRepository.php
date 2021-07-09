@@ -205,12 +205,20 @@ class ChannelRepository
       }
 
 
-      public function sendEmail($request) {
+      public function sendEmail($request, $otp) {
         
-        $to = $request['receiver'];
+        // $to = $request['receiver'];
+        // $name = $request['name'];
+        // $email_body = $request['message'];
+
+        $to = $request['email'];
         $name = $request['name'];
-        $email_body = $request['message'];
-        SendEmailJob::dispatch($to, $name, $email_body);
+        $email_otp = $otp;
+
+        //$email_otp = $request['otp'];
+        //$emailSubject = config('services.email.subject');
+        //return $emailSubject;
+        SendEmailJob::dispatch($to, $name, $email_otp);
        
       }
 
