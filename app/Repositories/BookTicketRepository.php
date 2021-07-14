@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\TicketPrice;
+use App\Repositories\ChannelRepository;
 
 class BookTicketRepository
 {
@@ -21,7 +22,7 @@ class BookTicketRepository
     protected $busSeats;
     protected $bookingDetail;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -30,30 +31,26 @@ class BookTicketRepository
         $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->bookingDetail = $bookingDetail;
+        $this->channelRepository = $channelRepository; 
     }   
     
     public function bookTicket($request)
     { 
-        $customerInfo = $request['customerInfo'];
+         $customerInfo = $request['customerInfo'];
         //find customer_id using email or phone no
-        $userId = $this->users
-        //->where('is_verified','1') 
-        ->where('email', $customerInfo['email'])
-        ->orWhere('phone', $customerInfo['phone']) 
-         ->get('id');
-         $userId = $userId[0];
-        // if( $existingCustomer == true){
-        //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
-        //     return $userId;
-        // //     $this->users->whereIn('id', $userId)->update($request['customerInfo']);
-        // }
-        // //create New Customer information
-        // else{
-        //     $newuserid = $this->users->create($request['customerInfo']);
-        //     //return  $newuserid;
-        // }
+        $existingCustomer = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->exists();
+        
+        if( $existingCustomer == true){
+            $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
+            $userId = $userId[0];
+        //     $this->users->whereIn('id', $userId)->update($request['customerInfo']);
+        }
+        //create New Customer information
+        else{
+            $newUserId = $this->users->create($request['customerInfo'])->get('id');
+            $userId = $newUserId[0];
+        }
    
-        if($userId){
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
         $bookStatus = $request['bookStatus'];
@@ -85,6 +82,7 @@ class BookTicketRepository
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->created_by = $bookingInfo['created_by'];
+
         $userId->booking()->save($booking);
            
         //$booking->save();
@@ -97,9 +95,6 @@ class BookTicketRepository
         }
         $booking->bookingDetail()->saveMany($bookingDetailModels);
         return $booking;
-        }
-        else{
-            return 'User not Registered';
-        } 
+       
     }
 }

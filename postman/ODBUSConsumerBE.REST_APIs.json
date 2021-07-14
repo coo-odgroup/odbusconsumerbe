@@ -73,7 +73,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n          \"seater\": [2,3],\r\n          \"sleeper\": [15,16]\r\n     }\r\n   \r\n",
+					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n          \"seater\": [5,6],\r\n          \"sleeper\": []\r\n     }\r\n   \r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -99,7 +99,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"\",\r\n    \"phone\": \"9916457575\"\r\n    },\r\n    \"seat_id\": [7,8],  \r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
+					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"swagatika.parida@gmail.com\",\r\n    \"phone\": \"9916457575\",\r\n    \"name\":\"swagatika\"\r\n    },\r\n    \"seat_id\": [7,8],  \r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -242,7 +242,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"receiver\":\"sahu.swagatika@gmail.com\",\r\n    \"subject\":\"Your OTP is \"\r\n}",
+					"raw": "{\r\n    \"receiver\":\"sahu.swagatika@gmail.com\",\r\n    \"message\":\"Your OTP is\",\r\n    \"name\":\"odbus\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -283,7 +283,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sender\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"contents\":\"booking\",\r\n    \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -393,7 +393,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Prince\",\r\n    \"email\":\"Prince@gmail.com\",\r\n    \"phone\":\"9916457455\",\r\n    \"password\":\"password11\",\r\n    \"created_by\":\"Admin\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"swagatika\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"phone\":\"9916457450\",\r\n    \"password\":\"password11\",\r\n    \"created_by\":\"Admin\",\r\n    \"message\":\"Your OTP is\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -471,7 +471,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"2\",\r\n    \"otp\":\"58092\"\r\n}",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"73652\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -592,6 +592,32 @@
 					],
 					"path": [
 						"RefreshToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_order_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Pay",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Pay"
 					]
 				}
 			},

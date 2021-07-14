@@ -249,7 +249,7 @@ class ListingRepository
                 })  
             ->get();
              //return $records;  
-            //$FilterRecords = array();
+            $FilterRecords = array();
             foreach($records as $record){
                 $busId = $record->id; 
                 $busName = $record->name;
