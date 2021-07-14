@@ -7,16 +7,23 @@ use App\Models\GatewayInformation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Jobs\SendEmailJob;
+use Razorpay\Api\Api;
+use App\Models\CustomerPayment;
+use App\Models\Booking;
 
 class ChannelRepository
 {
     protected $gatewayInformation;
     protected $users;
-   
-    public function __construct(GatewayInformation $gatewayInformation,Users $users)
+    protected $customerPayment;
+    protected $booking;
+
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
+        $this->customerPayment = $customerPayment;
+        $this->booking = $booking;
     } 
     
     public function storeGWInfo($data) {
@@ -224,35 +231,35 @@ class ChannelRepository
 
       public function makePayment(Request $request)
     {   
-        // $payment = new CustomerPayment;
-        // $payment->sender = $request['sender'];
-        // $payment->amount = $request['amount'];
-        // $payment->contents = $request['contents'];
-        // $payment->acknowledgement = $request['acknowledgement'];
-        // try {
-        //     $payment->save();
-        //     return $this->successResponse($payment, Config::get('constants.RECORD_ADDED'), Response::HTTP_CREATED);
-        // }
-        // catch(Exception $e){
-        //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        // }	
+        $transationId = $request['transaction_id'];
+        $userId = ($this->booking->where('transaction_id', $transationId)->pluck('users_id'))[0];
+        //$userId = $userId[0];
+        //return $userId;
+        $name = ($this->users->where('id', $userId)->pluck('name'))[0];
+        //$name = $name[0];
+        //$name = $request['name'];
+        $amount = $request['amount'];
+        $receiptId = 'rcpt_'.$transationId;
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+       
+        // Creates payment booking
+        $orderId = $order['id']; 
+        $user_pay = new $this->customerPayment();
+    
+        $user_pay->name = $name;
+        $user_pay->amount = $amount;
+        $user_pay->payment_id = $orderId;
+        $user_pay->save();
 
-        $input = $request->all();        
-        $api = new CustomerPayment(env('RAZOR_KEY'), env('RAZOR_SECRET'));
-        $payment = $api->payment->fetch($input['razorpay_payment_id']);
+        $data = array(
+            'name' => $name,
+            'amount' => $amount,
+            'key' => env('RAZORPAY_KEY'),
+            'razorpay_order_id' => $orderId   
+        );
+       return $data;
 
-        if(count($input)  && !empty($input['razorpay_payment_id'])) 
-        {
-            try 
-            {
-                $response = $api->payment->fetch($input['razorpay_payment_id'])->capture(array('amount'=>$payment['amount'])); 
-            } 
-            catch (Exception $e) 
-            {
-                return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-            }            
-        }
-        return $this->successResponse($payment, Config::get('constants.PAYMENT_DONE'), Response::HTTP_CREATED);
     }
 
 }
