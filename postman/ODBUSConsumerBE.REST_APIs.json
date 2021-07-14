@@ -7,8 +7,11 @@
 	"item": [
 		{
 			"name": "Listing",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -62,12 +65,15 @@
 		},
 		{
 			"name": "getPriceOn seatsSelection",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n          \"seater\": [2,3],\r\n          \"sleeper\": [15,16]\r\n     }\r\n   \r\n",
+					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":1291,\r\n          \"destinationId\":1294,\r\n          \"seater\": [5,6],\r\n          \"sleeper\": []\r\n     }\r\n   \r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -93,7 +99,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"\",\r\n    \"phone\": \"9916457575\"\r\n    },\r\n    \"seat_id\": [5,6],  \r\n    \"bookStatus\":\"1\",\r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"j_day\": \"1\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
+					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"swagatika.parida@gmail.com\",\r\n    \"phone\": \"9916457575\",\r\n    \"name\":\"swagatika\"\r\n    },\r\n    \"seat_id\": [7,8],  \r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -130,11 +136,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/getLocation",
+					"raw": "https://consumer.neoflix.in/api/getLocation",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"getLocation"
 					]
 				}
@@ -143,8 +153,11 @@
 		},
 		{
 			"name": "Filter",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
@@ -229,7 +242,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sender\": \"swagatikasahu.seofied@gmail.com\",\r\n    \"receiver\":\"sahu.swagatika@gmail.com\",\r\n    \"contents\":\"testing\",\r\n    \"addContent\":\"ODBUS\",\r\n    \"channel_type\":\"1\",\r\n     \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"raw": "{\r\n    \"receiver\":\"sahu.swagatika@gmail.com\",\r\n    \"message\":\"Your OTP is\",\r\n    \"name\":\"odbus\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -270,7 +283,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sender\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"contents\":\"booking\",\r\n    \"acknowledgement\":\"true\"\r\n    \r\n}",
+					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -345,26 +358,21 @@
 					"formdata": [
 						{
 							"key": "phone",
-							"value": "",
-							"type": "text",
-							"disabled": true
+							"value": "9916457575",
+							"type": "text"
 						},
 						{
 							"key": "email",
 							"value": "Prince@gmail.com",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "password",
-							"value": "password11",
+							"value": "smayan",
 							"type": "text"
 						}
-					],
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					]
 				},
 				"url": {
 					"raw": "{{url}}/Login",
@@ -385,7 +393,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Amit\",\r\n    \"email\":\"Amit.def@gmail.com\",\r\n    \"phone\":\"9916457579\",\r\n    \"password\":\"password\",\r\n    \"created_by\":\"Admin\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"swagatika\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"phone\":\"9916457450\",\r\n    \"password\":\"password11\",\r\n    \"created_by\":\"Admin\",\r\n    \"message\":\"Your OTP is\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -463,7 +471,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"88861\"\r\n}",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"73652\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -516,7 +524,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL1JlZnJlc2hUb2tlbiIsImlhdCI6MTYyNTE2MjI5MSwiZXhwIjoxNjI1MTY1OTE2LCJuYmYiOjE2MjUxNjIzMTYsImp0aSI6ImJCWlI2TkxiaWZRaVNvUUIiLCJzdWIiOjIsInBydiI6ImY2NGQ0OGE2Y2VjN2JkZmE3ZmJmODk5NDU0YjQ4OGIzZTQ2MjUyMGEifQ.b59tCG4iHTkKHPQkCDOUYQ_eX9hQji2TzO_YpzUlTQo",
+							"value": "eyJ0eXAiOiJiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1Mjg0Mzk3LCJleHAiOjE2MjUyODc5OTcsIm5iZiI6MTYyNTI4NDM5NywianRpIjoiQXd2QjdsNEhQR1drdjFwZCIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.opOjAzfZP9mvmWplYkE66ZDRf-MGi7akEF3qy9vSjXs",
 							"type": "string"
 						}
 					]
@@ -543,7 +551,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MTYwMjIwLCJleHAiOjE2MjUxNjM4MjAsIm5iZiI6MTYyNTE2MDIyMCwianRpIjoiWGZoaW5vUjhYeTZqaDBRTiIsInN1YiI6MiwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.PBbwYDmmC9HaB1R0TEurvvznWPadGyAcl44s4bb1Xo8",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MjA1ODc0LCJleHAiOjE2MjUyMDk0NzQsIm5iZiI6MTYyNTIwNTg3NCwianRpIjoiTXpudjEzYnZBVmR3Z0Q1ayIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.8YLGwCIYLn764XR3f7fcaV1dHnWiibcMoOAYdhKQR5c",
 							"type": "string"
 						}
 					]
@@ -570,7 +578,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MTYyMjkxLCJleHAiOjE2MjUxNjU4OTEsIm5iZiI6MTYyNTE2MjI5MSwianRpIjoiUlZDNGdOMVJPYU43bWZ0RCIsInN1YiI6MiwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.OUvMFBNWlsdXruyrW9V8YYH_-Wk3U7oK0sKuVCVrVTw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MjA2NTY3LCJleHAiOjE2MjUyMTAxNjcsIm5iZiI6MTYyNTIwNjU2NywianRpIjoiT2d6Q2FsVnp2OUhXaGtCeSIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.uHxScSmI2qHSNdzDiZ0upjIaCYCXb0gHKvnyPVqz6BE",
 							"type": "string"
 						}
 					]
@@ -584,6 +592,32 @@
 					],
 					"path": [
 						"RefreshToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user payment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_order_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Pay",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Pay"
 					]
 				}
 			},

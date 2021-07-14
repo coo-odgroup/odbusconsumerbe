@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
-//use Ixudra\Curl\Facades\Curl;
+use App\Models\CustomerPayment;
+use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Log;
 
 class ChannelController extends Controller
@@ -34,9 +35,6 @@ class ChannelController extends Controller
     }
     public function sendSms(Request $request)
     {
-        // $data = $request->only([
-        //     'number','smsprovider','sender','receiver','contents','channel_type','acknowledgement'
-        //    ]);  
           try {
            $response = $this->channelService->sendSms($request); 
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
@@ -70,16 +68,74 @@ class ChannelController extends Controller
     
       public function makePayment(Request $request)
     {   
-        try {
-            $response = $this->channelService->makePayment($request); 
-             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
-         }
-         catch (Exception $e) {
-             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-           }  
-        
+        $name = $request['name'];
+        $amount = $request['amount'];
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $order = $api->order->create(array('receipt' => '123', 'amount' => $amount * 100 , 'currency' => 'INR')); 
+       
+        // Creates payment booking
+        $orderId = $order['id']; 
+        $user_pay = new CustomerPayment();
+    
+        $user_pay->name = $name;
+        $user_pay->amount = $amount;
+        $user_pay->payment_id = $orderId;
+        $user_pay->save();
+
+        $data = array(
+            'name' => $name,
+            'amount' => $amount,
+            'key' => env('RAZORPAY_KEY'),
+            'razorpay_order_id' => $orderId   
+        );
+       return $data;
     }
 
+       public function pay(Request $request){
+        $data = $request->all();
+        dd($data);
+        $user = CustomerPayment::where('payment_id', $data['razorpay_order_id'])->first();
+
+        $user->payment_done = true;
+        $user->razorpay_id = $data['razorpay_payment_id'];
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        
+        try{
+        $attributes = array(
+             'razorpay_signature' => $data['razorpay_signature'],
+             'razorpay_payment_id' => $data['razorpay_payment_id'],
+             'razorpay_order_id' => $data['razorpay_order_id']
+        );
+        $order = $api->utility->verifyPaymentSignature($attributes);
+        $success = true;
+        }catch(SignatureVerificationError $e){
+
+            $success = false;
+        }    
+        if($success){
+            $user->save();
+            return $user;
+        }else{
+
+            return 'error';
+        }
+
+    }
+
+
+
+
+
+        
+        // try {
+        //     $response = $this->channelService->makePayment($request); 
+        //      return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        //  }
+        //  catch (Exception $e) {
+        //      return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        //    }  
    
 
 

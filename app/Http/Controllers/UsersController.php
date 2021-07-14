@@ -260,17 +260,6 @@ class UsersController extends Controller
       }
     
 }
-
-  protected function createNewToken($token){
-     $loginUser = [  
-          'access_token' => $token,
-          'token_type' => 'bearer',
-          'expires_in' => auth()->factory()->getTTL() * 60,
-          'user' => auth()->user()   
-    ]; 
-    return $this->successResponse($loginUser,Config::get('constants.LOGIN'),Response::HTTP_OK);
-}
-
 /**
  * @OA\SecurityScheme(
  *     type="http",
@@ -291,6 +280,18 @@ class UsersController extends Controller
  *  security={{ "apiAuth": {} }}
  * )
  */
+
+  protected function createNewToken($token){
+     $loginUser = [  
+          'access_token' => $token,
+          'token_type' => 'bearer',
+          'expires_in' => auth()->factory()->getTTL() * 60,
+          'user' => auth()->user()   
+    ]; 
+    return $this->successResponse($loginUser,Config::get('constants.LOGIN'),Response::HTTP_OK);
+}
+
+
 public function userProfile() {
   $user = auth()->user();
   if(!is_null($user)) {

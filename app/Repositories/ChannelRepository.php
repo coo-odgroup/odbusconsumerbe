@@ -6,11 +6,13 @@ use App\Models\Users;
 use App\Models\GatewayInformation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use App\Jobs\SendEmailJob;
+
 class ChannelRepository
 {
     protected $gatewayInformation;
     protected $users;
-
+   
     public function __construct(GatewayInformation $gatewayInformation,Users $users)
     {
         $this->gatewayInformation = $gatewayInformation; 
@@ -203,26 +205,21 @@ class ChannelRepository
       }
 
 
-      public function sendEmail($data) {
+      public function sendEmail($request, $otp) {
+        
+        // $to = $request['receiver'];
+        // $name = $request['name'];
+        // $email_body = $request['message'];
 
-        $email = new \SendGrid\Mail\Mail();
-        $email->sender = $data['sender'];
-        $email->receiver = $data['receiver'];
-        $email->contents = $data['contents'];
-        $email->channel_type = $data['channel_type'];
-        $email->acknowledgement = $data['acknowledgement'];
+        $to = $request['email'];
+        $name = $request['name'];
+        $email_otp = $otp;
 
-        // $email->setFrom = $request['setFrom'];
-        // $email->setSubject = $request['setSubject'];
-        // $email->addTo = $request['addTo'];
-        // $email->addContent = $request['addContent'];
-        // $email->addContent(
-        //     "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
-       // );
-        $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
-        $email->save();
-        return $email;
-
+        //$email_otp = $request['otp'];
+        //$emailSubject = config('services.email.subject');
+        //return $emailSubject;
+        SendEmailJob::dispatch($to, $name, $email_otp);
+       
       }
 
       public function makePayment(Request $request)

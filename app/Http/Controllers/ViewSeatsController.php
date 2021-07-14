@@ -58,7 +58,7 @@ class ViewSeatsController extends Controller
         return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**
- * @OA\Post(
+ * @OA\Get(
  *     path="/api/PriceOnSeatsSelection",
  *     tags={"PriceOnSeatsSelection API"},
  *     description="get total price on seat selection",
@@ -91,7 +91,7 @@ class ViewSeatsController extends Controller
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="seater[]",
+ *          name="seater[string]",
  *          description="seater Ids",
  *          in="query",
  *          required=false,

@@ -36,6 +36,8 @@ class UsersRepository
         $user->otp = $otp;
         $user->save();
         //$sendsms = $this->channelRepository->sendSms($request,$otp);
+        $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+        //return $sendEmail;
         //return  $sendsms;
         return  $user;   
     }

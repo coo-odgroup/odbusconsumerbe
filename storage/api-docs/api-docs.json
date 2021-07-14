@@ -33,7 +33,7 @@
             }
         },
         "/api/Listing": {
-            "post": {
+            "get": {
                 "tags": [
                     "Listing API"
                 ],
@@ -77,7 +77,7 @@
             }
         },
         "/api/Filter": {
-            "post": {
+            "get": {
                 "tags": [
                     "Filter API"
                 ],
@@ -407,7 +407,7 @@
                     "JWT Auth"
                 ],
                 "summary": "Get user details",
-                "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
+                "operationId": "App\\Http\\Controllers\\UsersController::createNewToken",
                 "responses": {
                     "200": {
                         "description": "Authorized User details"
@@ -450,7 +450,7 @@
             }
         },
         "/api/PriceOnSeatsSelection": {
-            "post": {
+            "get": {
                 "tags": [
                     "PriceOnSeatsSelection API"
                 ],
@@ -486,7 +486,7 @@
                         }
                     },
                     {
-                        "name": "seater[]",
+                        "name": "seater[string]",
                         "in": "query",
                         "description": "seater Ids",
                         "required": false,

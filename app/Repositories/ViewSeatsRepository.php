@@ -68,14 +68,15 @@ class ViewSeatsRepository
     }
     
     public function getPriceOnSeatsSelection($request)
-    {
-        $seaterIds = $request['seater'];
-        $sleeperIds = $request['sleeper'];
+    { 
+        $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
+        $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
+        // $seaterIds = $request['seater'];
+        // $sleeperIds = $request['sleeper'];
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
-
-        $busWithTicketPrice =  $this->bus->with('ticketPrice')
+        $busWithTicketPrice = $this->bus->with('ticketPrice')
         ->whereHas('ticketPrice', function ($query) use ($busId,$sourceId, $destinationId){
             $query->where([
                 ['bus_id', $busId],
@@ -84,13 +85,19 @@ class ViewSeatsRepository
             ]);            
             })      
         ->get();
-      
-        //Priyadarshi::Bus and Bustoppage relationships?????
+        //Priyadarshi::Bus and TicketPrice relationships?????
         //Remove hard coding values.
+       $seaterPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare;
+       $sleeperPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare; 
        $totalPrice = count($seaterIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare+
        count($sleeperIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare;
        
-       return  $totalPrice;
+       $seatWithPriceRecords[] = array(
+        "seaterPrice" => $seaterPrice,
+        "sleeperPrice" => $sleeperPrice,
+        "totalPrice" => $totalPrice,
+        ); 
+        return $seatWithPriceRecords;
     }
 
     public function getBoardingDroppingPoints($request)
@@ -119,7 +126,7 @@ class ViewSeatsRepository
             {
                 $droppingArray[] = array(
                     "id" =>  $boardDropId,
-                    "droppoingPoints" => $boardingPoints,
+                    "droppingPoints" => $boardingPoints,
             );
             }
     }

@@ -67,7 +67,7 @@ class ListingController extends Controller
         return $this->successResponse($location,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**
- * @OA\Post(
+ * @OA\Get(
  *     path="/api/Listing",
  *     tags={"Listing API"},
  *     description="Listing",
@@ -121,7 +121,7 @@ class ListingController extends Controller
     }
 
 /**
- * @OA\Post(
+ * @OA\Get(
  *     path="/api/Filter",
  *     tags={"Filter API"},
  *     description="Filter",

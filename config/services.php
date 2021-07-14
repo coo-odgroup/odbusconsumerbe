@@ -30,6 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'email' => [
+        'subject' => env('EMAIL_SUBJECT'),
+    ],
+
     'sms' => [
         'otpservice' => env('OTP_SERVICE','textLocal'),
         'otp_service_enabled' => true,
