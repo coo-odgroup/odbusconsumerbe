@@ -232,17 +232,15 @@ class ChannelRepository
       public function makePayment(Request $request)
     {   
         $transationId = $request['transaction_id'];
-        $userId = ($this->booking->where('transaction_id', $transationId)->pluck('users_id'))[0];
-        //$userId = $userId[0];
-        //return $userId;
-        $name = ($this->users->where('id', $userId)->pluck('name'))[0];
-        //$name = $name[0];
-        //$name = $request['name'];
+        $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
+        foreach($records as $record){
+            $name = $record->users->name;
+        }
         $amount = $request['amount'];
         $receiptId = 'rcpt_'.$transationId;
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
         $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
-       
+
         // Creates payment booking
         $orderId = $order['id']; 
         $user_pay = new $this->customerPayment();
@@ -259,7 +257,7 @@ class ChannelRepository
             'razorpay_order_id' => $orderId   
         );
        return $data;
-
     }
+    
 
 }
