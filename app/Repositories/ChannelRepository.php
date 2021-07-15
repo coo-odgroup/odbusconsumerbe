@@ -247,7 +247,7 @@ class ChannelRepository
     
         $user_pay->name = $name;
         $user_pay->amount = $amount;
-        $user_pay->payment_id = $orderId;
+        $user_pay->order_id = $orderId;
         $user_pay->save();
 
         $data = array(

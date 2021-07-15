@@ -11,6 +11,7 @@ return [
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
     'ALL_RECORDS'=>10000,
     'PAYMENT_DONE' => 'Payment successfully done',
+    'PAYMENT_FAILED' => 'Payment Failure',
     'REGISTERED' => 'Registered Successfully',
     'LOGIN' => 'Login Successful',
     'OTP_GEN' => 'OTP generated',

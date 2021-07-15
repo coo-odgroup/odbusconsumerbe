@@ -25,7 +25,7 @@ Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
-Route::get('/Pay', [ChannelController::class, 'pay']);
+Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']);
