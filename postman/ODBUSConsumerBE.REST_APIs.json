@@ -23,11 +23,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/Listing",
+					"raw": "https://consumer.neoflix.in/api/Listing",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"Listing"
 					]
 				}
@@ -81,11 +85,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/PriceOnSeatsSelection",
+					"raw": "https://consumer.neoflix.in/api/PriceOnSeatsSelection",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"PriceOnSeatsSelection"
 					]
 				}
@@ -99,7 +107,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"customerInfo\":{\r\n    \"email\": \"swagatika.parida@gmail.com\",\r\n    \"phone\": \"9916457575\",\r\n    \"name\":\"swagatika\"\r\n    },\r\n    \"seat_id\": [7,8],  \r\n    \"bookingInfo\": {\r\n    \"bus_id\": \"1\",\r\n    \"source_id\": \"1291\",\r\n    \"destination_id\": \"1294\",\r\n    \"journey_dt\": \"2021-05-25\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"dropping_point\": \"Sambalpur Town\",\r\n    \"boarding_time\": \"22:00\",\r\n    \"dropping_time\": \"07:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"WEB\",\r\n    \"typ_id\": \"1\",\r\n    \"created_by\": \"Admin\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"seat_no\": \"1\",\r\n        \"passenger_name\": \"Amit\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"30\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      },\r\n      {\r\n        \"seat_no\": \"2\",\r\n        \"passenger_name\": \"sandy\",\r\n        \"passenger_gender\": \"M\",\r\n        \"passenger_age\": \"10\",\r\n        \"total_fare\":\"400\",\r\n        \"owner_fare\":\"100\",\r\n        \"created_by\": \"Admin\"\r\n      }\r\n    ]\r\n  }\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"sahu.swagatika@gmail.com\",\r\n\t\t\"phone\": \"\",\r\n\t\t\"name\": \"swagatika\"\r\n\t},\r\n\t\"seat_id\": [\"10\", \"15\"],\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"1291\",\r\n\t\t\"destination_id\": \"1294\",\r\n\t\t\"journey_dt\": \"2021-07-16\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"Hirakud\",\r\n\t\t\"boarding_time\": \"21:00\",\r\n\t\t\"dropping_time\": \"06:30\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"seat_no\": \"10\",\r\n\t\t\t\t\"passenger_name\": \"lima\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\",\r\n\t\t\t\t\"total_fare\": 350,\r\n\t\t\t\t\"owner_fare\": 0,\r\n\t\t\t\t\"created_by\": \"Customer\"\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"seat_no\": \"15\",\r\n\t\t\t\t\"passenger_name\": \"lima\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\",\r\n\t\t\t\t\"total_fare\": 350,\r\n\t\t\t\t\"owner_fare\": 0,\r\n\t\t\t\t\"created_by\": \"Customer\"\r\n\t\t\t}\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -169,11 +177,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/Filter",
+					"raw": "https://consumer.neoflix.in/api/Filter",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"Filter"
 					]
 				}
@@ -283,7 +295,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
+					"raw": "{\r\n    \"transaction_id\": \"2021071412132969639\",\r\n    \"amount\":\"800\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -337,11 +349,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/FilterOptions",
+					"raw": "https://consumer.neoflix.in/api/FilterOptions",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"FilterOptions"
 					]
 				}
@@ -359,17 +375,17 @@
 						{
 							"key": "phone",
 							"value": "9916457575",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "Prince@gmail.com",
 							"type": "text",
 							"disabled": true
 						},
 						{
+							"key": "email",
+							"value": "sahu.swagatika@gmail.com",
+							"type": "text"
+						},
+						{
 							"key": "password",
-							"value": "smayan",
+							"value": "password11",
 							"type": "text"
 						}
 					]
@@ -393,7 +409,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"swagatika\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"phone\":\"9916457450\",\r\n    \"password\":\"password11\",\r\n    \"created_by\":\"Admin\",\r\n    \"message\":\"Your OTP is\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"swagatika\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"phone\":\"9916457575\",\r\n    \"password\":\"password11\",\r\n    \"created_by\":\"Admin\",\r\n    \"message\":\"Your OTP is\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -471,7 +487,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"73652\"\r\n}",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"70520\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -598,13 +614,13 @@
 			"response": []
 		},
 		{
-			"name": "user payment",
+			"name": "Payment Status",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"swagatika\",\r\n    \"amount\":\"1000\",\r\n    \"payment_id\":\"\",\r\n    \"razorpay_order_id\":\"\",\r\n    \"payment_done\":\"\"\r\n    \r\n}",
+					"raw": "{\r\n    \"transaction_id\": \"2021071412132969639\",\r\n    \"name\":\"Swagatika\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"razorpay_order_id\":\"order_HYnmFzO1W4mj8P\",\r\n    \"razorpay_payment_id\": \"pay_HYnmWNISavDZN8\",\r\n    \"razorpay_signature\": \"d94a898e130f431394466bd3a06ffc5f2a0471a0d4923b0b190b5576d52b6d95\",\r\n    \"bookingdate\":\"02-05-2021\",\r\n    \"journeydate\":\"08-05-2021\",\r\n    \"boarding_point\":\"Bermunda\",\r\n    \"departureTime\":\"21:00\",\r\n    \"dropping_point\":\"Hirakud\",\r\n    \"arrivalTime\":\"06:30\",\r\n    \"seat_id\":[10,15],\r\n    \"busname\":\"Jagakalia\",\r\n    \"busNumber\":\"OD B 8657\",\r\n    \"bustype\":\"NON AC\",\r\n    \"busTypeName\":\"DELUX\",\r\n    \"sittingType\":\"2+2\",\r\n    \"conductor_number\":\"9876236789\",\r\n    \"passengerDetails\": [\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima1\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"22\"\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima2\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\"\r\n\r\n\t\t\t}\r\n\t   ],\r\n    \"totalfare\":\"850\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -612,12 +628,38 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/Pay",
+					"raw": "{{url}}/PaymentStatus",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"Pay"
+						"PaymentStatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "email ticket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"sssss\",\r\n    \"bookingdate\":\"02-05-2021\",\r\n    \"journeydate\":\"08-05-2021\",\r\n    \"boarding_point\":\"Bermunda\",\r\n    \"departureTime\":\"21:00\",\r\n    \"dropping_point\":\"Hirakud\",\r\n    \"arrivalTime\":\"06:30\",\r\n    \"seat_id\":[10,15],\r\n    \"busname\":\"Jagakalia\",\r\n    \"busNumber\":\"OD B 8657\",\r\n    \"bustype\":\"NON AC\",\r\n    \"busTypeName\":\"DELUX\",\r\n    \"sittingType\":\"2+2\",\r\n    \"conductorphone\":\"1212121212\",\r\n    \"passengerDetails\": [\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima1\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"22\"\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima2\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\"\r\n\r\n\t\t\t}\r\n\t   ],\r\n    \"totalfare\":\"850\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/SendEmailTicket",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"SendEmailTicket"
 					]
 				}
 			},

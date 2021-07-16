@@ -32,6 +32,7 @@ return [
 
     'email' => [
         'subject' => env('EMAIL_SUBJECT'),
+        'subjectTicket' => env('EMAIL_TICKET_SUBJECT')
     ],
 
     'sms' => [

@@ -61,7 +61,18 @@ class ChannelService
         }
         return $sendEmail;
     }   
+    
+    public function sendEmailTicket($data)
+    {
+        try {
+            $sendEmail = $this->channelRepository->sendEmailTicket($data);
 
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $sendEmail;
+    }   
     public function makePayment($data)
     {
         try {
@@ -72,6 +83,18 @@ class ChannelService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $payment;
+    }  
+    
+    public function pay($data)
+    {
+        try {
+            $paymentStatus = $this->channelRepository->pay($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $paymentStatus;
     }   
    
 }

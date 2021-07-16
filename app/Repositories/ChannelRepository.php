@@ -7,9 +7,12 @@ use App\Models\GatewayInformation;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Jobs\SendEmailJob;
+use App\Jobs\SendEmailTicketJob;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
 use App\Models\Booking;
+Use hash_hmac;
+use Razorpay\Api\Errors\SignatureVerificationError;
 
 class ChannelRepository
 {
@@ -229,6 +232,18 @@ class ChannelRepository
        
       }
 
+   
+      public function sendEmailTicket($request, $pnr) {
+        $email_pnr = $pnr;
+        // $data = $request->only([
+        //     'name','email','bookingdate','journeydate', 'boarding_point','dropping_point',
+        //     'departureTime','arrivalTime','seat_id','busname','busNumber','bustype',
+        //     'busTypeName','sittingType','conductor_number','totalfare','passengerDetails' ]); 
+        $data =  $request->all();
+        SendEmailTicketJob::dispatch($data, $email_pnr);
+       
+      }
+
       public function makePayment(Request $request)
     {   
         $transationId = $request['transaction_id'];
@@ -258,6 +273,31 @@ class ChannelRepository
         );
        return $data;
     }
-    
+    public function pay($request)
+    {   
+        $data = $request->all();
+        $customerId = $this->customerPayment->where('order_id', $data['razorpay_order_id'])->pluck('id');
+        $customerId = $customerId[0];
+
+        $razorpay_signature = $data['razorpay_signature'];
+        $razorpay_payment_id = $data['razorpay_payment_id'];
+        $razorpay_order_id = $data['razorpay_order_id'];
+        $transationId = $data['transaction_id'];
+        $pnr = $this->booking->where('transaction_id', $transationId)->pluck('pnr')[0];
+
+        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, env('RAZORPAY_SECRET'));
+
+        if ($generated_signature == $data['razorpay_signature']) {
+            
+            $this->customerPayment->where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
+            $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
+            $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
+            return "Payment Done"; 
+        }
+        else{
+            return "Payment Failed  "; 
+            }
+        
+    }
 
 }

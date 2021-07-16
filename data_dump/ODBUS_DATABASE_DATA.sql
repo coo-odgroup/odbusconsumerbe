@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 14, 2021 at 04:13 AM
+-- Generation Time: Jul 16, 2021 at 04:37 AM
 -- Server version: 8.0.21
 -- PHP Version: 7.4.11
 
@@ -156,8 +156,11 @@ CREATE TABLE `booking` (
 --
 
 INSERT INTO `booking` (`id`, `transaction_id`, `pnr`, `users_id`, `bus_id`, `source_id`, `destination_id`, `j_day`, `journey_dt`, `boarding_point`, `dropping_point`, `boarding_time`, `dropping_time`, `origin`, `app_type`, `typ_id`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, '20210712092206513173', 'OD85619072', 1, 1, 1291, 1294, 2, '2021-05-25', 'Rasulgarh', 'Sambalpur Town', '22:00', '07:00', 'ODBUS', 'WEB', '1', '2021-07-12 09:22:06', '2021-07-12 09:22:06', 'Admin', 1),
-(2, '20210714040707622582', 'OD16987520', 1, 1, 1291, 1294, 2, '2021-05-25', 'Rasulgarh', 'Sambalpur Town', '22:00', '07:00', 'ODBUS', 'WEB', '1', '2021-07-14 04:07:07', '2021-07-14 04:07:07', 'Admin', 1);
+(1, '20210714105720148312', 'OD71284605', 1, 1, 1291, 1294, 2, '2021-05-25', 'Rasulgarh', 'Sambalpur Town', '22:00', '07:00', 'ODBUS', 'WEB', '1', '2021-07-14 10:57:20', '2021-07-14 10:57:20', 'Admin', 1),
+(2, '20210714105811816267', 'OD41968253', 1, 1, 1291, 1294, 2, '2021-05-25', 'Rasulgarh', 'Sambalpur Town', '22:00', '07:00', 'ODBUS', 'WEB', '1', '2021-07-14 10:58:11', '2021-07-14 10:58:11', 'Admin', 1),
+(3, '20210714110305516066', 'OD83259704', 1, 1, 1291, 1294, 2, '2021-07-16', 'Bermunda', 'Hirakud', '21:00', '06:30', 'ODBUS', 'WEB', '1', '2021-07-14 11:03:05', '2021-07-14 11:03:05', 'Customer', 1),
+(4, '2021071412132969639', 'OD50147829', 1, 1, 1291, 1294, 2, '2021-07-16', 'Bermunda', 'Hirakud', '21:00', '06:30', 'ODBUS', 'WEB', '1', '2021-07-14 12:13:29', '2021-07-14 12:13:29', 'Customer', 1),
+(5, '20210715094125794581', 'OD30517289', 1, 1, 1291, 1294, 2, '2021-07-16', 'Bermunda', 'Hirakud', '21:00', '06:30', 'ODBUS', 'WEB', '1', '2021-07-15 09:41:25', '2021-07-15 09:41:25', 'Customer', 1);
 
 -- --------------------------------------------------------
 
@@ -185,10 +188,16 @@ CREATE TABLE `booking_detail` (
 --
 
 INSERT INTO `booking_detail` (`id`, `booking_id`, `seat_no`, `passenger_name`, `passenger_gender`, `passenger_age`, `total_fare`, `owner_fare`, `created_at`, `updated_at`, `created_by`, `status`) VALUES
-(1, 1, '1', 'Amit', 'M', '30', 400, 100, '2021-07-12 09:22:06', '2021-07-12 09:22:06', 'Admin', 1),
-(2, 1, '2', 'sandy', 'M', '10', 400, 100, '2021-07-12 09:22:06', '2021-07-12 09:22:06', 'Admin', 1),
-(3, 2, '1', 'Amit', 'M', '30', 400, 100, '2021-07-14 04:07:07', '2021-07-14 04:07:07', 'Admin', 1),
-(4, 2, '2', 'sandy', 'M', '10', 400, 100, '2021-07-14 04:07:07', '2021-07-14 04:07:07', 'Admin', 1);
+(1, 1, '1', 'Amit', 'M', '30', 400, 100, '2021-07-14 10:57:20', '2021-07-14 10:57:20', 'Admin', 1),
+(2, 1, '2', 'sandy', 'M', '10', 400, 100, '2021-07-14 10:57:20', '2021-07-14 10:57:20', 'Admin', 1),
+(3, 2, '1', 'Amit', 'M', '30', 400, 100, '2021-07-14 10:58:11', '2021-07-14 10:58:11', 'Admin', 1),
+(4, 2, '2', 'sandy', 'M', '10', 400, 100, '2021-07-14 10:58:11', '2021-07-14 10:58:11', 'Admin', 1),
+(5, 3, '10', 'lima', 'F', '28', 350, 0, '2021-07-14 11:03:05', '2021-07-14 11:03:05', 'Customer', 1),
+(6, 3, '15', 'lima', 'F', '28', 350, 0, '2021-07-14 11:03:05', '2021-07-14 11:03:05', 'Customer', 1),
+(7, 4, '10', 'lima', 'F', '28', 350, 0, '2021-07-14 12:13:29', '2021-07-14 12:13:29', 'Customer', 1),
+(8, 4, '15', 'lima', 'F', '28', 350, 0, '2021-07-14 12:13:29', '2021-07-14 12:13:29', 'Customer', 1),
+(9, 5, '10', 'lima', 'F', '28', 350, 0, '2021-07-15 09:41:25', '2021-07-15 09:41:25', 'Customer', 1),
+(10, 5, '15', 'lima', 'F', '28', 350, 0, '2021-07-15 09:41:25', '2021-07-15 09:41:25', 'Customer', 1);
 
 -- --------------------------------------------------------
 
@@ -703,15 +712,15 @@ INSERT INTO `bus_seats` (`id`, `bus_id`, `ticket_price_id`, `seats_id`, `categor
 (4, 1, 1, 39, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-06-22 18:50:53', 'Admin', 0),
 (5, 1, 1, 40, 0, 1, '0', 0.00, '2021-06-11 15:23:52', '2021-07-06 10:52:25', 'Admin', 0),
 (6, 1, 1, 42, 0, 1, '0', 0.00, '2021-06-11 15:23:53', '2021-07-06 10:52:25', 'Admin', 0),
-(7, 1, 1, 43, 0, 1, '0', 0.00, '2021-06-11 15:23:53', '2021-07-14 04:07:07', 'Admin', 0),
-(8, 1, 1, 45, 0, 1, '0', 0.00, '2021-06-11 15:23:54', '2021-07-14 04:07:07', 'Admin', 0),
+(7, 1, 1, 43, 0, 1, '0', 0.00, '2021-06-11 15:23:53', '2021-07-14 10:58:11', 'Admin', 0),
+(8, 1, 1, 45, 0, 1, '0', 0.00, '2021-06-11 15:23:54', '2021-07-14 10:58:11', 'Admin', 0),
 (9, 1, 1, 46, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
-(10, 1, 1, 48, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
+(10, 1, 1, 48, 0, 1, '0', 0.00, '2021-06-11 15:23:54', '2021-07-15 09:41:25', 'Admin', 0),
 (11, 1, 1, 49, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
 (12, 1, 1, 54, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
 (13, 1, 1, 56, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
 (14, 1, 1, 57, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
-(15, 1, 1, 60, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
+(15, 1, 1, 60, 0, 1, '0', 0.00, '2021-06-11 15:23:54', '2021-07-15 09:41:25', 'Admin', 0),
 (16, 1, 1, 61, 0, 0, '0', 0.00, '2021-06-11 15:23:54', '2021-06-11 15:23:54', 'Admin', 0),
 (17, 2, 2, 1, 0, 0, '0', 0.00, '2021-06-11 15:38:37', '2021-06-11 15:38:37', 'Admin', 0),
 (18, 2, 2, 5, 0, 0, '0', 0.00, '2021-06-11 15:38:37', '2021-06-11 15:38:37', 'Admin', 0),
@@ -1109,10 +1118,10 @@ CREATE TABLE `coupon_assigned_bus` (
 CREATE TABLE `customer_payment` (
   `id` int UNSIGNED NOT NULL,
   `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `amount` int NOT NULL,
-  `payment_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` double NOT NULL,
+  `order_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `razorpay_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_done` tinyint(1) DEFAULT NULL,
+  `payment_done` int DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1121,11 +1130,8 @@ CREATE TABLE `customer_payment` (
 -- Dumping data for table `customer_payment`
 --
 
-INSERT INTO `customer_payment` (`id`, `name`, `amount`, `payment_id`, `razorpay_id`, `payment_done`, `created_at`, `updated_at`) VALUES
-(1, 'swagatika', 1000, 'order_HYNcXj3vAFKJOR', NULL, NULL, '2021-07-13 10:20:20', '2021-07-13 10:20:20'),
-(2, 'swagatika', 1000, 'order_HYXACyIDcJgEis', NULL, NULL, '2021-07-13 19:40:27', '2021-07-13 19:40:27'),
-(3, 'swagatika', 1000, 'order_HYXAmiV8Ln0Z5r', NULL, NULL, '2021-07-13 19:41:00', '2021-07-13 19:41:00'),
-(4, 'swagatika', 1000, 'order_HYXCvlrCiki463', NULL, NULL, '2021-07-13 19:43:02', '2021-07-13 19:43:02');
+INSERT INTO `customer_payment` (`id`, `name`, `amount`, `order_id`, `razorpay_id`, `payment_done`, `created_at`, `updated_at`) VALUES
+(1, 'lima Mohanty', 800, 'order_HYnmFzO1W4mj8P', 'pay_HYnmWNISavDZN8', 1, '2021-07-14 12:15:38', '2021-07-16 04:27:02');
 
 -- --------------------------------------------------------
 
@@ -2390,10 +2396,10 @@ INSERT INTO `user` (`id`, `user_pin`, `first_name`, `middle_name`, `last_name`, 
 CREATE TABLE `users` (
   `id` int NOT NULL,
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `email` varchar(120) NOT NULL,
-  `phone` varchar(40) NOT NULL,
+  `email` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `phone` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `otp` int DEFAULT NULL,
+  `otp` varchar(50) DEFAULT NULL,
   `is_verified` int NOT NULL DEFAULT '0',
   `msg_id` varchar(50) DEFAULT NULL,
   `created_at` datetime NOT NULL,
@@ -2406,8 +2412,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `password`, `otp`, `is_verified`, `msg_id`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 'swagatika', 'sahu.swagatika@gmail.com', '9916457450', '$2y$10$RSWhBFwrIbiGmtVPs4ePq.l9R9TRkJ7WUT1zRizxxqogpjZwXrOoq', 73659, 1, NULL, '2021-07-12 10:56:30', '2021-07-12 10:57:12', 'Admin'),
-(2, 'swagatika', 'swagatika.parida@gmail.com', '9916457575', NULL, NULL, 0, NULL, '2021-07-14 04:07:07', '2021-07-14 04:07:07', NULL);
+(1, 'swagatika', 'sahu.swagatika@gmail.com', '9916457575', '$2y$10$TJCT89bE0LfPNVTD9DKrHuomjkCv65IkCZg/UnDtCkay4xipIy5hG', '38201', 0, NULL, '2021-07-15 16:50:20', '2021-07-15 16:50:20', 'Admin');
 
 -- --------------------------------------------------------
 
@@ -2896,13 +2901,13 @@ ALTER TABLE `boarding_droping`
 -- AUTO_INCREMENT for table `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `booking_detail`
 --
 ALTER TABLE `booking_detail`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `bus`
@@ -3076,7 +3081,7 @@ ALTER TABLE `coupon_assigned_bus`
 -- AUTO_INCREMENT for table `customer_payment`
 --
 ALTER TABLE `customer_payment`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customer_query`
@@ -3226,7 +3231,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user_bank_details`

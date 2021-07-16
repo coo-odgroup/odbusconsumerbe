@@ -39,7 +39,6 @@ class BookTicketRepository
          $customerInfo = $request['customerInfo'];
         //find customer_id using email or phone no
         $existingCustomer = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->exists();
-        
         if( $existingCustomer == true){
             $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
             $userId = $userId[0];
@@ -94,6 +93,7 @@ class BookTicketRepository
         $bookingDetailModels[] = new BookingDetail($bDetail);
         }
         $booking->bookingDetail()->saveMany($bookingDetailModels);
+        //$sendEmailTicket = $this->channelRepository->sendEmailTicket($request,$pnr);
         return $booking;
        
     }

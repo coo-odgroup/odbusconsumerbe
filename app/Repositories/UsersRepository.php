@@ -99,9 +99,9 @@ class UsersRepository
     }
 
     public function login($request){
-        $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
-        ->first();
-            return $user;
+        // $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
+        // ->first();
+        //     return $user;
     }
 }
  

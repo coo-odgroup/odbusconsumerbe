@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-//require('razorpay-php/Razorpay.php');
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -11,20 +10,19 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
-use App\Models\CustomerPayment;
-Use hash_hmac;
 use App\Models\Users;
-use Razorpay\Api\Api;
-use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\ChannelRepository;
 
 class ChannelController extends Controller
 {
     use ApiResponser;
     protected $channelService;
-    public function __construct(ChannelService $channelService)
+    protected $channelRepository;
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository)
         {
-            $this->channelService = $channelService; 
+            $this->channelService = $channelService;
+            $this->channelRepository = $channelRepository;  
         }
 
     public function storeGWInfo(Request $request)
@@ -69,6 +67,17 @@ class ChannelController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
            }   
     }
+
+    public function sendEmailTicket(Request $request)
+    {
+        try {
+            $response = $this->channelService->sendEmailTicket($request); 
+             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }   
+    }
     
       public function makePayment(Request $request)
     {   
@@ -81,28 +90,18 @@ class ChannelController extends Controller
            }  
     }
 
-       public function pay(Request $request){
-        $data = $request->all();
-        $customerId = CustomerPayment::where('order_id', $data['razorpay_order_id'])->pluck('id');
-        $customerId = $customerId[0];
+    public function pay(Request $request){
         try{
-        $razorpay_signature = $data['razorpay_signature'];
-        $razorpay_payment_id = $data['razorpay_payment_id'];
-        $razorpay_order_id = $data['razorpay_order_id'];
+            $response = $this->channelService->pay($request); 
+            If($response == 'Payment Done'){
+                return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
+            }
+            else{
+                    return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
 
-        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, env('RAZORPAY_SECRET'));
-
-        if ($generated_signature == $data['razorpay_signature']) {
-            
-            CustomerPayment::where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
-            CustomerPayment::where('id', $customerId)->update(array('payment_done' => '1'));
-            return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
-        }
-        else{
-            return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
             }
         
-        }
+         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
