@@ -44,6 +44,10 @@ class Bus extends Model
     {        
         return $this->hasOne(BusCancelled::class);        
     } 
+    public function busContacts()
+    {        
+        return $this->hasOne(BusContacts::class);        
+    } 
     public function ticketPrice()
     {        
         return $this->hasMany(TicketPrice::class);        

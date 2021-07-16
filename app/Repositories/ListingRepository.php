@@ -15,6 +15,7 @@ use App\Models\BusSeats;
 use App\Models\Seats;
 use App\Models\CancellationSlab;
 use App\Models\CancellationSlabInfo;
+use App\Models\BusContacts;
 
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -74,8 +75,7 @@ class ListingRepository
         $destinationID =  $this->location->where("name", $destination)->first()->id;      
     
         $records = $this->bus
-        //->with('cancelationSlab')->get();
-        //return $records;
+        ->with('busContacts')
         ->with('busOperator')->with('ticketPrice')
         ->with('busAmenities.amenities')
         ->with('busSafety.safety')
@@ -101,6 +101,7 @@ class ListingRepository
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
             $via = $record->via;
+            $conductor_number = $record->busContacts->phone;
             $operatorId = $record->busOperator->id;
             $operatorName = $record->busOperator->operator_name;
             $sittingType = $record->BusSitting->name;
@@ -144,7 +145,8 @@ class ListingRepository
                 "busId" => $busId, 
                 "busName" => $busName,
                 "popularity" => $popularity,
-                "busNumber" => $busNumber, 
+                "busNumber" => $busNumber,
+                "conductor_number" => $conductor_number,
                 "operatorId" => $operatorId,
                 "operatorName" => $operatorName,
                 "sittingType" => $sittingType,
@@ -256,6 +258,7 @@ class ListingRepository
                 $popularity = $record->popularity;
                 $busNumber = $record->bus_number;
                 $via = $record->via;
+                $conductor_number = $record->busContacts->phone;
                 $operatorId = $record->busOperator->id;
                 $operatorName = $record->busOperator->operator_name;
                 $sittingType = $record->BusSitting->name;
@@ -302,6 +305,7 @@ class ListingRepository
                     "busName" => $busName,
                     "popularity" => $popularity,
                     "busNumber" => $busNumber, 
+                    "conductor_number" => $conductor_number,
                     "operatorId" => $operatorId,
                     "operatorName" => $operatorName,
                     "sittingType" => $sittingType,
