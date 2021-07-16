@@ -169,7 +169,7 @@
                                 <td>
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                         <tr style="border-bottom: solid 1px #fff;">
-                                            <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Thanks for choosing ODBUS, <strong>Bikram Keshari Mohanty</strong><br><br>
+                                            <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Thanks for choosing ODBUS, <strong>{{$name}}</strong><br><br>
                                             <strong  style="vertical-align: top">Booking Date:</strong> 
                                             <span style="vertical-align: top">{{$bookingdate}}	 </span><br>        <br>     
                                             <strong  style="vertical-align: top">Journey Date:</strong>     
