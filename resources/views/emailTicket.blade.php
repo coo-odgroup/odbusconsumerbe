@@ -315,8 +315,8 @@
                                                                             <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                                                 <tr style="border-bottom: solid 1px #fff;">
                                                                                      <td align="left" style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">
-                                                                                        <strong style="vertical-align: top;"> Traveller {{$loop->index}} {{$seat_id[$loop->index]}}: </strong>
-                                                                                        {{$passenger['passenger_name']}} {{$passenger['passenger_gender']}} {{$passenger['passenger_age']}}                                                         </td>                                                        
+                                                                                        <strong style="vertical-align: top;"> Traveller {{$loop->iteration}} {{$seat_id[$loop->index]}}: </strong>
+                                                                                        {{$passenger['passenger_name']}} {{$passenger['passenger_gender']}}({{$passenger['passenger_age']}})                                                        </td>                                                        
                                                                                 </tr>
                                                                             </table>
                                                                         </td>
