@@ -50,6 +50,10 @@ return [
             'url' => env('TEXT_LOCAL_SMS_URL'),
             'url_msg' => env('TEXT_LOCAL_MESSAGE_URL'),
         ]
-    ]
+    ],
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET')
+    ],
 
 ];

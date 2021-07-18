@@ -253,7 +253,9 @@ class ChannelRepository
         }
         $amount = $request['amount'];
         $receiptId = 'rcpt_'.$transationId;
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        $key = config('services.razorpay.key');
+        $secretKey = config('services.razorpay.secret');
+        $api = new Api($key, $secretKey);
         $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
 
         // Creates payment booking
