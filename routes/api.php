@@ -29,6 +29,7 @@ Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']);
+Route::post('/VerifyOtpLogin', [UsersController::class, 'verifyOtpLogin']);
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 Route::post('/Logout', [UsersController::class, 'logout']);
 Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);

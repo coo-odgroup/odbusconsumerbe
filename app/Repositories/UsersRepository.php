@@ -26,11 +26,14 @@ class UsersRepository
     public function Register($request)
     {
         $user = new $this->users;
+        if($request['phone']){
+            $user->phone = $request['phone'];  
+        } 
+        elseif($request['email']){
+            $user->email = $request['email']; 
+        }
         $user->name= $request['name'];
-        $user->email= $request['email'];
-        $user->phone= $request['phone'];
-        $user->password= bcrypt($request['password']);
-        //$user->password= Hash::make($request['password']);
+        $user->password= bcrypt('odbus123');
         $user->created_by= $request['created_by'];
         $otp = rand(10000, 99999);
         $user->otp = $otp;
@@ -47,13 +50,17 @@ class UsersRepository
         $userId = $request['userId'];
         $existingOtp = $this->users->where('id', $userId)->get('otp');
         $existingOtp = $existingOtp[0]['otp'];
-        if($existingOtp == $rcvOtp){
+        if(($rcvOtp=="")){
+        return "Null";
+        }
+        elseif($existingOtp == $rcvOtp){
         $this->users->where('id', $userId)->update(array('is_verified' => '1'));
+        $this->users->where('id', $userId)->update(array('otp' => Null));
         $user = $this->users->where('id', $userId)->get();
-        return $user;
+        return "reg done"; 
         }
         else{
-            return 'otp does not match';
+            return 'Invalid OTP';
         }
     }
 
@@ -99,9 +106,29 @@ class UsersRepository
     }
 
     public function login($request){
-        // $user = $this->users->where('email',$request['email'])->orWhere('phone',$request['phone'])->where('password',$request['password'])
-        // ->first();
-        //     return $user;
+
+      $otp = rand(10000, 99999);
+      $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
+      //$sendsms = $this->channelRepository->sendSms($request,$otp);
+      $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+    }
+
+    public function verifyOtpLogin($request){
+
+        $rcvOtp = trim($request['otp']);
+        $userId = $request['userId'];
+        $existingOtp = $this->users->where('id', $userId)->get('otp');
+        $existingOtp = $existingOtp[0]['otp'];
+        if(($rcvOtp=="")){
+        return "Null";
+        }
+        elseif($existingOtp == $rcvOtp){
+        $this->users->where('id', $userId)->update(array('otp' => Null));
+        return "Login done"; 
+        }
+        else{
+            return 'Invalid OTP';
+        }
     }
 }
  

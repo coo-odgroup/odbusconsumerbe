@@ -47,5 +47,10 @@ class UsersService
         $user = $this->usersRepository->login($request);
         return $user;
     }
+    public function verifyOtpLogin($data)
+    {   
+        $user = $this->usersRepository->verifyOtpLogin($data);
+        return $user;
+    }
     
 }

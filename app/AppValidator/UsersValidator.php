@@ -10,10 +10,9 @@ class UsersValidator
     public function validate($data) { 
         
         $rules = [
-            'name' => 'required|max:50',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|numeric|digits:10|unique:users',
-            'password' => 'required|alpha_num|min:5',
+             'name' => 'required|max:50',
+            'email' => 'required_without:phone',
+            'phone' => 'required_without:email',
             'created_by' => 'required',
         ];      
       

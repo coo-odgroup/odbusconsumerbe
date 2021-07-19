@@ -98,9 +98,7 @@ class ChannelController extends Controller
             }
             else{
                     return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
-
-            }
-        
+            }  
          }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

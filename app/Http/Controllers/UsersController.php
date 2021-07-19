@@ -87,22 +87,22 @@ class UsersController extends Controller
  * 
  */
     public function Register(Request $request) {
-        $data = $request->only([
-           'name','email','phone','password','created_by'
-          ]);   
-          $usersValidation = $this->usersValidator->validate($data);
-        
-          if ($usersValidation->fails()) {
-            $errors = $usersValidation->errors();
-            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
-          try {
-            $response = $this->usersService->Register($request);
-            return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
-        }
-         catch (Exception $e) {
-          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-        }       
+      $data = $request->only([
+        'name','email','phone','password','created_by'
+       ]);   
+       $usersValidation = $this->usersValidator->validate($data);
+     
+       if ($usersValidation->fails()) {
+         $errors = $usersValidation->errors();
+         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+       }
+       try {
+         $response = $this->usersService->Register($request);
+         return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
+     }
+      catch (Exception $e) {
+       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+     }        
    } 
 /**
  * @OA\Post(
@@ -135,22 +135,17 @@ class UsersController extends Controller
  * 
  */
    public function verifyOtp(Request $request) 
-    {
+   {
     try {
-      $rcvOtp = $request['otp'];
-      $userId = $request['userId'];
-      $existingOtp = Users::where('id', $userId)->get('otp');
-      $existingOtp = $existingOtp[0]['otp'];
-      if(is_null($rcvOtp)){
+      $response = $this->usersService->verifyOtp($request); 
+
+      if($response == 'Null'){
         return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
-    elseif($existingOtp == $rcvOtp){
-      Users::where('id', $userId)->update(array('is_verified' => '1'));
-      $user = Users::where('id', $userId)->get();
-      return $this->successResponse($user,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
+      elseif($response == 'reg done'){
+      return $this->successResponse(Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
     }
       else{
-      //$response = $this->usersService->verifyOtp($request);  
       return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
       }
     }
@@ -158,7 +153,6 @@ class UsersController extends Controller
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
     }
-
 
    public function RegisterSession(Request $request) {
     $data = $request->only([
@@ -240,16 +234,16 @@ class UsersController extends Controller
  */  
 
   public function login(Request $request){  
-    $data = $request->only([
-      'email','phone','password'
-     ]);   
+    $request->request->add(['password' => 'odbus123']);
+    $data = $request->all();  
       $LoginValidation = $this->loginValidator->validate($data);
-     
+
       if ($LoginValidation->fails()) {
         $errors = $LoginValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
        }
       try {
+        $response = $this->usersService->login($request);
         if (! $token = auth()->attempt($LoginValidation->validated())) {
         return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
         }
@@ -257,9 +251,10 @@ class UsersController extends Controller
       }
       catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }
-    
+      }   
 }
+
+
 /**
  * @OA\SecurityScheme(
  *     type="http",
@@ -288,10 +283,8 @@ class UsersController extends Controller
           'expires_in' => auth()->factory()->getTTL() * 60,
           'user' => auth()->user()   
     ]; 
-    return $this->successResponse($loginUser,Config::get('constants.LOGIN'),Response::HTTP_OK);
+    return $this->successResponse($loginUser,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
 }
-
-
 public function userProfile() {
   $user = auth()->user();
   if(!is_null($user)) {
@@ -301,6 +294,27 @@ public function userProfile() {
     return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
   }
 }
+
+public function verifyOtpLogin(Request $request) 
+   {
+    try {
+      $response = $this->usersService->verifyOtpLogin($request); 
+
+      if($response == 'Null'){
+        return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
+    }  
+      elseif($response == 'Login done'){
+      return $this->successResponse(Config::get('constants.LOGIN'),Response::HTTP_CREATED);
+    }
+      else{
+      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
+      }
+    }
+    catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }   
+    }
+
 public function logout() {
   auth()->logout();
   return $this->successResponse(Config::get('constants.USER_LOGGEDOUT'),Response::HTTP_OK);
