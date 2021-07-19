@@ -277,6 +277,8 @@ class ChannelRepository
     }
     public function pay($request)
     {   
+        $key = config('services.razorpay.key');
+        $secretKey = config('services.razorpay.secret');
         $data = $request->all();
         $customerId = $this->customerPayment->where('order_id', $data['razorpay_order_id'])->pluck('id');
         $customerId = $customerId[0];
@@ -287,7 +289,7 @@ class ChannelRepository
         $transationId = $data['transaction_id'];
         $pnr = $this->booking->where('transaction_id', $transationId)->pluck('pnr')[0];
 
-        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, env('RAZORPAY_SECRET'));
+        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
         if ($generated_signature == $data['razorpay_signature']) {
             
