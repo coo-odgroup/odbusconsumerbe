@@ -116,7 +116,7 @@ class ChannelRepository
     
     public function sendSms($data, $otp) {
         $SmsGW = config('services.sms.otpservice');
-        if($SmsGW=='textLocal'){
+        if($SmsGW =='textLocal'){
 
             //Environment Variables
             $apiKey = config('services.sms.textlocal.key');
@@ -270,7 +270,7 @@ class ChannelRepository
         $data = array(
             'name' => $name,
             'amount' => $amount,
-            'key' => env('RAZORPAY_KEY'),
+            'key' => $key,
             'razorpay_order_id' => $orderId   
         );
        return $data;
@@ -295,6 +295,8 @@ class ChannelRepository
             
             $this->customerPayment->where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
             $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
+
+            
             $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
             return "Payment Done"; 
         }

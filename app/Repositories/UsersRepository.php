@@ -26,20 +26,21 @@ class UsersRepository
     public function Register($request)
     {
         $user = new $this->users;
-        if($request['phone']){
-            $user->phone = $request['phone'];  
-        } 
-        elseif($request['email']){
-            $user->email = $request['email']; 
-        }
         $user->name= $request['name'];
         $user->password= bcrypt('odbus123');
         $user->created_by= $request['created_by'];
         $otp = rand(10000, 99999);
         $user->otp = $otp;
+        //$user->save();
+        if($request['phone']){
+            $user->phone = $request['phone'];
+            $sendsms = $this->channelRepository->sendSms($request,$otp);  
+        } 
+        elseif($request['email']){
+            $user->email = $request['email']; 
+            $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+        }
         $user->save();
-        //$sendsms = $this->channelRepository->sendSms($request,$otp);
-        $sendEmail = $this->channelRepository->sendEmail($request,$otp);
         //return $sendEmail;
         //return  $sendsms;
         return  $user;   
