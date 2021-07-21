@@ -179,6 +179,94 @@ class ChannelRepository
 
         }
       }
+      //public function sendSmsTicket($data){
+      public function sendSmsTicket($data, $pnr) {
+
+        $seatList = implode(",",$data['seat_id']);
+        $nameList = "";
+        $genderList ="";
+        $passengerDetails = $data['passengerDetails'];
+   
+        foreach($passengerDetails as $pDetail){
+            $nameList = "{$nameList},{$pDetail['passenger_name']}";
+            $genderList = "{$genderList},{$pDetail['passenger_gender']}";
+        } 
+        $nameList = substr($nameList,1);
+        $genderList = substr($genderList,1);
+        $busDetails = $data['busname'].'-'.$data['busNumber'];
+        $SmsGW = config('services.sms.otpservice');
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            $apiKey = config('services.sms.textlocal.key');
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.msgTicket');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            //$message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<PNR>",$pnr,$message);
+            $message = str_replace("<busdetails>",$busDetails,$message);
+            $message = str_replace("<DOJ>",$data['journeydate'],$message);
+            $message = str_replace("<routedetails>",$data['routedetails'],$message);
+            $message = str_replace("<dep>",$data['departureTime'],$message);
+            $message = str_replace("<name>",$nameList,$message);
+            $message = str_replace("<gender>",$genderList,$message);
+            $message = str_replace("<seat>",$seatList,$message);
+            $message = str_replace("<fare>",$data['totalfare'],$message);
+            $message = str_replace("<conmob>",$data['conductor_number'],$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+             
+            return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+            // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // $err = curl_error($ch);
+            
+            // if ($err) { 
+            //     return "cURL Error #:" . $err;
+            // } 
+
+        }elseif($SmsGW=='IndiaHUB'){
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
+                $otp = $data['otp'];
+                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
+                // //$channel = 'transactional';
+                // //$route =  '4';
+                // //$dcs = '0';
+                // //$flashsms = '0';
+                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
+                // $receiver = urlencode($data['phone']);
+                // $sender_id = urlencode($data['sender']);
+                // $name = $data['name'];
+                // $message = $data['message'];
+                // $message = str_replace("<otp>",$otp,$message);
+                // $message = rawurlencode($message);
+    
+                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
+    
+                // $response = file_get_contents($api);
+                //return $response;
+
+        }
+      }
+
 
       public function smsDeliveryStatus($request)  
       {
@@ -296,9 +384,18 @@ class ChannelRepository
             $this->customerPayment->where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
             $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
 
-            
-            $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
-            return "Payment Done"; 
+            if($request['phone']){
+                $sendsms = $this->sendSmsTicket($request,$pnr); 
+                return "Payment Done";
+            } 
+            elseif($request['email']){
+                $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
+                return "Payment Done";
+            }
+
+            //$sendsms = $this->sendSmsTicket($request,$pnr);  
+            //$sendEmailTicket = $this->sendEmailTicket($request,$pnr);
+            //return "Payment Done"; 
         }
         else{
             return "Payment Failed  "; 

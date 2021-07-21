@@ -23,6 +23,7 @@ Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingD
 Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
+Route::post('/SendSmsTicket', [ChannelController::class, 'sendSmsTicket']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/PaymentStatus', [ChannelController::class, 'pay']);

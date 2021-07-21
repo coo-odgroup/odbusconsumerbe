@@ -38,6 +38,17 @@ class ChannelService
         }
         return $sendSms;
     }   
+    public function sendSmsTicket($data)
+    {
+        try {
+            $sendSmsTicket = $this->channelRepository->sendSmsTicket($data);
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $sendSmsTicket;
+    }   
     public function smsDeliveryStatus($data)
     {
         try {

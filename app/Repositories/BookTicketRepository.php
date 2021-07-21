@@ -93,7 +93,6 @@ class BookTicketRepository
         $bookingDetailModels[] = new BookingDetail($bDetail);
         }
         $booking->bookingDetail()->saveMany($bookingDetailModels);
-        //$sendEmailTicket = $this->channelRepository->sendEmailTicket($request,$pnr);
         return $booking;
        
     }
