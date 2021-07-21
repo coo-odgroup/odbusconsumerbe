@@ -49,7 +49,7 @@ class UsersController extends Controller
  *     @OA\Parameter(
  *          name="email",
  *          description="email of user",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="string"
@@ -58,16 +58,7 @@ class UsersController extends Controller
  *     @OA\Parameter(
  *          name="phone",
  *          description="mobile number of user",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="string"
- *          )
- *      ),
- *     @OA\Parameter(
- *          name="password",
- *          description="password given by user",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="string"
@@ -128,7 +119,7 @@ class UsersController extends Controller
  *              type="string",
  *          )
  *      ),
- *     @OA\Response(response="201", description="Registered successfully"),
+ *     @OA\Response(response="200", description="Registered successfully"),
  *     @OA\Response(response="206", description="otp not provided"),
  *     @OA\Response(response="406", description="Invalid otp")
  * )
@@ -143,7 +134,7 @@ class UsersController extends Controller
         return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
       elseif($response == 'reg done'){
-      return $this->successResponse(Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
+      return $this->successResponse(Config::get('constants.REGISTERED'),Response::HTTP_OK);
     }
       else{
       return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
@@ -217,15 +208,6 @@ class UsersController extends Controller
  *              type="string",
  *          )
  *      ),
- *       @OA\Parameter(
- *          name="password",
- *          description="password given by user",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="string",
- *          )
- *      ),
  *     @OA\Response(response="200", description="Login Successful"),
  *     @OA\Response(response="206", description="Validation error"),
  *     @OA\Response(response="422", description="Wrong credentials response")
@@ -294,7 +276,36 @@ public function userProfile() {
     return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
   }
 }
-
+/**
+ * @OA\Post(
+ *     path="/api/VerifyOtpLogin",
+ *     tags={"VerifyOtp API Login"},
+ *     description="confirmation of user Login with OTP verification",
+ *     summary="user Login with OTP verification",
+ *     @OA\Parameter(
+ *          name="userId",
+ *          description="user Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="otp",
+ *          description="otp sent by user",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="Login successful"),
+ *     @OA\Response(response="206", description="otp not provided"),
+ *     @OA\Response(response="406", description="Invalid otp")
+ * )
+ * 
+ */
 public function verifyOtpLogin(Request $request) 
    {
     try {
@@ -304,7 +315,7 @@ public function verifyOtpLogin(Request $request)
         return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
       elseif($response == 'Login done'){
-      return $this->successResponse(Config::get('constants.LOGIN'),Response::HTTP_CREATED);
+      return $this->successResponse(Config::get('constants.LOGIN'),Response::HTTP_OK);
     }
       else{
       return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);

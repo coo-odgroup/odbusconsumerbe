@@ -270,7 +270,7 @@
                         "name": "email",
                         "in": "query",
                         "description": "email of user",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -279,16 +279,7 @@
                         "name": "phone",
                         "in": "query",
                         "description": "mobile number of user",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "password",
-                        "in": "query",
-                        "description": "password given by user",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -339,7 +330,7 @@
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Registered successfully"
                     },
                     "206": {
@@ -374,15 +365,6 @@
                         "in": "query",
                         "description": "email of user",
                         "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "password",
-                        "in": "query",
-                        "description": "password given by user",
-                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -421,6 +403,47 @@
                         "apiAuth": []
                     }
                 ]
+            }
+        },
+        "/api/VerifyOtpLogin": {
+            "post": {
+                "tags": [
+                    "VerifyOtp API Login"
+                ],
+                "summary": "user Login with OTP verification",
+                "description": "confirmation of user Login with OTP verification",
+                "operationId": "App\\Http\\Controllers\\UsersController::verifyOtpLogin",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "otp",
+                        "in": "query",
+                        "description": "otp sent by user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successful"
+                    },
+                    "206": {
+                        "description": "otp not provided"
+                    },
+                    "406": {
+                        "description": "Invalid otp"
+                    }
+                }
             }
         },
         "/api/viewSeats": {
