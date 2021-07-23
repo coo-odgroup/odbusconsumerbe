@@ -12,7 +12,7 @@ class CancellationSlab extends Model
         'api_id','rule_name','status'
     ];
 
-    public function slabInfo()
+    public function cancellationSlabInfo()
     {
         return $this->hasMany(CancellationSlabInfo::class);        
     }

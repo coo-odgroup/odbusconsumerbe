@@ -73,10 +73,11 @@ class ListingRepository
            return "";
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;      
-    
+        
         $records = $this->bus
         ->with('busContacts')
-        ->with('busOperator')->with('ticketPrice')
+        ->with('busOperator')
+        //->with('ticketPrice')
         ->with('busAmenities.amenities')
         ->with('busSafety.safety')
         ->with('BusType.busClass')
@@ -88,11 +89,12 @@ class ListingRepository
         ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
             $query->where('entry_date', $entry_date);            
             })
-        ->whereHas('ticketPrice', function($query ) use ($sourceID,$destinationID)  {
-            $query->where('source_id', $sourceID)
-                  ->where('destination_id', $destinationID);               
-                }) 
+        ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
+            $query->where('source_id',$sourceID)
+            ->where('destination_id', $destinationID);           
+                }]) 
         ->get();
+
         //return $records;
         $ListingRecords = array();
         foreach($records as $record){
@@ -108,8 +110,9 @@ class ListingRepository
             $busType = $record->BusType->busClass->class_name;
             $busTypeName = $record->BusType->name;
             $ticketPriceDatas = $record->ticketPrice;
-            $totalSeats = $record->busSeats->count('id');
-            $seatDatas = $record->busSeats;
+            $ticketPriceId = $ticketPriceDatas->first()->id;
+            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
+            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
             $amenityIcon = $amenityDatas->pluck('amenities.icon');
@@ -122,14 +125,15 @@ class ListingRepository
             {  
                $startingFromPrice = $ticketPriceData->base_seat_fare;   
                $departureTime = $ticketPriceData->dep_time;
-               $depTime = date("H:i",strtotime($departureTime)); 
                $arrivalTime = $ticketPriceData->arr_time;
+               $depTime = date("H:i",strtotime($departureTime));
                $arrTime = date("H:i",strtotime($arrivalTime)); 
                $arr_time = new DateTime($arrivalTime);
                $dep_time = new DateTime($departureTime);
                $totalTravelTime = $dep_time->diff($arr_time);
                $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
             }
+
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
             foreach($seatDatas as $seatData) {  
