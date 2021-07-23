@@ -392,13 +392,9 @@ class ChannelRepository
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
                 return "Payment Done";
             }
-
-            //$sendsms = $this->sendSmsTicket($request,$pnr);  
-            //$sendEmailTicket = $this->sendEmailTicket($request,$pnr);
-            //return "Payment Done"; 
         }
         else{
-            return "Payment Failed  "; 
+            return "Payment Failed"; 
             }
         
     }

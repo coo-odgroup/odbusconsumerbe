@@ -21,6 +21,8 @@ class BookTicketRepository
     protected $booking;
     protected $busSeats;
     protected $bookingDetail;
+    //public $existingEmail;
+    //public $existingPhone;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository)
     {
@@ -36,19 +38,39 @@ class BookTicketRepository
     
     public function bookTicket($request)
     { 
-         $customerInfo = $request['customerInfo'];
-        //find customer_id using email or phone no
-        $existingCustomer = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->exists();
-        if( $existingCustomer == true){
-            $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
-            $userId = $userId[0];
-        //     $this->users->whereIn('id', $userId)->update($request['customerInfo']);
-        }
+        $customerInfo = $request['customerInfo'];
+
+        $query = $this->users->whereNotNull('phone')->whereNotNull('email');
+        if($customerInfo['phone'] or $customerInfo['email']){
+            $existingCustomer = $query->where('phone',$customerInfo['phone'])
+                                      ->orWhere('email',$customerInfo['email'])
+                                      ->exists();   
+            if( $existingCustomer == true){
+                $userId = $query->where('phone',$customerInfo['phone'])
+                                ->orWhere('email',$customerInfo['email'])->first('id');
+                                //return $userId;
+               $this->users->whereIn('id', $userId)->update($customerInfo);     
+            }
         //create New Customer information
-        else{
-            $newUserId = $this->users->create($request['customerInfo'])->get('id');
-            $userId = $newUserId[0];
-        }
+            else{
+                $userId = $this->users->create($request['customerInfo'])->latest('id')->first('id');   
+            }
+    }
+        
+        // $existingCustomer = $this->users->where('phone',$customerInfo['phone'])
+        //                                     ->orWhere('email',$customerInfo['email'])
+        //                                     ->exists();
+        // if( $existingCustomer == true){
+        //     $userId = $this->users->where('email',$customerInfo['email'])->orWhere('phone',$customerInfo['phone'])->get('id');
+        //     $userId = $userId[0];
+        //     //return $userId;
+        // //     $this->users->whereIn('id', $userId)->update($request['customerInfo']);
+        // }
+        // //create New Customer information
+        // else{
+        //     $newUserId = $this->users->create($request['customerInfo'])->get('id');
+        //     $userId = $newUserId[0];
+        // }
    
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];

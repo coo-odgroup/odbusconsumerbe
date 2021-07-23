@@ -88,6 +88,36 @@ class ChannelController extends Controller
            }   
     }
     
+/**
+ * @OA\Post(
+ *     path="/api/MakePayment",
+ *     tags={"MakePayment API"},
+ *     description="generating razorpay order Id",
+ *     summary="generating razorpay order Id",
+ *     @OA\Parameter(
+ *          name="transaction_id",
+ *          description="customer transaction id against booking",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="amount",
+ *          description="total price",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Response(response="201", description="Order Id generated Successfully"),
+ *     @OA\Response(response="404", description="Invalid Argument Passed")
+ * )
+ * 
+ */
+
       public function makePayment(Request $request)
     {   
         try {
@@ -98,7 +128,164 @@ class ChannelController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
            }  
     }
-
+/**
+ * @OA\POST(
+ *     path="/api/PaymentStatus",
+ *     tags={"PaymentStatus API"},
+ *     summary="payment status success or failure",
+ *     @OA\RequestBody(
+ *        required = true,
+ *     description="updating payment status and sending email/sms to customers with ticket booking details",
+ *        @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                property="transaction_id",
+ *                type="string",
+ *                example="20210722102640458159"
+ *                ),
+ *             @OA\Property(
+ *                property="name",
+ *                type="string",
+ *                example="Bob"
+ *                ),
+ *             @OA\Property(
+ *                property="phone",
+ *                type="string",
+ *                example=""
+ *                ),
+ *             @OA\Property(
+ *                property="email",
+ *                type="string",
+ *                example="exapmle@gmail.com"
+ *                ),
+ *              @OA\Property(
+ *                property="routedetails",
+ *                type="string",
+ *                example="Bhubaneswar-Sambalpur"
+ *                ),
+ *              @OA\Property(
+ *                property="razorpay_order_id",
+ *                type="string",
+ *                example="order_HYnmFzO1W4mj8P"
+ *                ),
+ *              @OA\Property(
+ *                property="razorpay_payment_id",
+ *                type="string",
+ *                example="pay_HYnmWNISavDZN8"
+ *                ),
+ *              @OA\Property(
+ *                property="razorpay_signature",
+ *                type="string",
+ *                example="d94a898e130f431394466bd3a06ffc5f2a0471a0d4923b0b190b5576d52b6d95"
+ *                ),
+ *               @OA\Property(
+ *                property="bookingdate",
+ *                type="string",
+ *                example="02-05-2021"
+ *                ),
+ *              @OA\Property(
+ *                property="journeydate",
+ *                type="string",
+ *                example="08-05-2021"
+ *                ),
+ *            @OA\Property(
+ *                property="boarding_point",
+ *                type="string",
+ *                example="Bermunda"
+ *                ),
+ *            @OA\Property(
+ *                property="departureTime",
+ *                type="string",
+ *                example="21:00PM"
+ *                ),
+ *            @OA\Property(
+ *                property="dropping_point",
+ *                type="string",
+ *                example="Hirakud"
+ *                ),
+ *            @OA\Property(
+ *                property="arrivalTime",
+ *                type="string",
+ *                example="06:30AM"
+ *                ),
+ *            @OA\Property(
+ *                property="busname",
+ *                type="string",
+ *                example="Jagakalia"
+ *                ),
+ *            @OA\Property(
+ *                property="busNumber",
+ *                type="string",
+ *                example="OD B 8657"
+ *                ),
+ *            @OA\Property(
+ *                property="bustype",
+ *                type="string",
+ *                example="AC"
+ *                ),
+ *            @OA\Property(
+ *                property="busTypeName",
+ *                type="string",
+ *                example="DELUX"
+ *                ),
+ *            @OA\Property(
+ *                property="sittingType",
+ *                type="string",
+ *                example="2+2"
+ *                ),
+ *            @OA\Property(
+ *                property="conductor_number",
+ *                type="string",
+ *                example="9912334563"
+ *                ),
+ *            @OA\Property(
+ *                property="totalfare",
+ *                type="string",
+ *                example="800"
+ *                ),
+ *            @OA\Property(
+ *                 property="seat_id",
+ *                 type="array",
+ *                 @OA\Items(type="string",
+ *                  ),
+ *                 ),
+ *             @OA\Property(
+ *                property="passengerDetails",
+ *                type="array",
+ *                example={{
+ *                  "passenger_name": "Bob",
+ *                  "passenger_gender": "M",
+ *                  "passenger_age": "25"
+ *                }, {
+ *                  "passenger_name": "",
+ *                  "passenger_gender": "",
+ *                  "passenger_age": ""
+ *                }},
+ *                @OA\Items(
+ *                      @OA\Property(
+ *                         property="passenger_name",
+ *                         type="string",
+ *                         example=""
+ *                      ),
+ *                      @OA\Property(
+ *                         property="passenger_gender",
+ *                         type="string",
+ *                         example=""
+ *                      ),
+ *                      @OA\Property(
+ *                         property="passenger_age",
+ *                         type="string",
+ *                         example=""
+ *                      ),
+ *                ),
+ *             ),
+ *        ),
+ *     ),
+ *     @OA\Response(response="200", description="Payment successfully done"),
+ *     @OA\Response(response="402", description="Payment required"),
+ *     @OA\Response(response="404", description="Invalid Argument Passed")
+ * )
+ */
     public function pay(Request $request){
         try{
             $response = $this->channelService->pay($request); 

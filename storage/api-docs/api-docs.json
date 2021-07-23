@@ -6,6 +6,217 @@
         "version": "0.1"
     },
     "paths": {
+        "/api/BookTicket": {
+            "post": {
+                "tags": [
+                    "BookTicket API"
+                ],
+                "summary": "payment status success or failure",
+                "operationId": "App\\Http\\Controllers\\BookTicketController::bookTicket",
+                "requestBody": {
+                    "description": "User Ticket Booking",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket Booking successfully done"
+                    }
+                }
+            }
+        },
+        "/api/MakePayment": {
+            "post": {
+                "tags": [
+                    "MakePayment API"
+                ],
+                "summary": "generating razorpay order Id",
+                "description": "generating razorpay order Id",
+                "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "customer transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "description": "total price",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Order Id generated Successfully"
+                    },
+                    "404": {
+                        "description": "Invalid Argument Passed"
+                    }
+                }
+            }
+        },
+        "/api/PaymentStatus": {
+            "post": {
+                "tags": [
+                    "PaymentStatus API"
+                ],
+                "summary": "payment status success or failure",
+                "operationId": "App\\Http\\Controllers\\ChannelController::pay",
+                "requestBody": {
+                    "description": "updating payment status and sending email/sms to customers with ticket booking details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "transaction_id": {
+                                        "type": "string",
+                                        "example": "20210722102640458159"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Bob"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "exapmle@gmail.com"
+                                    },
+                                    "routedetails": {
+                                        "type": "string",
+                                        "example": "Bhubaneswar-Sambalpur"
+                                    },
+                                    "razorpay_order_id": {
+                                        "type": "string",
+                                        "example": "order_HYnmFzO1W4mj8P"
+                                    },
+                                    "razorpay_payment_id": {
+                                        "type": "string",
+                                        "example": "pay_HYnmWNISavDZN8"
+                                    },
+                                    "razorpay_signature": {
+                                        "type": "string",
+                                        "example": "d94a898e130f431394466bd3a06ffc5f2a0471a0d4923b0b190b5576d52b6d95"
+                                    },
+                                    "bookingdate": {
+                                        "type": "string",
+                                        "example": "02-05-2021"
+                                    },
+                                    "journeydate": {
+                                        "type": "string",
+                                        "example": "08-05-2021"
+                                    },
+                                    "boarding_point": {
+                                        "type": "string",
+                                        "example": "Bermunda"
+                                    },
+                                    "departureTime": {
+                                        "type": "string",
+                                        "example": "21:00PM"
+                                    },
+                                    "dropping_point": {
+                                        "type": "string",
+                                        "example": "Hirakud"
+                                    },
+                                    "arrivalTime": {
+                                        "type": "string",
+                                        "example": "06:30AM"
+                                    },
+                                    "busname": {
+                                        "type": "string",
+                                        "example": "Jagakalia"
+                                    },
+                                    "busNumber": {
+                                        "type": "string",
+                                        "example": "OD B 8657"
+                                    },
+                                    "bustype": {
+                                        "type": "string",
+                                        "example": "AC"
+                                    },
+                                    "busTypeName": {
+                                        "type": "string",
+                                        "example": "DELUX"
+                                    },
+                                    "sittingType": {
+                                        "type": "string",
+                                        "example": "2+2"
+                                    },
+                                    "conductor_number": {
+                                        "type": "string",
+                                        "example": "9912334563"
+                                    },
+                                    "totalfare": {
+                                        "type": "string",
+                                        "example": "800"
+                                    },
+                                    "seat_id": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "passengerDetails": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "passenger_name": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "passenger_gender": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "passenger_age": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "example": [
+                                            {
+                                                "passenger_name": "Bob",
+                                                "passenger_gender": "M",
+                                                "passenger_age": "25"
+                                            },
+                                            {
+                                                "passenger_name": "",
+                                                "passenger_gender": "",
+                                                "passenger_age": ""
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment successfully done"
+                    },
+                    "402": {
+                        "description": "Payment required"
+                    },
+                    "404": {
+                        "description": "Invalid Argument Passed"
+                    }
+                }
+            }
+        },
         "/api/getLocation": {
             "get": {
                 "tags": [

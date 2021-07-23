@@ -32,7 +32,18 @@ class BookTicketController extends Controller
         $this->bookTicketService = $bookTicketService;  
         $this->bookTicketValidator = $bookTicketValidator;      
     }
- 
+/**
+ * @OA\POST(
+ *     path="/api/BookTicket",
+ *     tags={"BookTicket API"},
+ *     summary="payment status success or failure",
+ *     @OA\RequestBody(
+ *        required = true,
+ *     description="User Ticket Booking",
+ *     ),
+ *     @OA\Response(response="200", description="Ticket Booking successfully done"),
+ * )
+ */
     public function bookTicket(Request $request) {
         //  $data = $request->only([
         //     'email','phone','seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
