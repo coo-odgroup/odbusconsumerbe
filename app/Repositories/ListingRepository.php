@@ -215,20 +215,27 @@ class ListingRepository
         $operatorId = $request['operatorId'];
         $amenityId = $request['amenityId'];
         //DB::enableQueryLog(); 
-        $records = $this->bus->with('busOperator')->with('ticketPrice')
-        ->with('busAmenities.amenities')
-        ->with('busSafety.safety')
-        ->with('BusType.busClass')
-        ->with('busSeats.seats')
-        ->with('BusSitting')
-        ->with('busGallery')
+        $records = $this->bus
+            ->with('busOperator')
+            //->with('ticketPrice')
+            ->with('busAmenities.amenities')
+            ->with('busSafety.safety')
+            ->with('BusType.busClass')
+            ->with('busSeats.seats')
+            ->with('BusSitting')
+            ->with('busGallery')
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
-            ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
-                $query->where('source_id', $sourceID)
-                        ->where('destination_id', $destinationID);               
-                })          
+            // ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
+            //     $query->where('source_id', $sourceID)
+            //             ->where('destination_id', $destinationID);               
+            //     })  
+            ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
+                $query->where('source_id',$sourceID)
+                ->where('destination_id', $destinationID);           
+                    }])  
+
             ->whereHas('busType.busClass', function ($query) use ($busType){
                 if($busType)
                 $query->whereIn('id', (array)$busType);            
@@ -269,10 +276,13 @@ class ListingRepository
                 $busType = $record->BusType->busClass->class_name;
                 $busTypeName = $record->BusType->name;
                 $ticketPriceDatas = $record->ticketPrice;
-                $totalSeats = $record->busSeats->count('id');
+                //$totalSeats = $record->busSeats->count('id');
                 //$seater = $record->busSeats->where('seat_type',1)->count();
                 //$sleeper = $record->busSeats->where('seat_type',2)->orWhere('seat_type',3)->count();
-                $seatDatas = $record->busSeats;
+                $ticketPriceId = $ticketPriceDatas->first()->id;
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
+                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+                //$seatDatas = $record->busSeats;
                 $amenityDatas = $record->busAmenities;
                 $amenityName = $amenityDatas->pluck('amenities.name');
                 $amenityIcon = $amenityDatas->pluck('amenities.icon');
