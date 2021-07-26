@@ -25,7 +25,11 @@ class Seats extends Model
     ];
     public function busSeats()
     {
-    	return $this->hasOne(BusSeats::class);
+    	return $this->hasOne(BusSeats::class)->withDefault(function () {
+            return (object)[];
+            //return new BusSeats();
+
+        });
     }
     public function seatClass()
     {
