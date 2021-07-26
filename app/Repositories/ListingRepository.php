@@ -89,14 +89,17 @@ class ListingRepository
         ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
             $query->where('entry_date', $entry_date);            
             })
-        ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
-            $query->where('source_id',$sourceID)
-            ->where('destination_id', $destinationID);           
-                }]) 
+        ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
+            $query->where('source_id', $sourceID)
+                    ->where('destination_id', $destinationID);               
+            }) 
+        // ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
+        //     $query->where('source_id',$sourceID)
+        //     ->where('destination_id', $destinationID);           
+        //         }]) 
         ->get();
 
-        //return $records;
-        $ListingRecords = array();
+        $ListingRecords = array();  
         foreach($records as $record){
             $busId = $record->id; 
             $busName = $record->name;
@@ -106,11 +109,28 @@ class ListingRepository
             $conductor_number = $record->busContacts->phone;
             $operatorId = $record->busOperator->id;
             $operatorName = $record->busOperator->operator_name;
-            $sittingType = $record->BusSitting->name;
+            $sittingType = $record->BusSitting->name;   
             $busType = $record->BusType->busClass->class_name;
             $busTypeName = $record->BusType->name;
             $ticketPriceDatas = $record->ticketPrice;
-            $ticketPriceId = $ticketPriceDatas->first()->id;
+
+            //$ticketPriceId = $ticketPriceDatas->find()->id;
+
+            $ticketPriceRecords = $ticketPriceDatas
+                    ->where('source_id', $sourceID)
+                    ->where('destination_id', $destinationID)
+                    ->first(); 
+            $ticketPriceId = $ticketPriceRecords->id;
+            $startingFromPrice = $ticketPriceRecords->base_seat_fare;
+            $departureTime = $ticketPriceRecords->dep_time;
+            $arrivalTime = $ticketPriceRecords->arr_time;
+            $depTime = date("H:i",strtotime($departureTime));
+            $arrTime = date("H:i",strtotime($arrivalTime)); 
+            $arr_time = new DateTime($arrivalTime);
+            $dep_time = new DateTime($departureTime);
+            $totalTravelTime = $dep_time->diff($arr_time);
+            $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
@@ -121,18 +141,18 @@ class ListingRepository
             $safetyIcon = $safetyDatas->pluck('safety.icon');
             $busPhotoDatas = $record->busGallery;
             $busPhotos = $busPhotoDatas->pluck('image');
-            foreach($ticketPriceDatas as $ticketPriceData) 
-            {  
-               $startingFromPrice = $ticketPriceData->base_seat_fare;   
-               $departureTime = $ticketPriceData->dep_time;
-               $arrivalTime = $ticketPriceData->arr_time;
-               $depTime = date("H:i",strtotime($departureTime));
-               $arrTime = date("H:i",strtotime($arrivalTime)); 
-               $arr_time = new DateTime($arrivalTime);
-               $dep_time = new DateTime($departureTime);
-               $totalTravelTime = $dep_time->diff($arr_time);
-               $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
-            }
+            // foreach($ticketPriceDatas as $ticketPriceData) 
+            // {  
+            //    $startingFromPrice = $ticketPriceData->base_seat_fare;   
+            //    $departureTime = $ticketPriceData->dep_time;
+            //    $arrivalTime = $ticketPriceData->arr_time;
+            //    $depTime = date("H:i",strtotime($departureTime));
+            //    $arrTime = date("H:i",strtotime($arrivalTime)); 
+            //    $arr_time = new DateTime($arrivalTime);
+            //    $dep_time = new DateTime($departureTime);
+            //    $totalTravelTime = $dep_time->diff($arr_time);
+            //    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+            // }
 
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
@@ -227,14 +247,14 @@ class ListingRepository
             ->whereHas('busSchedule.busScheduleDate', function ($query) use ($entry_date){
                 $query->where('entry_date', $entry_date);            
               })
-            // ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
-            //     $query->where('source_id', $sourceID)
-            //             ->where('destination_id', $destinationID);               
-            //     })  
-            ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
-                $query->where('source_id',$sourceID)
-                ->where('destination_id', $destinationID);           
-                    }])  
+            ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
+                $query->where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID);               
+                })  
+            // ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
+            //     $query->where('source_id',$sourceID)
+            //     ->where('destination_id', $destinationID);           
+            //         }])  
 
             ->whereHas('busType.busClass', function ($query) use ($busType){
                 if($busType)
@@ -279,7 +299,24 @@ class ListingRepository
                 //$totalSeats = $record->busSeats->count('id');
                 //$seater = $record->busSeats->where('seat_type',1)->count();
                 //$sleeper = $record->busSeats->where('seat_type',2)->orWhere('seat_type',3)->count();
-                $ticketPriceId = $ticketPriceDatas->first()->id;
+                //$ticketPriceId = $ticketPriceDatas->first()->id;
+
+                $ticketPriceRecords = $ticketPriceDatas
+                ->where('source_id', $sourceID)
+                ->where('destination_id', $destinationID)
+                ->first(); 
+                $ticketPriceId = $ticketPriceRecords->id;
+                $startingFromPrice = $ticketPriceRecords->base_seat_fare;
+                $departureTime = $ticketPriceRecords->dep_time;
+                $arrivalTime = $ticketPriceRecords->arr_time;
+                $depTime = date("H:i",strtotime($departureTime));
+                $arrTime = date("H:i",strtotime($arrivalTime)); 
+                $arr_time = new DateTime($arrivalTime);
+                $dep_time = new DateTime($departureTime);
+                $totalTravelTime = $dep_time->diff($arr_time);
+                $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+
                 $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 //$seatDatas = $record->busSeats;
@@ -291,18 +328,18 @@ class ListingRepository
                 $safetyIcon = $safetyDatas->pluck('safety.icon');
                 $busPhotoDatas = $record->busGallery;
                 $busPhotos = $busPhotoDatas->pluck('image');
-                foreach($ticketPriceDatas as $ticketPriceData) 
-                {  
-                   $startingFromPrice = $ticketPriceData->base_seat_fare;   
-                   $departureTime = $ticketPriceData->dep_time; 
-                   $depTime = date("H:i",strtotime($departureTime)); 
-                   $arrivalTime = $ticketPriceData->arr_time; 
-                   $arrTime = date("H:i",strtotime($arrivalTime)); 
-                   $arr_time = new DateTime($arrivalTime);
-                   $dep_time = new DateTime($departureTime);
-                   $totalTravelTime = $dep_time->diff($arr_time);
-                   $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
-                }
+                // foreach($ticketPriceDatas as $ticketPriceData) 
+                // {  
+                //    $startingFromPrice = $ticketPriceData->base_seat_fare;   
+                //    $departureTime = $ticketPriceData->dep_time; 
+                //    $depTime = date("H:i",strtotime($departureTime)); 
+                //    $arrivalTime = $ticketPriceData->arr_time; 
+                //    $arrTime = date("H:i",strtotime($arrivalTime)); 
+                //    $arr_time = new DateTime($arrivalTime);
+                //    $dep_time = new DateTime($departureTime);
+                //    $totalTravelTime = $dep_time->diff($arr_time);
+                //    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+                // }
                  $seatClassRecords = 0;
                  $sleeperClassRecords = 0;
                 foreach($seatDatas as $seatData) {  
