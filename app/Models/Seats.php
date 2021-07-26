@@ -23,6 +23,11 @@ class Seats extends Model
         'created_by',
         'status',
     ];
+
+    // public function busSeats()
+    // {
+    // 	return $this->hasOne(BusSeats::class);
+    // }
     public function busSeats()
     {
     	return $this->hasOne(BusSeats::class)->withDefault(function () {

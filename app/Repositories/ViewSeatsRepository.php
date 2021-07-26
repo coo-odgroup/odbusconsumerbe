@@ -36,34 +36,48 @@ class ViewSeatsRepository
     { 
 
         $busId = $request['busId'];
-        // $result['viewSeats_arr'] =  $this->bus
-        // ->with('busSeatLayout.seats.busSeats')
-        // ->where('id', $busId)
-        // ->get();
+
         $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
+
         $result['lower_berth']=$this->seats
-        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-        ->where('berthType','1')
-        ->with('busSeats')
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType','1')
+            ->with(["busSeats" => function ($query) use ($busId){
+            $query->where('bus_id',$busId);
+        }])
         ->get();
 
-        $rowsColumns  =$this->seats
-        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-        ->where('berthType', '1');
-        $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-        $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
+        // Lower Berth seat Calculation
+        if(($result['lower_berth'])->isEmpty()){
+            unset($result['lower_berth']);   
+        }else{
+            $rowsColumns = $this->seats
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType', '1');
+            $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+            $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
+        
+        } 
 
         $result['upper_berth']=$this->seats
-        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-        ->where('berthType','2')
-        ->with('busSeats')
-        ->get();
+                ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+                ->where('berthType','2')
+                ->with(["busSeats" => function ($query) use ($busId){
+                    $query->where('bus_id',$busId);
+                }])
+                ->get();
+        if(($result['upper_berth'])->isEmpty()){
+            unset($result['upper_berth']);
 
-        $rowsColumns  =$this->seats
-        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-        ->where('berthType', '2');
-        $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-        $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
+         
+        }else{
+            $rowsColumns = $this->seats
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType', '2');
+            $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+            $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
+         
+        }
         return $result;
     }
     
@@ -76,22 +90,17 @@ class ViewSeatsRepository
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
-        $busWithTicketPrice = $this->bus->with('ticketPrice')
-        ->whereHas('ticketPrice', function ($query) use ($busId,$sourceId, $destinationId){
-            $query->where([
-                ['bus_id', $busId],
-                ['source_id', $sourceId],
-                ['destination_id', $destinationId],   
-            ]);            
-            })      
-        ->get();
-        //Priyadarshi::Bus and TicketPrice relationships?????
-        //Remove hard coding values.
-       $seaterPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare;
-       $sleeperPrice = $busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare; 
-       $totalPrice = count($seaterIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_seat_fare+
-       count($sleeperIds)*$busWithTicketPrice[0]->ticketPrice[0]->base_sleeper_fare;
-       
+
+        $busWithTicketPrice = $this->ticketPrice
+                ->where('source_id', $sourceId)
+                ->where('destination_id', $destinationId)
+                ->where('bus_id', $busId)           
+                ->first();
+        $seaterPrice = $busWithTicketPrice->base_seat_fare;
+        $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
+        $totalPrice = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
+        count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
+
        $seatWithPriceRecords[] = array(
         "seaterPrice" => $seaterPrice,
         "sleeperPrice" => $sleeperPrice,

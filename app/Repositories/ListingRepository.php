@@ -91,7 +91,7 @@ class ListingRepository
             })
         ->whereHas('ticketPrice', function($query) use ($sourceID,$destinationID)  {
             $query->where('source_id', $sourceID)
-                    ->where('destination_id', $destinationID);               
+                  ->where('destination_id', $destinationID);               
             }) 
         // ->with(['ticketPrice'=> function($query) use ($sourceID,$destinationID,$entry_date) {
         //     $query->where('source_id',$sourceID)
