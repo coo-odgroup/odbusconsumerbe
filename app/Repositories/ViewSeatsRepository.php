@@ -34,11 +34,10 @@ class ViewSeatsRepository
     
     public function getAllViewSeats($request)
     { 
-
         $busId = $request['busId'];
 
         $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
-
+        // Lower Berth seat Calculation
         $result['lower_berth']=$this->seats
             ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
             ->where('berthType','1')
@@ -47,7 +46,6 @@ class ViewSeatsRepository
         }])
         ->get();
 
-        // Lower Berth seat Calculation
         if(($result['lower_berth'])->isEmpty()){
             unset($result['lower_berth']);   
         }else{
@@ -58,7 +56,7 @@ class ViewSeatsRepository
             $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
         
         } 
-
+        // Lower Berth seat Calculation
         $result['upper_berth']=$this->seats
                 ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
                 ->where('berthType','2')
@@ -67,9 +65,7 @@ class ViewSeatsRepository
                 }])
                 ->get();
         if(($result['upper_berth'])->isEmpty()){
-            unset($result['upper_berth']);
-
-         
+            unset($result['upper_berth']); 
         }else{
             $rowsColumns = $this->seats
             ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
@@ -85,8 +81,6 @@ class ViewSeatsRepository
     { 
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
         $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
-        // $seaterIds = $request['seater'];
-        // $sleeperIds = $request['sleeper'];
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
@@ -117,7 +111,6 @@ class ViewSeatsRepository
         $Records =  $this->busStoppageTiming->with('boardingDroping')
         ->where('bus_id', $busId)
         ->get();
-        //return $Records;
 
         $boardingDroppings = array();  
         foreach($Records as $Record){  
@@ -143,8 +136,6 @@ class ViewSeatsRepository
         "boardingPoints" => $boardingArray,
         "droppingPoints" => $droppingArray,
     );  
-
-
     return $boardingDroppings;
     }
 

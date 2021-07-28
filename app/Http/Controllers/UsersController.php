@@ -226,7 +226,8 @@ class UsersController extends Controller
        }
       try {
         $response = $this->usersService->login($request);
-        if (! $token = auth()->attempt($LoginValidation->validated())) {
+        //if (! $token = auth()->attempt($LoginValidation->validated())) {
+          if (! $token = auth()->attempt($data)) {
         return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
         }
         return $this->createNewToken($token);

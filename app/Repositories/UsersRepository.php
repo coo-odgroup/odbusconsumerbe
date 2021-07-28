@@ -31,18 +31,15 @@ class UsersRepository
         $user->created_by= $request['created_by'];
         $otp = rand(10000, 99999);
         $user->otp = $otp;
-        //$user->save();
         if($request['phone']){
             $user->phone = $request['phone'];
-            $sendsms = $this->channelRepository->sendSms($request,$otp);  
+            //$sendsms = $this->channelRepository->sendSms($request,$otp);  
         } 
         elseif($request['email']){
             $user->email = $request['email']; 
-            $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+            //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
         }
         $user->save();
-        //return $sendEmail;
-        //return  $sendsms;
         return  $user;   
     }
     public function verifyOtp($request){
@@ -109,9 +106,16 @@ class UsersRepository
     public function login($request){
 
       $otp = rand(10000, 99999);
-      $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
-      //$sendsms = $this->channelRepository->sendSms($request,$otp);
-      $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+
+      if($request['phone']){
+        $users = $this->users->where('phone', $request['phone'])->update(array('otp' => $otp));
+        //$sendsms = $this->channelRepository->sendSms($request,$otp);  
+      } 
+      elseif($request['email']){
+        $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
+        //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
+      }
+
     }
 
     public function verifyOtpLogin($request){

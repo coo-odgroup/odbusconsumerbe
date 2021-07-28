@@ -44,8 +44,7 @@ class ListingRepository
         $this->amenities = $amenities;
         $this->boardingDroping = $boardingDroping;
         $this->busClass = $busClass;
-        $this->seatClass = $seatClass;
-        
+        $this->seatClass = $seatClass;  
      }   
 
      public function getLocation($request)
@@ -384,17 +383,7 @@ class ListingRepository
            }
             
            $sorted = array_values($sorted);
-           return $sorted;
-
-
-            ////need to do later for enhanced code//////////
-            // $filterDatas->each(function($item, $key) { 
-            //     //Log::info("*******************    ".$key);
-            //    // Log::info("*******************    ".$item->id);
-            //    $busRecords[] = array(
-            //     $id = $item->id,                
-            //    );   
-            // });         
+           return $sorted;   
     
     }
 

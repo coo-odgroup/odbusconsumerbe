@@ -370,7 +370,6 @@ class ChannelRepository
         $data = $request->all();
         $customerId = $this->customerPayment->where('order_id', $data['razorpay_order_id'])->pluck('id');
         $customerId = $customerId[0];
-
         $razorpay_signature = $data['razorpay_signature'];
         $razorpay_payment_id = $data['razorpay_payment_id'];
         $razorpay_order_id = $data['razorpay_order_id'];
@@ -379,13 +378,12 @@ class ChannelRepository
 
         $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
-        if ($generated_signature == $data['razorpay_signature']) {
-            
+        if ($generated_signature == $data['razorpay_signature']) { 
             $this->customerPayment->where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
             $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
 
             if($request['phone']){
-                $sendsms = $this->sendSmsTicket($request,$pnr); 
+                //$sendsms = $this->sendSmsTicket($request,$pnr); 
                 return "Payment Done";
             } 
             elseif($request['email']){
