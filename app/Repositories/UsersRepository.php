@@ -43,97 +43,42 @@ class UsersRepository
         return  $user;   
     }
     public function verifyOtp($request){
-
         $rcvOtp = trim($request['otp']);
         $userId = $request['userId'];
         $existingOtp = $this->users->where('id', $userId)->get('otp');
         $existingOtp = $existingOtp[0]['otp'];
+        $user = $this->users->where('id', $userId)->first()->only('name','email');
+        //$user['password'] = 'odbus123';
         if(($rcvOtp=="")){
-        return "Null";
-        }
+            return "Null";
+            }
         elseif($existingOtp == $rcvOtp){
-        $this->users->where('id', $userId)->update(array('is_verified' => '1'));
-        $this->users->where('id', $userId)->update(array('otp' => Null));
-        $user = $this->users->where('id', $userId)->get();
-        return "reg done"; 
+            $this->users->where('id', $userId)->update(array('is_verified' => '1'));
+            $this->users->where('id', $userId)->update(array('otp' => Null));
+            //$user = $this->users->where('id', $userId)->get();
+ 
+            return "success"; 
         }
         else{
             return 'Invalid OTP';
         }
     }
-
-    public function RegisterSession($request)
-    {
-        //$isError = 0;
-        //$errorMessage = true;
-        $otp = rand(10000, 99999);
-        $mobile = $request['phone'];
-        $name = $request['name'];
-        $email = $request['email'];
-        $password= $request['password'];
-        $created_by= $request['created_by'];
-        ////$request->request->add(['otp' => $otp]);
-        //$sendsms = $this->channelRepository->sendSms($request,$otp);
-        //return $sendsms;
-        session(['name'=> $name]);
-        session(['mobile'=> $mobile]);
-        session(['email'=> $email]);
-        session(['otp' => $otp]);
-        session(['password' => $password]);
-        session(['created_by' => $created_by]);
-        //Log::info($otp);
-        return 'OTP:'. $otp;
-    }
-
-    public function submitOtp($request){
-        $otp = trim($request['otp']);
-            $user = new $this->users;
-            
-                $user->name= session('name');
-                $user->otp= $otp;
-                $user->email= session('email');
-                $user->phone= session('mobile');
-                $user->password= session('password');
-                $user->created_by= session('created_by');
-                $user->msg_id= session('msgId');
-                $user->is_verified= '1';
-                $user->save();
-               
-                session()->flush();
-                return $user;
-    }
-
     public function login($request){
 
       $otp = rand(10000, 99999);
 
       if($request['phone']){
         $users = $this->users->where('phone', $request['phone'])->update(array('otp' => $otp));
-        //$sendsms = $this->channelRepository->sendSms($request,$otp);  
+        $users = $this->users->where('phone', $request['phone'])->get();
+        //$sendsms = $this->channelRepository->sendSms($request,$otp); 
+        return $users; 
       } 
       elseif($request['email']){
         $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
+        $users = $this->users->where('email', $request['email'])->get();
         //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
+        return $users;
       }
-
-    }
-
-    public function verifyOtpLogin($request){
-
-        $rcvOtp = trim($request['otp']);
-        $userId = $request['userId'];
-        $existingOtp = $this->users->where('id', $userId)->get('otp');
-        $existingOtp = $existingOtp[0]['otp'];
-        if(($rcvOtp=="")){
-        return "Null";
-        }
-        elseif($existingOtp == $rcvOtp){
-        $this->users->where('id', $userId)->update(array('otp' => Null));
-        return "Login done"; 
-        }
-        else{
-            return 'Invalid OTP';
-        }
     }
 }
  

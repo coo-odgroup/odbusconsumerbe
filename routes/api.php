@@ -14,7 +14,6 @@ use App\Http\Middleware\LogRoute;
 //Route::middleware([LogRoute::class])->group(function () {
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
-//Route::get('/BusOperators', [ListingController::class, 'getBusOpertors']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
 Route::get('/Filter', [ListingController::class, 'filter']);
@@ -30,15 +29,11 @@ Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']);
-Route::post('/VerifyOtpLogin', [UsersController::class, 'verifyOtpLogin']);
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 Route::post('/Logout', [UsersController::class, 'logout']);
 Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
-
-//Route::post('/RegisterSession', [UsersController::class, 'RegisterSession']);
-//Route::post('/submitOtp', [UsersController::class, 'submitOtp']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 
 //});

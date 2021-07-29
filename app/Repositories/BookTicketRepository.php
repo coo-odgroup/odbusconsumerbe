@@ -74,7 +74,6 @@ class BookTicketRepository
    
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
         $seatIds = $request['seat_id'];
-        $bookStatus = $request['bookStatus'];
         $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
         $bookingInfo = $request['bookingInfo'];
         //Save Booking 

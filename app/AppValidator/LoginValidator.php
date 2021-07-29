@@ -12,7 +12,7 @@ class LoginValidator
         $rules = [
             'email' => 'required_without:phone',
             'phone' => 'required_without:email',
-            'password' => 'required|alpha_num|min:5'
+            //'password' => 'required|alpha_num|min:5'
         ];      
       
         $LoginValidation = Validator::make($data, $rules);

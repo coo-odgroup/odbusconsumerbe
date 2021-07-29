@@ -12,6 +12,7 @@ return [
     'ALL_RECORDS'=>10000,
     'PAYMENT_DONE' => 'Payment successfully done',
     'PAYMENT_FAILED' => 'Payment Failure',
+    'VERIFIED' => 'verification is successful',
     'REGISTERED' => 'Registered Successfully',
     'LOGIN' => 'Login Successful',
     'OTP_GEN' => 'OTP generated',

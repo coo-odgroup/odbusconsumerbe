@@ -127,63 +127,54 @@ class UsersController extends Controller
  */
    public function verifyOtp(Request $request) 
    {
-    try {
-      $response = $this->usersService->verifyOtp($request); 
-
+    $data = $request->all();
+    $user = Users::where('id', $data)->first()->only('name','email','phone');
+    $user['password'] = 'odbus123';
+    $response = $this->usersService->verifyOtp($request); 
       if($response == 'Null'){
         return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
-      elseif($response == 'reg done'){
-      return $this->successResponse(Config::get('constants.REGISTERED'),Response::HTTP_OK);
+      elseif($response == 'success'){
+        try {
+          if (! $token = auth()->attempt($user)) {
+            return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
+            }
+            return $this->createNewToken($token);
+          }
+          catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+          }  
+      return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }
       else{
       return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
       }
     }
-    catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-    }
 
-   public function RegisterSession(Request $request) {
-    $data = $request->only([
-      'name','email','phone','password','created_by'
-     ]);   
-     $usersValidation = $this->usersValidator->validate($data);
-   
-     if ($usersValidation->fails()) {
-       $errors = $usersValidation->errors();
-       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-     }
-      try {
-        $response = $this->usersService->RegisterSession($request);
-        return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK); 
-    }
-     catch (Exception $e) {
-      return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    }       
-} 
 
-  public function submitOtp(Request $request) 
-    {
-    try {
-      $recvOtp = $request['otp'];
-      if(is_null($recvOtp)){
-        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
-    }  
-      elseif($recvOtp == session('otp')){
-      $response =  $this->usersService->submitOtp($request);  
-        return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_CREATED);
-      }
-      else{
-        return $this->errorResponse(Config::get('constants.OTP_EXPIRED'),Response::HTTP_PARTIAL_CONTENT);
-        }
-    }
-    catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-    }
-    
+
+
+
+
+
+
+
+
+    //   if($response == 'Null'){
+    //     return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
+    // }  
+    //   elseif($response == 'success'){
+    //   return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
+    // }
+    //   else{
+    //   return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
+    //   }
+    // }
+    // catch (Exception $e) {
+    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //   }   
+  
+
     /**
  * @OA\Post(
  *     path="/api/Login",
@@ -216,25 +207,41 @@ class UsersController extends Controller
  */  
 
   public function login(Request $request){  
-    $request->request->add(['password' => 'odbus123']);
-    $data = $request->all();  
-      $LoginValidation = $this->loginValidator->validate($data);
 
-      if ($LoginValidation->fails()) {
-        $errors = $LoginValidation->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-       }
-      try {
-        $response = $this->usersService->login($request);
-        //if (! $token = auth()->attempt($LoginValidation->validated())) {
-          if (! $token = auth()->attempt($data)) {
-        return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
-        }
-        return $this->createNewToken($token);
-      }
-      catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
+    $data = $request->all();  
+    $LoginValidation = $this->loginValidator->validate($data);
+     
+    if ($LoginValidation->fails()) {
+      $errors = $LoginValidation->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }
+    try {
+      $response = $this->usersService->login($request);
+      return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
+  }
+   catch (Exception $e) {
+    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+  }        
+
+    // $request->request->add(['password' => 'odbus123']);
+    // $data = $request->all();  
+    //   $LoginValidation = $this->loginValidator->validate($data);
+
+    //   if ($LoginValidation->fails()) {
+    //     $errors = $LoginValidation->errors();
+    //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    //    }
+    //   try {
+    //     $response = $this->usersService->login($request);
+    //     //if (! $token = auth()->attempt($LoginValidation->validated())) {
+    //       if (! $token = auth()->attempt($data)) {
+    //     return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
+    //     }
+    //     return $this->createNewToken($token);
+    //   }
+    //   catch (Exception $e) {
+    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    //   }   
 }
 
 
@@ -277,61 +284,8 @@ public function userProfile() {
     return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
   }
 }
-/**
- * @OA\Post(
- *     path="/api/VerifyOtpLogin",
- *     tags={"VerifyOtp API Login"},
- *     description="confirmation of user Login with OTP verification",
- *     summary="user Login with OTP verification",
- *     @OA\Parameter(
- *          name="userId",
- *          description="user Id",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="integer",
- *          )
- *      ),
- *     @OA\Parameter(
- *          name="otp",
- *          description="otp sent by user",
- *          required=false,
- *          in="query",
- *          @OA\Schema(
- *              type="string",
- *          )
- *      ),
- *     @OA\Response(response="200", description="Login successful"),
- *     @OA\Response(response="206", description="otp not provided"),
- *     @OA\Response(response="406", description="Invalid otp")
- * )
- * 
- */
-public function verifyOtpLogin(Request $request) 
-   {
-    try {
-      $response = $this->usersService->verifyOtpLogin($request); 
 
-      if($response == 'Null'){
-        return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
-    }  
-      elseif($response == 'Login done'){
-      return $this->successResponse(Config::get('constants.LOGIN'),Response::HTTP_OK);
-    }
-      else{
-      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
-      }
-    }
-    catch (Exception $e) {
-        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      }   
-    }
-
-public function logout() {
-  auth()->logout();
-  return $this->successResponse(Config::get('constants.USER_LOGGEDOUT'),Response::HTTP_OK);
-}
 public function refreshToken() {
   return $this->createNewToken(auth()->refresh());
-}
+  }
 }

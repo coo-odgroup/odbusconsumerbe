@@ -383,13 +383,12 @@ class ChannelRepository
             $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
 
             if($request['phone']){
-                //$sendsms = $this->sendSmsTicket($request,$pnr); 
-                return "Payment Done";
+                $sendsms = $this->sendSmsTicket($request,$pnr); 
             } 
-            elseif($request['email']){
-                $sendEmailTicket = $this->sendEmailTicket($request,$pnr);
-                return "Payment Done";
+            if($request['email']){
+                $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
             }
+            return "Payment Done";
         }
         else{
             return "Payment Failed"; 
