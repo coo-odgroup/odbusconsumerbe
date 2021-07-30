@@ -32,7 +32,7 @@ Route::post('/Login', [UsersController::class, 'login']);
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 Route::post('/Logout', [UsersController::class, 'logout']);
 Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
-Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
+//Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 

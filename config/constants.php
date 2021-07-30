@@ -24,4 +24,5 @@ return [
     'USER_LOGGEDOUT' => ' User successfully signed out',
     'SMS_DELIVERED' => 'SMS delivered successfully',
     'ORDERID_CREATED' => 'Order Id generated Successfully',
+    'BOOKED' => 'Seats already booked',
 ];

@@ -122,7 +122,16 @@ class ChannelController extends Controller
     {   
         try {
             $response = $this->channelService->makePayment($request); 
-             return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
+            if($response == 'Booked'){
+                return $this->errorResponse(Config::get('constants.BOOKED'),Response::HTTP_NOT_ACCEPTABLE);
+            }
+            else{
+                return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
+            }
+            
+
+            // $response = $this->channelService->makePayment($request); 
+            //  return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
          }
          catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

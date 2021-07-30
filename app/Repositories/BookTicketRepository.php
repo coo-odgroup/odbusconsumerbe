@@ -55,7 +55,7 @@ class BookTicketRepository
             else{
                 $userId = $this->users->create($request['customerInfo'])->latest('id')->first('id');   
             }
-    }
+        }
         
         // $existingCustomer = $this->users->where('phone',$customerInfo['phone'])
         //                                     ->orWhere('email',$customerInfo['email'])
@@ -72,9 +72,11 @@ class BookTicketRepository
         //     $userId = $newUserId[0];
         // }
    
+
+        
         //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
-        $seatIds = $request['seat_id'];
-        $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
+        //$seatIds = $request['seat_id'];
+        //$this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
         $bookingInfo = $request['bookingInfo'];
         //Save Booking 
         $booking = new $this->booking;

@@ -11,6 +11,7 @@ use App\Jobs\SendEmailTicketJob;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
 use App\Models\Booking;
+use App\Models\BusSeats;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -20,13 +21,15 @@ class ChannelRepository
     protected $users;
     protected $customerPayment;
     protected $booking;
+    protected $busSeats;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
         $this->customerPayment = $customerPayment;
         $this->booking = $booking;
+        $this->busSeats = $busSeats;
     } 
     
     public function storeGWInfo($data) {
@@ -334,34 +337,51 @@ class ChannelRepository
 
       public function makePayment(Request $request)
     {   
-        $transationId = $request['transaction_id'];
-        $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
-        foreach($records as $record){
-            $name = $record->users->name;
-        }
-        $amount = $request['amount'];
-        $receiptId = 'rcpt_'.$transationId;
-        $key = config('services.razorpay.key');
-        $secretKey = config('services.razorpay.secret');
-        $api = new Api($key, $secretKey);
-        $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+        
+        $seatIds = $request['seat_id'];
+        $bookStatus = $this->busSeats->whereIn('id', $seatIds)->pluck('bookStatus')->toArray();
+        // $bookedTicket = $this->busSeats->whereIn('id', $seatIds)
+        // ->where('bookStatus', '1')->pluck('id'); 
+        if(in_array('1', $bookStatus))
+        {
 
-        // Creates payment booking
-        $orderId = $order['id']; 
-        $user_pay = new $this->customerPayment();
+          return "Booked";
+        
+        }else{
+
+            $transationId = $request['transaction_id'];
+            $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
+            foreach($records as $record){
+                $name = $record->users->name;
+            }
+            $amount = $request['amount'];
+            $receiptId = 'rcpt_'.$transationId;
+            $key = config('services.razorpay.key');
+            $secretKey = config('services.razorpay.secret');
+            $api = new Api($key, $secretKey);
+            $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
     
-        $user_pay->name = $name;
-        $user_pay->amount = $amount;
-        $user_pay->order_id = $orderId;
-        $user_pay->save();
+            // Creates payment booking
+            $orderId = $order['id']; 
+            $user_pay = new $this->customerPayment();
+        
+            $user_pay->name = $name;
+            $user_pay->amount = $amount;
+            $user_pay->order_id = $orderId;
+            $user_pay->save();
+            
+            //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
 
-        $data = array(
-            'name' => $name,
-            'amount' => $amount,
-            'key' => $key,
-            'razorpay_order_id' => $orderId   
-        );
-       return $data;
+            $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
+            $data = array(
+                'name' => $name,
+                'amount' => $amount,
+                'key' => $key,
+                'razorpay_order_id' => $orderId   
+            );
+           return $data;
+
+        }   
     }
     public function pay($request)
     {   
