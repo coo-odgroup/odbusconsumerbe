@@ -344,9 +344,7 @@ class ChannelRepository
         // ->where('bookStatus', '1')->pluck('id'); 
         if(in_array('1', $bookStatus))
         {
-
           return "Booked";
-        
         }else{
 
             $transationId = $request['transaction_id'];
@@ -372,7 +370,7 @@ class ChannelRepository
             
             //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
 
-            $this->busSeats->whereIn('id', $seatIds)->update(array('bookStatus' => 1));
+            $this->busSeats->whereIn('seats_id', $seatIds)->update(array('bookStatus' => 1));
             $data = array(
                 'name' => $name,
                 'amount' => $amount,
@@ -403,7 +401,7 @@ class ChannelRepository
             $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
 
             if($request['phone']){
-                $sendsms = $this->sendSmsTicket($request,$pnr); 
+                //$sendsms = $this->sendSmsTicket($request,$pnr); 
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 

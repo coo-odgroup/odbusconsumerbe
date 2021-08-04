@@ -3,6 +3,7 @@ namespace App\AppValidator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UsersValidator 
 {   
@@ -11,11 +12,6 @@ class UsersValidator
         
         $rules = [
             'name' => 'required|max:50',
-            //'email' => 'unique:users,NULL',
-            'phone' => 'required_without:email|nullable|sometimes|unique:users',
-            
-            //'email' => 'exists:email,NULL',
-            'email' => 'required_without:phone|nullable|sometimes|unique:users',
             'created_by' => 'required',
         ];      
       

@@ -73,7 +73,8 @@ class UsersController extends Controller
  *              type="string"
  *          )
  *      ),
- *     @OA\Response(response="200", description="user details saved and generaed otp sent to user")
+ *     @OA\Response(response="200", description="otp generated"),
+ *     @OA\Response(response="206", description="not a valid credential"),
  * )
  * 
  */
@@ -89,30 +90,36 @@ class UsersController extends Controller
        }
        try {
          $response = $this->usersService->Register($request);
-         return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
-     }
-      catch (Exception $e) {
-       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-     }        
+         if($response!='Exsting User')
+         {
+            return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+         }else{
+            return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_OK);
+         }
+       }
+       catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+       }        
    } 
-/**
+   
+    /**
  * @OA\Post(
  *     path="/api/VerifyOtp",
- *     tags={"VerifyOtp API"},
- *     description="confirmation of user Registration with OTP verification",
- *     summary="user Registration with OTP verification",
+ *     tags={"JWT Auth"},
+ *     description="otp verification and  generating authentication token",
+ *     summary="otp verification and  generating authentication token",
  *     @OA\Parameter(
  *          name="userId",
  *          description="user Id",
  *          required=true,
  *          in="query",
- *          @OA\Schema(
- *              type="integer",
+ *          @OA\Schema( 
+ *              type="string",
  *          )
  *      ),
  *     @OA\Parameter(
  *          name="otp",
- *          description="otp sent by user",
+ *          description="otp set to user",
  *          required=false,
  *          in="query",
  *          @OA\Schema(
@@ -124,7 +131,8 @@ class UsersController extends Controller
  *     @OA\Response(response="406", description="Invalid otp")
  * )
  * 
- */
+ */  
+
    public function verifyOtp(Request $request) 
    {
     $data = $request->all();
@@ -151,43 +159,19 @@ class UsersController extends Controller
       }
     }
 
-
-
-
-
-
-
-
-
-
-    //   if($response == 'Null'){
-    //     return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
-    // }  
-    //   elseif($response == 'success'){
-    //   return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
-    // }
-    //   else{
-    //   return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
-    //   }
-    // }
-    // catch (Exception $e) {
-    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    //   }   
-  
-
-    /**
+/**
  * @OA\Post(
  *     path="/api/Login",
- *     tags={"JWT Auth"},
- *     description="Login with email/phone and password to get the authentication token",
- *     summary="user Login input either phone no or email and password, creating access_token for each user",
+ *     tags={"Login API"},
+ *     description="user login using phone or email",
+ *     summary="user login using phone or email",
  *     @OA\Parameter(
  *          name="phone",
- *          description="phone no of user",
- *          required=false,
+ *          description="phone of user",
+ *          required=false,  
  *          in="query",
- *          @OA\Schema( 
- *              type="string",
+ *          @OA\Schema(
+ *              type="integer",
  *          )
  *      ),
  *     @OA\Parameter(
@@ -199,13 +183,11 @@ class UsersController extends Controller
  *              type="string",
  *          )
  *      ),
- *     @OA\Response(response="200", description="Login Successful"),
- *     @OA\Response(response="206", description="Validation error"),
- *     @OA\Response(response="422", description="Wrong credentials response")
+ *     @OA\Response(response="200", description="otp generated"),
+ *     @OA\Response(response="206", description="not a valid credential"),
  * )
  * 
- */  
-
+ */
   public function login(Request $request){  
 
     $data = $request->all();  
@@ -223,27 +205,7 @@ class UsersController extends Controller
     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
   }        
 
-    // $request->request->add(['password' => 'odbus123']);
-    // $data = $request->all();  
-    //   $LoginValidation = $this->loginValidator->validate($data);
-
-    //   if ($LoginValidation->fails()) {
-    //     $errors = $LoginValidation->errors();
-    //     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-    //    }
-    //   try {
-    //     $response = $this->usersService->login($request);
-    //     //if (! $token = auth()->attempt($LoginValidation->validated())) {
-    //       if (! $token = auth()->attempt($data)) {
-    //     return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
-    //     }
-    //     return $this->createNewToken($token);
-    //   }
-    //   catch (Exception $e) {
-    //     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-    //   }   
 }
-
 
 /**
  * @OA\SecurityScheme(
@@ -273,7 +235,7 @@ class UsersController extends Controller
           'expires_in' => auth()->factory()->getTTL() * 60,
           'user' => auth()->user()   
     ]; 
-    return $this->successResponse($loginUser,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+    return $this->successResponse($loginUser,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
 }
 public function userProfile() {
   $user = auth()->user();

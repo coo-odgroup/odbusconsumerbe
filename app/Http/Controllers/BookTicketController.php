@@ -34,15 +34,13 @@ class BookTicketController extends Controller
     }
 
     public function bookTicket(Request $request) {
-        //  $data = $request->only([
-        //     'email','phone','seat_id','bookStatus','customerInfo','bookingInfo','bookingDetail'
-        //    ]);  
-        //    $bookTicketValidation = $this->bookTicketValidator->validate($data);
+         $data = $request->all();
+           $bookTicketValidation = $this->bookTicketValidator->validate($data);
    
-        // if ($bookTicketValidation->fails()) {
-        // $errors = $bookTicketValidation->errors();
-        // return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        // } 
+        if ($bookTicketValidation->fails()) {
+        $errors = $bookTicketValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
           try {
            $response =  $this->bookTicketService->bookTicket($request);  
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);

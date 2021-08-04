@@ -16,6 +16,29 @@
                 "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
                 "parameters": [
                     {
+                        "name": "seat_id",
+                        "in": "query",
+                        "description": "bus seats ids",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seat_id[]",
+                        "in": "query",
+                        "description": "seat Ids",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
+                    },
+                    {
                         "name": "transaction_id",
                         "in": "query",
                         "description": "customer transaction id against booking",
@@ -37,6 +60,9 @@
                 "responses": {
                     "201": {
                         "description": "Order Id generated Successfully"
+                    },
+                    "406": {
+                        "description": "seats already booked"
                     },
                     "404": {
                         "description": "Invalid Argument Passed"
@@ -489,7 +515,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "user details saved and generaed otp sent to user"
+                        "description": "otp generated"
+                    },
+                    "206": {
+                        "description": "not a valid credential"
                     }
                 }
             }
@@ -497,10 +526,10 @@
         "/api/VerifyOtp": {
             "post": {
                 "tags": [
-                    "VerifyOtp API"
+                    "JWT Auth"
                 ],
-                "summary": "user Registration with OTP verification",
-                "description": "confirmation of user Registration with OTP verification",
+                "summary": "otp verification and  generating authentication token",
+                "description": "otp verification and  generating authentication token",
                 "operationId": "App\\Http\\Controllers\\UsersController::verifyOtp",
                 "parameters": [
                     {
@@ -509,13 +538,13 @@
                         "description": "user Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     {
                         "name": "otp",
                         "in": "query",
-                        "description": "otp sent by user",
+                        "description": "otp set to user",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -538,19 +567,19 @@
         "/api/Login": {
             "post": {
                 "tags": [
-                    "JWT Auth"
+                    "Login API"
                 ],
-                "summary": "user Login input either phone no or email and password, creating access_token for each user",
-                "description": "Login with email/phone and password to get the authentication token",
+                "summary": "user login using phone or email",
+                "description": "user login using phone or email",
                 "operationId": "App\\Http\\Controllers\\UsersController::login",
                 "parameters": [
                     {
                         "name": "phone",
                         "in": "query",
-                        "description": "phone no of user",
+                        "description": "phone of user",
                         "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -565,13 +594,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Login Successful"
+                        "description": "otp generated"
                     },
                     "206": {
-                        "description": "Validation error"
-                    },
-                    "422": {
-                        "description": "Wrong credentials response"
+                        "description": "not a valid credential"
                     }
                 }
             }
@@ -596,47 +622,6 @@
                         "apiAuth": []
                     }
                 ]
-            }
-        },
-        "/api/VerifyOtpLogin": {
-            "post": {
-                "tags": [
-                    "VerifyOtp API Login"
-                ],
-                "summary": "user Login with OTP verification",
-                "description": "confirmation of user Login with OTP verification",
-                "operationId": "App\\Http\\Controllers\\UsersController::verifyOtpLogin",
-                "parameters": [
-                    {
-                        "name": "userId",
-                        "in": "query",
-                        "description": "user Id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "otp",
-                        "in": "query",
-                        "description": "otp sent by user",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Login successful"
-                    },
-                    "206": {
-                        "description": "otp not provided"
-                    },
-                    "406": {
-                        "description": "Invalid otp"
-                    }
-                }
             }
         },
         "/api/viewSeats": {

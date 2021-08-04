@@ -95,6 +95,29 @@ class ChannelController extends Controller
  *     description="generating razorpay order Id",
  *     summary="generating razorpay order Id",
  *     @OA\Parameter(
+ *          name="seat_id",
+ *          description="bus seats ids",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+  *   @OA\Parameter(
+ *      name="seat_id[]",
+ *      description="seat Ids",
+ *      in="query",
+ *      required=true,
+ *      @OA\Schema(
+ *        type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
+ *          )
+ *    ),       
+ *     @OA\Parameter(
  *          name="transaction_id",
  *          description="customer transaction id against booking",
  *          required=true,
@@ -113,6 +136,7 @@ class ChannelController extends Controller
  *          )
  *      ),
  *     @OA\Response(response="201", description="Order Id generated Successfully"),
+ *     @OA\Response(response="406", description="seats already booked"),
  *     @OA\Response(response="404", description="Invalid Argument Passed")
  * )
  * 

@@ -115,6 +115,7 @@ class ViewSeatsRepository
         $boardingDroppings = array();  
         foreach($Records as $Record){  
             $boardingPoints = $Record->boardingDroping->boarding_point;
+            $boardingDroppingTimes = $Record->stoppage_time;
             $locationId = $Record->boardingDroping->location_id;
             $boardDropId = $Record->boardingDroping->id;
             if($locationId==$sourceId)
@@ -122,6 +123,7 @@ class ViewSeatsRepository
                 $boardingArray[] = array(
                     "id" =>  $boardDropId,
                     "boardingPoints" => $boardingPoints,
+                    "boardingTimes" => $boardingDroppingTimes,
                 );
             }
             elseif($locationId==$destinationId)
@@ -129,6 +131,7 @@ class ViewSeatsRepository
                 $droppingArray[] = array(
                     "id" =>  $boardDropId,
                     "droppingPoints" => $boardingPoints,
+                    "droppingTimes" => $boardingDroppingTimes,
             );
             }
     }

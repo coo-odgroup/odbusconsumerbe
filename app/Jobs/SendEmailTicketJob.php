@@ -98,9 +98,13 @@ class SendEmailTicketJob implements ShouldQueue
             
         ];
         //dd($data);
+        $this->subject = config('services.email.subjectTicket');
+        $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
+        //dd($this->subject);
         Mail::send('emailTicket', $data, function ($messageNew) {
             $messageNew->to($this->to)
-            ->subject(config('services.email.subjectTicket'));
+            //->subject(config('services.email.subjectTicket'));
+            ->subject($this->subject);
         });
 
     }

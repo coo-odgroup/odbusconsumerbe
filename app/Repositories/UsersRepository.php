@@ -24,23 +24,49 @@ class UsersRepository
     }
   
     public function Register($request)
-    {
-        $user = new $this->users;
-        $user->name= $request['name'];
-        $user->password= bcrypt('odbus123');
-        $user->created_by= $request['created_by'];
-        $otp = rand(10000, 99999);
-        $user->otp = $otp;
-        if($request['phone']){
+    {  
+        $guestUser = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->exists(); 
+        if(!$guestUser){
+            $user = new $this->users;
+            $user->name= $request['name'];
+            $user->password= bcrypt('odbus123');
+            $user->created_by= $request['created_by'];
+            $otp = $this->sendOtp($request);
             $user->phone = $request['phone'];
+            $user->otp = $otp;
+            $user->save();
+            return  $user;
+        }else{
+            $verifiedUser =  $this->users->where('phone', $request['phone'])
+                                         ->orWhere('email', $request['email'])
+                                         ->first()->is_verified;
+            if($verifiedUser==0){
+                $otp = $this->sendOtp($request);
+                $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])
+                    ->update([
+                    'otp' => $otp,
+                    'password' => bcrypt('odbus123')
+                   ]);
+                   return $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();
+            }
+            else{
+                    return "Exsting User";
+            }
+        }
+
+       //return  $user;   
+    }
+    public function sendOtp($request){
+        $otp = rand(10000, 99999);
+        if($request['phone']){
+            $this->users->phone = $request['phone'];
             //$sendsms = $this->channelRepository->sendSms($request,$otp);  
         } 
         elseif($request['email']){
-            $user->email = $request['email']; 
+            $this->users->email = $request['email']; 
             //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
         }
-        $user->save();
-        return  $user;   
+        return  $otp;
     }
     public function verifyOtp($request){
         $rcvOtp = trim($request['otp']);
