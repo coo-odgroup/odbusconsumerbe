@@ -25,7 +25,17 @@ class UsersRepository
   
     public function Register($request)
     {  
-        $guestUser = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->exists(); 
+        $query =$this->users->where([
+                ['phone', $request['phone']],
+                ['phone', '<>', null]
+                ])
+                ->orWhere([
+                ['email', $request['email']],
+                ['email', '<>', null]
+                ]);
+ 
+        $guestUser = $query->exists();
+        
         if(!$guestUser){
             $user = new $this->users;
             $user->name= $request['name'];
@@ -37,9 +47,7 @@ class UsersRepository
             $user->save();
             return  $user;
         }else{
-            $verifiedUser =  $this->users->where('phone', $request['phone'])
-                                         ->orWhere('email', $request['email'])
-                                         ->first()->is_verified;
+            $verifiedUser = $query->first()->is_verified;
             if($verifiedUser==0){
                 $otp = $this->sendOtp($request);
                 $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])
@@ -47,14 +55,13 @@ class UsersRepository
                     'otp' => $otp,
                     'password' => bcrypt('odbus123')
                    ]);
-                   return $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();
+                   return $query->get();
             }
             else{
                     return "Exsting User";
             }
         }
 
-       //return  $user;   
     }
     public function sendOtp($request){
         $otp = rand(10000, 99999);
@@ -64,7 +71,7 @@ class UsersRepository
         } 
         elseif($request['email']){
             $this->users->email = $request['email']; 
-            //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
+            $sendEmail = $this->channelRepository->sendEmail($request,$otp);
         }
         return  $otp;
     }
@@ -102,7 +109,7 @@ class UsersRepository
       elseif($request['email']){
         $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
         $users = $this->users->where('email', $request['email'])->get();
-        //$sendEmail = $this->channelRepository->sendEmail($request,$otp);
+        $sendEmail = $this->channelRepository->sendEmail($request,$otp);
         return $users;
       }
     }
