@@ -61,7 +61,6 @@ class UsersRepository
                     return "Exsting User";
             }
         }
-
     }
     public function sendOtp($request){
         $otp = rand(10000, 99999);
@@ -81,37 +80,26 @@ class UsersRepository
         $existingOtp = $this->users->where('id', $userId)->get('otp');
         $existingOtp = $existingOtp[0]['otp'];
         $user = $this->users->where('id', $userId)->first()->only('name','email');
-        //$user['password'] = 'odbus123';
         if(($rcvOtp=="")){
             return "Null";
             }
         elseif($existingOtp == $rcvOtp){
             $this->users->where('id', $userId)->update(array('is_verified' => '1'));
             $this->users->where('id', $userId)->update(array('otp' => Null));
-            //$user = $this->users->where('id', $userId)->get();
- 
             return "success"; 
         }
         else{
             return 'Invalid OTP';
         }
     }
+
     public function login($request){
-
-      $otp = rand(10000, 99999);
-
-      if($request['phone']){
-        $users = $this->users->where('phone', $request['phone'])->update(array('otp' => $otp));
-        $users = $this->users->where('phone', $request['phone'])->get();
-        //$sendsms = $this->channelRepository->sendSms($request,$otp); 
-        return $users; 
-      } 
-      elseif($request['email']){
-        $users = $this->users->where('email', $request['email'])->update(array('otp' => $otp));
-        $users = $this->users->where('email', $request['email'])->get();
-        $sendEmail = $this->channelRepository->sendEmail($request,$otp);
-        return $users;
+        $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->first()->name;
+        $request->request->add(['name' => $name]);
+        $otp = $this->sendOtp($request);
+        $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->update(array('otp' => $otp));
+        return  $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();                         
+        
       }
-    }
 }
  

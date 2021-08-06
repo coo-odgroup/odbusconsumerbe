@@ -161,7 +161,8 @@ class ListingRepository
             $totalTravelTime = $dep_time->diff($arr_time);
             $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
+            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
+            //$totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
@@ -171,18 +172,6 @@ class ListingRepository
             $safetyIcon = $safetyDatas->pluck('safety.icon');
             $busPhotoDatas = $record->busGallery;
             $busPhotos = $busPhotoDatas->pluck('image');
-            // foreach($ticketPriceDatas as $ticketPriceData) 
-            // {  
-            //    $startingFromPrice = $ticketPriceData->base_seat_fare;   
-            //    $departureTime = $ticketPriceData->dep_time;
-            //    $arrivalTime = $ticketPriceData->arr_time;
-            //    $depTime = date("H:i",strtotime($departureTime));
-            //    $arrTime = date("H:i",strtotime($arrivalTime)); 
-            //    $arr_time = new DateTime($arrivalTime);
-            //    $dep_time = new DateTime($departureTime);
-            //    $totalTravelTime = $dep_time->diff($arr_time);
-            //    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
-            // }
 
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
