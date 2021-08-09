@@ -162,8 +162,7 @@ class ListingRepository
             $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
-            //$totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
             $amenityIcon = $amenityDatas->pluck('amenities.icon');
@@ -343,8 +342,8 @@ class ListingRepository
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
 
-                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
+                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
                 $amenityDatas = $record->busAmenities;
                 $amenityName = $amenityDatas->pluck('amenities.name');
                 $amenityIcon = $amenityDatas->pluck('amenities.icon');

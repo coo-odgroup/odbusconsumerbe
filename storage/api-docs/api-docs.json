@@ -608,7 +608,7 @@
                     "JWT Auth"
                 ],
                 "summary": "Get user details",
-                "operationId": "App\\Http\\Controllers\\UsersController::createNewToken",
+                "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
                 "responses": {
                     "200": {
                         "description": "Authorized User details"
