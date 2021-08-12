@@ -96,5 +96,8 @@ class Bus extends Model
     {        
         return $this->belongsTo(CancellationSlab::class);        
     }
-    
+    public function seatOpen()
+    {        
+        return $this->hasOne(SeatOpen::class);        
+    } 
 }

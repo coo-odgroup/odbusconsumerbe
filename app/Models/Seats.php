@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\BusSeatLayout;
 use App\Models\SeatClass;
 use App\Models\BusSeats;
+use App\Models\SeatOpenSeats;
 
 class Seats extends Model
 {
@@ -24,21 +25,22 @@ class Seats extends Model
         'status',
     ];
 
-    // public function busSeats()
-    // {
-    // 	return $this->hasOne(BusSeats::class);
-    // }
     public function busSeats()
     {
     	return $this->hasOne(BusSeats::class)->withDefault(function () {
             return (object)[];
             //return new BusSeats();
-
         });
     }
     public function seatClass()
     {
     	return $this->belongsTo(SeatClass::class);
+    }
+    public function seatOpenSeats()
+    { 
+        return $this->hasOne(SeatOpenSeats::class)->withDefault(function () {
+            return (object)[];
+        });
     }
 
 }
