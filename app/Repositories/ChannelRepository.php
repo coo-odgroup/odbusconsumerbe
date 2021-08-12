@@ -337,15 +337,16 @@ class ChannelRepository
 
       public function makePayment(Request $request)
     {   
-        $seatIds = $request['seat_id'];
-        $bookStatus = $this->busSeats->whereIn('id', $seatIds)->pluck('bookStatus')->toArray();
+        $busId = $request['bus_id'];
+        $seatIds = $request['seat_id']; 
+        $bookStatus = $this->busSeats->whereIn('seats_id', $seatIds)->pluck('bookStatus')->toArray();
+        //return $bookStatus;
         // $bookedTicket = $this->busSeats->whereIn('id', $seatIds)
         // ->where('bookStatus', '1')->pluck('id'); 
         if(in_array('1', $bookStatus))
         {
           return "Booked";
         }else{
-
             $transationId = $request['transaction_id'];
             $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
             foreach($records as $record){
@@ -357,13 +358,12 @@ class ChannelRepository
             //$secretKey = config('services.razorpay.secret');
             $key = $this->credentials->first()->razorpay_key;
             $secretKey = $this->credentials->first()->razorpay_secret;
-            $api = new Api($key, $secretKey);
+            $api = new Api($key, $secretKey);   
             $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
-    
-            // Creates payment booking
+            // Creates customer payment 
             $orderId = $order['id']; 
+            //return $orderId;
             $user_pay = new $this->customerPayment();
-        
             $user_pay->name = $name;
             $user_pay->amount = $amount;
             $user_pay->order_id = $orderId;
@@ -371,7 +371,9 @@ class ChannelRepository
             
             //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
 
-            $this->busSeats->whereIn('seats_id', $seatIds)->update(array('bookStatus' => 1));
+            $this->busSeats->where('bus_id', $busId)
+                ->whereIn('seats_id', $seatIds)
+                ->update(array('bookStatus' => 1));
             $data = array(
                 'name' => $name,
                 'amount' => $amount,
@@ -391,6 +393,8 @@ class ChannelRepository
         $data = $request->all();
         $customerId = $this->customerPayment->where('order_id', $data['razorpay_order_id'])->pluck('id');
         $customerId = $customerId[0];
+        $busId = $request['bus_id'];
+        $seatIds = $request['seat_id'];
         $razorpay_signature = $data['razorpay_signature'];
         $razorpay_payment_id = $data['razorpay_payment_id'];
         $razorpay_order_id = $data['razorpay_order_id'];
@@ -418,6 +422,9 @@ class ChannelRepository
             return "Payment Done";
         }
         else{
+            $this->busSeats->where('bus_id', $busId)
+                           ->whereIn('seats_id', $seatIds)
+                           ->update(array('bookStatus' => 0));
             return "Payment Failed"; 
             }
         

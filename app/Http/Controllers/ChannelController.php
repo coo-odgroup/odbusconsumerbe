@@ -152,10 +152,6 @@ class ChannelController extends Controller
             else{
                 return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
             }
-            
-
-            // $response = $this->channelService->makePayment($request); 
-            //  return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
          }
          catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -326,7 +322,7 @@ class ChannelController extends Controller
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
             }
             else{
-                    return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
+                return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
             }  
          }
         catch (Exception $e) {
