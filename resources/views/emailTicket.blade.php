@@ -231,8 +231,8 @@
                                              <td align="left" style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;"><img src="https://www.odbus.in/frontassets/emailimages/40.png" /> &nbsp;
                                                 <strong style="vertical-align: top;"> Seat Number: </strong>
                                                 <span style="vertical-align: top;">
-                                                @foreach($seat_id as $seat) 
-                                									{{$seat_id[$loop->index]}}@if (!$loop->last),@endif         
+                                                @foreach($seat_no as $seat) 
+                                									{{$seat_no[$loop->index]}}@if (!$loop->last),@endif         
                                                 @endforeach                                              </span>
                                             </td>                                                        
                                         </tr>
@@ -315,7 +315,7 @@
                                                                             <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                                                 <tr style="border-bottom: solid 1px #fff;">
                                                                                      <td align="left" style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">
-                                                                                        <strong style="vertical-align: top;"> Traveller{{$loop->iteration}} {{$seat_id[$loop->index]}}: </strong>
+                                                                                        <strong style="vertical-align: top;"> Traveller{{$loop->iteration}} {{$seat_no[$loop->index]}}: </strong>
                                                                                         {{$passenger['passenger_name']}} {{$passenger['passenger_gender']}}({{$passenger['passenger_age']}})                                                        </td>                                                        
                                                                                 </tr>
                                                                             </table>

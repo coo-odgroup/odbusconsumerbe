@@ -189,7 +189,7 @@ class ChannelRepository
       //public function sendSmsTicket($data){
       public function sendSmsTicket($data, $pnr) {
 
-        $seatList = implode(",",$data['seat_id']);
+        $seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
