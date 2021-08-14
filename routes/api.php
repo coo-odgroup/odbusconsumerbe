@@ -21,7 +21,7 @@ Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
 Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
-//Route::post('/SendSms', [ChannelController::class, 'sendSms']);
+Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 //Route::post('/SendSmsTicket', [ChannelController::class, 'sendSmsTicket']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
@@ -35,10 +35,9 @@ Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 //Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
+Route::get('/BusDetails', [ListingController::class, 'busDetails']);
 
 //});
-
-
 
 
 

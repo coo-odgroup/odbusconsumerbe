@@ -287,4 +287,9 @@ class ListingController extends Controller
         $FilterData = $this->listingService->getFilterOptions($request);
         return $this->successResponse($FilterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }   
+
+    public function busDetails(Request $request) {
+        $details = $this->listingService->busDetails($request);
+        return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 }
