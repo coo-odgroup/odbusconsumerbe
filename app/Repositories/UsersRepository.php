@@ -66,7 +66,7 @@ class UsersRepository
         $otp = rand(10000, 99999);
         if($request['phone']){
             $this->users->phone = $request['phone'];
-            //$sendsms = $this->channelRepository->sendSms($request,$otp);  
+            $sendsms = $this->channelRepository->sendSms($request,$otp);  
         } 
         elseif($request['email']){
             $this->users->email = $request['email']; 
@@ -94,12 +94,13 @@ class UsersRepository
     }
 
     public function login($request){
-        $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->first()->name;
+        $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first()->name;
         $request->request->add(['name' => $name]);
         $otp = $this->sendOtp($request);
-        $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->update(array('otp' => $otp));
-        return  $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();                         
+        $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->orderBy('id','DESC')->take(1)->update(array('otp' => $otp));
+
+        return  $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first();                         
         
       }
-}
+}   
  

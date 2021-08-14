@@ -40,10 +40,12 @@ class BookTicketRepository
     { 
         $customerInfo = $request['customerInfo'];
         $existingUser = $this->users->where('phone',$customerInfo['phone'])
-                                ->orWhere('email', $customerInfo['email'])->exists(); 
+                                //->orWhere('email', $customerInfo['email'])
+                                ->exists(); 
         if($existingUser==true){
             $userId = $this->users->where('phone',$customerInfo['phone'])
-                            ->orWhere('email',$customerInfo['email'])->first('id');
+                            //->orWhere('email',$customerInfo['email'])
+                            ->first('id');
            $this->users->whereIn('id', $userId)->update($customerInfo);     
         }
         else{

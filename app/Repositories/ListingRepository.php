@@ -119,7 +119,7 @@ class ListingRepository
                 ->with('seatOpen.seatOpenSeats')
                 ->with('BusSitting')
                 ->with('busGallery')
-                //->with('cancelationSlab')
+                ->with('cancellationslabs.cancellationSlabInfo')
                 ->where('status','1')
                 ->where('id',$busId)
                 ->get();
@@ -161,9 +161,6 @@ class ListingRepository
             //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
             //return $seatsOpenSeats;
 
-
-
-
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
             $amenityDatas = $record->busAmenities;
@@ -174,7 +171,10 @@ class ListingRepository
             $safetyIcon = $safetyDatas->pluck('safety.icon');
             $busPhotoDatas = $record->busGallery;
             $busPhotos = $busPhotoDatas->pluck('image');
-
+            $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
+            $cSlabDuration = $cSlabDatas->pluck('duration');
+            $cSlabDeduction = $cSlabDatas->pluck('deduction');
+        
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
             foreach($seatDatas as $seatData) {  
@@ -209,7 +209,9 @@ class ListingRepository
                 "amenityIcon" => $amenityIcon,
                 "safetyIconName" =>$safetyName,
                 "safetyIcon" => $safetyIcon,
-                "busPhotos" => $busPhotos,        
+                "busPhotos" => $busPhotos,
+                "cancellationDuration" => $cSlabDuration,
+                "cancellationDuduction" => $cSlabDeduction,
             );
                     
         }
@@ -287,6 +289,9 @@ class ListingRepository
                 ->with('busSeats.seats')
                 ->with('BusSitting')
                 ->with('busGallery')
+                ->with('cancellationslabs.cancellationSlabInfo')
+                ->where('status','1')
+                ->where('id',$busId)
                 ->whereHas('busType.busClass', function ($query) use ($busType){
                     if($busType)
                     $query->whereIn('id', (array)$busType);            
@@ -357,6 +362,9 @@ class ListingRepository
                 $safetyIcon = $safetyDatas->pluck('safety.icon');
                 $busPhotoDatas = $record->busGallery;
                 $busPhotos = $busPhotoDatas->pluck('image');
+                $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
+                $cSlabDuration = $cSlabDatas->pluck('duration');
+                $cSlabDeduction = $cSlabDatas->pluck('deduction');
                  $seatClassRecords = 0;
                  $sleeperClassRecords = 0;
                 foreach($seatDatas as $seatData) {  
@@ -391,7 +399,9 @@ class ListingRepository
                     "amenityIcon" => $amenityIcon, 
                     "safetyIconName" =>$safetyName,
                     "safetyIcon" => $safetyIcon,
-                    "busPhotos" => $busPhotos,     
+                    "busPhotos" => $busPhotos,
+                    "cancellationDuration" => $cSlabDuration,
+                    "cancellationDuduction" => $cSlabDeduction,     
                 );            
             }
             if($price == 0){
