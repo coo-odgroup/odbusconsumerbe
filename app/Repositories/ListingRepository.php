@@ -84,7 +84,6 @@ class ListingRepository
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;    
 
-       
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);  
@@ -98,9 +97,9 @@ class ListingRepository
 
             $busRecords[] = $busId;
             
-            $busScheduleDate = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
+            $busScheduleId = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
             $dates = $this->busScheduleDate
-                ->where('bus_schedule_id', $busScheduleDate)           
+                ->where('bus_schedule_id', $busScheduleId)           
                 ->pluck('entry_date')->toarray();
 
             if($jdays>1){
@@ -108,10 +107,8 @@ class ListingRepository
             }else{
                 $new_date = $entry_date;
             }
-
             if(in_array($new_date, $dates))
             {
-    
                 $records[] = $this->bus
                 ->with('busContacts')
                 ->with('busOperator')       
@@ -119,23 +116,24 @@ class ListingRepository
                 ->with('busSafety.safety')
                 ->with('BusType.busClass')
                 ->with('busSeats.seats')
+                ->with('seatOpen.seatOpenSeats')
                 ->with('BusSitting')
                 ->with('busGallery')
-                ->with('cancelationSlab')
+                //->with('cancelationSlab')
                 ->where('status','1')
                 ->where('id',$busId)
                 ->get();
             }   
-    }
+        }
      $records = Arr::flatten($records);
      //return $records;
-    
         foreach($records as $record){
             $busId = $record->id; 
             $busName = $record->name;
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
             $via = $record->via;
+            $maxSeatBook = $record->max_seat_book;
             $conductor_number = $record->busContacts->phone;
             $operatorId = $record->busOperator->id;
             $operatorName = $record->busOperator->operator_name;
@@ -143,8 +141,6 @@ class ListingRepository
             $busType = $record->BusType->busClass->class_name;
             $busTypeName = $record->BusType->name;
             $ticketPriceDatas = $record->ticketPrice;
-
-            //$ticketPriceId = $ticketPriceDatas->find()->id;
 
             $ticketPriceRecords = $ticketPriceDatas
                     ->where('source_id', $sourceID)
@@ -161,9 +157,15 @@ class ListingRepository
             $totalTravelTime = $dep_time->diff($arr_time);
             $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
+            //$seatOpenDatas = $record->seatOpen;
+            //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
+            //return $seatsOpenSeats;
+
+
+
+
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
-            //$totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
             $amenityIcon = $amenityDatas->pluck('amenities.icon');
@@ -189,6 +191,7 @@ class ListingRepository
                 "busName" => $busName,
                 "popularity" => $popularity,
                 "busNumber" => $busNumber,
+                "maxSeatBook" => $maxSeatBook,
                 "conductor_number" => $conductor_number,
                 "operatorId" => $operatorId,
                 "operatorName" => $operatorName,
@@ -320,6 +323,7 @@ class ListingRepository
                 $popularity = $record->popularity;
                 $busNumber = $record->bus_number;
                 $via = $record->via;
+                $maxSeatBook = $record->max_seat_book;
                 $conductor_number = $record->busContacts->phone;
                 $operatorId = $record->busOperator->id;
                 $operatorName = $record->busOperator->operator_name;
@@ -343,8 +347,8 @@ class ListingRepository
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
 
-                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
+                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
                 $amenityDatas = $record->busAmenities;
                 $amenityName = $amenityDatas->pluck('amenities.name');
                 $amenityIcon = $amenityDatas->pluck('amenities.icon');
@@ -369,6 +373,7 @@ class ListingRepository
                     "busName" => $busName,
                     "popularity" => $popularity,
                     "busNumber" => $busNumber, 
+                    "maxSeatBook" => $maxSeatBook,
                     "conductor_number" => $conductor_number,
                     "operatorId" => $operatorId,
                     "operatorName" => $operatorName,
@@ -394,11 +399,36 @@ class ListingRepository
             }elseif($price == 1){
                 $sortByPrice = collect($FilterRecords)->sortBy('startingFromPrice')->all();
                 $sorted = $sortByPrice; 
-           }
-            
+           }  
            $sorted = array_values($sorted);
            return $sorted;   
-    
     }
+
+    public function busDetails($request)
+    { 
+        $busId = $request['bus_id'];
+        $sourceID = $request['source_id'];      
+        $destinationID = $request['destination_id']; 
+        $result['busDetails'] = $this->bus->where('id',$busId)
+                                ->with('cancellationslabs.cancellationSlabInfo')
+                                ->with('busAmenities.amenities')
+                                ->with('busSafety.safety')
+                                ->with('busGallery')
+                                ->get();        
+        $result['boarding_point'] = $this->busStoppageTiming
+                                              ->where('bus_id', $busId)
+                                              ->where('location_id', $sourceID)
+                                              ->get();
+        $result['dropping_point'] = $this->busStoppageTiming
+                                              ->where('bus_id', $busId)
+                                              ->where('location_id', $destinationID)
+                                              ->get();                                     
+
+        return $result;
+    }
+
+
+
+
 
 }

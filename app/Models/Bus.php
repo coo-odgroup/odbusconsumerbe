@@ -92,9 +92,12 @@ class Bus extends Model
     {        
         return $this->hasMany(BusGallery::class);        
     }
-    public function cancelationSlab()
+    public function cancellationslabs()
     {        
         return $this->belongsTo(CancellationSlab::class);        
     }
-    
+    public function seatOpen()
+    {        
+        return $this->hasOne(SeatOpen::class);        
+    } 
 }

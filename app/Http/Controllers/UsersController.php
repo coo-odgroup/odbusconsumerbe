@@ -144,7 +144,7 @@ class UsersController extends Controller
     }  
       elseif($response == 'success'){
         try {
-          if (! $token = auth()->attempt($user)) {
+          if (! $token = Auth()->attempt($user)) {
             return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
             }
             return $this->createNewToken($token);
@@ -207,6 +207,15 @@ class UsersController extends Controller
 
 }
 
+protected function createNewToken($token){
+  $loginUser = [  
+       'access_token' => $token,
+       'token_type' => 'bearer',
+       'expires_in' => Auth()->factory()->getTTL() * 60,
+       'user' => Auth()->user()   
+ ]; 
+ return $this->successResponse($loginUser,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
+}
 /**
  * @OA\SecurityScheme(
  *     type="http",
@@ -228,15 +237,7 @@ class UsersController extends Controller
  * )
  */
 
-  protected function createNewToken($token){
-     $loginUser = [  
-          'access_token' => $token,
-          'token_type' => 'bearer',
-          'expires_in' => auth()->factory()->getTTL() * 60,
-          'user' => auth()->user()   
-    ]; 
-    return $this->successResponse($loginUser,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
-}
+  
 public function userProfile() {
   $user = auth()->user();
   if(!is_null($user)) {

@@ -12,6 +12,7 @@ use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BusSeats;
+use App\Models\Credentials;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -22,14 +23,16 @@ class ChannelRepository
     protected $customerPayment;
     protected $booking;
     protected $busSeats;
+    protected $credentials;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
         $this->customerPayment = $customerPayment;
         $this->booking = $booking;
         $this->busSeats = $busSeats;
+        $this->credentials = $credentials;
     } 
     
     public function storeGWInfo($data) {
@@ -118,11 +121,13 @@ class ChannelRepository
     }
     
     public function sendSms($data, $otp) {
+
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
 
             //Environment Variables
-            $apiKey = config('services.sms.textlocal.key');
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
             $textLocalUrl = config('services.sms.textlocal.url_send');
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.message');
@@ -136,7 +141,6 @@ class ChannelRepository
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
             
-
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
             //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
@@ -154,7 +158,7 @@ class ChannelRepository
 
             // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
-            
+ 
             // if ($err) { 
             //     return "cURL Error #:" . $err;
             // } 
@@ -185,7 +189,7 @@ class ChannelRepository
       //public function sendSmsTicket($data){
       public function sendSmsTicket($data, $pnr) {
 
-        $seatList = implode(",",$data['seat_id']);
+        $seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
@@ -201,7 +205,8 @@ class ChannelRepository
         if($SmsGW =='textLocal'){
 
             //Environment Variables
-            $apiKey = config('services.sms.textlocal.key');
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
             $textLocalUrl = config('services.sms.textlocal.url_send');
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.msgTicket');
@@ -326,27 +331,22 @@ class ChannelRepository
    
       public function sendEmailTicket($request, $pnr) {
         $email_pnr = $pnr;
-        // $data = $request->only([
-        //     'name','email','bookingdate','journeydate', 'boarding_point','dropping_point',
-        //     'departureTime','arrivalTime','seat_id','busname','busNumber','bustype',
-        //     'busTypeName','sittingType','conductor_number','totalfare','passengerDetails' ]); 
         $data =  $request->all();
         SendEmailTicketJob::dispatch($data, $email_pnr);
-       
       }
 
       public function makePayment(Request $request)
     {   
-        
-        $seatIds = $request['seat_id'];
-        $bookStatus = $this->busSeats->whereIn('id', $seatIds)->pluck('bookStatus')->toArray();
+        $busId = $request['bus_id'];
+        $seatIds = $request['seat_id']; 
+        $bookStatus = $this->busSeats->whereIn('seats_id', $seatIds)->pluck('bookStatus')->toArray();
+        //return $bookStatus;
         // $bookedTicket = $this->busSeats->whereIn('id', $seatIds)
         // ->where('bookStatus', '1')->pluck('id'); 
         if(in_array('1', $bookStatus))
         {
           return "Booked";
         }else{
-
             $transationId = $request['transaction_id'];
             $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
             foreach($records as $record){
@@ -354,15 +354,16 @@ class ChannelRepository
             }
             $amount = $request['amount'];
             $receiptId = 'rcpt_'.$transationId;
-            $key = config('services.razorpay.key');
-            $secretKey = config('services.razorpay.secret');
-            $api = new Api($key, $secretKey);
+            //$key = config('services.razorpay.key');
+            //$secretKey = config('services.razorpay.secret');
+            $key = $this->credentials->first()->razorpay_key;
+            $secretKey = $this->credentials->first()->razorpay_secret;
+            $api = new Api($key, $secretKey);   
             $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
-    
-            // Creates payment booking
+            // Creates customer payment 
             $orderId = $order['id']; 
+            //return $orderId;
             $user_pay = new $this->customerPayment();
-        
             $user_pay->name = $name;
             $user_pay->amount = $amount;
             $user_pay->order_id = $orderId;
@@ -370,7 +371,9 @@ class ChannelRepository
             
             //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
 
-            $this->busSeats->whereIn('seats_id', $seatIds)->update(array('bookStatus' => 1));
+            $this->busSeats->where('bus_id', $busId)
+                ->whereIn('seats_id', $seatIds)
+                ->update(array('bookStatus' => 1));
             $data = array(
                 'name' => $name,
                 'amount' => $amount,
@@ -383,11 +386,15 @@ class ChannelRepository
     }
     public function pay($request)
     {   
-        $key = config('services.razorpay.key');
-        $secretKey = config('services.razorpay.secret');
+        //$key = config('services.razorpay.key');
+        //$secretKey = config('services.razorpay.secret');
+        $key = $this->credentials->first()->razorpay_key;
+        $secretKey = $this->credentials->first()->razorpay_secret;
         $data = $request->all();
         $customerId = $this->customerPayment->where('order_id', $data['razorpay_order_id'])->pluck('id');
         $customerId = $customerId[0];
+        $busId = $request['bus_id'];
+        $seatIds = $request['seat_id'];
         $razorpay_signature = $data['razorpay_signature'];
         $razorpay_payment_id = $data['razorpay_payment_id'];
         $razorpay_order_id = $data['razorpay_order_id'];
@@ -396,12 +403,18 @@ class ChannelRepository
 
         $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
-        if ($generated_signature == $data['razorpay_signature']) { 
-            $this->customerPayment->where('id', $customerId)->update(array('razorpay_id' => $razorpay_payment_id));
-            $this->customerPayment->where('id', $customerId)->update(array('payment_done' => '1'));
-
+        $api = new Api($key, $secretKey);
+        $payment = $api->payment->fetch($razorpay_payment_id);
+        $paymentStatus = $payment->status;
+        if ($generated_signature == $data['razorpay_signature'] && $paymentStatus == 'authorized') { 
+            $this->customerPayment->where('id', $customerId)
+                                ->update([
+                                    'razorpay_id' => $razorpay_payment_id,
+                                    'razorpay_signature' => $razorpay_signature,
+                                    'payment_done'  => '1'
+                                ]);
             if($request['phone']){
-                //$sendsms = $this->sendSmsTicket($request,$pnr); 
+                $sendsms = $this->sendSmsTicket($request,$pnr); 
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
@@ -409,6 +422,9 @@ class ChannelRepository
             return "Payment Done";
         }
         else{
+            $this->busSeats->where('bus_id', $busId)
+                           ->whereIn('seats_id', $seatIds)
+                           ->update(array('bookStatus' => 0));
             return "Payment Failed"; 
             }
         

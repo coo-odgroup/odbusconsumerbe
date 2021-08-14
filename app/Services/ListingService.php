@@ -36,6 +36,9 @@ class ListingService
     {
         return $this->listingRepository->getFilterOptions($request);
     }
-    
+    public function busDetails(Request $request)
+    {
+        return $this->listingRepository->busDetails($request);
+    }
    
 }

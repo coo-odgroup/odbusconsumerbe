@@ -4,7 +4,6 @@ namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use Illuminate\Support\Facades\Log;
-//use Illuminate\Support\Facades\Auth;
 use App\Repositories\ChannelRepository;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +42,7 @@ class UsersRepository
             $user->created_by= $request['created_by'];
             $otp = $this->sendOtp($request);
             $user->phone = $request['phone'];
+            $user->email = $request['email'];
             $user->otp = $otp;
             $user->save();
             return  $user;

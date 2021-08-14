@@ -27,7 +27,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $dropping_point;
     protected $departureTime;
     protected $arrivalTime;
-    protected $seat_id;
+    protected $seat_no;
     protected $busname;
     protected $busNumber;      
     protected $bustype;
@@ -53,7 +53,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->dropping_point = $request['dropping_point'];
         $this->departureTime = $request['departureTime'];
         $this->arrivalTime = $request['arrivalTime'];
-        $this->seat_id = $request['seat_id'];
+        $this->seat_no = $request['seat_no'];
         $this->busname = $request['busname'];
         $this->busNumber = $request['busNumber'];
         $this->bustype = $request['bustype'];
@@ -86,7 +86,7 @@ class SendEmailTicketJob implements ShouldQueue
             'dropping_point' => $this->dropping_point,
             'departureTime'=> $this->departureTime,
             'arrivalTime'=> $this->arrivalTime,
-            'seat_id' => $this->seat_id,
+            'seat_no' => $this->seat_no,
             'busname'=> $this->busname,
             'busNumber'=> $this->busNumber,
             'bustype' => $this->bustype,
