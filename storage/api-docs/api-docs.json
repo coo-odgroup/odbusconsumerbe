@@ -467,6 +467,50 @@
                 }
             }
         },
+        "/api/BusDetails": {
+            "get": {
+                "tags": [
+                    "BusDetails API"
+                ],
+                "summary": "Get Details of a Bus",
+                "description": "BusDetails",
+                "operationId": "App\\Http\\Controllers\\ListingController::busDetails",
+                "parameters": [
+                    {
+                        "name": "bus_id",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "source_id",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destination_id",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus Details"
+                    }
+                }
+            }
+        },
         "/api/Register": {
             "post": {
                 "tags": [
