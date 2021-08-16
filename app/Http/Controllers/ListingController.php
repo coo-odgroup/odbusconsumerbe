@@ -288,6 +288,43 @@ class ListingController extends Controller
         return $this->successResponse($FilterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }   
 
+    /**
+ * @OA\Get(
+ *     path="/api/BusDetails",
+ *     tags={"BusDetails API"},
+ *     description="BusDetails",
+ *     summary="Get Details of a Bus",
+ *     @OA\Parameter(
+ *          name="bus_id",
+ *          description="bus Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="source_id",
+ *          description="source Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="destination_id",
+ *          description="destination Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="Bus Details")
+ * )
+ * 
+ */
     public function busDetails(Request $request) {
         $details = $this->listingService->busDetails($request);
         return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
