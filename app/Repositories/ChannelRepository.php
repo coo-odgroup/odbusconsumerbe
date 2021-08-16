@@ -328,7 +328,7 @@ class ChannelRepository
        
       }
 
-   
+      
       public function sendEmailTicket($request, $pnr) {
         $email_pnr = $pnr;
         $data =  $request->all();
@@ -339,10 +339,8 @@ class ChannelRepository
     {   
         $busId = $request['bus_id'];
         $seatIds = $request['seat_id']; 
-        $bookStatus = $this->busSeats->whereIn('seats_id', $seatIds)->pluck('bookStatus')->toArray();
-        //return $bookStatus;
-        // $bookedTicket = $this->busSeats->whereIn('id', $seatIds)
-        // ->where('bookStatus', '1')->pluck('id'); 
+        $passengerGender = $request['passenger_gender']; 
+        $bookStatus = $this->busSeats->where('bus_id', $busId)->whereIn('seats_id', $seatIds)->pluck('bookStatus')->toArray();
         if(in_array('1', $bookStatus))
         {
           return "Booked";
@@ -360,20 +358,22 @@ class ChannelRepository
             $secretKey = $this->credentials->first()->razorpay_secret;
             $api = new Api($key, $secretKey);   
             $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+
             // Creates customer payment 
             $orderId = $order['id']; 
-            //return $orderId;
             $user_pay = new $this->customerPayment();
             $user_pay->name = $name;
             $user_pay->amount = $amount;
             $user_pay->order_id = $orderId;
             $user_pay->save();
             
-            //Update Ticket Status in bus_seats Change bookStatus to 1(Booked)
-
-            $this->busSeats->where('bus_id', $busId)
-                ->whereIn('seats_id', $seatIds)
-                ->update(array('bookStatus' => 1));
+            //Update Ticket Status in bus_seats Change bookStatus to 1(Booked) and gender
+            for ($i = 0; $i < count($seatIds); $i++) {
+                $this->busSeats->where('bus_id', $busId)
+                    ->where('seats_id', $seatIds[$i])
+                    ->update(['bookStatus' =>1, 'seat_type_gender' =>$passengerGender[$i]]);
+              
+            }
             $data = array(
                 'name' => $name,
                 'amount' => $amount,

@@ -110,6 +110,7 @@ class ViewSeatsRepository
         $destinationId = $request['destinationId'];
         $Records =  $this->busStoppageTiming->with('boardingDroping')
         ->where('bus_id', $busId)
+        ->orderBy('stoppage_time', 'ASC')
         ->get();
 
         $boardingDroppings = array();  
