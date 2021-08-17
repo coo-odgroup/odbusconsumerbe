@@ -95,15 +95,15 @@ class ChannelController extends Controller
  *     description="generating razorpay order Id",
  *     summary="generating razorpay order Id",
  *     @OA\Parameter(
- *          name="seat_id",
- *          description="bus seats ids",
+ *          name="bus_id",
+ *          description="BusId",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="integer"
  *          )
  *      ),
-  *   @OA\Parameter(
+ *   @OA\Parameter(
  *      name="seat_id[]",
  *      description="seat Ids",
  *      in="query",
@@ -116,7 +116,20 @@ class ChannelController extends Controller
  *              example=1,
  *              )
  *          )
- *    ),       
+ *    ),
+ *   @OA\Parameter(
+ *      name="passenger_gender[]",
+ *      description="passenger gender",
+ *      in="query",
+ *      required=true,
+ *      @OA\Schema(
+ *        type="array",
+ *          @OA\Items(
+ *              type="string",
+ *              format="int64",
+ *              )
+ *          )
+ *    ),         
  *     @OA\Parameter(
  *          name="transaction_id",
  *          description="customer transaction id against booking",
