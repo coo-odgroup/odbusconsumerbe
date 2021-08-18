@@ -33,7 +33,7 @@ class UsersRepository
                 ['email', '<>', null]
                 ]);
  
-        $guestUser = $query->exists();
+        $guestUser = $query->latest()->exists();
         
         if(!$guestUser){
             $user = new $this->users;
@@ -47,7 +47,7 @@ class UsersRepository
             $user->save();
             return  $user;
         }else{
-            $verifiedUser = $query->first()->is_verified;
+            $verifiedUser = $query->latest()->first()->is_verified;
             if($verifiedUser==0){
                 $otp = $this->sendOtp($request);
                 $user = $query
@@ -56,7 +56,7 @@ class UsersRepository
                     'otp' => $otp,
                     'password' => bcrypt('odbus123')
                    ]);
-                   return $query->get();
+                   return $query->latest()->first();
             }
             else{
                     return "Existing User";
@@ -103,19 +103,11 @@ class UsersRepository
                 ['email', $request['email']],
                 ['email', '<>', null]
                 ]);
-
-        $name = $query->first()->name;        
-        // $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();
-        //return $name;
-        // $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first()->name;
+        $name = $query->latest()->first()->name;        
         $request->request->add(['name' => $name]);
         $otp = $this->sendOtp($request);
-
         $user = $query->update(array('otp' => $otp));
-
-        // $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->orderBy('id','DESC')->take(1)->update(array('otp' => $otp));
-
-        return  $query->first();                            
+        return  $query->latest()->first();                            
         
       }
 }   
