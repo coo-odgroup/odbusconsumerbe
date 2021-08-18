@@ -50,15 +50,16 @@ class UsersRepository
             $verifiedUser = $query->first()->is_verified;
             if($verifiedUser==0){
                 $otp = $this->sendOtp($request);
-                $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])
+                $user = $query
                     ->update([
+                    'name' => $request['name'],
                     'otp' => $otp,
                     'password' => bcrypt('odbus123')
                    ]);
                    return $query->get();
             }
             else{
-                    return "Exsting User";
+                    return "Existing User";
             }
         }
     }
@@ -94,12 +95,27 @@ class UsersRepository
     }
 
     public function login($request){
-        $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first()->name;
+            $query =$this->users->where([
+                ['phone', $request['phone']],
+                ['phone', '<>', null]
+                ])
+                ->orWhere([
+                ['email', $request['email']],
+                ['email', '<>', null]
+                ]);
+
+        $name = $query->first()->name;        
+        // $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();
+        //return $name;
+        // $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first()->name;
         $request->request->add(['name' => $name]);
         $otp = $this->sendOtp($request);
-        $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->orderBy('id','DESC')->take(1)->update(array('otp' => $otp));
 
-        return  $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->latest()->first();                         
+        $user = $query->update(array('otp' => $otp));
+
+        // $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->orderBy('id','DESC')->take(1)->update(array('otp' => $otp));
+
+        return  $query->first();                            
         
       }
 }   

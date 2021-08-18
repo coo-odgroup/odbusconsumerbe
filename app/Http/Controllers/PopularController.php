@@ -26,5 +26,8 @@ class PopularController extends Controller
         $popularRoutes = $this->popularService->getPopularRoutes($request);
         return $this->successResponse($popularRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
+    public function getTopOperators(Request $request) {
+        $topOperators = $this->popularService->getTopOperators($request);
+        return $this->successResponse($topOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 }

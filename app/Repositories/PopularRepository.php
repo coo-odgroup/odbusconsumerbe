@@ -53,4 +53,34 @@ class PopularRepository
         return $sourceName;
     }
 
+    public function getTopOperators($request)
+    { 
+        $busIds = $this->booking
+        ->select('bus_id',(DB::raw('count(*) as count')))
+        ->whereDate('created_at', '>', Carbon::now()->subDays(30))
+        ->groupBy('bus_id')
+        ->orderBy('count', 'DESC')
+        ->get();
+  
+        foreach($busIds as $busId){
+            $opId = $busId->bus_id;
+            $count = $busId->count;
+            $opName = $this->getOperatorName($opId);
+            $topOperators[] = array(
+                 "operatorName" => $opName, 
+                 "count" => $count
+             );
+         } 
+         return $topOperators;
+    }
+    public function getOperatorName($operatorId){ 
+        $records = $this->bus
+        ->with('busOperator')
+        ->where('id',$operatorId)->get();
+        foreach($records as $record){
+            $operatorName = $record->busOperator->operator_name;
+         } 
+        return $operatorName;
+    }
+
 }

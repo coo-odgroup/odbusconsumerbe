@@ -90,11 +90,12 @@ class UsersController extends Controller
        }
        try {
          $response = $this->usersService->Register($request);
-         if($response!='Exsting User')
+         if($response!='Existing User')
          {
             return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
          }else{
-            return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_OK);
+            return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+            // return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_OK);
          }
        }
        catch (Exception $e) {

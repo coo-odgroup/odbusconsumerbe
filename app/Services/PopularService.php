@@ -19,4 +19,8 @@ class PopularService
     {
         return $this->popularRepository->getPopularRoutes($request);
     }
+    public function getTopOperators(Request $request)
+    {
+        return $this->popularRepository->getTopOperators($request);
+    }
 }

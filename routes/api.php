@@ -38,6 +38,7 @@ Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/BusDetails', [ListingController::class, 'busDetails']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
+Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
 
 //});
 
