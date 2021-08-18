@@ -424,7 +424,8 @@ class ChannelRepository
         else{
             $this->busSeats->where('bus_id', $busId)
                            ->whereIn('seats_id', $seatIds)
-                           ->update(array('bookStatus' => 0));
+                           //->update(array('bookStatus' => 0));
+                           ->update(['bookStatus' => 0, 'seat_type_gender' =>'null']);
             return "Payment Failed"; 
             }
         
