@@ -22,10 +22,30 @@ class PopularController extends Controller
     {
         $this->popularService = $popularService;       
     }
+/**
+ * @OA\Get(
+ *     path="/api/PopularRoutes",
+ *     tags={"PopularRoutes API"},
+ *     description="get all Popular Routes",
+ *     summary="get all Popular Routes",
+ *     @OA\Response(response="200", description="get all Popular Routes")
+ * )
+ * 
+ */
     public function getPopularRoutes(Request $request) {
         $popularRoutes = $this->popularService->getPopularRoutes($request);
         return $this->successResponse($popularRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+    /**
+ * @OA\Get(
+ *     path="/api/TopOperators",
+ *     tags={"TopOperators API"},
+ *     description="get all Top Operators",
+ *     summary="get all Top Operators",
+ *     @OA\Response(response="200", description="get all Top Operators")
+ * )
+ * 
+ */
     public function getTopOperators(Request $request) {
         $topOperators = $this->popularService->getTopOperators($request);
         return $this->successResponse($topOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

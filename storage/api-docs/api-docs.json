@@ -524,6 +524,36 @@
                 }
             }
         },
+        "/api/PopularRoutes": {
+            "get": {
+                "tags": [
+                    "PopularRoutes API"
+                ],
+                "summary": "get all Popular Routes",
+                "description": "get all Popular Routes",
+                "operationId": "App\\Http\\Controllers\\PopularController::getPopularRoutes",
+                "responses": {
+                    "200": {
+                        "description": "get all Popular Routes"
+                    }
+                }
+            }
+        },
+        "/api/TopOperators": {
+            "get": {
+                "tags": [
+                    "TopOperators API"
+                ],
+                "summary": "get all Top Operators",
+                "description": "get all Top Operators",
+                "operationId": "App\\Http\\Controllers\\PopularController::getTopOperators",
+                "responses": {
+                    "200": {
+                        "description": "get all Top Operators"
+                    }
+                }
+            }
+        },
         "/api/Register": {
             "post": {
                 "tags": [
