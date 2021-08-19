@@ -34,7 +34,7 @@ class BookTicketController extends Controller
     }
 
 /**
- * @OA\POST(
+ * @OA\Post(
  *     path="/api/BookTicket",
  *     tags={"BookTicket API"},
  *     summary="Ticket Booking with customer details",
@@ -207,6 +207,8 @@ class BookTicketController extends Controller
  * )
  * 
  */
+
+
 
     public function bookTicket(Request $request) {
          $data = $request->all();

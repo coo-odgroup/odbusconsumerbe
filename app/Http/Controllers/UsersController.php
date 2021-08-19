@@ -141,7 +141,8 @@ class UsersController extends Controller
     $user['password'] = 'odbus123';
     $response = $this->usersService->verifyOtp($request); 
       if($response == 'Null'){
-        return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
+        //return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
+       return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
     }  
       elseif($response == 'success'){
         try {
@@ -156,7 +157,7 @@ class UsersController extends Controller
       return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }
       else{
-        return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);       
+        return $this->errorResponse($response,Response::HTTP_BAD_REQUEST);       
       }
     }
 
