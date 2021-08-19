@@ -156,7 +156,7 @@ class UsersController extends Controller
       return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }
       else{
-      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_NOT_ACCEPTABLE);
+        return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);       
       }
     }
 

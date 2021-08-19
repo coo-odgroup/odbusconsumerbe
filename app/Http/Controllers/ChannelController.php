@@ -292,18 +292,31 @@ class ChannelController extends Controller
  *                  ),
  *                 ),
  *             @OA\Property(
+ *                 property="seat_no",
+ *                 type="array",
+ *                 @OA\Items(type="string",
+ *                  ),
+ *                 ),
+ *             @OA\Property(
  *                property="passengerDetails",
  *                type="array",
  *                example={{
+ *                  "seat_no" : "ST1",
  *                  "passenger_name": "Bob",
  *                  "passenger_gender": "M",
  *                  "passenger_age": "25"
  *                }, {
- *                  "passenger_name": "",
- *                  "passenger_gender": "",
- *                  "passenger_age": ""
+ *                  "seat_no" : "ST2",
+ *                  "passenger_name": "Mom",
+ *                  "passenger_gender": "F",
+ *                  "passenger_age": "45"
  *                }},
  *                @OA\Items(
+ *                      @OA\Property(
+ *                         property="seat_no",
+ *                         type="string",
+ *                         example=""
+ *                      ),
  *                      @OA\Property(
  *                         property="passenger_name",
  *                         type="string",
