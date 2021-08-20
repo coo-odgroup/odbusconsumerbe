@@ -94,8 +94,7 @@ class UsersController extends Controller
          {
             return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
          }else{
-            return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
-            // return $this->successResponse($response,Config::get('constants.REGISTERED'),Response::HTTP_OK);
+            return $this->errorResponse($response,Response::HTTP_OK);
          }
        }
        catch (Exception $e) {
@@ -141,8 +140,7 @@ class UsersController extends Controller
     $user['password'] = 'odbus123';
     $response = $this->usersService->verifyOtp($request); 
       if($response == 'Null'){
-        //return $this->successResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
-       return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_BAD_REQUEST);
+       return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
     }  
       elseif($response == 'success'){
         try {
@@ -157,7 +155,7 @@ class UsersController extends Controller
       return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }
       else{
-        return $this->errorResponse($response,Response::HTTP_BAD_REQUEST);       
+        return $this->errorResponse($response,Response::HTTP_OK);       
       }
     }
 
