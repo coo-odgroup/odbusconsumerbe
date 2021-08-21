@@ -9,6 +9,7 @@ use App\Http\Controllers\ViewSeatsController;
 use App\Http\Controllers\BookTicketController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\PopularController;
 use App\Http\Middleware\LogRoute;
 
 //Route::middleware([LogRoute::class])->group(function () {
@@ -36,6 +37,8 @@ Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/BusDetails', [ListingController::class, 'busDetails']);
+Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
+Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
 
 //});
 

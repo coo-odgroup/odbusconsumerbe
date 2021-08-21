@@ -6,6 +6,177 @@
         "version": "0.1"
     },
     "paths": {
+        "/api/BookTicket": {
+            "post": {
+                "tags": [
+                    "BookTicket API"
+                ],
+                "summary": "Ticket Booking with customer details",
+                "operationId": "App\\Http\\Controllers\\BookTicketController::bookTicket",
+                "requestBody": {
+                    "description": "Ticket Booking with customer details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "customerInfo": {
+                                        "properties": {
+                                            "email": {
+                                                "type": "string",
+                                                "default": "abc@gmail.com",
+                                                "example": "abc@gmail.com"
+                                            },
+                                            "phone": {
+                                                "type": "number",
+                                                "default": 9912345678,
+                                                "example": 9912345678
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "default": "Bob",
+                                                "example": "Bob"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "bookingInfo": {
+                                        "properties": {
+                                            "bus_id": {
+                                                "type": "number",
+                                                "default": 12,
+                                                "example": 12
+                                            },
+                                            "source_id": {
+                                                "type": "number",
+                                                "default": 1291,
+                                                "example": 1291
+                                            },
+                                            "destination_id": {
+                                                "type": "number",
+                                                "default": 1294,
+                                                "example": 1294
+                                            },
+                                            "journey_dt": {
+                                                "type": "string",
+                                                "default": "2021-08-16",
+                                                "example": "2021-08-16"
+                                            },
+                                            "boarding_point": {
+                                                "type": "string",
+                                                "default": "Bermunda",
+                                                "example": "Bermunda"
+                                            },
+                                            "dropping_point": {
+                                                "type": "string",
+                                                "default": "bus stand",
+                                                "example": "bus stand"
+                                            },
+                                            "boarding_time": {
+                                                "type": "string",
+                                                "default": "21:00",
+                                                "example": "21:00"
+                                            },
+                                            "dropping_time": {
+                                                "type": "string",
+                                                "default": "06:30",
+                                                "example": "06:30"
+                                            },
+                                            "origin": {
+                                                "type": "string",
+                                                "default": "ODBUS",
+                                                "example": "ODBUS"
+                                            },
+                                            "app_type": {
+                                                "type": "string",
+                                                "default": "WEB",
+                                                "example": "WEB"
+                                            },
+                                            "typ_id": {
+                                                "type": "number",
+                                                "default": "1",
+                                                "example": "1"
+                                            },
+                                            "created_by": {
+                                                "type": "string",
+                                                "default": "Customer",
+                                                "example": "Customer"
+                                            },
+                                            "bookingDetail": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "seat_no": {
+                                                            "type": "string",
+                                                            "example": "ST1"
+                                                        },
+                                                        "passenger_name": {
+                                                            "type": "string",
+                                                            "example": "Bob"
+                                                        },
+                                                        "passenger_gender": {
+                                                            "type": "string",
+                                                            "example": "M"
+                                                        },
+                                                        "passenger_age": {
+                                                            "type": "string",
+                                                            "example": "22"
+                                                        },
+                                                        "total_fare": {
+                                                            "type": "string",
+                                                            "example": "350"
+                                                        },
+                                                        "owner_fare": {
+                                                            "type": "string",
+                                                            "example": "0"
+                                                        },
+                                                        "created_by": {
+                                                            "type": "string",
+                                                            "example": "Customer"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "example": [
+                                                    {
+                                                        "seat_no": "ST1",
+                                                        "passenger_name": "Bob",
+                                                        "passenger_gender": "M",
+                                                        "passenger_age": "22",
+                                                        "total_fare": "350",
+                                                        "owner_fare": "0",
+                                                        "created_by": "Customer"
+                                                    },
+                                                    {
+                                                        "seat_no": "ST2",
+                                                        "passenger_name": "Mom",
+                                                        "passenger_gender": "F",
+                                                        "passenger_age": "20",
+                                                        "total_fare": "350",
+                                                        "owner_fare": "0",
+                                                        "created_by": "Customer"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "records added"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                }
+            }
+        },
         "/api/MakePayment": {
             "post": {
                 "tags": [
@@ -16,12 +187,12 @@
                 "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
                 "parameters": [
                     {
-                        "name": "seat_id",
+                        "name": "bus_id",
                         "in": "query",
-                        "description": "bus seats ids",
+                        "description": "BusId",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -35,6 +206,19 @@
                                 "type": "integer",
                                 "format": "int64",
                                 "example": 1
+                            }
+                        }
+                    },
+                    {
+                        "name": "passenger_gender[]",
+                        "in": "query",
+                        "description": "passenger gender",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "int64"
                             }
                         }
                     },
@@ -174,10 +358,20 @@
                                             "type": "string"
                                         }
                                     },
+                                    "seat_no": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
                                     "passengerDetails": {
                                         "type": "array",
                                         "items": {
                                             "properties": {
+                                                "seat_no": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
                                                 "passenger_name": {
                                                     "type": "string",
                                                     "example": ""
@@ -195,14 +389,16 @@
                                         },
                                         "example": [
                                             {
+                                                "seat_no": "ST1",
                                                 "passenger_name": "Bob",
                                                 "passenger_gender": "M",
                                                 "passenger_age": "25"
                                             },
                                             {
-                                                "passenger_name": "",
-                                                "passenger_gender": "",
-                                                "passenger_age": ""
+                                                "seat_no": "ST2",
+                                                "passenger_name": "Mom",
+                                                "passenger_gender": "F",
+                                                "passenger_age": "45"
                                             }
                                         ]
                                     }
@@ -463,6 +659,80 @@
                 "responses": {
                     "200": {
                         "description": "get all Filter Options"
+                    }
+                }
+            }
+        },
+        "/api/BusDetails": {
+            "get": {
+                "tags": [
+                    "BusDetails API"
+                ],
+                "summary": "Get Details of a Bus",
+                "description": "BusDetails",
+                "operationId": "App\\Http\\Controllers\\ListingController::busDetails",
+                "parameters": [
+                    {
+                        "name": "bus_id",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "source_id",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destination_id",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bus Details"
+                    }
+                }
+            }
+        },
+        "/api/PopularRoutes": {
+            "get": {
+                "tags": [
+                    "PopularRoutes API"
+                ],
+                "summary": "get all Popular Routes",
+                "description": "get all Popular Routes",
+                "operationId": "App\\Http\\Controllers\\PopularController::getPopularRoutes",
+                "responses": {
+                    "200": {
+                        "description": "get all Popular Routes"
+                    }
+                }
+            }
+        },
+        "/api/TopOperators": {
+            "get": {
+                "tags": [
+                    "TopOperators API"
+                ],
+                "summary": "get all Top Operators",
+                "description": "get all Top Operators",
+                "operationId": "App\\Http\\Controllers\\PopularController::getTopOperators",
+                "responses": {
+                    "200": {
+                        "description": "get all Top Operators"
                     }
                 }
             }

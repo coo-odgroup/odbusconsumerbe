@@ -33,7 +33,7 @@ class UsersRepository
                 ['email', '<>', null]
                 ]);
  
-        $guestUser = $query->exists();
+        $guestUser = $query->latest()->exists();
         
         if(!$guestUser){
             $user = new $this->users;
@@ -47,18 +47,19 @@ class UsersRepository
             $user->save();
             return  $user;
         }else{
-            $verifiedUser = $query->first()->is_verified;
+            $verifiedUser = $query->latest()->first()->is_verified;
             if($verifiedUser==0){
                 $otp = $this->sendOtp($request);
-                $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])
+                $user = $query
                     ->update([
+                    'name' => $request['name'],
                     'otp' => $otp,
                     'password' => bcrypt('odbus123')
                    ]);
-                   return $query->get();
+                   return $query->latest()->first();
             }
             else{
-                    return "Exsting User";
+                    return "Existing User";
             }
         }
     }
@@ -66,7 +67,7 @@ class UsersRepository
         $otp = rand(10000, 99999);
         if($request['phone']){
             $this->users->phone = $request['phone'];
-            //$sendsms = $this->channelRepository->sendSms($request,$otp);  
+            $sendsms = $this->channelRepository->sendSms($request,$otp);  
         } 
         elseif($request['email']){
             $this->users->email = $request['email']; 
@@ -94,12 +95,20 @@ class UsersRepository
     }
 
     public function login($request){
-        $name = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->first()->name;
+            $query =$this->users->where([
+                ['phone', $request['phone']],
+                ['phone', '<>', null]
+                ])
+                ->orWhere([
+                ['email', $request['email']],
+                ['email', '<>', null]
+                ]);
+        $name = $query->latest()->first()->name;        
         $request->request->add(['name' => $name]);
         $otp = $this->sendOtp($request);
-        $user = $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->update(array('otp' => $otp));
-        return  $this->users->where('phone', $request['phone'])->orWhere('email', $request['email'])->get();                         
+        $user = $query->update(array('otp' => $otp));
+        return  $query->latest()->first();                            
         
       }
-}
+}   
  

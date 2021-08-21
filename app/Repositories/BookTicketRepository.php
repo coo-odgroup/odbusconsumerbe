@@ -21,8 +21,6 @@ class BookTicketRepository
     protected $booking;
     protected $busSeats;
     protected $bookingDetail;
-    //public $existingEmail;
-    //public $existingPhone;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository)
     {
@@ -40,10 +38,12 @@ class BookTicketRepository
     { 
         $customerInfo = $request['customerInfo'];
         $existingUser = $this->users->where('phone',$customerInfo['phone'])
-                                ->orWhere('email', $customerInfo['email'])->exists(); 
+                                //->orWhere('email', $customerInfo['email'])
+                                ->exists(); 
         if($existingUser==true){
             $userId = $this->users->where('phone',$customerInfo['phone'])
-                            ->orWhere('email',$customerInfo['email'])->first('id');
+                            //->orWhere('email',$customerInfo['email'])
+                            ->first('id');
            $this->users->whereIn('id', $userId)->update($customerInfo);     
         }
         else{

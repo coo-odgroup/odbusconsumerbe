@@ -48,7 +48,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"entry_date\":\"11-08-2021\",\r\n    \"busId\": 8\r\n}",
+					"raw": "{\r\n    \"entry_date\":\"16-08-2021\",\r\n    \"busId\": 12\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -210,7 +210,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"busId\": \"8\",\r\n    \"sourceId\": \"1345\",\r\n    \"destinationId\": \"1374\"\r\n\r\n}",
+					"raw": "{\r\n    \"busId\": 12,\r\n    \"sourceId\": \"1291\",\r\n    \"destinationId\": \"1374\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -315,7 +315,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"bus_id\": 8,\r\n    \"seat_id\": [\"31\",\"36\"],\r\n    \"transaction_id\": \"20210813070023725187\",\r\n    \"amount\":\"800\"\r\n}",
+					"raw": "{ \r\n    \"bus_id\": 12,\r\n    \"seat_id\": [\"146\",\"147\"],\r\n    \"passenger_gender\":[\"M\",\"F\"],\r\n    \"transaction_id\": \"20210813070023725187\",\r\n    \"amount\":\"800\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -642,7 +642,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20210812074248448606\",\r\n\t\"razorpay_payment_id\": \"pay_HdqCuwk1Rcarl1\",\r\n\t\"razorpay_order_id\": \"order_HdqChuap4AEY1V\",\r\n\t\"razorpay_signature\": \"4906adfdcbc868ebe689f32342fa0961fa35285b1559c6844fc5ee85dcdc6247\",\r\n\t\"name\": \"Sonny\",\r\n    \"phone\":\"\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"27-07-2021\",\r\n\t\"journeydate\": \"28-07-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"04:45\",\r\n\t\"dropping_point\": \"Bus Stand\",\r\n\t\"arrivalTime\": \"23:30\",\r\n    \"seat_id\": [\"31\",\"36\"],\r\n\t\"seat_no\": [\"ST1\",\"ST6\"],\r\n    \"bus_id\": \"8\",\r\n\t\"busname\": \"LIMA BUS\",\r\n\t\"busNumber\": \"OD 02 FE 1779\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"VOLVO\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"seat_no\": \"ST1\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t},\r\n    {\r\n\t\t\"seat_no\": \"ST6\",\r\n\t\t\"passenger_name\": \"lima1\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}\r\n    ],\r\n\t\"totalfare\": 600\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20210813070023725187\",\r\n\t\"razorpay_payment_id\": \"pay_HdqCuwk1Rcarl1\",\r\n\t\"razorpay_order_id\": \"order_HdqChuap4AEY1V\",\r\n\t\"razorpay_signature\": \"4906adfdcbc868ebe689f32342fa0961fa35285b1559c6844fc5ee85dcdc6247\",\r\n\t\"name\": \"Sonny\",\r\n    \"phone\":\"\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"27-07-2021\",\r\n\t\"journeydate\": \"28-07-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"04:45\",\r\n\t\"dropping_point\": \"Bus Stand\",\r\n\t\"arrivalTime\": \"23:30\",\r\n    \"seat_id\": [\"31\",\"36\"],\r\n\t\"seat_no\": [\"ST1\",\"ST6\"],\r\n    \"bus_id\": \"8\",\r\n\t\"busname\": \"LIMA BUS\",\r\n\t\"busNumber\": \"OD 02 FE 1779\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"VOLVO\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"seat_no\": \"ST1\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t},\r\n    {\r\n\t\t\"seat_no\": \"ST6\",\r\n\t\t\"passenger_name\": \"lima1\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}\r\n    ],\r\n\t\"totalfare\": 600\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -753,6 +753,27 @@
 					"path": [
 						"api",
 						"BusDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Popular routes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://consumer.neoflix.in/api/PopularRoutes",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"PopularRoutes"
 					]
 				}
 			},
