@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Bus;
 use App\Models\Booking;
-use App\Models\BookingCustomer;
+use App\Models\BookingSequence;
 
-class BookingDetail extends Model
+class BookingSequence extends Model
 {
     use HasFactory;
-    protected $table = 'booking_detail';
-    protected $fillable = ['booking_id','bus_seats_id', 'passenger_name','passenger_gender','passenger_age','total_fare','owner_fare','created_by'];
+    protected $table = 'booking_sequence';
+    protected $fillable = ['booking_id','sequence_start_no', 'sequence_end_no'];
                             
       public function booking()
       {

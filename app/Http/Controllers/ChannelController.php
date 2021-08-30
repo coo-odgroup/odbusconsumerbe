@@ -102,34 +102,7 @@ class ChannelController extends Controller
  *          @OA\Schema(
  *              type="integer"
  *          )
- *      ),
- *   @OA\Parameter(
- *      name="seat_id[]",
- *      description="seat Ids",
- *      in="query",
- *      required=true,
- *      @OA\Schema(
- *        type="array",
- *          @OA\Items(
- *              type="integer",
- *              format="int64",
- *              example=1,
- *              )
- *          )
- *    ),
- *   @OA\Parameter(
- *      name="passenger_gender[]",
- *      description="passenger gender",
- *      in="query",
- *      required=true,
- *      @OA\Schema(
- *        type="array",
- *          @OA\Items(
- *              type="string",
- *              format="int64",
- *              )
- *          )
- *    ),         
+ *      ),        
  *     @OA\Parameter(
  *          name="transaction_id",
  *          description="customer transaction id against booking",
@@ -159,12 +132,12 @@ class ChannelController extends Controller
     {   
         try {
             $response = $this->channelService->makePayment($request); 
-            if($response == 'Booked'){
-                return $this->errorResponse(Config::get('constants.BOOKED'),Response::HTTP_NOT_ACCEPTABLE);
-            }
-            else{
+            // if($response == 'Booked'){
+            //     return $this->errorResponse(Config::get('constants.BOOKED'),Response::HTTP_NOT_ACCEPTABLE);
+            // }
+            // else{
                 return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
-            }
+            //}
          }
          catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

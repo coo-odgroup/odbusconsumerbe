@@ -26,4 +26,9 @@ return [
     'SMS_DELIVERED' => 'SMS delivered successfully',
     'ORDERID_CREATED' => 'Order Id generated Successfully',
     'BOOKED' => 'Seats already booked',
+    'LOWER_BERTH' => 1,
+    'UPPER_BERTH' => 2,
+    'BOOKED_STATUS' => 1,
+    'BOOKED_STATUS_FAILED' => 0,
+    'PAYMENT_DONE' => 1,
 ];
