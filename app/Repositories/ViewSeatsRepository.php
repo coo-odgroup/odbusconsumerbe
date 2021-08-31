@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Repositories;
 use Illuminate\Http\Request;
 use App\Models\Bus;
@@ -63,20 +62,26 @@ class ViewSeatsRepository
         $busSeatsIds = $this->busSeats->where('bus_id',$busId)->pluck('id');                     
         //1,2,3,4,5,6....
 ///////////////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        $bookingDetail = $this->booking->where('bus_id',$busId)->where('status',$booked)->with('bookingDetail')->get();         
+        //$bookingDetail = $this->booking->where('bus_id',$busId)->where('status',$booked)->with('bookingDetail')->get();         
         $bookingIds = $this->booking->where('bus_id',$busId)
                                     ->where('journey_dt',$journeyDate)
                                     ->where('status',$booked)
                                     ->pluck('id');
+                                  
        if (sizeof($bookingIds)){
         $blockedSeats=array();
         foreach($bookingIds as $bookingId){
-            $seatsIds = array();
+            
             $bookedSeatIds = $this->bookingDetail->where('booking_id',$bookingId)
                                                  ->pluck('bus_seats_id');
-            $seatsIds[] = $this->busSeats->whereIn('id',$bookedSeatIds)->pluck('seats_id');
-            $gender[] = $this->bookingDetail->where('booking_id',$bookingId)
-                                          ->pluck('passenger_gender');
+
+            foreach($bookedSeatIds as $bookedSeatId){
+                $seatsIds[] = $this->busSeats->where('id',$bookedSeatId)->first()->seats_id;
+                $gender[] = $this->bookingDetail->where('booking_id',$bookingId)
+                                            ->where('bus_seats_id',$bookedSeatId)
+                                            ->first()->passenger_gender;     
+            }   
+           
              $srcId=  $this->booking->where('id',$bookingId)->first()->source_id;
              $destId= $this->booking->where('id',$bookingId)->first()->destination_id;
              $bookedSequence = $this->busLocationSequence->whereIn('location_id',[$srcId,$destId])
@@ -93,9 +98,8 @@ class ViewSeatsRepository
                 $flag = 'false';
             } 
         }
-        $blockedSeats = Arr::collapse($blockedSeats);
+        //return $gender;
         $viewSeat = $this->getSeatInfo($busId,$blockedSeats,$flag);
-        
        }else{//no booking on that specific date
             $blockedSeats=array();
             $flag = 'true';
@@ -104,27 +108,24 @@ class ViewSeatsRepository
   
             // Add Gender into Booked seat List
             if (sizeof($bookingIds)){
-                $gender = Arr::flatten($gender);
                 $i=0;   
-                $j=0;
                 foreach($viewSeat['lower_berth'] as &$lb){
                     if(in_array($lb['id'], $blockedSeats)){
-                        $viewSeat['lower_berth'][$i]['Gender'] = $gender[$j];
-                        $j++;
+                        $key = array_search($lb['id'], $seatsIds);
+                        $viewSeat['lower_berth'][$i]['Gender'] = $gender[$key];
                     } 
                     $i++;
                 }  
                 $i=0; 
                 foreach($viewSeat['upper_berth'] as &$ub){
                     if(in_array($ub['id'], $blockedSeats)){
-                        $viewSeat['upper_berth'][$i]['Gender'] = $gender[$j];
-                        $j++;
+                        $key = array_search($ub['id'], $seatsIds);
+                        $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
                     } 
                     $i++;
                 }   
             }
             return $viewSeat;
-
     }
 
     public function getSeatInfo($busId,$seatsIds,$flag){
@@ -144,10 +145,6 @@ class ViewSeatsRepository
             }])
             ->get();
 
-            // $collection = collect($result);
-            // $collection->put('price', 100);
-            // return $collection;
-
             if(($result['lower_berth'])->isEmpty()){
                 unset($result['lower_berth']);   
             }else{
@@ -155,8 +152,7 @@ class ViewSeatsRepository
                 ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
                 ->where('berthType', $lowerBerth);
                 $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-                $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
-            
+                $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
             } 
             // Upper Berth seat Calculation
             $result['upper_berth']=$this->seats

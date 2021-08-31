@@ -105,12 +105,12 @@ class BookTicketRepository
 
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
-
-        $busSeatsId = $this->busSeats
-                            ->where('bus_id',$busId)
-                            ->where('ticket_price_id',$ticketPriceId)
-                            ->whereIn('seats_id',$seatIds)->pluck('id');
-
+        foreach ($seatIds as $seatId){
+            $busSeatsId[] = $this->busSeats
+                ->where('bus_id',$busId)
+                ->where('ticket_price_id',$ticketPriceId)
+                ->where('seats_id',$seatId)->first()->id;
+        }  
         $bookingDetailModels = [];  
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
@@ -118,7 +118,7 @@ class BookTicketRepository
             $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
             $bookingDetailModels[] = new BookingDetail($merged);
             $i++;
-        }   
+        }    
         $booking->bookingDetail()->saveMany($bookingDetailModels);      
         return $booking; 
        
