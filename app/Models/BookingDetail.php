@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\Booking;
 use App\Models\BookingCustomer;
+use App\Models\BusSeats;
 
 class BookingDetail extends Model
 {
@@ -17,5 +18,10 @@ class BookingDetail extends Model
       public function booking()
       {
             return $this->belongsTo(Booking::class);
+      }
+
+      public function busSeats()
+      {
+            return $this->belongsTo(BusSeats::class);
       }
 }
