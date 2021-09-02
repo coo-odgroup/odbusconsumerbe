@@ -93,18 +93,37 @@ class BookingManageRepository
                   } ]);
             } ]);
         }])->get();
+        
+        //return $booking_detail;
 
-        if($booking_detail){            
+        if(isset($booking_detail[0])){            
 
             if(isset($booking_detail[0]->booking)){
                  $booking_detail[0]->booking['source']=$this->location->where('id',$booking_detail[0]->booking->source_id)->get();
                  $booking_detail[0]->booking['destination']=$this->location->where('id',$booking_detail[0]->booking->destination_id)->get();
+                 
+                  return $booking_detail;
+                  
             }
+            
+            else{
+                
+                 return "PNR is invalid";
+                
+            }
+            
+           
 
+        }
+        
+        else{
+            
+            return "Mobile no is invalid";
+            
         }
 
        
-        return $booking_detail;
+        
        
     }
 
