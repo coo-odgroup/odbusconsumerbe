@@ -877,9 +877,36 @@
                 "operationId": "App\\Http\\Controllers\\ViewSeatsController::getAllViewSeats",
                 "parameters": [
                     {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "searching date",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "busId",
                         "in": "query",
                         "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "source Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destination Id",
                         "required": true,
                         "schema": {
                             "type": "integer"

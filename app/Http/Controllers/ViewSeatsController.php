@@ -40,8 +40,35 @@ class ViewSeatsController extends Controller
  *     description="get all seat Information  for a Bus",
  *     summary="Get seat information for a Bus with seat layout",
  *     @OA\Parameter(
+ *          name="entry_date",
+ *          description="searching date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
  *          name="busId",
  *          description="bus Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="sourceId",
+ *          description="source Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="destinationId",
+ *          description="destination Id",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
