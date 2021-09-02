@@ -11,6 +11,7 @@ use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\PopularController;
 use App\Http\Controllers\CancelTicketController;
+use App\Http\Controllers\BookingManageController;
 use App\Http\Middleware\LogRoute;
 
 //Route::middleware([LogRoute::class])->group(function () {
@@ -41,6 +42,12 @@ Route::get('/BusDetails', [ListingController::class, 'busDetails']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
 Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
 Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
+
+
+Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
+Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
+Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
+
 //});
 
 
