@@ -278,22 +278,27 @@ class ChannelRepository
         }
       }
 
-      public function sendSmsTicketCancel($data, $pnr) {
-
+      public function sendSmsTicketCancel($data) {
+        
+            //$seatList = implode(",",$data['seat']);
+            $doj = date("d-m-Y", strtotime($data['doj']));
             $apiKey = $this->credentials->first()->sms_textlocal_key;
             $textLocalUrl = config('services.sms.textlocal.url_send');
             $sender = config('services.sms.textlocal.senderid');
-            $message = config('services.sms.textlocal.message');
+            $message = config('services.sms.textlocal.cancelTicket');
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($data['phone']);
-            $name = $data['name'];
-            $message = str_replace("<otp>",$otp,$message);
-            $message = str_replace("<name>",$name,$message);
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<doj>",$doj,$message);
+            $message = str_replace("<route>",$data['route'],$message);
+            $message = str_replace("<seat>",$data['seat'],$message);
             //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
             
+
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
             //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
@@ -304,10 +309,11 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-            
-            // return $response;
+             
+            //return $response;
             $msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
+
 
       }
 

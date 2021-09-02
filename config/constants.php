@@ -25,10 +25,13 @@ return [
     'USER_LOGGEDOUT' => ' User successfully signed out',
     'SMS_DELIVERED' => 'SMS delivered successfully',
     'ORDERID_CREATED' => 'Order Id generated Successfully',
+    'REFUND_INITIATED' => 'Refund Initiated',
     'BOOKED' => 'Seats already booked',
     'LOWER_BERTH' => 1,
     'UPPER_BERTH' => 2,
     'BOOKED_STATUS' => 1,
     'BOOKED_STATUS_FAILED' => 0,
+    'BOOKED_CANCELLED' => 2,
     'PAYMENT_DONE' => 1,
+    'REFUNDED' => 2,
 ];

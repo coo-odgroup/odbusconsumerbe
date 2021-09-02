@@ -44,6 +44,7 @@ return [
             'url_status' => env('TXTLOCAL_STATUS_SMS_URL'),
             'message' => env('SMS_TEMPLATE'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
+            'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'senderid' => env('SENDER_ID'),
         ],
         'indiaHub' => [

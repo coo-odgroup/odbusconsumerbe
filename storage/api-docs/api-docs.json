@@ -177,6 +177,41 @@
                 }
             }
         },
+        "/api/CancelTicket": {
+            "post": {
+                "tags": [
+                    "CancelTicket API"
+                ],
+                "summary": "refund initiated for ticket cancellation",
+                "description": "refund initiated for ticket cancellation",
+                "operationId": "App\\Http\\Controllers\\CancelTicketController::cancelTicket",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "user phone",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": " refund initiated"
+                    }
+                }
+            }
+        },
         "/api/MakePayment": {
             "post": {
                 "tags": [
