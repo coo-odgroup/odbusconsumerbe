@@ -278,6 +278,44 @@ class ChannelRepository
         }
       }
 
+      public function sendSmsTicketCancel($data, $pnr) {
+
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.message');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            $name = $data['name'];
+            $message = str_replace("<otp>",$otp,$message);
+            $message = str_replace("<name>",$name,$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+            
+            // return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+      }
+
+
+
+
+
+
 
       public function smsDeliveryStatus($request)  
       {
@@ -313,7 +351,6 @@ class ChannelRepository
 
       }
 
-
       public function sendEmail($request, $otp) {
         
         // $to = $request['receiver'];
@@ -347,21 +384,7 @@ class ChannelRepository
         $booked = Config::get('constants.BOOKED_STATUS');
         $bookingId = $this->booking->where('bus_id', $busId)
                                    ->where('transaction_id', $transationId)->first()->id;
-        // $bookStatus = $this->bookingDetail->where('booking_id', $bookingId)
-        // ->whereIn('bus_seats_id', $busSeatIds)->pluck('status')->toArray();
-        // return $bookStatus;
-
-        // $bookStatus = $this->booking->where('bus_id', $busId)
-        // ->whereHas('bookingDetail', function ($query) use ($busSeatIds){
-        //     $query->whereIn('bus_seats_id', $busSeatIds)->pluck('status')->toArray();           
-        //     });
-        // ->whereIn('bus_seats_id', $busSeatIds)->pluck('bookStatus')->toArray();
-        
-        // if(in_array($booked, $bookStatus))
-        // {
-        //   return "Booked";
-         //}else{
-            
+            //return $bookingId;
             $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
             foreach($records as $record){
                 $name = $record->users->name;
@@ -379,25 +402,15 @@ class ChannelRepository
             $orderId = $order['id']; 
             $user_pay = new $this->customerPayment();
             $user_pay->name = $name;
+            $user_pay->booking_id = $bookingId;
             $user_pay->amount = $amount;
             $user_pay->order_id = $orderId;
             $user_pay->save();
-            
+           
             //Update Ticket Status in booking Change status to 1(Booked)
-            // for ($i = 0; $i < count($seatIds); $i++) {
-            //     $this->busSeats->where('bus_id', $busId)
-            //         ->where('seats_id', $seatIds[$i])
-            //         ->update(['bookStatus' =>1, 'seat_type_gender' =>$passengerGender[$i]]);
-            // }
             
             $this->booking->where('id', $bookingId)->update(['status' => $booked]);
-                 
-            // for ($i = 0; $i < count($busSeatIds); $i++) {
-            //     $this->bookingDetail
-            //         ->where('booking_id', $bookingId)
-            //         ->where('bus_seats_id', $busSeatIds[$i])
-            //         ->update(['status' =>1]);
-            // }
+          
             $data = array(
                 'name' => $name,
                 'amount' => $amount,
@@ -405,8 +418,6 @@ class ChannelRepository
                 'razorpay_order_id' => $orderId   
             );
            return $data;
-
-        //}   
     }
     public function pay($request)
     {   
@@ -435,7 +446,7 @@ class ChannelRepository
         $paymentStatus = $payment->status;
         if ($generated_signature == $data['razorpay_signature'] && $paymentStatus == 'authorized') { 
             $this->customerPayment->where('id', $customerId)
-                                ->update([
+                                  ->update([
                                     'razorpay_id' => $razorpay_payment_id,
                                     'razorpay_signature' => $razorpay_signature,
                                     'payment_done' => $paymentDone
@@ -451,8 +462,12 @@ class ChannelRepository
         else{
             $this->booking->where('id', $bookingId)
                           ->where('transaction_id', $transationId)
-                          ->update(['status' => $bookedStatusFailed]); 
+                          ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
              
+
+
+
+                    
             return "Payment Failed"; 
             }
         
