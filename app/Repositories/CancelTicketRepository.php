@@ -52,24 +52,40 @@ class CancelTicketRepository
     
     public function cancelTicket($request)
     { 
-        $key = $this->credentials->first()->razorpay_key;
-        $secretKey = $this->credentials->first()->razorpay_secret;
-
         $pnr = $request['pnr'];
         $phone = $request['phone'];
+        
         $bookingDetails = $this->booking->with('bookingDetail')->where("pnr", $pnr)->get();
+        if(isset($bookingDetails[0])){ 
         $jDate =$bookingDetails[0]->journey_dt;
-        //return $bookingDetails;
+        $jDate = date("d-m-Y", strtotime($jDate));
+        $bookingId =$bookingDetails[0]->id; 
         $busId =$bookingDetails[0]->bus_id;
         $busSeatsIds = $bookingDetails[0]->bookingDetail->pluck('bus_seats_id');
         $seatsIds = $this->busSeats->whereIn('id', $busSeatsIds)->pluck('seats_id');
+       
         $busNumber = $this->bus->where('id', $busId)->first()->bus_number;
         $sourceId =$bookingDetails[0]->source_id;
         $destinationId =$bookingDetails[0]->destination_id;
         $sourceName = $this->location->where('id', $sourceId)->first()->name;
         $destinationName = $this->location->where('id', $destinationId)->first()->name;
         $route = $sourceName .'-'. $destinationName;
-
+        $userId =$bookingDetails[0]->users_id;
+        $userDetails = $this->users->where('id',$userId)->get();
+        $userMailId = $userDetails[0]->email;
+        $existPhone = $userDetails[0]->phone;
+        $boardTime =$bookingDetails[0]->boarding_time; 
+        $booking = $this->booking->find($bookingId);
+        $busId =$bookingDetails[0]->bus_id; 
+        $razorpay_payment_id =$this->customerPayment->where('booking_id',$bookingId)
+                                                    ->first()->razorpay_id;
+                                                    
+        $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+        $current_date_time = Carbon::now()->toDateTimeString(); 
+        $bookingDate = new DateTime($combinedDT);
+        $cancelDate = new DateTime($current_date_time);
+        $interval = $bookingDate->diff($cancelDate);
+        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
         $smsData = array(
             'phone' => $phone,
             'PNR' => $pnr,
@@ -78,30 +94,22 @@ class CancelTicketRepository
             'route' => $route,
             'seat' => $seatsIds
         );
-        $boardTime =$bookingDetails[0]->boarding_time; 
-        $bookingId =$bookingDetails[0]->id; 
-        $booking = $this->booking->find($bookingId);
-
-        //$transactionId =$bookingDetails[0]->transaction_id; 
-        $busId =$bookingDetails[0]->bus_id; 
-        $razorpay_payment_id =$this->customerPayment->where('booking_id',$bookingId)
-                                                    ->first()->razorpay_id;
-        $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
-        $current_date_time = Carbon::now()->toDateTimeString(); 
-        $datetime1 = new DateTime($combinedDT);
-        $datetime2 = new DateTime($current_date_time);
-        $interval = $datetime1->diff($datetime2);
-        // $interval = ($interval->format("%a") * 24) + $interval->format(" %h"). "h". $interval->format(" %im");
-        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
-        //return $interval;
-        $userId = $bookingDetails[0]->users_id;
-        $existPhone = $this->users->where('id',$userId)->first()->phone;
+        $emailData = array(
+            'email' => $userMailId,
+            'contactNo' => $phone,
+            'pnr' => $pnr,
+            'journeydate' => $jDate, 
+            'route' => $route,
+            'seat_no' => $seatsIds,
+            'cancellationDateTime' => $current_date_time
+        );
+        }
+        else{                
+            return "PNR is invalid";                
+        }      
         if($existPhone == $phone){
             $slabRecords = $this->bus->where('id', $busId)                     
                     ->with('cancellationslabs.cancellationSlabInfo')
-                            // ->with(["cancellationslabs.cancellationSlabInfo" => function ($query) use ($interval){
-                            //     $query->whereBetween('duration',['10','20']); 
-                            // }])
                     ->get();    
 
             $cancelPolicies = $slabRecords[0]->cancellationslabs->cancellationSlabInfo;
@@ -116,7 +124,6 @@ class CancelTicketRepository
                     return 'Not allowed';
                     
                 }elseif( $interval > 240){
-                    return "240";
                     $deduction = 10;//minimum deduction
                     $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking);
                     $refundAmt =  $refund['refundAmount'];
@@ -125,20 +132,28 @@ class CancelTicketRepository
                     return $refund;
 
                 }elseif($min < $interval && $interval < $max){ 
-                    //$refund = $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking)
+                    $refund = $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking)
                     ; 
-                    //$refundAmt =  $refund['refundAmount'];
-                    //$smsData['refundAmount'] = $refundAmt;
-                    $smsData['refundAmount'] = '1000';
-                
+                    $refundAmt =  ($refund['refundAmount']/100);
+                    $paidAmt =  ($refund['paidAmount']/100);
+                    $smsData['refundAmount'] = $refundAmt;
+
+                    $emailData['refundAmount'] = $refundAmt;
+                    $emailData['deductionPercentage'] = $deduction;
+                    $emailData['totalfare'] = $paidAmt;
+
                     $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
-                    return $sendsms;
-                    //return $refund;
+                    if($emailData['email'] != ''){
+                        $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+                    } 
+                    return $refund;
                 }
             }
+
         }else{
             return "invalid user";
         }
+       
     }
 
     public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking){
@@ -151,11 +166,10 @@ class CancelTicketRepository
         $api = new Api($key, $secretKey);
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paidAmount = $payment->amount;
-        //$percentage = $deduction;
+        
         $refundAmount = $paidAmount * ((100-$percentage) / 100);
-        //$refund = $payment->refund(array('amount' => '1')); //for partial refund
+
         $refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=>           $refundAmount));
-        //dd($refund);
         $refundId = $refund->id;
         $refundStatus = $refund->status;
         $refundAmount = $refund->amount;
@@ -163,12 +177,14 @@ class CancelTicketRepository
         $this->booking->where('id', $bookingId)->update(array('status' => $bookingCancelled)); 
         $booking->bookingDetail()->delete();
         //$booking->delete();
+
         $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded,'refund_id' => $refundId]);
 
         $data = array(
             'refundStatus' => $refundStatus,
             'refund_id' => $refundId,
-            'refundAmount' => $refundAmount   
+             'refundAmount' => $refundAmount,
+            'paidAmount' => $paidAmount,
         );
         return $data;
     }
