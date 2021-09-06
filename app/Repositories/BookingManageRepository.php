@@ -29,10 +29,11 @@ class BookingManageRepository
     protected $bookingDetail;
     protected $busType;
     protected $busClass;
+    protected $credentials;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType)
+    ,BusType $busType,Credentials $credentials)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -44,6 +45,7 @@ class BookingManageRepository
         $this->bookingDetail = $bookingDetail;
         $this->busType = $busType;
         $this->busClass = $busClass;
+        $this->credentials = $credentials;
     }   
     
     public function getJourneyDetails($request)
@@ -112,8 +114,8 @@ class BookingManageRepository
                   } ]);
             } ]);
         }])->get();
-        
 
+     
         if(isset($booking_detail[0])){          
 
             if(isset($booking_detail[0]->booking)){
@@ -135,26 +137,27 @@ class BookingManageRepository
 
     public function emailSms($request)
     { 
-        $b= $this->getBookingDetails($request);
-
-        return $b; 
-
+        $b= $this->getBookingDetails($request);      
+      
         if($b && isset($b[0])){
 
             $b=$b[0];
 
             $seat_arr=[];
             $seat_no='';
-            foreach($b->booking->booking_detail as $bd){
-                array_push($seat_arr,$bd->bus_seats->seats->seatText);
-            }
+            $totalfare=0;
+          
+            foreach($b->booking->bookingDetail as $bd){
+                array_push($seat_arr,$bd->busSeats->seats->seatText);
+                $totalfare += $bd->total_fare;
+            }           
 
-            if($seat_arr){
-                $seat_no=implode(',',$seat_arr);
-            }
+            
 
             $body = [
                 'name' => $b->name,
+                'phone' => $b->phone,
+                'email' => $b->email,
                 'pnr' => $b->booking->pnr,
                 'bookingdate'=> $b->booking->created_at,
                 'journeydate' => $b->booking->journey_dt ,
@@ -162,25 +165,28 @@ class BookingManageRepository
                 'dropping_point' => $b->booking->dropping_point,
                 'departureTime'=> $b->booking->boarding_time,
                 'arrivalTime'=> $b->booking->dropping_time,
-                'seat_no' => $seat_no,
-                'busname'=> $b->booking->name,
-                'busNumber'=> $b->booking->bus_number,
-                'bustype' => $b->booking->bus->bus_type->name,
-                'busTypeName' => $b->booking->bus->bus_type->bus_class->class_name,
-                'sittingType' => $b->booking->bus->bus_sitting->name, 
-                'conductor_number'=> $this->conductor_number,
-                'passengerDetails' => $this->passengerDetails ,
-                'totalfare'=> $this->totalfare,
+                'seat_no' => $seat_arr,
+                'busname'=> $b->booking->bus->name,
+                'busNumber'=> $b->booking->bus->bus_number,
+                'bustype' => $b->booking->bus->busType->name,
+                'busTypeName' => $b->booking->bus->busType->busClass->class_name,
+                'sittingType' => $b->booking->bus->busSitting->name, 
+                'conductor_number'=> $b->booking->bus->busContacts->phone,
+                'passengerDetails' => $b->booking->bookingDetail ,
+                'totalfare'=> $totalfare,
+                'routedetails' => $b->booking->source[0]->name."-".$b->booking->destination[0]->name
                 
             ];
-
-            if($b->email != ''){
-                $sendEmailTicket = $this->sendEmailTicket($body,$pnr); 
-            }
+          
+            // if($b->email != ''){
+            //      $sendEmailTicket = $this->sendEmailTicket($body,$b->booking->pnr); 
+            // }
 
             if($b->phone != ''){
-                $sendEmailTicket = $this->sendSmsTicket($body,$pnr); 
+                 $sendEmailTicket = $this->sendSmsTicket($body,$b->booking->pnr); 
             }
+
+            return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
 
         }else{
 
@@ -193,27 +199,28 @@ class BookingManageRepository
 
     public function sendEmailTicket($request, $pnr) {
         $email_pnr = $pnr;
-        $data =  $request->all();
-        SendEmailTicketJob::dispatch($data, $email_pnr);
+        $data =  $request;
+       return SendEmailTicketJob::dispatch($data, $email_pnr);
       }
 
       public function sendSmsTicket($data, $pnr) {
+
+       
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
-   
+
         foreach($passengerDetails as $pDetail){
             $nameList = "{$nameList},{$pDetail['passenger_name']}";
             $genderList = "{$genderList},{$pDetail['passenger_gender']}";
         } 
         $nameList = substr($nameList,1);
         $genderList = substr($genderList,1);
-        $busDetails = $data['busname'].'-'.$data['busNumber'];
-        $SmsGW = config('services.sms.otpservice');
-        if($SmsGW =='textLocal'){
-
+         $busDetails = $data['busname'].'-'.$data['busNumber'];
+          $SmsGW = config('services.sms.otpservice');
+        if($SmsGW == 'textLocal'){
             //Environment Variables
             //$apiKey = config('services.sms.textlocal.key');
             $apiKey = $this->credentials->first()->sms_textlocal_key;
@@ -221,7 +228,7 @@ class BookingManageRepository
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.msgTicket');
             $apiKey = urlencode( $apiKey);
-            $receiver = urlencode($data['phone']);
+             $receiver = urlencode($data['phone']);
             //$message = str_replace("<PNR>",$data['PNR'],$message);
             $message = str_replace("<PNR>",$pnr,$message);
             $message = str_replace("<busdetails>",$busDetails,$message);
