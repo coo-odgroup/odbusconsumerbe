@@ -8,12 +8,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Jobs\SendEmailJob;
 use App\Jobs\SendEmailTicketJob;
+use App\Jobs\SendEmailTicketCancelJob;
+use App\Mail\SendEmailOTP;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\Credentials;
+use Illuminate\Support\Facades\Mail;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -281,7 +284,8 @@ class ChannelRepository
       public function sendSmsTicketCancel($data) {
         
             //$seatList = implode(",",$data['seat']);
-            $doj = date("d-m-Y", strtotime($data['doj']));
+            //$doj = date("d-m-Y", strtotime($data['doj']));
+            $doj = $data['doj'];
             $apiKey = $this->credentials->first()->sms_textlocal_key;
             $textLocalUrl = config('services.sms.textlocal.url_send');
             $sender = config('services.sms.textlocal.senderid');
@@ -293,6 +297,7 @@ class ChannelRepository
             $message = str_replace("<doj>",$doj,$message);
             $message = str_replace("<route>",$data['route'],$message);
             $message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<fare>",$data['refundAmount'],$message);
             //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
@@ -309,20 +314,12 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-             
             //return $response;
             $msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
 
-
       }
-
-
-
-
-
-
-
+      
       public function smsDeliveryStatus($request)  
       {
         $phone = $request['phone'];
@@ -358,27 +355,25 @@ class ChannelRepository
       }
 
       public function sendEmail($request, $otp) {
-        
-        // $to = $request['receiver'];
-        // $name = $request['name'];
-        // $email_body = $request['message'];
-
         $to = $request['email'];
         $name = $request['name'];
         $email_otp = $otp;
 
-        //$email_otp = $request['otp'];
-        //$emailSubject = config('services.email.subject');
-        //return $emailSubject;
-        SendEmailJob::dispatch($to, $name, $email_otp);
-       
+        SendEmailJob::dispatch($to, $name, $email_otp);        //Old method
+
+       // Mail::to($to)->send(new SendEmailOTP($name,$email_otp)); //New Method
+
+      }
+ 
+      public function sendEmailTicket($request, $pnr) {
+        //$email_pnr = $pnr;
+        //$data =  $request->all();
+        //SendEmailTicketJob::dispatch($data, $email_pnr);
+        SendEmailTicketJob::dispatch($request, $pnr);
       }
 
-      
-      public function sendEmailTicket($request, $pnr) {
-        $email_pnr = $pnr;
-        $data =  $request->all();
-        SendEmailTicketJob::dispatch($data, $email_pnr);
+      public function sendEmailTicketCancel($request) {
+        SendEmailTicketCancelJob::dispatch($request);
       }
 
       public function makePayment(Request $request)
