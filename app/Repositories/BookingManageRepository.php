@@ -197,6 +197,11 @@ class BookingManageRepository
     }
 
 
+    public function cancelTicketInfo($request){
+        
+    }
+
+
     public function sendEmailTicket($request, $pnr) {
        return SendEmailTicketJob::dispatch($request, $pnr);
       }

@@ -48,6 +48,7 @@ Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetai
 Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
 Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
 Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
+Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
 
 //});
 
