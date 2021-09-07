@@ -178,9 +178,9 @@ class BookingManageRepository
                 
             ];
           
-            // if($b->email != ''){
-            //      $sendEmailTicket = $this->sendEmailTicket($body,$b->booking->pnr); 
-            // }
+            if($b->email != ''){
+                 $sendEmailTicket = $this->sendEmailTicket($body,$b->booking->pnr); 
+            }
 
             if($b->phone != ''){
                  $sendEmailTicket = $this->sendSmsTicket($body,$b->booking->pnr); 
@@ -198,9 +198,7 @@ class BookingManageRepository
 
 
     public function sendEmailTicket($request, $pnr) {
-        $email_pnr = $pnr;
-        $data =  $request;
-       return SendEmailTicketJob::dispatch($data, $email_pnr);
+       return SendEmailTicketJob::dispatch($request, $pnr);
       }
 
       public function sendSmsTicket($data, $pnr) {
