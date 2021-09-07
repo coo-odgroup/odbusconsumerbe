@@ -7,6 +7,7 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\BookingDetail;
+use App\Models\CustomerPayment;
 use App\Models\BusType;
 use App\Models\BusClass;
 use App\Models\BusSeats;
@@ -15,7 +16,11 @@ use App\Models\Seats;
 use App\Models\TicketPrice;
 use App\Jobs\SendEmailTicketJob;
 use App\Models\Credentials;
+use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
+use DateTime;
+
 
 class BookingManageRepository
 {
@@ -30,10 +35,11 @@ class BookingManageRepository
     protected $busType;
     protected $busClass;
     protected $credentials;
+    protected $customerPayment;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType,Credentials $credentials)
+    ,BusType $busType,Credentials $credentials,CustomerPayment $customerPayment)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -46,6 +52,7 @@ class BookingManageRepository
         $this->busType = $busType;
         $this->busClass = $busClass;
         $this->credentials = $credentials;
+        $this->customerPayment = $customerPayment;
     }   
     
     public function getJourneyDetails($request)
@@ -198,7 +205,98 @@ class BookingManageRepository
 
 
     public function cancelTicketInfo($request){
+
+
+        $pnr = $request['pnr'];
+        $mobile = $request['mobile'];
+
+        $booking_detail  = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+            $u->where('booking.pnr', '=', $pnr); 
+            $u->with("customerPayment");           
+            $u->with(["bus" => function($bs){
+                $bs->with('cancellationslabs.cancellationSlabInfo');
+              } ] );          
+            
+            $u->with(["bookingDetail" => function($b){
+                $b->with(["busSeats" => function($s){
+                    $s->with("seats");
+                  } ]);
+            } ]);
+
+            
+        }])->get();
+
+      
+        if(isset($booking_detail[0])){          
+
+            if(isset($booking_detail[0]->booking)){
+
+                
+                $jDate =$booking_detail[0]->booking->journey_dt;
+                $jDate = date("d-m-Y", strtotime($jDate));
+                $boardTime =$booking_detail[0]->booking->boarding_time; 
+
+                $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                $current_date_time = Carbon::now()->toDateTimeString(); 
+                $bookingDate = new DateTime($combinedDT);
+                $cancelDate = new DateTime($current_date_time);
+                $interval = $bookingDate->diff($cancelDate);
+                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+
+                 if($interval < 12) {
+                    return 'Cancellation is not allowed';                    
+                }
+
+                 $razorpay_payment_id=$booking_detail[0]->booking->customerPayment->razorpay_id;
+
+
+                 $cancelPolicies = $booking_detail[0]->booking->bus->cancellationslabs->cancellationSlabInfo;
+                foreach($cancelPolicies as $cancelPolicy){
+                    $duration = $cancelPolicy->duration;
+                    $deduction = $cancelPolicy->deduction;
+                    $duration = explode("-", $duration, 2);
+                    $max= $duration[1];
+                    $min= $duration[0];
+    
+                    if( $interval > 240){
+                        $deduction = 10;//minimum deduction
+                        $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
+                        return $refundAmt =  $refund['refundAmount'];
+    
+                    }elseif($min < $interval && $interval < $max){ 
+
+                      return  $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
+                       
+                    }
+                }
+                                 
+            }
+            
+            else{                
+                 return "PNR is invalid";                
+            }
+        }
         
+        else{            
+            return "Mobile no is invalid";            
+        }
+
+        return $booking_detail;
+        
+    }
+
+
+    public function refundPolicy($percentage,$razorpay_payment_id){
+
+        $key = $this->credentials->first()->razorpay_key;
+        $secretKey = $this->credentials->first()->razorpay_secret;
+        
+        $rzapi = new Api($key, $secretKey);
+        
+        $rzapi->payment->fetch($razorpay_payment_id);
+        
+        return $refundAmount = $paidAmount - (($paidAmount*$percentage) / 100);
+
     }
 
 
