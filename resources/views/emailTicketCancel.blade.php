@@ -224,7 +224,9 @@
                            </td>
                                       
                             <td  style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:5px; border: solid 1px #d1d1d1;">
-                              <strong>{{$seat_no}}</strong>
+                              <strong>@foreach($seat_no as $seat) 
+                                				{{$seat_no[$loop->index]}}@if (!$loop->last),@endif         
+                                                @endforeach </strong>
                             </td>                                                         
                          </tr>
                           <tr>

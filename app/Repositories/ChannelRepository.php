@@ -282,9 +282,8 @@ class ChannelRepository
       }
 
       public function sendSmsTicketCancel($data) {
-        
-            //$seatList = implode(",",$data['seat']);
-            //$doj = date("d-m-Y", strtotime($data['doj']));
+      
+            $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];
             $apiKey = $this->credentials->first()->sms_textlocal_key;
             $textLocalUrl = config('services.sms.textlocal.url_send');
@@ -296,7 +295,8 @@ class ChannelRepository
             $message = str_replace("<busdetails>",$data['busdetails'],$message);
             $message = str_replace("<doj>",$doj,$message);
             $message = str_replace("<route>",$data['route'],$message);
-            $message = str_replace("<seat>",$data['seat'],$message);
+            //$message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<seat>",$seatList,$message);
             $message = str_replace("<fare>",$data['refundAmount'],$message);
             //return $message;
             $message = rawurlencode($message);
@@ -373,6 +373,7 @@ class ChannelRepository
       }
 
       public function sendEmailTicketCancel($request) {
+
         SendEmailTicketCancelJob::dispatch($request);
       }
 

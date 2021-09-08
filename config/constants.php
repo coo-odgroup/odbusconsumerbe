@@ -26,6 +26,8 @@ return [
     'SMS_DELIVERED' => 'SMS delivered successfully',
     'ORDERID_CREATED' => 'Order Id generated Successfully',
     'REFUND_INITIATED' => 'Refund Initiated',
+    'REFUNDED_COMPLETED' => 'Already refunded',
+    'NO_PAYMENT' => 'Not a successful payment',
     'BOOKED' => 'Seats already booked',
     'LOWER_BERTH' => 1,
     'UPPER_BERTH' => 2,
