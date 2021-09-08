@@ -261,11 +261,29 @@ class BookingManageRepository
                     if( $interval > 240){
                         $deduction = 10;//minimum deduction
                         $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
-                        return $refundAmt =  $refund['refundAmount'];
+                        $refundAmt =  ($refund['refundAmount']/100);
+                        $paidAmt =  ($refund['paidAmount']/100);
+
+                        $emailData['refundAmount'] = $refundAmt;
+                        $emailData['deductionPercentage'] = $deduction."%";
+                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                        $emailData['totalfare'] = $paidAmt;
+
+                        return $emailData;
     
                     }elseif($min < $interval && $interval < $max){ 
 
-                      return  $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
+                        $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
+
+                        $refundAmt =  ($refund['refundAmount']/100);
+                        $paidAmt =  ($refund['paidAmount']/100);
+
+                        $emailData['refundAmount'] = $refundAmt;
+                        $emailData['deductionPercentage'] = $deduction."%";
+                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                        $emailData['totalfare'] = $paidAmt;
+
+                        return $emailData;
                        
                     }
                 }
@@ -291,11 +309,20 @@ class BookingManageRepository
         $key = $this->credentials->first()->razorpay_key;
         $secretKey = $this->credentials->first()->razorpay_secret;
         
-        $rzapi = new Api($key, $secretKey);
+        $api = new Api($key, $secretKey);
         
-        $rzapi->payment->fetch($razorpay_payment_id);
-        
-        return $refundAmount = $paidAmount - (($paidAmount*$percentage) / 100);
+        $payment = $api->payment->fetch($razorpay_payment_id);
+
+         $paidAmount = $payment->amount;
+
+         $refundAmount = $paidAmount * ((100-$percentage) / 100);
+
+         $data = array(
+             'refundAmount' => $refundAmount,
+            'paidAmount' => $paidAmount,
+        );
+        return $data;
+       
 
     }
 

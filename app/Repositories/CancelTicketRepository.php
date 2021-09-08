@@ -168,7 +168,7 @@ class CancelTicketRepository
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
 
-        $key = $this->credentials->first()->razorpay_key;
+         $key = $this->credentials->first()->razorpay_key;
         $secretKey = $this->credentials->first()->razorpay_secret;
  
         $api = new Api($key, $secretKey);
