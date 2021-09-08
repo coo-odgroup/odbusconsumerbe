@@ -132,7 +132,7 @@ class CancelTicketRepository
                     return $refund;
 
                 }elseif($min < $interval && $interval < $max){ 
-                    $refund = $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking)
+                    return $refund = $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking)
                     ; 
                     $refundAmt =  ($refund['refundAmount']/100);
                     $paidAmt =  ($refund['paidAmount']/100);
@@ -157,19 +157,22 @@ class CancelTicketRepository
     }
 
     public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking){
+        
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
 
-        $key = $this->credentials->first()->razorpay_key;
+         $key = $this->credentials->first()->razorpay_key;
         $secretKey = $this->credentials->first()->razorpay_secret;
 
         $api = new Api($key, $secretKey);
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paidAmount = $payment->amount;
-        
-        $refundAmount = $paidAmount * ((100-$percentage) / 100);
 
-        $refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=>           $refundAmount));
+         $refundAmount = $paidAmount - (($paidAmount*$percentage) / 100);
+        
+       // $refundAmount = $paidAmount * ((100-$percentage) / 100);
+
+        $refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=>$refundAmount));
         $refundId = $refund->id;
         $refundStatus = $refund->status;
         $refundAmount = $refund->amount;
