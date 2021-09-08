@@ -168,9 +168,7 @@ class CancelTicketRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paidAmount = $payment->amount;
 
-         $refundAmount = $paidAmount - (($paidAmount*$percentage) / 100);
-        
-       // $refundAmount = $paidAmount * ((100-$percentage) / 100);
+       $refundAmount = $paidAmount * ((100-$percentage) / 100);
 
         $refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=>$refundAmount));
         $refundId = $refund->id;

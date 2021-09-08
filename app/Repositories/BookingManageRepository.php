@@ -315,7 +315,7 @@ class BookingManageRepository
 
          $paidAmount = $payment->amount;
 
-         $refundAmount = $paidAmount - (($paidAmount*$percentage) / 100);
+         $refundAmount = $paidAmount * ((100-$percentage) / 100);
 
          $data = array(
              'refundAmount' => $refundAmount,
