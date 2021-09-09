@@ -31,9 +31,13 @@ class DTController extends Controller
         } else {
             $products = LocationE::sortable();              
         }
-       
-        return $products->paginate($paginate);
-
+        $products =  $products->paginate($paginate);
+        $response = array(
+            "count" => $products->count(), 
+            "total" => $products->total(),
+            "data" => $products
+           );   
+           return $response;
     }
     public function HelloWorld(Request $data)
     {
