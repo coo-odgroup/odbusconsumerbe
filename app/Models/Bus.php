@@ -16,6 +16,7 @@ use App\Models\BusCancelled;
 use App\Models\BusGallery;
 use App\Models\CancellationSlabInfo;
 use App\Models\CancellationSlab;
+use App\Models\BusLocationSequence;
 
 class Bus extends Model
 {
@@ -100,4 +101,9 @@ class Bus extends Model
     {        
         return $this->hasOne(SeatOpen::class);        
     } 
+    public function busLocationSequence()
+    {        
+        return $this->hasMany(BusLocationSequence::class);        
+    }
+    
 }

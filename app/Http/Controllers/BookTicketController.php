@@ -145,7 +145,7 @@ class BookTicketController extends Controller
  *                  property="bookingDetail",
  *                  type="array",
  *                  example={{
- *                    "seat_no" : "ST1",
+ *                    "bus_seats_id" : "31",
  *                    "passenger_name": "Bob",
  *                    "passenger_gender": "M",
  *                    "passenger_age": "22",
@@ -153,7 +153,7 @@ class BookTicketController extends Controller
  *                    "owner_fare": "0",
  *                    "created_by": "Customer"
  *                  }, {
- *                    "seat_no" : "ST2",
+ *                    "bus_seats_id" : "32",
  *                    "passenger_name": "Mom",
  *                    "passenger_gender": "F",
  *                    "passenger_age": "20",
@@ -163,7 +163,7 @@ class BookTicketController extends Controller
  *                  }},
  *                  @OA\Items(
  *                      @OA\Property(
- *                         property="seat_no",
+ *                         property="bus_seats_id",
  *                         type="string",
  *                         example="ST1"
  *                      ),

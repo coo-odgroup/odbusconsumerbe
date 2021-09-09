@@ -10,7 +10,10 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\TicketPrice;
+use App\Models\BusLocationSequence;
+use App\Models\BookingSequence;
 use App\Repositories\ChannelRepository;
+use Illuminate\Support\Arr;
 
 class BookTicketRepository
 {
@@ -20,9 +23,9 @@ class BookTicketRepository
     protected $users;
     protected $booking;
     protected $busSeats;
-    protected $bookingDetail;
+    protected $busLocationSequence;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -30,8 +33,9 @@ class BookTicketRepository
         $this->users = $users;
         $this->busSeats = $busSeats;
         $this->booking = $booking;
-        $this->bookingDetail = $bookingDetail;
-        $this->channelRepository = $channelRepository; 
+        $this->channelRepository = $channelRepository;
+        $this->busLocationSequence = $busLocationSequence;
+        
     }   
     
     public function bookTicket($request)
@@ -51,6 +55,7 @@ class BookTicketRepository
         }
         
         $bookingInfo = $request['bookingInfo'];
+
         //Save Booking 
         $booking = new $this->booking;
         do {
@@ -79,17 +84,43 @@ class BookTicketRepository
         $booking->created_by = $bookingInfo['created_by'];
 
         $userId->booking()->save($booking);
-           
-        //$booking->save();
+        
+        //fetch the sequence from bus_locaton_sequence
+        $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
+        $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+        
+        $bookingSequence = new BookingSequence;
+        $bookingSequence->sequence_start_no = $seq_no_start;
+        $bookingSequence->sequence_end_no = $seq_no_end;
+            
+        $booking->bookingSequence()->save($bookingSequence);
 
-        //Update Booking Details
-        $bookingDetailModels = [];
-         //TOD Latter,Write Enhanced Query
-        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
-        $bookingDetailModels[] = new BookingDetail($bDetail);
-        }
-        $booking->bookingDetail()->saveMany($bookingDetailModels);
-        return $booking;
+        //Update Booking Details >>>>>>>>>>
+        $sourceId = $bookingInfo['source_id'];
+        $destinationId = $bookingInfo['destination_id'];
+       
+        $ticketPriceId = $this->ticketPrice
+                             ->where('source_id',$sourceId)
+                             ->where('destination_id',$destinationId)->first()->id;
+
+        $bookingDetail = $request['bookingInfo']['bookingDetail'];
+        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+        foreach ($seatIds as $seatId){
+            $busSeatsId[] = $this->busSeats
+                ->where('bus_id',$busId)
+                ->where('ticket_price_id',$ticketPriceId)
+                ->where('seats_id',$seatId)->first()->id;
+        }  
+        $bookingDetailModels = [];  
+        $i=0;
+       foreach ($bookingInfo['bookingDetail'] as $bDetail) {
+            $collection= collect($bDetail);
+            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
+            $bookingDetailModels[] = new BookingDetail($merged);
+            $i++;
+        }    
+        $booking->bookingDetail()->saveMany($bookingDetailModels);      
+        return $booking; 
        
     }
 }

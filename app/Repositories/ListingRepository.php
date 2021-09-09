@@ -79,7 +79,7 @@ class ListingRepository
 
         $sourceID =  $this->location->where("name", $source)->get('id');
         $destinationID =  $this->location->where("name", $destination)->get('id');
-        if($sourceID->count()==0|| $destinationID->count()==0)
+        if($sourceID->count()==0 || $destinationID->count()==0)
            return "";
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;    
@@ -110,19 +110,19 @@ class ListingRepository
             if(in_array($new_date, $dates))
             {
                 $records[] = $this->bus
-                ->with('busContacts')
-                ->with('busOperator')       
-                ->with('busAmenities.amenities')
-                ->with('busSafety.safety')
-                ->with('BusType.busClass')
-                ->with('busSeats.seats')
-                ->with('seatOpen.seatOpenSeats')
-                ->with('BusSitting')
-                ->with('busGallery')
-                ->with('cancellationslabs.cancellationSlabInfo')
-                ->where('status','1')
-                ->where('id',$busId)
-                ->get();
+                 ->with('busContacts')
+                 ->with('busOperator')       
+                 ->with('busAmenities.amenities')
+                 ->with('busSafety.safety')
+                 ->with('BusType.busClass')
+                 ->with('busSeats.seats')
+                // ->with('seatOpen.seatOpenSeats')
+                 ->with('BusSitting')
+                 ->with('busGallery')
+                 ->with('cancellationslabs.cancellationSlabInfo')
+                 ->where('status','1')
+                 ->where('id',$busId)
+                 ->get();
             }   
         }
      $records = Arr::flatten($records);
@@ -161,8 +161,9 @@ class ListingRepository
             //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
             //return $seatsOpenSeats;
 
-            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
-            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
+            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+            ->count('id');
+            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
             $amenityIcon = $amenityDatas->pluck('amenities.icon');

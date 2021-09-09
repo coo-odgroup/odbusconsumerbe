@@ -106,7 +106,7 @@
                                                 "type": "array",
                                                 "items": {
                                                     "properties": {
-                                                        "seat_no": {
+                                                        "bus_seats_id": {
                                                             "type": "string",
                                                             "example": "ST1"
                                                         },
@@ -139,7 +139,7 @@
                                                 },
                                                 "example": [
                                                     {
-                                                        "seat_no": "ST1",
+                                                        "bus_seats_id": "31",
                                                         "passenger_name": "Bob",
                                                         "passenger_gender": "M",
                                                         "passenger_age": "22",
@@ -148,7 +148,7 @@
                                                         "created_by": "Customer"
                                                     },
                                                     {
-                                                        "seat_no": "ST2",
+                                                        "bus_seats_id": "32",
                                                         "passenger_name": "Mom",
                                                         "passenger_gender": "F",
                                                         "passenger_age": "20",
@@ -193,33 +193,6 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "seat_id[]",
-                        "in": "query",
-                        "description": "seat Ids",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer",
-                                "format": "int64",
-                                "example": 1
-                            }
-                        }
-                    },
-                    {
-                        "name": "passenger_gender[]",
-                        "in": "query",
-                        "description": "passenger gender",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "format": "int64"
-                            }
                         }
                     },
                     {
