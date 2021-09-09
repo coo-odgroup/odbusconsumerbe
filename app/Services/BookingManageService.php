@@ -54,6 +54,31 @@ class BookingManageService
         }
         return $getBookingDetails;
     }  
+
+
+    public function emailSms($request)
+    {
+        try {
+            $emailSms = $this->bookingManageRepository->emailSms($request);
+
+        } catch (Exception $e) {
+            //Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $emailSms;
+    } 
+
+    public function cancelTicketInfo($request)
+    {
+        try {
+            $cancelTicketInfo = $this->bookingManageRepository->cancelTicketInfo($request);
+
+        } catch (Exception $e) {
+            //Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $cancelTicketInfo;
+    } 
     
     
    

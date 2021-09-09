@@ -20,6 +20,7 @@ return [
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
 
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
@@ -29,10 +30,15 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'mailjet' => [
+        'key' => env('MAILJET_APIKEY'),
+        'secret' => env('MAILJET_APISECRET'),
+    ],
 
     'email' => [
         'subject' => env('EMAIL_SUBJECT'),
-        'subjectTicket' => env('EMAIL_TICKET_SUBJECT')
+        'subjectTicket' => env('EMAIL_TICKET_SUBJECT'),
+        'subjectTicketCancel' => env('EMAIL_TICKET_CANCEL_SUBJECT')
     ],
 
     'sms' => [
@@ -44,6 +50,7 @@ return [
             'url_status' => env('TXTLOCAL_STATUS_SMS_URL'),
             'message' => env('SMS_TEMPLATE'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
+            'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'senderid' => env('SENDER_ID'),
         ],
         'indiaHub' => [

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Users;
 use App\Models\Bus;
 use App\Models\BookingSequence;
+use App\Models\CustomerPayment;
 class Booking extends Model
 {
     use HasFactory;
@@ -32,6 +33,10 @@ class Booking extends Model
       public function bookingSequence()
       {
             return $this->hasOne(BookingSequence::class);   
+      } 
+      public function customerPayment()
+      {
+            return $this->hasOne(CustomerPayment::class);   
       } 
 
 }

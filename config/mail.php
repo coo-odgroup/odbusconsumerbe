@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    'default' => env('MAIL_MAILER', 'failover'),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,27 @@ return [
 
     'mailers' => [
         'smtp' => [
-            'transport' => env('MAIL_MAILER'),
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
+            'timeout' => null,
+                'auth_mode' => null,
+            ],
+        'mailjet' => [
+            'transport' => 'smtp',
+            'host' => env('MAILJET_HOST'),
+            'port' => env('MAILJET_PORT'),
+            'encryption' => env('MAILJET_ENCRYPTION', 'tls'),
+            'username' => env('MAILJET_APIKEY'),
+            'password' => env('MAILJET_APISECRET'),
+            'timeout' => null,
+            'auth_mode' => null,
+        ],
+        'sendmail' => [
+            'transport' => 'sendmail',
             'host' => env('MAIL_HOST'),
             'port' => env('MAIL_PORT'),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
@@ -44,9 +64,51 @@ return [
             'timeout' => null,
             'auth_mode' => null,
         ],
+        // 'mailjet' => [
+        //     'transport' => env('MAIL_MAILER'),
+        //     'host' => env('MAILJET_HOST'),
+        //     'port' => env('MAILJET_PORT'),
+        //     'encryption' => env('MAILJET_ENCRYPTION', 'tls'),
+        //     'username' => env('MAILJET_APIKEY'),
+        //     'password' => env('MAILJET_APISECRET'),
+        //     'transactional' => [
+        //         'call' => true,
+        //         'options' => [
+        //             'url' => 'api.mailjet.com',
+        //             'version' => 'v3.1',
+        //             'call' => true,
+        //             'secured' => true
+        //         ]
+        //     ],
+        //     'common' => [
+        //         'call' => true,
+        //         'options' => [
+        //             'url' => 'api.mailjet.com',
+        //             'version' => 'v3',
+        //             'call' => true,
+        //             'secured' => true
+        //         ]
+        //     ],
+        //     'v4' => [
+        //         'call' => true,
+        //         'options' => [
+        //             'url' => 'api.mailjet.com',
+        //             'version' => 'v4',
+        //             'call' => true,
+        //             'secured' => true
+        //         ]
+        //     ],
+        // ],
 
         'ses' => [
-            'transport' => 'ses',
+            'transport' => env('MAIL_MAILER'),
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('AWS_ACCESS_KEY_ID'),
+            'password' => env('AWS_SECRET_ACCESS_KEY'),
+            'timeout' => null,
+            'auth_mode' => null,
         ],
 
         'mailgun' => [
@@ -65,6 +127,13 @@ return [
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
+        ],
+        'failover' => [
+            'transport' => 'failover',
+            'mailers' => [
+                'ses',
+                'mailjet',
+            ],
         ],
 
         'array' => [

@@ -8,12 +8,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Jobs\SendEmailJob;
 use App\Jobs\SendEmailTicketJob;
+use App\Jobs\SendEmailTicketCancelJob;
+use App\Mail\SendEmailOTP;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\Credentials;
+use Illuminate\Support\Facades\Mail;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -278,7 +281,45 @@ class ChannelRepository
         }
       }
 
+      public function sendSmsTicketCancel($data) {
+      
+            $seatList = implode(",",$data['seat']);
+            $doj = $data['doj'];
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.cancelTicket');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            $message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<busdetails>",$data['busdetails'],$message);
+            $message = str_replace("<doj>",$doj,$message);
+            $message = str_replace("<route>",$data['route'],$message);
+            //$message = str_replace("<seat>",$data['seat'],$message);
+            $message = str_replace("<seat>",$seatList,$message);
+            $message = str_replace("<fare>",$data['refundAmount'],$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
 
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+            //return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+      }
+      
       public function smsDeliveryStatus($request)  
       {
         $phone = $request['phone'];
@@ -313,100 +354,69 @@ class ChannelRepository
 
       }
 
-
       public function sendEmail($request, $otp) {
-        
-        // $to = $request['receiver'];
-        // $name = $request['name'];
-        // $email_body = $request['message'];
-
         $to = $request['email'];
         $name = $request['name'];
         $email_otp = $otp;
 
-        //$email_otp = $request['otp'];
-        //$emailSubject = config('services.email.subject');
-        //return $emailSubject;
-        SendEmailJob::dispatch($to, $name, $email_otp);
-       
+        SendEmailJob::dispatch($to, $name, $email_otp);        //Old method
+
+       // Mail::to($to)->send(new SendEmailOTP($name,$email_otp)); //New Method
+
+      }
+ 
+      public function sendEmailTicket($request, $pnr) {
+        //$email_pnr = $pnr;
+        //$data =  $request->all();
+        //SendEmailTicketJob::dispatch($data, $email_pnr);
+        SendEmailTicketJob::dispatch($request, $pnr);
       }
 
-      
-      public function sendEmailTicket($request, $pnr) {
-        $email_pnr = $pnr;
-        $data =  $request->all();
-        SendEmailTicketJob::dispatch($data, $email_pnr);
+      public function sendEmailTicketCancel($request) {
+
+        SendEmailTicketCancelJob::dispatch($request);
       }
 
       public function makePayment(Request $request)
     {   
         $busId = $request['bus_id'];    
-        //$busSeatIds = $request['seat_id'];
         $transationId = $request['transaction_id']; 
  
         $booked = Config::get('constants.BOOKED_STATUS');
         $bookingId = $this->booking->where('bus_id', $busId)
                                    ->where('transaction_id', $transationId)->first()->id;
-        // $bookStatus = $this->bookingDetail->where('booking_id', $bookingId)
-        // ->whereIn('bus_seats_id', $busSeatIds)->pluck('status')->toArray();
-        // return $bookStatus;
-
-        // $bookStatus = $this->booking->where('bus_id', $busId)
-        // ->whereHas('bookingDetail', function ($query) use ($busSeatIds){
-        //     $query->whereIn('bus_seats_id', $busSeatIds)->pluck('status')->toArray();           
-        //     });
-        // ->whereIn('bus_seats_id', $busSeatIds)->pluck('bookStatus')->toArray();
-        
-        // if(in_array($booked, $bookStatus))
-        // {
-        //   return "Booked";
-         //}else{
+        $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
             
-            $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
-            foreach($records as $record){
-                $name = $record->users->name;
-            }
-            $amount = $request['amount'];
-            $receiptId = 'rcpt_'.$transationId;
-            //$key = config('services.razorpay.key');
-            //$secretKey = config('services.razorpay.secret');
-            $key = $this->credentials->first()->razorpay_key;
-            $secretKey = $this->credentials->first()->razorpay_secret;
-            $api = new Api($key, $secretKey);   
-            $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+        $name = $records[0]->users->name;
+        $amount = $request['amount'];
+        $receiptId = 'rcpt_'.$transationId;
+        //$key = config('services.razorpay.key');
+        //$secretKey = config('services.razorpay.secret');
+        $key = $this->credentials->first()->razorpay_key;
+        $secretKey = $this->credentials->first()->razorpay_secret;
+        $api = new Api($key, $secretKey);   
+        $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
 
-            // Creates customer payment 
-            $orderId = $order['id']; 
-            $user_pay = new $this->customerPayment();
-            $user_pay->name = $name;
-            $user_pay->amount = $amount;
-            $user_pay->order_id = $orderId;
-            $user_pay->save();
+        // Creates customer payment 
+        $orderId = $order['id']; 
+        $user_pay = new $this->customerPayment();
+        $user_pay->name = $name;
+        $user_pay->booking_id = $bookingId;
+        $user_pay->amount = $amount;
+        $user_pay->order_id = $orderId;
+        $user_pay->save();
+           
+        //Update Ticket Status in booking Change status to 1(Booked)
             
-            //Update Ticket Status in booking Change status to 1(Booked)
-            // for ($i = 0; $i < count($seatIds); $i++) {
-            //     $this->busSeats->where('bus_id', $busId)
-            //         ->where('seats_id', $seatIds[$i])
-            //         ->update(['bookStatus' =>1, 'seat_type_gender' =>$passengerGender[$i]]);
-            // }
-            
-            $this->booking->where('id', $bookingId)->update(['status' => $booked]);
-                 
-            // for ($i = 0; $i < count($busSeatIds); $i++) {
-            //     $this->bookingDetail
-            //         ->where('booking_id', $bookingId)
-            //         ->where('bus_seats_id', $busSeatIds[$i])
-            //         ->update(['status' =>1]);
-            // }
-            $data = array(
-                'name' => $name,
-                'amount' => $amount,
-                'key' => $key,
-                'razorpay_order_id' => $orderId   
-            );
-           return $data;
-
-        //}   
+        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+          
+        $data = array(
+            'name' => $name,
+            'amount' => $amount,
+            'key' => $key,
+            'razorpay_order_id' => $orderId   
+        );
+        return $data;
     }
     public function pay($request)
     {   
@@ -435,7 +445,7 @@ class ChannelRepository
         $paymentStatus = $payment->status;
         if ($generated_signature == $data['razorpay_signature'] && $paymentStatus == 'authorized') { 
             $this->customerPayment->where('id', $customerId)
-                                ->update([
+                                  ->update([
                                     'razorpay_id' => $razorpay_payment_id,
                                     'razorpay_signature' => $razorpay_signature,
                                     'payment_done' => $paymentDone
@@ -451,8 +461,8 @@ class ChannelRepository
         else{
             $this->booking->where('id', $bookingId)
                           ->where('transaction_id', $transationId)
-                          ->update(['status' => $bookedStatusFailed]); 
-             
+                          ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
+        
             return "Payment Failed"; 
             }
         

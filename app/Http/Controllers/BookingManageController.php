@@ -85,6 +85,44 @@ class BookingManageController extends Controller
        }      
     } 
 
+    public function emailSms(Request $request) {
+      $data = $request->all();
+        $bookingManageValidator = $this->bookingManageValidator->validate($data);
+
+     if ($bookingManageValidator->fails()) {
+     $errors = $bookingManageValidator->errors();
+     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+     } 
+       try {
+        $response =  $this->bookingManageService->emailSms($request);  
+         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+     }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+
+
+    public function cancelTicketInfo(Request $request) {
+      $data = $request->all();
+        $bookingManageValidator = $this->bookingManageValidator->validate($data);
+
+     if ($bookingManageValidator->fails()) {
+     $errors = $bookingManageValidator->errors();
+     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+     } 
+       try {
+        $response =  $this->bookingManageService->cancelTicketInfo($request);  
+         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+     }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+    
+
+    
+
 
     
 
