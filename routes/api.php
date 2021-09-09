@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DTController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\ViewSeatsController;
 use App\Http\Controllers\BookTicketController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\BookingManageController;
 use App\Http\Middleware\LogRoute;
 
 //Route::middleware([LogRoute::class])->group(function () {
+Route::get('/coreTable', [DTController::class, 'coreTable']);
+Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
