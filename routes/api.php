@@ -13,6 +13,7 @@ use App\Http\Controllers\PopularController;
 use App\Http\Controllers\CancelTicketController;
 use App\Http\Controllers\BookingManageController;
 use App\Http\Middleware\LogRoute;
+use App\Http\Controllers\ReviewController;
 
 //Route::middleware([LogRoute::class])->group(function () {
 
@@ -49,6 +50,13 @@ Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerD
 Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
 Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
 Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
+
+Route::post('/AddReview', [ReviewController::class, 'AddReview']);
+Route::post('/UpdateReview', [ReviewController::class, 'UpdateReview']);
+Route::post('/DeleteReview', [ReviewController::class, 'DeleteReview']);
+Route::post('/allReviews', [ReviewController::class, 'allReviews']);
+Route::post('/ReviewDetail/{id}', [ReviewController::class, 'ReviewDetail']);
+Route::post('/SingleBusReviewList/{bid}', [ReviewController::class, 'SingleBusReviewList']);
 
 //});
 
