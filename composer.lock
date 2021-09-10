@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85ced7e5d41da4a2ab994a537ec1a0b5",
+    "content-hash": "7efdb65a88cf15d166a1f2a17f585590",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1362,6 +1362,63 @@
             "time": "2020-09-22T12:50:01+00:00"
         },
         {
+            "name": "kyslik/column-sortable",
+            "version": "6.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Kyslik/column-sortable.git",
+                "reference": "44f9da98acd31b2e871d0074bd638998990888b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Kyslik/column-sortable/zipball/44f9da98acd31b2e871d0074bd638998990888b1",
+                "reference": "44f9da98acd31b2e871d0074bd638998990888b1",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "5.8.*|^6.0|^7.0|^8.0",
+                "illuminate/support": "5.8.*|^6.0|^7.0|^8.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^5.0",
+                "phpunit/phpunit": "^8.5"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Kyslik\\ColumnSortable\\ColumnSortableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kyslik\\ColumnSortable\\": "src/ColumnSortable/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Kiesel",
+                    "email": "martin.kiesel@gmail.com",
+                    "role": "Developer and maintainer"
+                }
+            ],
+            "description": "Package for handling column sorting in Laravel 6.x",
+            "keywords": [
+                "column",
+                "laravel",
+                "sort",
+                "sortable",
+                "sorting"
+            ],
+            "time": "2021-07-09T12:15:54+00:00"
+        },
+        {
             "name": "laravel/framework",
             "version": "v8.11.2",
             "source": {
@@ -2183,10 +2240,6 @@
                 "mailjet wrapper",
                 "transport"
             ],
-            "support": {
-                "issues": "https://github.com/mailjet/laravel-mailjet/issues",
-                "source": "https://github.com/mailjet/laravel-mailjet/tree/3.0.0"
-            },
             "time": "2021-02-26T21:28:56+00:00"
         },
         {
@@ -2240,10 +2293,6 @@
                 "php",
                 "v3"
             ],
-            "support": {
-                "issues": "https://github.com/mailjet/mailjet-apiv3-php/issues",
-                "source": "https://github.com/mailjet/mailjet-apiv3-php/tree/v1.5.3"
-            },
             "time": "2021-08-12T12:24:50+00:00"
         },
         {
@@ -2297,10 +2346,6 @@
                 "Mailjet",
                 "swiftmailer"
             ],
-            "support": {
-                "issues": "https://github.com/mailjet/MailjetSwiftMailer/issues",
-                "source": "https://github.com/mailjet/MailjetSwiftMailer/tree/2.0.0"
-            },
             "time": "2019-06-13T12:40:37+00:00"
         },
         {
@@ -9330,5 +9375,5 @@
         "php": "^7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "1.1.0"
 }

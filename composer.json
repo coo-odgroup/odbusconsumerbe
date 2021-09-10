@@ -16,6 +16,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.3",
         "ixudra/curl": "^6.21",
+        "kyslik/column-sortable": "^6.4",
         "laravel/framework": "^8.0",
         "laravel/passport": "^10.1",
         "laravel/tinker": "^2.0",

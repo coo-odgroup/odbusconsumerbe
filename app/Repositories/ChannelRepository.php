@@ -380,46 +380,43 @@ class ChannelRepository
       public function makePayment(Request $request)
     {   
         $busId = $request['bus_id'];    
-        //$busSeatIds = $request['seat_id'];
         $transationId = $request['transaction_id']; 
  
         $booked = Config::get('constants.BOOKED_STATUS');
         $bookingId = $this->booking->where('bus_id', $busId)
                                    ->where('transaction_id', $transationId)->first()->id;
-            //return $bookingId;
-            $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
-            foreach($records as $record){
-                $name = $record->users->name;
-            }
-            $amount = $request['amount'];
-            $receiptId = 'rcpt_'.$transationId;
-            //$key = config('services.razorpay.key');
-            //$secretKey = config('services.razorpay.secret');
-            $key = $this->credentials->first()->razorpay_key;
-            $secretKey = $this->credentials->first()->razorpay_secret;
-            $api = new Api($key, $secretKey);   
-            $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
-
-            // Creates customer payment 
-            $orderId = $order['id']; 
-            $user_pay = new $this->customerPayment();
-            $user_pay->name = $name;
-            $user_pay->booking_id = $bookingId;
-            $user_pay->amount = $amount;
-            $user_pay->order_id = $orderId;
-            $user_pay->save();
-           
-            //Update Ticket Status in booking Change status to 1(Booked)
+        $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
             
-            $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        $name = $records[0]->users->name;
+        $amount = $request['amount'];
+        $receiptId = 'rcpt_'.$transationId;
+        //$key = config('services.razorpay.key');
+        //$secretKey = config('services.razorpay.secret');
+        $key = $this->credentials->first()->razorpay_key;
+        $secretKey = $this->credentials->first()->razorpay_secret;
+        $api = new Api($key, $secretKey);   
+        $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+
+        // Creates customer payment 
+        $orderId = $order['id']; 
+        $user_pay = new $this->customerPayment();
+        $user_pay->name = $name;
+        $user_pay->booking_id = $bookingId;
+        $user_pay->amount = $amount;
+        $user_pay->order_id = $orderId;
+        $user_pay->save();
+           
+        //Update Ticket Status in booking Change status to 1(Booked)
+            
+        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
           
-            $data = array(
-                'name' => $name,
-                'amount' => $amount,
-                'key' => $key,
-                'razorpay_order_id' => $orderId   
-            );
-           return $data;
+        $data = array(
+            'name' => $name,
+            'amount' => $amount,
+            'key' => $key,
+            'razorpay_order_id' => $orderId   
+        );
+        return $data;
     }
     public function pay($request)
     {   
@@ -465,11 +462,7 @@ class ChannelRepository
             $this->booking->where('id', $bookingId)
                           ->where('transaction_id', $transationId)
                           ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
-             
-
-
-
-                    
+        
             return "Payment Failed"; 
             }
         
