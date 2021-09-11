@@ -41,7 +41,7 @@ class SendEmailTicketJob implements ShouldQueue
 
     //protected $request = [];
     //public function __construct($to, $name, $email_pnr)
-    public function __construct(array &$request, $email_pnr)
+    public function __construct($request, $email_pnr)
 
     {
         //$this->$request[] = $request;
