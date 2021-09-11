@@ -100,8 +100,10 @@ class BookTicketRepository
         $destinationId = $bookingInfo['destination_id'];
        
         $ticketPriceId = $this->ticketPrice
-                             ->where('source_id',$sourceId)
-                             ->where('destination_id',$destinationId)->first()->id;
+        ->where('source_id',$sourceId)
+        ->where('destination_id',$destinationId)
+        ->where('bus_id',$busId)
+        ->first()->id;
 
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
