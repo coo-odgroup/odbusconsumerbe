@@ -383,10 +383,9 @@ class ChannelRepository
         $transationId = $request['transaction_id']; 
  
         $booked = Config::get('constants.BOOKED_STATUS');
-        $bookingId = $this->booking->where('bus_id', $busId)
-                                   ->where('transaction_id', $transationId)->first()->id;
+        
         $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
-            
+        $bookingId = $records[0]->id;    
         $name = $records[0]->users->name;
         $amount = $request['amount'];
         $receiptId = 'rcpt_'.$transationId;

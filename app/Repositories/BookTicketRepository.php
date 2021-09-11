@@ -63,7 +63,8 @@ class BookTicketRepository
            } while ( $booking ->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
         do {
-            $PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
+            $PNR = substr(str_shuffle("0123456789"), 0, 8);
+            //$PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
             } while ( $booking ->where('pnr', $PNR )->exists()); 
         $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
