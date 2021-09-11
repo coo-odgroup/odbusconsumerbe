@@ -254,6 +254,7 @@ class ViewSeatsRepository
         foreach($Records as $Record){  
             $boardingPoints = $Record->boardingDroping->boarding_point;
             $boardingDroppingTimes = $Record->stoppage_time;
+            $boardingDroppingTimes = date("H:i",strtotime($boardingDroppingTimes));
             $locationId = $Record->boardingDroping->location_id;
             $boardDropId = $Record->boardingDroping->id;
             if($locationId==$sourceId)
