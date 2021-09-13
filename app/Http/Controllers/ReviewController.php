@@ -1,22 +1,26 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use App\Models\Review;
-
-use App\Services\ReviewService;
 use Exception;
-use InvalidArgumentException;
-
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Config;
+use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Response;
+use App\Services\ReviewService;
+use App\AppValidator\ReviewValidator;
+use Illuminate\Support\Facades\Log;
+
 
 class ReviewController extends Controller
 {
+
+    use ApiResponser;
      /**
      * @var reviewService
      */
     protected $reviewService;
+    protected $reviewValidator;
 
     /**
      * PostController Constructor
@@ -24,110 +28,90 @@ class ReviewController extends Controller
      * @param ReviewService $reviewService
      *
      */
-    public function __construct(ReviewService $reviewService)
+    public function __construct(ReviewService $reviewService,ReviewValidator $reviewValidator)
     {
         $this->reviewService = $reviewService;
+        $this->reviewValidator = $reviewValidator;      
+
     }
 
-
-
     public function getAllReview() {
-        $prod = $this->reviewService->getAll();;
-        $output ['status']=1;
-        $output ['message']='All Data Fetched Successfully';
-        $output ['result']=$prod;
-        return response($output, 200);
+
+      $result = $this->reviewService->getAllReview();
+      return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+  
+        
     }
 
     public function createReview(Request $request) {
-        $data = $request->only([
-            'pnr','bus_id','customer_id','reference_key','rating_overall','rating_comfort','rating_clean','rating_behavior',
-            'rating_timing','comments',
-          
-        ]);
-        $reviewRules = [
-          'pnr' => 'required',
-          'bus_id' => 'required',
-          'customer_id' => 'required',
-          'reference_key' => 'required',
-          'rating_overall' => 'required',
-          'rating_comfort' => 'required',
-          'rating_clean' => 'required',
-          'rating_behavior' => 'required',
-          'rating_timing' => 'required',
-          'comments' => 'required',
-        ];
+      $data = $request->all();
       
-        $reviewValidation = Validator::make($data, $reviewRules);
-        
-        if ($reviewValidation->fails()) {
-          $errors = $reviewValidation->errors();
-          return $errors->toJson();
+      $reviewValidator = $this->reviewValidator->validate($data);
+
+      if ($reviewValidator->fails()) {
+      $errors = $reviewValidator->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+        try {
+          $response =  $this->reviewService->createReview($request); 
+          return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
-        
-        $this->reviewService->savePostData($data);
-    
-        $output ['status']=1;
-        $output ['message']='Data Added Successfully';
-        return response($output, 200);
-	
+        catch (Exception $e) { 
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        }	
     } 
 
     public function updateReview(Request $request, $id) {
-        $data = $request->only([
-            'pnr','bus_id','customer_id','reference_key','rating_overall','rating_comfort','rating_clean','rating_behavior',
-            'rating_timing','comments',
-          
-        ]);
-        $reviewRules = [
-          'pnr' => 'required',
-          'bus_id' => 'required',
-          'customer_id' => 'required',
-          'reference_key' => 'required',
-          'rating_overall' => 'required',
-          'rating_comfort' => 'required',
-          'rating_clean' => 'required',
-          'rating_behavior' => 'required',
-          'rating_timing' => 'required',
-          'comments' => 'required',
-        ];
-      
-      
-        $reviewValidation = Validator::make($data, $reviewRules);
-        
-        if ($reviewValidation->fails()) {
-          $errors = $reviewValidation->errors();
-          return $errors->toJson();
-        }
-     
-        $this->reviewService->updatePost($data, $id);
-        $output ['status']=1;
-        $output ['message']='Data updated successfully';
-        return response($output, 200);
-        
+      $data = $request->all();
+      $reviewValidator = $this->reviewValidator->validate($data);
+      try {
+        $response = $this->reviewService->updateReview($data, $id);
+        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+
+    } catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+    }
     }
 
     public function deleteReview ($id) {
-      $this->reviewService->deleteById($id);
-      $output ['status']=1;
-      $output ['message']='Data Deleted successfully';
-      return response($output, 200);
+
+      try{
+        $response = $this->reviewService->deleteReview($id);
+        return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+     
     }
 
     public function getReview($id) {
-      $ame= $this->reviewService->getById($id);
-      $output ['status']=1;
-      $output ['message']='Single Data Fetched Successfully';
-      $output ['result']=$ame;
-      return response($output, 200);
+
+      try{
+        $result= $this->reviewService->getReview($id);
+      }
+      catch (Exception $e){
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+   
+
+      
 
     }
     public function getReviewByBid($bid) {
-        $ame= $this->reviewService->getreviewBid($bid);
-        $output ['status']=1;
-        $output ['message']='Single Data Fetched Successfully..';
-        $output ['result']=$ame;
-        return response($output, 200);
+
+      try{
+        $result= $this->reviewService->getReviewByBid($bid);
+      }
+      catch (Exception $e){
+        
+          return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+
+
+       
     }
     
 

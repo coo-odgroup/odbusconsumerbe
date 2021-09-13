@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Repositories;
-
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+
 
 class ReviewRepository
 {
@@ -29,7 +31,7 @@ class ReviewRepository
      *
      * @return Review $review
      */
-    public function getAll()
+    public function getAllReview()
     {
         return $this->review->whereNotIn('status', [2])->get();
     }
@@ -40,22 +42,23 @@ class ReviewRepository
      * @param $id
      * @return mixed
      */
-    public function getById($id)
+    public function getReview($id)
     {
         return $this->review
             ->where('id', $id)
             ->get();
     }
-    public function getreviewBid($bid)
+    public function getReviewByBid($bid)
     {
-        return $this->review::addSelect(['cname' => $this->user::select('first_name')
+
+        $result= $this->review::addSelect(['cname' => $this->user::select('first_name')
         ->whereColumn('Review.customer_id', 'id')])
-        // ->addSelect(['Average Rating' => $this->review->avg('rating_overall')])
         ->whereNotIn('status', [2])
         ->where('bus_id', $bid)
         ->orderBy('id', 'desc')
-        ->limit(10)
         ->get();
+
+        return $result;
 
         // return $this->review->avg('rating_overall');
     }
@@ -65,7 +68,7 @@ class ReviewRepository
      * @param $data
      * @return Review
      */
-    public function save($data)
+    public function createReview($data)
     {
         $post = new $this->review;
 
@@ -80,11 +83,11 @@ class ReviewRepository
         $post->rating_timing = $data['rating_timing'];
         $post->comments = $data['comments'];
         // $post->created_date = date('Y-m-d H:i:s');
-        $post->created_by = "Admin";
+        $post->created_by = $data['created_by'];
 
         $post->save();
 
-        return $post->fresh();
+        return $post;
     }
 
     /**
@@ -93,7 +96,7 @@ class ReviewRepository
      * @param $data
      * @return Review
      */
-    public function update($data, $id)
+    public function updateReview($data, $id)
     {
         
         $post = $this->review->find($id);
@@ -119,7 +122,7 @@ class ReviewRepository
      * @param $data
      * @return Review
      */
-    public function delete($id)
+    public function deleteReview($id)
     {
         
         $post = $this->review->find($id);

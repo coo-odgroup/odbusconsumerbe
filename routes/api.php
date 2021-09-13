@@ -54,12 +54,13 @@ Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetai
 Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
 Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
 
-Route::post('/AddReview', [ReviewController::class, 'AddReview']);
-Route::post('/UpdateReview', [ReviewController::class, 'UpdateReview']);
-Route::post('/DeleteReview', [ReviewController::class, 'DeleteReview']);
-Route::post('/allReviews', [ReviewController::class, 'allReviews']);
-Route::post('/ReviewDetail/{id}', [ReviewController::class, 'ReviewDetail']);
-Route::post('/SingleBusReviewList/{bid}', [ReviewController::class, 'SingleBusReviewList']);
+
+Route::post('/AddReview', [ReviewController::class, 'createReview']);
+Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
+Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
+Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
+Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
+Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
 
 //});
 

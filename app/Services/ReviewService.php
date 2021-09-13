@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Config;
 
 class ReviewService
 {
@@ -33,24 +34,16 @@ class ReviewService
      * @param $id
      * @return String
      */
-    public function deleteById($id)
+    public function deleteReview($id)
     {
-        DB::beginTransaction();
 
         try {
-            $post = $this->reviewRepository->delete($id);
-
+            $review = $this->reviewRepository->deleteReview($id);
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to delete post data');
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
-
-        DB::commit();
-
-        return $post;
-
+        return $review;
     }
 
     /**
@@ -58,9 +51,9 @@ class ReviewService
      *
      * @return String
      */
-    public function getAll()
+    public function getAllReview()
     {
-        return $this->reviewRepository->getAll();
+        return $this->reviewRepository->getAllReview();
     }
 
     /**
@@ -69,14 +62,14 @@ class ReviewService
      * @param $id
      * @return String
      */
-    public function getById($id)
+    public function getReview($id)
     {
-        return $this->reviewRepository->getById($id);
+        return $this->reviewRepository->getReview($id);
     }
 
-    public function getreviewBid($bid)
+    public function getReviewByBid($bid)
     {
-        return $this->reviewRepository->getreviewBid($bid);
+        return $this->reviewRepository->getReviewByBid($bid);
     }
     /**
      * Update  data
@@ -85,25 +78,18 @@ class ReviewService
      * @param array $data
      * @return String
      */
-    public function updatePost($data, $id)
+    public function updateReview($data, $id)
     {
-        
 
-        DB::beginTransaction();
 
         try {
-            $post = $this->reviewRepository->update($data, $id);
-
+            $review = $this->reviewRepository->updateReview($data, $id);
         } catch (Exception $e) {
-            DB::rollBack();
             Log::info($e->getMessage());
-
-            throw new InvalidArgumentException('Unable to update post data');
+            throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
-
-        DB::commit();
-
-        return $post;
+        return $review;
+        
 
     }
 
@@ -114,13 +100,16 @@ class ReviewService
      * @param array $data
      * @return String
      */
-    public function savePostData($data)
+    public function createReview($data)
     {
+
+        try { 
+            $review = $this->reviewRepository->createReview($data);
+        } catch (Exception $e) { 
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $review;
         
-
-        $result = $this->reviewRepository->save($data);
-
-        return $result;
     }
 
 }
