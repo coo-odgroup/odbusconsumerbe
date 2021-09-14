@@ -12,6 +12,8 @@ use App\Models\BusLocationSequence;
 use App\Models\BookingSequence;
 use App\Models\BookingDetail;
 use App\Models\Booking;
+use App\Models\TicketFareSlab;
+use App\Models\OdbusCharges;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -29,8 +31,10 @@ class ViewSeatsRepository
     protected $bookingSequence;
     protected $bookingDetail;
     protected $booking;
+    protected $ticketFareSlab;
+    protected $odbusCharges;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats, BusStoppageTiming $busStoppageTiming,BusLocationSequence $busLocationSequence,BookingSequence $bookingSequence,BookingDetail $bookingDetail,Booking $booking)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats, BusStoppageTiming $busStoppageTiming,BusLocationSequence $busLocationSequence,BookingSequence $bookingSequence,BookingDetail $bookingDetail,Booking $booking,TicketFareSlab $ticketFareSlab,OdbusCharges $odbusCharges)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -43,6 +47,8 @@ class ViewSeatsRepository
         $this->bookingSequence=$bookingSequence;
         $this->bookingDetail=$bookingDetail;
         $this->booking=$booking;
+        $this->ticketFareSlab = $ticketFareSlab;
+        $this->odbusCharges = $odbusCharges;  
     }   
     
     public function getAllViewSeats($request)
@@ -57,11 +63,11 @@ class ViewSeatsRepository
 
         $requestedSeq = $this->busLocationSequence->whereIn('location_id',[$sourceId,$destinationId])
                                         ->pluck('sequence');
-        $reqRange = Arr::sort($requestedSeq);
 
-        $busSeatsIds = $this->busSeats->where('bus_id',$busId)->pluck('id');                     
+        $reqRange = Arr::sort($requestedSeq);
+        //$busSeatsIds = $this->busSeats->where('bus_id',$busId)->pluck('id');                     
         //1,2,3,4,5,6....
-///////////////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        ///////////////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         //$bookingDetail = $this->booking->where('bus_id',$busId)->where('status',$booked)->with('bookingDetail')->get();         
         $bookingIds = $this->booking->where('bus_id',$busId)
                                     ->where('journey_dt',$journeyDate)
@@ -131,88 +137,58 @@ class ViewSeatsRepository
     public function getSeatInfo($busId,$seatsIds,$flag){
         $lowerBerth = Config::get('constants.LOWER_BERTH');
         $upperBerth = Config::get('constants.UPPER_BERTH');
-
-        if($flag == 'false')//Dont display the blocked seats
-        {
-            $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
-            // Lower Berth seat Calculation
-            $result['lower_berth']=$this->seats
-                ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                ->where('berthType', $lowerBerth)
-                ->with(["busSeats" => function ($query) use ($busId,$seatsIds){
-                $query->where('bus_id',$busId) 
-                    ->whereNotIn('seats_id',$seatsIds);
-            }])
-            ->get();
-
-            if(($result['lower_berth'])->isEmpty()){
-                unset($result['lower_berth']);   
-            }else{
-                $rowsColumns = $this->seats
-                ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                ->where('berthType', $lowerBerth);
-                $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-                $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
-            } 
-            // Upper Berth seat Calculation
-            $result['upper_berth']=$this->seats
-                    ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                    ->where('berthType', $upperBerth)
-                    ->with(["busSeats" => function ($query) use ($busId,$seatsIds){
-                        $query->where('bus_id',$busId)
+        $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
+        // Lower Berth seat Calculation
+        $result['lower_berth']=$this->seats
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType', $lowerBerth)
+            ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds){
+                $query->when($flag == 'false', 
+                function($q) use ($busId,$seatsIds){  //Don't Display booked Seats
+                        $q->where('bus_id',$busId) 
                         ->whereNotIn('seats_id',$seatsIds);
-                    }])
-                    ->get();
-            if(($result['upper_berth'])->isEmpty()){
-                unset($result['upper_berth']); 
-            }else{
-                $rowsColumns = $this->seats
-                ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                ->where('berthType', $upperBerth);
-                $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-                $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
-            }
-            return $result;
-        }else{  ///seats are available
-            $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
-            // Lower Berth seat Calculation
-            $result['lower_berth']=$this->seats
-                                        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                                        ->where('berthType', $lowerBerth)
-                                        ->with(["busSeats" => function ($query) use ($busId,$seatsIds){
-                $query->where('bus_id',$busId);
+                },
+                function($q) use ($busId,$seatsIds){  //Display unbooked Seats
+                        $q->where('bus_id',$busId); 
+                });
             }])
             ->get();
-            if(($result['lower_berth'])->isEmpty()){
-                unset($result['lower_berth']);   
-            }else{
-                $rowsColumns = $this->seats
-                                    ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                                    ->where('berthType', $lowerBerth);
-                $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-                $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1;
-            } 
-            // Upper Berth seat Calculation
-            $result['upper_berth']=$this->seats
-                                        ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                                        ->where('berthType', $upperBerth)
-                                        ->with(["busSeats" => function ($query) use ($busId){
-                                                $query->where('bus_id',$busId);
-                    }])
-                    ->get();
-            if(($result['upper_berth'])->isEmpty()){
-                unset($result['upper_berth']); 
-            }else{
-                $rowsColumns = $this->seats
-                                    ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
-                                    ->where('berthType', $upperBerth);
-                $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
-                $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
-            }
-            return $result;
-        }
-    }
 
+        if(($result['lower_berth'])->isEmpty()){
+            unset($result['lower_berth']);   
+        }else{
+            $rowsColumns = $this->seats
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType', $lowerBerth);
+            $result['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+            $result['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
+        } 
+        // Upper Berth seat Calculation
+        $result['upper_berth']=$this->seats
+                ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+                ->where('berthType', $upperBerth)
+                ->with(["busSeats" => function ($query) use ($flag,$busId,$seatsIds){
+                    $query->when($flag == 'false',
+                    function($q) use ($busId,$seatsIds){  //Don't Display booked Seats
+                            $q->where('bus_id',$busId) 
+                            ->whereNotIn('seats_id',$seatsIds);
+                    },
+                    function($q) use ($busId,$seatsIds){  //Display unbooked Seats
+                            $q->where('bus_id',$busId);
+                    });
+                }])
+                ->get();
+        if(($result['upper_berth'])->isEmpty()){
+            unset($result['upper_berth']); 
+        }else{
+            $rowsColumns = $this->seats
+            ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
+            ->where('berthType', $upperBerth);
+            $result['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+            $result['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
+        }
+        return $result;
+    }
     
     public function getPriceOnSeatsSelection($request)
     { 
@@ -229,14 +205,35 @@ class ViewSeatsRepository
                 ->first();
         $seaterPrice = $busWithTicketPrice->base_seat_fare;
         $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
-        $totalPrice = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
+        
+        $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
         count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
+        
+        $ticketFareSlabs = $this->ticketFareSlab->get();
+        foreach($ticketFareSlabs as $ticketFareSlab){
 
-       $seatWithPriceRecords[] = array(
-        "seaterPrice" => $seaterPrice,
-        "sleeperPrice" => $sleeperPrice,
-        "totalPrice" => $totalPrice,
-        ); 
+            $startingFare = $ticketFareSlab->starting_fare;
+            $uptoFare = $ticketFareSlab->upto_fare;
+            if($startingFare <= $ownerFare && $uptoFare >= $ownerFare){
+                $percentage = $ticketFareSlab->odbus_commision;
+                $odbusServiceCharges = $ownerFare * ($percentage/100);
+                $odbusCharges = $this->odbusCharges->get();
+                $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
+                $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
+                $gwCharges = (($ownerFare + $odbusServiceCharges + $smsEmailCharges) * $gwPercentage);
+                $transactionFee = round($smsEmailCharges + $gwCharges);
+                $totalFare = round($ownerFare + $odbusServiceCharges + $transactionFee);
+            }  
+        } 
+
+        $seatWithPriceRecords[] = array(
+            "seaterPrice" => $seaterPrice,
+            "sleeperPrice" => $sleeperPrice,
+            "ownerFare" => $ownerFare,
+            "odbusServiceCharges" => $odbusServiceCharges,
+            "transactionFee" => $transactionFee,
+            "totalFare" => $totalFare,
+            ); 
         return $seatWithPriceRecords;
     }
 
@@ -274,11 +271,11 @@ class ViewSeatsRepository
             );
             }
     }
-    $boardingDroppings[] = array(   
-        "boardingPoints" => $boardingArray,
-        "droppingPoints" => $droppingArray,
-    );  
-    return $boardingDroppings;
+        $boardingDroppings[] = array(   
+            "boardingPoints" => $boardingArray,
+            "droppingPoints" => $droppingArray,
+        );  
+        return $boardingDroppings;
     }
 
 }

@@ -13,6 +13,8 @@ use App\Models\TicketPrice;
 use App\Models\BusLocationSequence;
 use App\Models\BookingSequence;
 use App\Repositories\ChannelRepository;
+use App\Models\OdbusCharges;
+use App\Models\BusOperator;
 use Illuminate\Support\Arr;
 
 class BookTicketRepository
@@ -34,8 +36,7 @@ class BookTicketRepository
         $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->channelRepository = $channelRepository;
-        $this->busLocationSequence = $busLocationSequence;
-        
+        $this->busLocationSequence = $busLocationSequence;       
     }   
     
     public function bookTicket($request)
@@ -71,9 +72,8 @@ class BookTicketRepository
         $busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $j_day = $this->ticketPrice->where('bus_id',$busId)->pluck('j_day');
-        $booking->j_day = $j_day[0];
-        //$booking->j_day = $bookingInfo['j_day'];
+        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])->where('destination_id',$bookingInfo['destination_id'])->get();
+        $booking->j_day = $ticketPriceDetails[0]->j_day;
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
@@ -82,6 +82,24 @@ class BookTicketRepository
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];
+        $booking->owner_fare = $bookingInfo['owner_fare'];
+        $booking->total_fare = $bookingInfo['total_fare'];
+        $odbusGstPercent = OdbusCharges::first()->odbus_gst_charges;
+        $booking->odbus_gst_charges = $odbusGstPercent;
+        $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
+        $booking->odbus_gst_amount = $odbusGstAmount;
+
+        $operatorId = $ticketPriceDetails[0]->bus_operator_id;
+        $busOperator = BusOperator::where("id",$operatorId)->get();
+        //$need_gst_bill = $busOperator[0]->need_gst_bill;
+        if(isset($busOperator[0]->need_gst_bill)){
+            $ownerGstPercentage = $busOperator[0]->gst_amount;
+            $booking->owner_gst_charges = $ownerGstPercentage;
+            $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
+            $booking->owner_gst_amount = $ownerGstAmount;
+        }else{
+            return "owner gst not required";
+        }
         $booking->created_by = $bookingInfo['created_by'];
 
         $userId->booking()->save($booking);
@@ -97,15 +115,8 @@ class BookTicketRepository
         $booking->bookingSequence()->save($bookingSequence);
 
         //Update Booking Details >>>>>>>>>>
-        $sourceId = $bookingInfo['source_id'];
-        $destinationId = $bookingInfo['destination_id'];
-       
-        $ticketPriceId = $this->ticketPrice
-        ->where('source_id',$sourceId)
-        ->where('destination_id',$destinationId)
-        ->where('bus_id',$busId)
-        ->first()->id;
-
+  
+        $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
         foreach ($seatIds as $seatId){
