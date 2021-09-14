@@ -16,6 +16,7 @@ use App\Repositories\ChannelRepository;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
 
 class BookTicketRepository
 {
@@ -41,6 +42,7 @@ class BookTicketRepository
     
     public function bookTicket($request)
     { 
+        $needGstBill = Config::get('constants.NEED_GST_BILL');
         $customerInfo = $request['customerInfo'];
         $existingUser = $this->users->where('phone',$customerInfo['phone'])
                                 //->orWhere('email', $customerInfo['email'])
@@ -91,14 +93,12 @@ class BookTicketRepository
 
         $operatorId = $ticketPriceDetails[0]->bus_operator_id;
         $busOperator = BusOperator::where("id",$operatorId)->get();
-        //$need_gst_bill = $busOperator[0]->need_gst_bill;
-        if(isset($busOperator[0]->need_gst_bill)){
+    
+        if($busOperator[0]->need_gst_bill == $needGstBill){   
             $ownerGstPercentage = $busOperator[0]->gst_amount;
             $booking->owner_gst_charges = $ownerGstPercentage;
             $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
             $booking->owner_gst_amount = $ownerGstAmount;
-        }else{
-            return "owner gst not required";
         }
         $booking->created_by = $bookingInfo['created_by'];
 

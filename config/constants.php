@@ -36,4 +36,5 @@ return [
     'BOOKED_CANCELLED' => 2,
     'PAYMENT_DONE' => 1,
     'REFUNDED' => 2,
+    'NEED_GST_BILL' => 1,
 ];
