@@ -216,7 +216,7 @@ class ViewSeatsRepository
             $uptoFare = $ticketFareSlab->upto_fare;
             if($startingFare <= $ownerFare && $uptoFare >= $ownerFare){
                 $percentage = $ticketFareSlab->odbus_commision;
-                $odbusServiceCharges = $ownerFare * ($percentage/100);
+                $odbusServiceCharges = round($ownerFare * ($percentage/100));
                 $odbusCharges = $this->odbusCharges->get();
                 $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
                 $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
