@@ -14,7 +14,7 @@ class Booking extends Model
     protected $table = 'booking';
     protected $fillable = ['transaction_id','pnr','users_id','bus_id','source_id',
                             'destination_id','j_day','journey_dt','boarding_point','dropping_point',
-                            'boarding_time','dropping_time','origin','app_type','typ_id','total_fare','owner_fare','odbus_gst_charges','odbus_gst_amount','owner_gst_charges','owner_gst_amount','created_by'];
+                            'boarding_time','dropping_time','origin','app_type','typ_id','total_fare','owner_fare','odbus_Charges','odbus_gst_charges','odbus_gst_amount','owner_gst_charges','owner_gst_amount','created_by'];
 
       public function users()
       {

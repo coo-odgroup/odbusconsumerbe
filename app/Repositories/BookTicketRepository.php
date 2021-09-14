@@ -86,6 +86,7 @@ class BookTicketRepository
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
+        $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
         $odbusGstPercent = OdbusCharges::first()->odbus_gst_charges;
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
