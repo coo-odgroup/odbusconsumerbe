@@ -103,12 +103,16 @@ class UsersRepository
                 ['email', $request['email']],
                 ['email', '<>', null]
                 ]);
-        $name = $query->latest()->first()->name;        
-        $request->request->add(['name' => $name]);
-        $otp = $this->sendOtp($request);
-        $user = $query->update(array('otp' => $otp));
-        return  $query->latest()->first();                            
-        
+        $verifiedStatus = $query->latest()->first()->is_verified;    
+        if($verifiedStatus == 1){
+            $name = $query->latest()->first()->name;        
+            $request->request->add(['name' => $name]);
+            $otp = $this->sendOtp($request);
+            $user = $query->update(array('otp' => $otp));
+            return  $query->latest()->first(); 
+        } else{
+            return "un_registered";
+        }      
       }
 }   
  
