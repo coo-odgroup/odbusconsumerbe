@@ -18,6 +18,7 @@ use App\Models\CancellationSlabInfo;
 use App\Models\BusContacts;
 use App\Models\TicketPrice;
 use App\Models\BusScheduleDate;
+use App\Models\Booking;
 use App\Models\BusSchedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -25,6 +26,7 @@ use Illuminate\Support\Arr;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use DB;
+use Illuminate\Support\Facades\Config;
 
 class ListingRepository
 {
@@ -41,8 +43,9 @@ class ListingRepository
     protected $ticketPrice;
     protected $busScheduledate;
     protected $busSchedule;
+    protected $booking;
     
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -56,6 +59,7 @@ class ListingRepository
         $this->ticketPrice = $ticketPrice;
         $this->busScheduleDate = $busScheduleDate;
         $this->busSchedule = $busSchedule;
+        $this->booking=$booking;
      }   
 
      public function getLocation($request)
@@ -72,6 +76,7 @@ class ListingRepository
  
     public function getAll($request)
     { 
+       
         $source = $request['source'];
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
@@ -79,55 +84,55 @@ class ListingRepository
 
         $sourceID =  $this->location->where("name", $source)->get('id');
         $destinationID =  $this->location->where("name", $destination)->get('id');
+
         if($sourceID->count()==0 || $destinationID->count()==0)
            return "";
         $sourceID =  $this->location->where("name", $source)->first()->id;
-        $destinationID =  $this->location->where("name", $destination)->first()->id;    
+        $destinationID =  $this->location->where("name", $destination)->first()->id;  
 
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);  
-        $busRecords = array();
         $records = array();
         $ListingRecords = array();
         foreach($busDetails as $busDetail){
-           
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
-
-            $busRecords[] = $busId;
-            
-            $busScheduleId = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
-            $dates = $this->busScheduleDate
-                ->where('bus_schedule_id', $busScheduleId)           
-                ->pluck('entry_date')->toarray();
-
-            if($jdays>1){
-                $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-            }else{
-                $new_date = $entry_date;
-            }
-            if(in_array($new_date, $dates))
-            {
-                $records[] = $this->bus
-                 ->with('busContacts')
-                 ->with('busOperator')       
-                 ->with('busAmenities.amenities')
-                 ->with('busSafety.safety')
-                 ->with('BusType.busClass')
-                 ->with('busSeats.seats')
-                // ->with('seatOpen.seatOpenSeats')
-                 ->with('BusSitting')
-                 ->with('busGallery')
-                 ->with('cancellationslabs.cancellationSlabInfo')
-                 ->where('status','1')
-                 ->where('id',$busId)
-                 ->get();
-            }   
+            $busEntryPresent =$this->busSchedule->where('bus_id', $busId)
+                                ->exists(); 
+            if($busEntryPresent==true){
+                $busScheduleId = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');    
+                $dates = $this->busScheduleDate
+                    ->where('bus_schedule_id', $busScheduleId)           
+                    ->pluck('entry_date')->toarray();
+                if($jdays>1){
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                }else{
+                    $new_date = $entry_date;
+                }
+                if(in_array($new_date, $dates))
+                {
+                    $records[] = $this->bus
+                    ->with('busContacts')
+                    ->with('busOperator')       
+                    ->with('busAmenities.amenities')
+                    ->with('busSafety.safety')
+                    ->with('BusType.busClass')
+                    ->with('busSeats.seats')
+                    // ->with('seatOpen.seatOpenSeats')
+                    ->with('BusSitting')
+                    ->with('busGallery')
+                    ->with('cancellationslabs.cancellationSlabInfo')
+                    ->where('status','1')
+                    ->where('id',$busId)
+                    ->get();
+                } 
+            } 
         }
-     $records = Arr::flatten($records);
-     //return $records;
+        $records = Arr::flatten($records);
+        //return $records;
         foreach($records as $record){
+           
             $busId = $record->id; 
             $busName = $record->name;
             $popularity = $record->popularity;
@@ -162,7 +167,7 @@ class ListingRepository
             //return $seatsOpenSeats;
 
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
-            ->count('id');
+                                            ->count('id');                      
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
@@ -187,7 +192,11 @@ class ListingRepository
                      $sleeperClassRecords ++;
                 }
             }
-            $ListingRecords[] = array(
+           $bookedSeats = $this->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+           $seatClassRecords = $seatClassRecords - $bookedSeats[1];
+           $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
+           $totalSeats = $totalSeats - $bookedSeats[2];
+           $ListingRecords[] = array(
                 "busId" => $busId, 
                 "busName" => $busName,
                 "popularity" => $popularity,
@@ -218,8 +227,37 @@ class ListingRepository
         }
         return $ListingRecords;
     }
+ //Calculate Booked seats and remove it from total count
+    public function getBookedSeats($sourceID,$destinationID,$entry_date,$busId){
+        $booked = Config::get('constants.BOOKED_STATUS');
+        $booked_seats = $this->booking->where('journey_dt',$entry_date)
+            ->where('bus_id',$busId)
+            ->where('source_id',$sourceID)
+            ->where('destination_id',$destinationID)
+            ->where('status',$booked)
+            ->with(["bookingDetail.busSeats.seats"]) 
+            ->get();
+        $collection = collect($booked_seats);
+        $i = 0;
+        $seaterRecords = 0;
+        $sleeperRecords = 0;
+        foreach($collection as $cid){
+        foreach($cid->bookingDetail as $cbd)
+        {
+            $class = $cbd->busSeats->seats->seat_class_id;
+            if($class==1){
+                $seaterRecords ++;
+            }
+            elseif($class==2 || $class==3){
+                $sleeperRecords ++;
+            }
+        }
+        $i++;
+        } 
+        $totalBookedCount= $sleeperRecords+$seaterRecords;
+        return [$sleeperRecords,$seaterRecords,$totalBookedCount];
 
-
+    }   
     public function getFilterOptions($request)
     {
         $sourceID = $request['sourceID'];
@@ -245,7 +283,8 @@ class ListingRepository
     }
 
     public function filter($request)
-    {      
+    {   
+        $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID']; 
@@ -262,67 +301,70 @@ class ListingRepository
 
         $busDetails = $this->ticketPrice
         ->where('source_id', $sourceID)
-        ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);  
-        $busRecords = array();
+        ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);
+
         $records = array();
-        $ListingRecords = array();
+        $FilterRecords = array();
 
         foreach($busDetails as $busDetail){
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
-            $busRecords[] = $busId;
-            $busScheduleDate = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
-            $dates = $this->busScheduleDate
-                ->where('bus_schedule_id', $busScheduleDate)           
-                ->pluck('entry_date')->toarray();
-            if($jdays>1){
-                $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-            }else{
-                $new_date = $entry_date;
-            }
-            if(in_array($new_date, $dates))
-            {
-                $records[] = $this->bus
-                ->with('busOperator')
-                ->with('busAmenities.amenities')
-                ->with('busSafety.safety')
-                ->with('BusType.busClass')
-                ->with('busSeats.seats')
-                ->with('BusSitting')
-                ->with('busGallery')
-                ->with('cancellationslabs.cancellationSlabInfo')
-                ->where('status','1')
-                ->where('id',$busId)
-                ->whereHas('busType.busClass', function ($query) use ($busType){
-                    if($busType)
-                    $query->whereIn('id', (array)$busType);            
-                    })
-                ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
-                    if($seatType)
-                    $query->whereIn('id', (array)$seatType);            
-                    })
-                ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
-                    if($boardingPointId)                   
-                    $query->whereIn('id', (array)$boardingPointId);
-                      })    
-                ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){
-                    if($dropingingPointId)  
-                    $query->whereIn('id', (array)$dropingingPointId);
-                     })       
-                ->whereHas('busOperator', function ($query) use ($operatorId){
-                    if($operatorId)
-                    $query->whereIn('id', (array)$operatorId);            
-                    })
-                ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
-                    if($amenityId)
-                    $query->whereIn('id', (array)$amenityId);            
-                    })  
-                ->where('id',$busId)
-                ->get();
-            }   
+            $busEntryPresent =$this->busSchedule->where('bus_id', $busId)
+                                ->exists(); 
+            if($busEntryPresent==true){
+                $busScheduleDate = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
+                $dates = $this->busScheduleDate
+                    ->where('bus_schedule_id', $busScheduleDate)           
+                    ->pluck('entry_date')->toarray();
+                if($jdays>1){
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                }else{
+                    $new_date = $entry_date;
+                }
+                if(in_array($new_date, $dates))
+                {
+                    $records[] = $this->bus
+                    ->with('busOperator')
+                    ->with('busAmenities.amenities')
+                    ->with('busSafety.safety')
+                    ->with('BusType.busClass')
+                    ->with('busSeats.seats')
+                    ->with('BusSitting')
+                    ->with('busGallery')
+                    ->with('cancellationslabs.cancellationSlabInfo')
+                    ->where('status','1')
+                    ->where('id',$busId)
+                    ->whereHas('busType.busClass', function ($query) use ($busType){
+                        if($busType)
+                        $query->whereIn('id', (array)$busType);            
+                        })
+                    ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
+                        if($seatType)
+                        $query->whereIn('id', (array)$seatType);            
+                        })
+                    ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
+                        if($boardingPointId)                   
+                        $query->whereIn('id', (array)$boardingPointId);
+                        })    
+                    ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){
+                        if($dropingingPointId)  
+                        $query->whereIn('id', (array)$dropingingPointId);
+                        })       
+                    ->whereHas('busOperator', function ($query) use ($operatorId){
+                        if($operatorId)
+                        $query->whereIn('id', (array)$operatorId);            
+                        })
+                    ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
+                        if($amenityId)
+                        $query->whereIn('id', (array)$amenityId);            
+                        })  
+                    ->where('id',$busId)
+                    ->get();
+                } 
+            }  
         }
         $records = Arr::flatten($records); 
-            $FilterRecords = array();
+        //return $records;
             foreach($records as $record){
                 $busId = $record->id; 
                 $busName = $record->name;
@@ -352,9 +394,9 @@ class ListingRepository
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
 
-                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->count('id');
-                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('bookStatus','0')->all();
+                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 $amenityDatas = $record->busAmenities;
                 $amenityName = $amenityDatas->pluck('amenities.name');
                 $amenityIcon = $amenityDatas->pluck('amenities.icon');
@@ -366,8 +408,8 @@ class ListingRepository
                 $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
                 $cSlabDuration = $cSlabDatas->pluck('duration');
                 $cSlabDeduction = $cSlabDatas->pluck('deduction');
-                 $seatClassRecords = 0;
-                 $sleeperClassRecords = 0;
+                $seatClassRecords = 0;
+                $sleeperClassRecords = 0;
                 foreach($seatDatas as $seatData) {  
                      $seatclass = $seatData->seats->seat_class_id;
                      if($seatclass==1){
@@ -377,6 +419,11 @@ class ListingRepository
                          $sleeperClassRecords ++;
                     }
                 }
+                $bookedSeats = $this->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+                $seatClassRecords = $seatClassRecords - $bookedSeats[1];
+                $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
+                $totalSeats = $totalSeats - $bookedSeats[2];
+
                 $FilterRecords[] = array(
                     "busId" => $busId, 
                     "busName" => $busName,
