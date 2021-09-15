@@ -199,7 +199,14 @@ class UsersController extends Controller
     }
     try {
       $response = $this->usersService->login($request);
-      return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
+      if($response!='un_registered')
+      {
+         return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+      }else{
+        return $this->successResponse($response,Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+      }
+
+      //return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
   }
    catch (Exception $e) {
     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

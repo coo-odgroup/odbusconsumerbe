@@ -97,6 +97,41 @@
                                                 "default": "1",
                                                 "example": "1"
                                             },
+                                            "total_fare": {
+                                                "type": "double",
+                                                "default": "1000",
+                                                "example": "1000"
+                                            },
+                                            "owner_fare": {
+                                                "type": "double",
+                                                "default": "900",
+                                                "example": "900"
+                                            },
+                                            "odbus_service_Charges": {
+                                                "type": "double",
+                                                "default": "70",
+                                                "example": "70"
+                                            },
+                                            "odbus_gst_charges": {
+                                                "type": "number",
+                                                "default": "5",
+                                                "example": "5"
+                                            },
+                                            "odbus_gst_amount": {
+                                                "type": "double",
+                                                "default": "50",
+                                                "example": "50"
+                                            },
+                                            "owner_gst_charges": {
+                                                "type": "number",
+                                                "default": "5",
+                                                "example": "5"
+                                            },
+                                            "owner_gst_amount": {
+                                                "type": "double",
+                                                "default": "50",
+                                                "example": "50"
+                                            },
                                             "created_by": {
                                                 "type": "string",
                                                 "default": "Customer",
@@ -122,14 +157,6 @@
                                                             "type": "string",
                                                             "example": "22"
                                                         },
-                                                        "total_fare": {
-                                                            "type": "string",
-                                                            "example": "350"
-                                                        },
-                                                        "owner_fare": {
-                                                            "type": "string",
-                                                            "example": "0"
-                                                        },
                                                         "created_by": {
                                                             "type": "string",
                                                             "example": "Customer"
@@ -143,8 +170,6 @@
                                                         "passenger_name": "Bob",
                                                         "passenger_gender": "M",
                                                         "passenger_age": "22",
-                                                        "total_fare": "350",
-                                                        "owner_fare": "0",
                                                         "created_by": "Customer"
                                                     },
                                                     {
@@ -152,8 +177,6 @@
                                                         "passenger_name": "Mom",
                                                         "passenger_gender": "F",
                                                         "passenger_age": "20",
-                                                        "total_fare": "350",
-                                                        "owner_fare": "0",
                                                         "created_by": "Customer"
                                                     }
                                                 ]

@@ -136,6 +136,48 @@ class BookTicketController extends Controller
  *                  example="1" ,
  *                  ),
  *                @OA\Property(
+ *                  property="total_fare",
+ *                  type="double",
+ *                  default="1000",
+ *                  example="1000" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="owner_fare",
+ *                  type="double",
+ *                  default="900",
+ *                  example="900" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="odbus_service_Charges",
+ *                  type="double",
+ *                  default="70",
+ *                  example="70" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="odbus_gst_charges",
+ *                  type="number",
+ *                  default="5",
+ *                  example="5" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="odbus_gst_amount",
+ *                  type="double",
+ *                  default="50",
+ *                  example="50" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="owner_gst_charges",
+ *                  type="number",
+ *                  default="5",
+ *                  example="5" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="owner_gst_amount",
+ *                  type="double",
+ *                  default="50",
+ *                  example="50" ,
+ *                  ),
+ *                @OA\Property(
  *                  property="created_by",
  *                  type="string",
  *                  default="Customer",
@@ -149,16 +191,12 @@ class BookTicketController extends Controller
  *                    "passenger_name": "Bob",
  *                    "passenger_gender": "M",
  *                    "passenger_age": "22",
- *                    "total_fare": "350",
- *                    "owner_fare": "0",
  *                    "created_by": "Customer"
  *                  }, {
  *                    "bus_seats_id" : "32",
  *                    "passenger_name": "Mom",
  *                    "passenger_gender": "F",
  *                    "passenger_age": "20",
- *                    "total_fare": "350",
- *                    "owner_fare": "0",
  *                    "created_by": "Customer"
  *                  }},
  *                  @OA\Items(
@@ -181,16 +219,6 @@ class BookTicketController extends Controller
  *                         property="passenger_age",
  *                         type="string",
  *                         example="22"
- *                      ),
- *                      @OA\Property(
- *                         property="total_fare",
- *                         type="string",
- *                         example="350"
- *                      ),
- *                      @OA\Property(
- *                         property="owner_fare",
- *                         type="string",
- *                         example="0"
  *                      ),
  *                      @OA\Property(
  *                         property="created_by",
