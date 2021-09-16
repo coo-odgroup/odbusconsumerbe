@@ -28,4 +28,8 @@ class TicketPrice extends Model
     {
         return $this->hasMany(BusStoppageTiming::class);
     }
+    public function busOperator()
+    {        
+        return $this->belongsTo(BusOperator::class);        
+    }
 }

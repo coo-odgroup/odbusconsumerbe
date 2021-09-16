@@ -45,6 +45,9 @@ Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/BusDetails', [ListingController::class, 'busDetails']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
 Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
+Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
+Route::get('/AllOperators', [PopularController::class, 'allOperators']);
+Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
 Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
 
 

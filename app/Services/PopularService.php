@@ -23,4 +23,16 @@ class PopularService
     {
         return $this->popularRepository->getTopOperators($request);
     }
+    public function allRoutes(Request $request)
+    {
+        return $this->popularRepository->allRoutes($request);
+    }
+    public function allOperators(Request $request)
+    {
+        return $this->popularRepository->allOperators($request);
+    }
+    public function operatorDetails(Request $request)
+    {
+        return $this->popularRepository->operatorDetails($request);
+    }
 }

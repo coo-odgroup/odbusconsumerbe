@@ -6,7 +6,10 @@ use App\Models\Bus;
 use App\Models\TicketPrice;
 use App\Models\Booking;
 use App\Models\Location;
+use App\Models\BusOperator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Collection;
 use DB;
 use Carbon\Carbon;
 
@@ -32,7 +35,7 @@ class PopularRepository
         ->whereDate('created_at', '>', Carbon::now()->subDays(30))
         ->groupBy('source_id', 'destination_id')
         ->orderBy('count', 'DESC')
-        ->limit(5)
+        ->limit(10)
         ->get();
         foreach($routenames as $route){
            $srcId = $route->source_id;
@@ -54,33 +57,156 @@ class PopularRepository
     }
 
     public function getTopOperators($request)
-    { 
+    {  
         $busIds = $this->booking
         ->select('bus_id',(DB::raw('count(*) as count')))
         ->whereDate('created_at', '>', Carbon::now()->subDays(30))
         ->groupBy('bus_id')
         ->orderBy('count', 'DESC')
         ->get();
-  
-        foreach($busIds as $busId){
-            $opId = $busId->bus_id;
-            $count = $busId->count;
-            $opName = $this->getOperatorName($opId);
-            $topOperators[] = array(
-                 "operatorName" => $opName, 
-                 "count" => $count
-             );
-         } 
-         return $topOperators;
+            if($busIds->isEmpty()){
+                return "No booking exist to filter top operator";
+            }
+            else{
+                foreach($busIds as $busId){
+                    $opId = $busId->bus_id;
+                    $count = $busId->count;
+                    $opName = $this->getOperatorName($opId);
+                    $topOperators[] = array(
+                        "operatorName" => $opName, 
+                        "count" => $count
+                        );
+                } 
+            }
+            return $topOperators;
     }
     public function getOperatorName($operatorId){ 
         $records = $this->bus
         ->with('busOperator')
         ->where('id',$operatorId)->get();
-        foreach($records as $record){
-            $operatorName = $record->busOperator->operator_name;
-         } 
+        $operatorName = $records[0]->busOperator->operator_name;
         return $operatorName;
     }
+
+    public function allRoutes($request){ 
+        $allRoutes = array();
+        $routenames = $this->ticketPrice
+        ->select('source_id','destination_id',(DB::raw('count(*) as count')))
+        ->groupBy('source_id', 'destination_id')
+        ->orderBy('count', 'DESC')
+        ->get();
+        foreach($routenames as $route){
+           $srcId = $route->source_id;
+           $destId = $route->destination_id;
+           $count = $route->count;
+           $srcName = $this->getRouteNames($srcId);
+           $destName = $this->getRouteNames($destId);
+            $allRoutes[] = array(
+                "sourceName" => $srcName, 
+                "destinationName" => $destName
+            );
+        } 
+        return $allRoutes;
+    }
+
+    public function allOperators($request){  
+
+        $operators = BusOperator::get(['id','operator_name']);
+        return $operators;
+
+    }
+
+    public function operatorDetails($request){ 
+
+        $operatorId = $request['operator_id'];
+       
+        $operatorDetails = BusOperator::where('id', $operatorId)->with(['bus' => function ($q){ 
+           $q->select('bus_operator_id','id','name');
+           $q->with(['busAmenities' => function ($query) {
+               $query->select('bus_id','amenities_id');
+                $query->with(['amenities' =>  function ($a){
+                   $a->select('id','name','icon');
+                       }]);
+                   }]);
+                }])   
+           ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
+           ->get();
+           $items = collect($operatorDetails)[0]->ticketPrice; 
+           if(!empty($items)){
+                $buses = $operatorDetails[0]->bus;
+                foreach($items as $item){
+
+                    $srcName = $this->getRouteNames($item['source_id']);
+                    $destName = $this->getRouteNames($item['destination_id']);
+                    $routeRecords[] = [   
+                        "sourceName" => $srcName, 
+                        "destinationName" => $destName
+                    ];       
+                }
+ 
+                $opNameDetails = [$buses,$routeRecords];
+                unset($routeRecords);
+            }  
+            return $opNameDetails;
+       
+   }
+
+
+
+
+    public function allOperatorDetails($request){ 
+       
+         $operatorDetails = BusOperator:: with(['bus' => function ($q){ 
+            $q->select('bus_operator_id','id','name');
+            $q->with(['busAmenities' => function ($query) {
+                $query->select('bus_id','amenities_id');
+                 $query->with(['amenities' =>  function ($a){
+                    $a->select('id','name','icon');
+                        }]);
+                    }]);
+                 }])
+            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
+            ->select(['id','operator_name']) 
+            ->get();
+       
+        foreach($operatorDetails as $operatorDetail){
+            $items = collect($operatorDetail)['ticket_price']; 
+         
+           if(!empty($items)){
+                $buses = collect($operatorDetail)['bus'];
+               
+                $opName =  $operatorDetail['operator_name'];
+                //$operatorRecords[] = ["operator_name"=>$opName]; 
+                foreach($items as $item){
+                    
+                    $srcName = $this->getRouteNames($item['source_id']);
+                    $destName = $this->getRouteNames($item['destination_id']);
+                    $routeRecords[] = [
+                        "sourceName" => $srcName, 
+                        "destinationName" => $destName
+                    ];       
+                }
+                // $opNameDetails[] = [$opName=>$buses, 
+                $opNameDetails[] = [$opName => [$buses,$routeRecords]];
+                unset($routeRecords);
+
+                // $popularRoutes = array();
+                //     $routenames = $this->booking
+                //     ->where('source_id', $srcName)
+                //     ->where('destination_id', $destName)
+                //     ->whereDate('created_at', '>', Carbon::now()->subDays(30))
+                //     ->groupBy('source_id', 'destination_id')
+                //     ->orderBy('count', 'DESC')
+                //     ->limit(10)
+                //     ->get();
+            }   
+         
+        } 
+        
+ 
+        return $opNameDetails;
+        
+    }
+
 
 }

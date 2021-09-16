@@ -116,7 +116,7 @@ class ViewSeatsRepository
             if (sizeof($bookingIds)){
                 $i=0;
               
-              if(isset($viewSeat['lower_berth']) && $viewSeat['lower_berth']){
+              if(isset($viewSeat['lower_berth'])){
                 foreach($viewSeat['lower_berth'] as &$lb){
                     if(in_array($lb['id'], $blockedSeats)){
                         $key = array_search($lb['id'], $seatsIds);
@@ -126,8 +126,7 @@ class ViewSeatsRepository
                 } 
               }
                 $i=0; 
-                if(isset($viewSeat['upper_berth']) && $viewSeat['upper_berth']){
-                  
+                if(isset($viewSeat['upper_berth'])){  
                   foreach($viewSeat['upper_berth'] as &$ub){
                     if(in_array($ub['id'], $blockedSeats)){
                         $key = array_search($ub['id'], $seatsIds);

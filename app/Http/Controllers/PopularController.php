@@ -50,4 +50,17 @@ class PopularController extends Controller
         $topOperators = $this->popularService->getTopOperators($request);
         return $this->successResponse($topOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function allRoutes(Request $request) {
+        $allRoutes = $this->popularService->allRoutes($request);
+        return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    public function allOperators(Request $request) {
+        $allRoutes = $this->popularService->allOperators($request);
+        return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    public function operatorDetails(Request $request) {
+        $allRoutes = $this->popularService->operatorDetails($request);
+        return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 }
