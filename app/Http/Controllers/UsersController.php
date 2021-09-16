@@ -258,4 +258,20 @@ public function userProfile() {
 public function refreshToken() {
   return $this->createNewToken(auth()->refresh());
   }
+
+  public function BookingHistory(Request $request){  
+
+    $data = $request->all();  
+    $user = auth()->user();
+    if(!is_null($user)) {     
+      $response =  $this->UsersService->BookingHistory($request);  
+      return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    else {
+      return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+    }
+
+  }
+
+
 }

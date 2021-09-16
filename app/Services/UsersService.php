@@ -36,4 +36,11 @@ class UsersService
         $user = $this->usersRepository->login($request);
         return $user;
     }
+
+    public function BookingHistory($request){
+
+        $result = $this->usersRepository->BookingHistory($request);
+        return $result;
+
+    }
 }
