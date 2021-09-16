@@ -62,6 +62,10 @@ Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
 Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
 Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
 
+
+
+Route::get('/BookingHistory', [UsersController::class, 'BookingHistory']);
+
 //});
 
 

@@ -113,6 +113,10 @@ class UsersRepository
         } else{
             return "un_registered";
         }      
-      }
+    }
+
+    public function BookingHistory($request){
+
+    }
 }   
  
