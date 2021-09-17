@@ -8,6 +8,18 @@ use App\Repositories\ChannelRepository;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Bus;
+use App\Models\Location;
+use App\Models\Booking;
+use App\Models\BookingDetail;
+use App\Models\CustomerPayment;
+use App\Models\BusType;
+use App\Models\BusClass;
+use App\Models\BusSeats;
+use App\Models\BusContacts;
+use App\Models\Seats;
+use App\Models\TicketPrice;
+
 
 class UsersRepository
 {
@@ -15,11 +27,36 @@ class UsersRepository
      * @var Users
      */
     protected $channelRepository;
+    protected $bus;
+    protected $ticketPrice;
+    protected $location;
+    protected $users;
+    protected $booking;
+    protected $busSeats;
+    protected $seats;
+    protected $bookingDetail;
+    protected $busType;
+    protected $busClass;
+    protected $customerPayment;
 
-    public function __construct(Users $users,ChannelRepository $channelRepository)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
+    BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
+    ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository)
     {
         $this->users = $users;
         $this->channelRepository = $channelRepository;   
+
+        $this->bus = $bus;
+        $this->ticketPrice = $ticketPrice;
+        $this->location = $location;
+        $this->busSeats = $busSeats;
+        $this->seats = $seats;
+        $this->booking = $booking;
+        $this->bookingDetail = $bookingDetail;
+        $this->busType = $busType;
+        $this->busClass = $busClass;
+        $this->customerPayment = $customerPayment;
+
     }
   
     public function Register($request)
@@ -117,7 +154,56 @@ class UsersRepository
 
     public function BookingHistory($request){
 
-        return $request['paginate'];
+         $user = auth()->user();
+
+        $status = $request['status'];
+        $paginate = $request['paginate'];
+       
+
+        $list = Booking::where('users_id',$user->id)
+        ->with(["bus" => function($bs){
+            $bs->with('BusType.busClass');
+            $bs->with('BusSitting');                
+            $bs->with('busContacts');
+          } ] )
+        ->with(["bookingDetail" => function($b){
+                $b->with(["busSeats" => function($s){
+                    $s->with("seats");
+                  } ]);
+            } ]);
+        
+
+        $list =  $list->paginate($paginate);
+
+        $today=date("Y-m-d");
+
+        if($list){
+            foreach($list as $l){
+
+                $l['source']=$this->location->where('id',$l->source_id)->get();
+                $l['destination']=$this->location->where('id',$l->destination_id)->get();
+
+                if($l->status==2){
+                    $l['booking_status']= "Cancelled";
+                }
+                else if($today > $l->journey_dt){
+                    $l['booking_status']= "Completed";
+                }elseif($today < $l->journey_dt){
+                    $l['booking_status']= "Upcoming";
+                }
+         
+
+            }
+        }
+
+      
+        $response = array(
+            "count" => $list->count(), 
+            "total" => $list->total(),
+            "data" => $list
+           );   
+           return $response;
+
 
     }
 }   
