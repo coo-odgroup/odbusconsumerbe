@@ -117,6 +117,8 @@ class UsersRepository
 
     public function BookingHistory($request){
 
+        return $request['paginate'];
+
     }
 }   
  

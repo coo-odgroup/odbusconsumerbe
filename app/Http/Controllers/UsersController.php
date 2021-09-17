@@ -264,7 +264,7 @@ public function refreshToken() {
     $data = $request->all();  
     $user = auth()->user();
     if(!is_null($user)) {     
-      $response =  $this->UsersService->BookingHistory($request);  
+      $response =  $this->usersService->BookingHistory($request);  
       return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
     else {

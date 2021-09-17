@@ -33,12 +33,6 @@ Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
-Route::post('/Register', [UsersController::class, 'Register']);
-Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
-Route::post('/Login', [UsersController::class, 'login']);
-Route::get('/UserProfile', [UsersController::class, 'userProfile']);
-Route::post('/Logout', [UsersController::class, 'logout']);
-Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 //Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
 //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
 Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
@@ -67,9 +61,16 @@ Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByB
 
 
 
-Route::get('/BookingHistory', [UsersController::class, 'BookingHistory']);
+Route::post('/Register', [UsersController::class, 'Register']);
+Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
+Route::post('/Login', [UsersController::class, 'login']);
+Route::post('/Logout', [UsersController::class, 'logout']);
+Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 
-//});
+Route::group(['middleware' => ['jwt.verify']], function() {
+    Route::get('/UserProfile', [UsersController::class, 'userProfile']);
+    Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);
+});
 
 
 
