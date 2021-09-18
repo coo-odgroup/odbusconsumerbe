@@ -36,7 +36,7 @@ class PopularController extends Controller
         $popularRoutes = $this->popularService->getPopularRoutes($request);
         return $this->successResponse($popularRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-    /**
+/**
  * @OA\Get(
  *     path="/api/TopOperators",
  *     tags={"TopOperators API"},
@@ -50,15 +50,53 @@ class PopularController extends Controller
         $topOperators = $this->popularService->getTopOperators($request);
         return $this->successResponse($topOperators,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
+/**
+ * @OA\Get(
+ *     path="/api/AllRoutes",
+ *     tags={"All Routes API"},
+ *     description="get all Routes of bus running",
+ *     summary="get all Routes of bus running",
+ *     @OA\Response(response="200", description="Record Fetched Successfully")
+ * )
+ * 
+ */
     public function allRoutes(Request $request) {
         $allRoutes = $this->popularService->allRoutes($request);
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+/**
+ * @OA\Get(
+ *     path="/api/AllOperators",
+ *     tags={"All Operators API"},
+ *     description="get all Operators names",
+ *     summary="get all Operators names",
+ *     @OA\Response(response="200", description="Record Fetched Successfully")
+ * )
+ * 
+ */
     public function allOperators(Request $request) {
         $allRoutes = $this->popularService->allOperators($request);
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+/**
+ * @OA\Get(
+ *     path="/api/OperatorDetails",
+ *     tags={"Operator's Details"},
+ *     description="Operator's Details",
+ *     summary="Operator's Details",
+ *     @OA\Parameter(
+ *          name="operator_id",
+ *          description="operator Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="Record Fetched Successfully")
+ * )
+ * 
+ */
     public function operatorDetails(Request $request) {
         $allRoutes = $this->popularService->operatorDetails($request);
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

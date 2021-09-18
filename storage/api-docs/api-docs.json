@@ -768,6 +768,62 @@
                 }
             }
         },
+        "/api/AllRoutes": {
+            "get": {
+                "tags": [
+                    "All Routes API"
+                ],
+                "summary": "get all Routes of bus running",
+                "description": "get all Routes of bus running",
+                "operationId": "App\\Http\\Controllers\\PopularController::allRoutes",
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    }
+                }
+            }
+        },
+        "/api/AllOperators": {
+            "get": {
+                "tags": [
+                    "All Operators API"
+                ],
+                "summary": "get all Operators names",
+                "description": "get all Operators names",
+                "operationId": "App\\Http\\Controllers\\PopularController::allOperators",
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    }
+                }
+            }
+        },
+        "/api/OperatorDetails": {
+            "get": {
+                "tags": [
+                    "Operator's Details"
+                ],
+                "summary": "Operator's Details",
+                "description": "Operator's Details",
+                "operationId": "App\\Http\\Controllers\\PopularController::operatorDetails",
+                "parameters": [
+                    {
+                        "name": "operator_id",
+                        "in": "query",
+                        "description": "operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    }
+                }
+            }
+        },
         "/api/Register": {
             "post": {
                 "tags": [
