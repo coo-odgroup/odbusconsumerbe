@@ -27,14 +27,14 @@ use Symfony\Component\HttpFoundation\Response;
             } catch (Exception $e) {
                 if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
                     return $this->errorResponse(Config::get('constants.TOKEN_INVALID'),
-                    Response::HTTP_OK);
+                    Response::HTTP_UNAUTHORIZED);
                 }else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
                     return $this->errorResponse(Config::get('constants.TOKEN_EXPIRED'),
-                    Response::HTTP_OK);
+                    Response::HTTP_UNAUTHORIZED);
                     
                 }else{
                     return $this->errorResponse(Config::get('constants.TOKEN_NOTFOUND'),
-                    Response::HTTP_OK);
+                    Response::HTTP_UNAUTHORIZED);
                 }
             }
             return $next($request);

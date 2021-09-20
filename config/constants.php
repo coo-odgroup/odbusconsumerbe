@@ -20,6 +20,7 @@ return [
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_INVALID' => 'Invalid OTP',
     'OTP_VERIFIED' => 'OTP verification successful',
+    'REFRESH_TOKEN' => 'Refresh token is successful',
     'WRONG_CREDENTIALS' => 'Wrong credentials',
     'USER_DETAILS' => 'Authorized user details',
     'USER_UNAUTHORIZED' => 'Unauthorized user',

@@ -158,27 +158,84 @@ class UsersRepository
 
         $status = $request['status'];
         $paginate = $request['paginate'];
-       
-
-        $list = Booking::where('users_id',$user->id)
-        ->with(["bus" => function($bs){
-            $bs->with('BusType.busClass');
-            $bs->with('BusSitting');                
-            $bs->with('busContacts');
-          } ] )
-        ->with(["bookingDetail" => function($b){
-                $b->with(["busSeats" => function($s){
-                    $s->with("seats");
-                  } ]);
-            } ]);
-        
-
-        $list =  $list->paginate($paginate);
+        $filter = $request['filter'];  
 
         $today=date("Y-m-d");
 
+        if($status=='Cancelled'){   
+            
+            $list = Booking::where('users_id',$user->id)
+            ->where('status','=',2)
+            ->with(["bus" => function($bs){
+                $bs->with('BusType.busClass');
+                $bs->with('BusSitting');                
+                $bs->with('busContacts');
+              } ] )
+            ->with(["bookingDetail" => function($b){
+                    $b->with(["busSeats" => function($s){
+                        $s->with("seats");
+                      } ]);
+                } ]);
+
+        }
+        
+        else if($status=='Completed'){ 
+
+            $list = Booking::where('users_id',$user->id)
+            ->where('status','!=',2)
+            ->where('journey_dt','<',$today)
+            ->with(["bus" => function($bs){
+                $bs->with('BusType.busClass');
+                $bs->with('BusSitting');                
+                $bs->with('busContacts');
+              } ] )
+            ->with(["bookingDetail" => function($b){
+                    $b->with(["busSeats" => function($s){
+                        $s->with("seats");
+                      } ]);
+                } ]);
+
+        }
+
+        else if($status=='Upcoming'){    
+
+            $list = Booking::where('users_id',$user->id)
+            ->where('status','!=',2)
+            ->where('journey_dt','>',$today)
+            ->with(["bus" => function($bs){
+                $bs->with('BusType.busClass');
+                $bs->with('BusSitting');                
+                $bs->with('busContacts');
+              } ] )
+            ->with(["bookingDetail" => function($b){
+                    $b->with(["busSeats" => function($s){
+                        $s->with("seats");
+                      } ]);
+                } ]);
+
+        }
+
+      else{
+            $list = Booking::where('users_id',$user->id)
+            ->with(["bus" => function($bs){
+                $bs->with('BusType.busClass');
+                $bs->with('BusSitting');                
+                $bs->with('busContacts');
+              } ] )
+            ->with(["bookingDetail" => function($b){
+                    $b->with(["busSeats" => function($s){
+                        $s->with("seats");
+                      } ]);
+                } ]);
+
+        }        
+
+        $list =  $list->paginate($paginate);
+
+       // $list= (array) $list;
+
         if($list){
-            foreach($list as $l){
+            foreach($list as $k => $l){
 
                 $l['source']=$this->location->where('id',$l->source_id)->get();
                 $l['destination']=$this->location->where('id',$l->destination_id)->get();
@@ -186,13 +243,11 @@ class UsersRepository
                 if($l->status==2){
                     $l['booking_status']= "Cancelled";
                 }
-                else if($today > $l->journey_dt){
+                else if($l->status!=2 && $today > $l->journey_dt){
                     $l['booking_status']= "Completed";
-                }elseif($today < $l->journey_dt){
+                }elseif($l->status!=2 && $today < $l->journey_dt){
                     $l['booking_status']= "Upcoming";
                 }
-         
-
             }
         }
 
