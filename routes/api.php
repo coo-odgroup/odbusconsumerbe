@@ -52,11 +52,8 @@ Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
 Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
 
 
-Route::post('/AddReview', [ReviewController::class, 'createReview']);
+
 Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
-Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
-Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
-Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
 Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
 
 
@@ -69,7 +66,11 @@ Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
-    Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);
+    Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);    
+    Route::post('/AddReview', [ReviewController::class, 'createReview']);
+    Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
+    Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
+    Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
 });
 
 
