@@ -11,7 +11,7 @@ class BusOperator extends Model
     use HasFactory;
     protected $table = 'bus_operator';
     protected $fillable = [
-        'email_id','password','operator_name','contact_number','organisation_name','location_name'
+        'email_id','password','operator_name','operator_info','contact_number','organisation_name','location_name'
     ];
     public function bus()
     {        

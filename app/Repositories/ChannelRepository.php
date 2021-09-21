@@ -382,7 +382,7 @@ class ChannelRepository
         $busId = $request['bus_id'];    
         $transationId = $request['transaction_id']; 
  
-        $booked = Config::get('constants.BOOKED_STATUS');
+        //$booked = Config::get('constants.BOOKED_STATUS');
         
         $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
         $bookingId = $records[0]->id;    
@@ -407,7 +407,7 @@ class ChannelRepository
            
         //Update Ticket Status in booking Change status to 1(Booked)
             
-        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        //$this->booking->where('id', $bookingId)->update(['status' => $booked]);
           
         $data = array(
             'name' => $name,
@@ -419,6 +419,7 @@ class ChannelRepository
     }
     public function pay($request)
     {   
+        $booked = Config::get('constants.BOOKED_STATUS');
         $paymentDone = Config::get('constants.PAYMENT_DONE');
         $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
         //$key = config('services.razorpay.key');
@@ -455,6 +456,11 @@ class ChannelRepository
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
             }
+        //Update Ticket Status in booking Change status to 1(Booked)
+            
+        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+
             return "Payment Done";
         }
         else{
