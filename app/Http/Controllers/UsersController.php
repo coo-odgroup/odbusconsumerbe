@@ -260,11 +260,10 @@ public function refreshToken() {
   $loginUser = [  
     'access_token' => auth()->refresh(),
     'token_type' => 'bearer',
-    'expires_in' => Auth()->factory()->getTTL() * 60,
-    'user' => Auth()->user()   
+    'expires_in' => Auth()->factory()->getTTL() * 60
 ];
 
-return $this->successResponse($user,Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);
+return $this->successResponse($loginUser,Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);
 }
 
   public function BookingHistory(Request $request){  
