@@ -33,7 +33,7 @@ class ReviewRepository
      */
     public function getAllReview()
     {
-        return $this->review->whereNotIn('status', [2])->get();
+        return $this->review->where('status', 1)->get();
     }
 
     /**
