@@ -256,7 +256,14 @@ public function userProfile() {
 }
 
 public function refreshToken() {
-   return $this->successResponse($this->createNewToken(auth()->refresh()),Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);
+
+  $res = [  
+    'access_token' => auth()->refresh(),
+    'token_type' => 'bearer',
+    'expires_in' => Auth()->factory()->getTTL() * 60
+]; 
+
+   return $this->successResponse($res,Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);
 }
 
   public function BookingHistory(Request $request){  
