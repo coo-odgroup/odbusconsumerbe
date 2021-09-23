@@ -11,15 +11,23 @@ class SeatOpenSeats extends Model
 {
     use HasFactory;
     protected $table = 'seat_open_seats';
-    protected $fillable = ['seat_open_id','seat_id'];
+    protected $fillable = ['seat_open_id','seats_id'];
 
 	public function seats()
     {
     	return $this->belongsTo(Seats::class);
     }
-    public function seatOpen()
-    {
-    	return $this->belongsTo(SeatOpen::class);
+    // public function seatOpen()
+    // {
+    //     return $this->belongsTo(SeatOpen::class)->withDefault(function () {
+    //         return (object)[];
+    //     });
+    // 	//return $this->belongsTo(SeatOpen::class);
+    // }
+    public function seatOpen(){
+        if(empty($this->seat_open_id)){
+            return $this->belongsTo(SeatOpen::class)->withDefault();
+        }
     }
    
 }

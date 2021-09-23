@@ -65,10 +65,13 @@ class CancelTicketController extends Controller
           $response =  $this->cancelTicketService->cancelTicket($request); 
           if($response == 'refunded'){
             return $this->successResponse($response,Config::get('constants.REFUNDED_COMPLETED'));
-          }elseif($response == 'noPayment'){
-            return $this->successResponse($response,Config::get('constants.NO_PAYMENT'));
+          }else{
+            return $this->successResponse($response,Config::get('constants.REFUND_INITIATED'),Response::HTTP_CREATED);
           }
-           return $this->successResponse($response,Config::get('constants.REFUND_INITIATED'),Response::HTTP_CREATED);
+          // elseif($response == 'noPayment'){
+          //   return $this->successResponse($response,Config::get('constants.NO_PAYMENT'));
+          // }
+          
        }
        catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

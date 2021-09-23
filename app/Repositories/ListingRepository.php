@@ -119,7 +119,7 @@ class ListingRepository
                     ->with('busSafety.safety')
                     ->with('BusType.busClass')
                     ->with('busSeats.seats')
-                    // ->with('seatOpen.seatOpenSeats')
+                    //->with('seatOpen.seatOpenSeats')
                     ->with('BusSitting')
                     ->with('busGallery')
                     ->with('cancellationslabs.cancellationSlabInfo')
@@ -227,6 +227,7 @@ class ListingRepository
         }
         return $ListingRecords;
     }
+
  //Calculate Booked seats and remove it from total count
     public function getBookedSeats($sourceID,$destinationID,$entry_date,$busId){
         $booked = Config::get('constants.BOOKED_STATUS');

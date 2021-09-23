@@ -136,20 +136,10 @@ class CancelTicketRepository
                         } 
                         return $refund;
 
-                    }elseif($min < $interval && $interval < $max){ 
+                    }
+                    elseif($min < $interval && $interval < $max){ 
                         $refund = $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData)
                         ; 
-                        //$refundAmt =  ($refund['refundAmount']/100);
-                        //$paidAmt =  ($refund['paidAmount']/100);
-                        //$smsData['refundAmount'] = $refundAmt;
-    
-                        //$emailData['refundAmount'] = $refundAmt;
-                        //$emailData['deductionPercentage'] = $deduction;
-                        //$emailData['totalfare'] = $paidAmt;
-                        //$sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
-                        // if($emailData['email'] != ''){
-                        //     //$sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
-                        // } 
                         return $refund;    
                     }
                 }                     
@@ -178,31 +168,33 @@ class CancelTicketRepository
         //$refundStatus = $payment['refund_status'];
         $refundStatus = $payment->refund_status;
 
-        if($paymentStatus == 'captured'){
+       // if($paymentStatus == 'captured'){
             if($refundStatus != null){
                 return 'refunded';
-            }else{
+            }
+            else{
                 $refundAmount = $paidAmount * ((100-$percentage) / 100);
-                $refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=> $refundAmount));
+
+                //$refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=> $refundAmount));
                 
-                $refundId = $refund->id;
-                $refundStatus = $refund->status;
-                $refundAmount = $refund->amount;
+                //$refundId = $refund->id;
+                //$refundStatus = $refund->status;
+                //$refundAmount = $refund->amount;
          
                 $this->booking->where('id', $bookingId)->update(array('status' => $bookingCancelled)); 
                 $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
                 //$booking->bookingDetail()->delete();
                 //$booking->delete();
         
-                $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded,'refund_id' => $refundId]);
+                // $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded,'refund_id' => $refundId]);
+                $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
         
                 $data = array(
-                     'refundStatus' => $refundStatus,
-                     'refund_id' => $refundId,
+                    //  'refundStatus' => $refundStatus,
+                    //  'refund_id' => $refundId,
                      'refundAmount' => $refundAmount/100,
                      'paidAmount' => $paidAmount/100,
                 );
-
                 $refundAmt = $refundAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
                
@@ -217,9 +209,10 @@ class CancelTicketRepository
                 return $data;
  
             }
-        }else{
-            return 'noPayment';
-        }
+        //}
+        // else{
+        //     return 'noPayment';
+        // }
     
         
 

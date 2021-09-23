@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\SeatOpenSeats;
 use App\Models\Bus;
+use App\Models\Seats;
 
 
 class SeatOpen extends Model
@@ -16,7 +17,7 @@ class SeatOpen extends Model
 
 
     public function seatOpenSeats()
-    {
+    { 
     	 return $this->hasMany(SeatOpenSeats::class);
     }
 

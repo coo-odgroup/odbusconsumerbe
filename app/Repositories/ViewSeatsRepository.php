@@ -14,6 +14,7 @@ use App\Models\BookingDetail;
 use App\Models\Booking;
 use App\Models\TicketFareSlab;
 use App\Models\OdbusCharges;
+use App\Models\SeatOpenSeats;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -73,14 +74,13 @@ class ViewSeatsRepository
                                     ->where('journey_dt',$journeyDate)
                                     ->where('status',$booked)
                                     ->pluck('id');
-                                  
+                                
        if (sizeof($bookingIds)){
         $blockedSeats=array();
         foreach($bookingIds as $bookingId){
-            
             $bookedSeatIds = $this->bookingDetail->where('booking_id',$bookingId)
                                                  ->pluck('bus_seats_id');
-
+        //return  $bookedSeatIds;
             foreach($bookedSeatIds as $bookedSeatId){
                 $seatsIds[] = $this->busSeats->where('id',$bookedSeatId)->first()->seats_id;
                 $gender[] = $this->bookingDetail->where('booking_id',$bookingId)
@@ -105,11 +105,11 @@ class ViewSeatsRepository
             } 
         }
         //return $gender;
-        $viewSeat = $this->getSeatInfo($busId,$blockedSeats,$flag);
+        $viewSeat = $this->getSeatInfo($busId,$blockedSeats,$flag,$journeyDate);
        }else{//no booking on that specific date
             $blockedSeats=array();
             $flag = 'true';
-            $viewSeat = $this->getSeatInfo($busId,$blockedSeats,$flag);
+            $viewSeat = $this->getSeatInfo($busId,$blockedSeats,$flag,$journeyDate);
        }
   
             // Add Gender into Booked seat List
@@ -141,7 +141,7 @@ class ViewSeatsRepository
             return $viewSeat;
     }
 
-    public function getSeatInfo($busId,$seatsIds,$flag){
+    public function getSeatInfo($busId,$seatsIds,$flag,$journeyDate){
         $lowerBerth = Config::get('constants.LOWER_BERTH');
         $upperBerth = Config::get('constants.UPPER_BERTH');
         $result['bus']=$busRecord=$this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
@@ -151,18 +151,35 @@ class ViewSeatsRepository
             ->where('berthType', $lowerBerth)
             ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds){
                 $query->when($flag == 'false', 
-                function($q) use ($busId,$seatsIds){  //Don't Display booked Seats
+                function($q) use ($busId,$seatsIds){  //hide booked Seats
                         $q->where('bus_id',$busId) 
                         ->whereNotIn('seats_id',$seatsIds);
                 },
                 function($q) use ($busId,$seatsIds){  //Display unbooked Seats
                         $q->where('bus_id',$busId); 
                 });
-            }])
-            ->get();
+            }])  
+            // ->with('seatOpenSeats', function ($query) use ($flag,$busId,$seatsIds,$journeyDate){
+            //     $query->when($flag == 'false', 
+            //     function($q) use ($seatsIds,$busId,$journeyDate){  //hide booked Seats
+            //         $q->whereNotIn('seats_id',$seatsIds);
+            //         $q->with('seatOpen', function ($b) use ($busId,$journeyDate) {
+            //             $b->where('bus_id',$busId)
+            //             ->where('date_applied',$journeyDate);
+            //         });           
+            //     },
+            //     function($q) use ($seatsIds,$busId,$journeyDate){  //Display unbooked Seats
+            //         $q->with('seatOpen', function ($b) use ($busId,$journeyDate) {
+            //             $b->where('bus_id',$busId)
+            //               ->where('date_applied',$journeyDate);
+            //         });           
+            //     });
+            // })
+             ->get();
 
         if(($result['lower_berth'])->isEmpty()){
-            unset($result['lower_berth']);   
+            unset($result['lower_berth']);  
+            
         }else{
             $rowsColumns = $this->seats
             ->where('bus_seat_layout_id',$busRecord[0]->bus_seat_layout_id)
@@ -184,6 +201,22 @@ class ViewSeatsRepository
                             $q->where('bus_id',$busId);
                     });
                 }])
+                // ->with('seatOpenSeats', function ($query) use ($flag,$busId,$seatsIds,$journeyDate){
+                //     $query->when($flag == 'false', 
+                //     function($q) use ($seatsIds,$busId,$journeyDate){  //hide booked Seats
+                //         $q->whereNotIn('seats_id',$seatsIds);
+                //         $q->with('seatOpen', function ($b) use ($busId,$journeyDate) {
+                //             $b->where('bus_id',$busId)
+                //             ->where('date_applied',$journeyDate);
+                //         });           
+                //     },
+                //     function($q) use ($seatsIds,$busId,$journeyDate){  //Display unbooked Seats
+                //         $q->with('seatOpen', function ($b) use ($busId,$journeyDate) {
+                //             $b->where('bus_id',$busId)
+                //               ->where('date_applied',$journeyDate);
+                //         });           
+                //     });
+                // })
                 ->get();
         if(($result['upper_berth'])->isEmpty()){
             unset($result['upper_berth']); 

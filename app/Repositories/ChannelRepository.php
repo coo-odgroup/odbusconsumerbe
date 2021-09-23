@@ -15,8 +15,11 @@ use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
+use App\Repositories\ViewSeatsRepository;
 use App\Models\Credentials;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -29,8 +32,9 @@ class ChannelRepository
     protected $bookingDetail;
     protected $busSeats;
     protected $credentials;
+    protected $viewSeatsRepository;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail,ViewSeatsRepository $viewSeatsRepository)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
@@ -39,6 +43,7 @@ class ChannelRepository
         $this->busSeats = $busSeats;
         $this->credentials = $credentials;
         $this->bookingDetail = $bookingDetail;
+        $this->viewSeatsRepository = $viewSeatsRepository;
     } 
     
     public function storeGWInfo($data) {
@@ -379,11 +384,21 @@ class ChannelRepository
 
       public function makePayment(Request $request)
     {   
-        $busId = $request['bus_id'];    
+        $busId = $request['busId'];    
         $transationId = $request['transaction_id']; 
- 
-        //$booked = Config::get('constants.BOOKED_STATUS');
-        
+        $seatIds = $request['seatIds'];
+
+
+        $seatStatus = $this->viewSeatsRepository->getAllViewSeats($request); 
+        $lb = collect($seatStatus['lower_berth']);
+        $ub = collect($seatStatus['upper_berth']);
+        $collection= $lb->merge($ub);
+        $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+        $filtered = $checkBookedSeat->reject(function ($value, $key) {                   //remove the null value
+            return $value == null;
+        });
+        if(sizeof($filtered->all())==0){
+
         $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
         $bookingId = $records[0]->id;    
         $name = $records[0]->users->name;
@@ -405,17 +420,19 @@ class ChannelRepository
         $user_pay->order_id = $orderId;
         $user_pay->save();
            
-        //Update Ticket Status in booking Change status to 1(Booked)
-            
-        //$this->booking->where('id', $bookingId)->update(['status' => $booked]);
-          
+        //Update Ticket Status in booking Change status to 1(Booked)             
         $data = array(
             'name' => $name,
             'amount' => $amount,
             'key' => $key,
             'razorpay_order_id' => $orderId   
         );
-        return $data;
+            return $data;
+            //return "SEAT AVAIL";
+        }else{
+            return "SEAT UN-AVAIL";
+        }
+
     }
     public function pay($request)
     {   
