@@ -146,6 +146,7 @@ class UsersRepository
             $request->request->add(['name' => $name]);
             $otp = $this->sendOtp($request);
             $user = $query->update(array('otp' => $otp));
+            $user = $query->update(array('password' => bcrypt('odbus123')));
             return  $query->latest()->first(); 
         } else{
             return "un_registered";

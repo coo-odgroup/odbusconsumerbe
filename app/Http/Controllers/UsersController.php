@@ -137,7 +137,7 @@ class UsersController extends Controller
    {
     $data = $request->all();
     $user = Users::where('id', $data)->first()->only('name','email','phone');
-    $user['password'] = 'odbus123';
+    //$user['password'] = 'odbus123';
     $response = $this->usersService->verifyOtp($request); 
       if($response == 'Null'){
        return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
