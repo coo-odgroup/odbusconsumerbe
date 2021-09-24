@@ -127,6 +127,9 @@ class PopularRepository
                         $a->select('id','name','icon');
                     }]);
                 }]);
+                $q->with(['review' => function ($query) {
+                    $query->select('bus_id','customer_name','title','rating_overall','comments');
+                    }]);
             }])   
            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
            ->get();
@@ -143,14 +146,6 @@ class PopularRepository
             ->whereDate('created_at', '>', Carbon::now()->subDays(30))
             ->groupBy('source_id','destination_id')
             ->orderBy('count', 'DESC')
-            
-            // ->with('bus.ticketPrice', function ($query) use ($busIds){
-            //     if($busIds)
-            //         $query->whereIn('bus_id', $busIds); 
-            //         //$query->whereDate('dep_time',$this->entry_date);
-            //         $query->select('bus_id','dep_time');
-            //         $query->orderBy('dep_time', 'ASC') ;         
-            //     })
             ->get();        
         if(sizeof($bookingRoutes)) {
             foreach($bookingRoutes as $bookingRoute){
