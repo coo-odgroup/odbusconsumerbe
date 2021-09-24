@@ -71,9 +71,10 @@ class PopularRepository
                 foreach($busIds as $busId){
                     $opId = $busId->bus_id;
                     $count = $busId->count;
-                    $opName = $this->getOperatorName($opId);
+                    $opDetail = $this->getOperatorName($opId);
                     $topOperators[] = array(
-                        "operatorName" => $opName, 
+                        "id" => $opDetail->busOperator->id, 
+                        "operatorName" => $opDetail->busOperator->operator_name, 
                         "count" => $count
                         );
                 } 
@@ -84,8 +85,8 @@ class PopularRepository
         $records = $this->bus
         ->with('busOperator')
         ->where('id',$operatorId)->get();
-        $operatorName = $records[0]->busOperator->operator_name;
-        return $operatorName;
+        $opDetail = $records[0];
+        return $opDetail;
     }
 
     public function allRoutes($request){ 
@@ -183,11 +184,23 @@ class PopularRepository
                     "destinationName" => $destName
                 ];       
             }
-            $opNameDetails = ['buses' => $buses,'routes' => $allRoutes,'popularRoutes' => $popularRoutes];
-            unset($allRoutes);
-        }else{
-            $opNameDetails = ['buses' => $buses,'routes' => [],'popularRoutes' => $popularRoutes];
-        }  
+            
+            //unset($allRoutes);
+        }
+        // else{
+        //     $opNameDetails['buses'] = $buses;
+        //     $opNameDetails['routes'] = [];
+        //     $opNameDetails['popularRoutes'] = $popularRoutes;
+        //     $opNameDetails = ['buses' => $buses,'routes' => [],'popularRoutes' => $popularRoutes];
+        // }
+
+        $opNameDetails['id'] = $operatorDetails[0]->id;
+        $opNameDetails['operator_name'] = $operatorDetails[0]->operator_name;
+        $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info;
+        $opNameDetails['buses'] = $buses;
+        $opNameDetails['routes'] = $allRoutes;
+        $opNameDetails['popularRoutes'] = $popularRoutes;
+
         return $opNameDetails;   
    }
 
