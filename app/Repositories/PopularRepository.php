@@ -129,11 +129,15 @@ class PopularRepository
                     }]);
                 }]);
                 $q->with(['review' => function ($query) {
-                    $query->select('bus_id','customer_name','title','rating_overall','comments');
+                    $query->select('bus_id','users_id','title','rating_overall','comments');
+                    $query->with(['users' =>  function ($u){
+                        $u->select('id','name');
+                    }]);
                     }]);
             }])   
            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
            ->get();
+           return $operatorDetails;
         $buses = $operatorDetails[0]->bus;
         $busIds =$buses->pluck('id');
         
