@@ -184,6 +184,7 @@ class UsersRepository
 
             $list = Booking::where('users_id',$user->id)
             ->where('status','!=',2)
+              ->where('status','!=',0)
             ->where('journey_dt','<',$today)
             ->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
@@ -201,7 +202,8 @@ class UsersRepository
         else if($status=='Upcoming'){    
 
             $list = Booking::where('users_id',$user->id)
-            ->where('status','!=',2)
+             ->where('status','!=',2)
+              ->where('status','!=',0)
             ->where('journey_dt','>',$today)
             ->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
@@ -218,6 +220,7 @@ class UsersRepository
 
       else{
             $list = Booking::where('users_id',$user->id)
+             ->where('status','!=',0)
             ->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');                
@@ -229,11 +232,15 @@ class UsersRepository
                       } ]);
                 } ]);
 
-        }        
+        } 
+      
+      
 
         $list =  $list->paginate($paginate);
+      
+     
 
-       // $list= (array) $list;
+     
 
         if($list){
             foreach($list as $k => $l){
