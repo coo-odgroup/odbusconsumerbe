@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use App\Models\Booking;
+use App\Models\Review;
 
 class Users extends Authenticatable implements JWTSubject 
 {
@@ -53,6 +54,10 @@ class Users extends Authenticatable implements JWTSubject
     public function booking()
       {
             return $this->hasOne(Booking::class);   
+      } 
+      public function review()
+      {
+            return $this->hasMany(Review::class);   
       } 
 
 }

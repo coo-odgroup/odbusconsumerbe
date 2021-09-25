@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
+use App\Models\Users;
 
 
 class Review extends Model
@@ -16,5 +17,9 @@ class Review extends Model
     public function bus()
     {
     	return $this->belongsTo(Bus::class);
+    }
+    public function users()
+    {
+    	return $this->belongsTo(Users::class);
     }
 }
