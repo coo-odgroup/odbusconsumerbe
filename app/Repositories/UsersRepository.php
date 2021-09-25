@@ -152,6 +152,14 @@ class UsersRepository
             return "un_registered";
         }      
     }
+  
+    public function updateProfile($request){
+      
+       $user = auth()->user();
+      
+      return $request->all();  
+      
+    }
 
     public function BookingHistory($request){
 
