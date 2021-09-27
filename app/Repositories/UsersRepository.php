@@ -19,6 +19,7 @@ use App\Models\BusSeats;
 use App\Models\BusContacts;
 use App\Models\Seats;
 use App\Models\TicketPrice;
+use App\Models\Review;
 
 
 class UsersRepository
@@ -44,8 +45,7 @@ class UsersRepository
     ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository)
     {
         $this->users = $users;
-        $this->channelRepository = $channelRepository;   
-
+        $this->channelRepository = $channelRepository;  
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
         $this->location = $location;
@@ -262,5 +262,31 @@ class UsersRepository
 
 
     }
+
+    public function userReviews($request){
+            
+        $user = auth()->user();
+        
+        $userReviews = Review::where('users_id',$user->id)
+                            ->with('bus', function ($q) {
+                                $q->with('busGallery');
+                                $q->with('booking', function ($b){
+                                    $b ->where('status','!=',0);
+                                });
+                            })
+                            ->with('users')
+                            ->get();
+        $userReviews = collect($userReviews);
+       //$a = $this->location->where('id',$userReviews[0]->bus->booking->source_id)->first()->name;
+
+        if($userReviews){
+            foreach($userReviews as $key => $value){
+                $value->bus->booking['source_id']=Location::where('id',$value->bus->booking->source_id)->first()->name;
+                $value->bus->booking['destination_id']=Location::where('id',$value->bus->booking->destination_id)->first()->name;   
+            }
+        }
+        return $userReviews;
+    }
+
 }   
  

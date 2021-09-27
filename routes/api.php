@@ -71,6 +71,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
     Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
+    Route::get('/UserReviews', [UsersController::class, 'userReviews']);
 });
 
 
