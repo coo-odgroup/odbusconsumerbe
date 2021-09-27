@@ -307,12 +307,10 @@ class UsersRepository
                             ->with('users')
                             ->get();
         $userReviews = collect($userReviews);
-       //$a = $this->location->where('id',$userReviews[0]->bus->booking->source_id)->first()->name;
-
         if($userReviews){
             foreach($userReviews as $key => $value){
-                $value->bus->booking['source_id']=Location::where('id',$value->bus->booking->source_id)->first()->name;
-                $value->bus->booking['destination_id']=Location::where('id',$value->bus->booking->destination_id)->first()->name;   
+                $value->bus->booking['src_name']=Location::where('id',$value->bus->booking->source_id)->first()->name;
+                $value->bus->booking['dest_name']=Location::where('id',$value->bus->booking->destination_id)->first()->name;   
             }
         }
         return $userReviews;
