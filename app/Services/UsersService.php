@@ -42,7 +42,18 @@ class UsersService
         $result = $this->usersRepository->BookingHistory($request);
         return $result;
 
+        
     }
+
+    public function updateProfile($request){
+
+        $result = $this->usersRepository->updateProfile($request);
+        return $result;
+
+        
+    }
+
+    
     public function userReviews($request)
     {
         $result = $this->usersRepository->userReviews($request);
