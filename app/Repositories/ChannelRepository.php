@@ -453,10 +453,7 @@ class ChannelRepository
         $razorpay_order_id = $data['razorpay_order_id'];
         $transationId = $data['transaction_id'];
       
-      
-        //$pnr = $this->booking->where('transaction_id', $transationId)->pluck('pnr')[0];
         $bookingRecord = $this->booking->where('bus_id', $busId)->where('transaction_id', $transationId)->get();
-      
       
         $pnr = $bookingRecord[0]->pnr;
         $bookingId = $bookingRecord[0]->id;      
@@ -467,42 +464,30 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
         if ($generated_signature == $data['razorpay_signature'] && $paymentStatus == 'authorized') { 
-          
-          
-          
             $this->customerPayment->where('id', $customerId)
                                   ->update([
                                     'razorpay_id' => $razorpay_payment_id,
                                     'razorpay_signature' => $razorpay_signature,
                                     'payment_done' => $paymentDone
                                 ]);
-          
-                    
-          
             if($request['phone']){
                 $sendsms = $this->sendSmsTicket($request,$pnr); 
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
            }
-          //Update Ticket Status in booking Change status to 1(Booked)
-          
-          
-         $this->booking->where('id', $bookingId)->update(['status' => $booked]);
-        //$booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
-        
-
+          //Update Ticket Status in booking Change status to 1(Booked)  
+        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        $booking = $this->booking->find($bookingId);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
             return "Payment Done";
         }
-        else{
-          
+        else{ 
             $this->booking->where('id', $bookingId)
                           ->where('transaction_id', $transationId)
                           ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
-        
             return "Payment Failed"; 
-            }
-        
+            }   
     }
 
 }

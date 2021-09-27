@@ -43,4 +43,9 @@ class UsersService
         return $result;
 
     }
+    public function userReviews($request)
+    {
+        $result = $this->usersRepository->userReviews($request);
+        return $result;
+    }
 }
