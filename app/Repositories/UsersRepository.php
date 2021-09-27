@@ -157,7 +157,22 @@ class UsersRepository
       
        $user = auth()->user();
       
-      return $request->all();  
+        $post = $this->users->find($user->id);
+
+        $post->name = $request['name'];
+        $post->email  = $request['email'];
+        $post->pincode = $request['pincode'];
+        $post->street = $request['street'];
+        $post->district = $request['district'];
+        $post->address = $request['address'];
+      
+        if($request['profile_image']!=''){
+          $post->profile_image = $request['profile_image'];
+        }
+        
+        $post->update();
+
+        return $post;
       
     }
 
