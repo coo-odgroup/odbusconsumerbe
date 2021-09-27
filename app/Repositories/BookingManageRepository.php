@@ -72,8 +72,8 @@ class BookingManageRepository
         if($journey_detail){            
 
             if(isset($journey_detail[0]->booking)){
-                 $journey_detail[0]->booking['source']=$this->location->where('id',$journey_detail[0]->booking->source_id)->get();
-                 $journey_detail[0]->booking['destination']=$this->location->where('id',$journey_detail[0]->booking->destination_id)->get();
+                 $journey_detail[0]->booking['source']=$this->location->where('id',$journey_detail[0]->booking[0]->source_id)->get();
+                 $journey_detail[0]->booking['destination']=$this->location->where('id',$journey_detail[0]->booking[0]->destination_id)->get();
             }
 
         }
@@ -126,8 +126,12 @@ class BookingManageRepository
         if(isset($booking_detail[0])){          
 
             if(isset($booking_detail[0]->booking)){
-                 $booking_detail[0]->booking['source']=$this->location->where('id',$booking_detail[0]->booking->source_id)->get();
-                 $booking_detail[0]->booking['destination']=$this->location->where('id',$booking_detail[0]->booking->destination_id)->get();
+              
+                 $booking_detail[0]->booking[0]['source']=$this->location->where('id',$booking_detail[0]->booking[0]->source_id)->get();
+                 $booking_detail[0]->booking[0]['destination']=$this->location->where('id',$booking_detail[0]->booking[0]->destination_id)->get();
+              
+              
+                  
                  
                   return $booking_detail;                  
             }
@@ -229,12 +233,12 @@ class BookingManageRepository
       
         if(isset($booking_detail[0])){          
 
-            if(isset($booking_detail[0]->booking)){
+            if(isset($booking_detail[0]->booking[0])){
 
                 
-                $jDate =$booking_detail[0]->booking->journey_dt;
+                $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
-                $boardTime =$booking_detail[0]->booking->boarding_time; 
+                $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
 
                 $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                 $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -247,10 +251,10 @@ class BookingManageRepository
                     return 'Cancellation is not allowed';                    
                 }
 
-                 $razorpay_payment_id=$booking_detail[0]->booking->customerPayment->razorpay_id;
+                 $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
 
-                 $cancelPolicies = $booking_detail[0]->booking->bus->cancellationslabs->cancellationSlabInfo;
+                 $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                 foreach($cancelPolicies as $cancelPolicy){
                     $duration = $cancelPolicy->duration;
                     $deduction = $cancelPolicy->deduction;

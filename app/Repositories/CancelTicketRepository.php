@@ -73,22 +73,22 @@ class CancelTicketRepository
 
             if(isset($booking_detail[0]->booking)){
  
-                $jDate =$booking_detail[0]->booking->journey_dt;
+                $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
-                $boardTime =$booking_detail[0]->booking->boarding_time;
+                $boardTime =$booking_detail[0]->booking[0]->boarding_time;
                 $seat_arr=[];
-                foreach($booking_detail[0]->booking->bookingDetail as $bd){
+                foreach($booking_detail[0]->booking[0]->bookingDetail as $bd){
                     
                    $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
                 }
-                $busNumber = $booking_detail[0]->booking->bus->bus_number;
-                $sourceName =$this->location->where('id',$booking_detail[0]->booking->source_id)->first()->name;
-                $destinationName =$this->location->where('id',$booking_detail[0]->booking->destination_id)->first()->name;
+                $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
+                $sourceName =$this->location->where('id',$booking_detail[0]->booking[0]->source_id)->first()->name;
+                $destinationName =$this->location->where('id',$booking_detail[0]->booking[0]->destination_id)->first()->name;
                 $route = $sourceName .'-'. $destinationName;
                 $userMailId =$booking_detail[0]->email;
-                $bookingId =$booking_detail[0]->booking->id;
+                $bookingId =$booking_detail[0]->booking[0]->id;
                 $booking = $this->booking->find($bookingId);
-                $razorpay_payment_id = $booking_detail[0]->booking->customerPayment->razorpay_id;
+                $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
                 $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                 $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -116,7 +116,7 @@ class CancelTicketRepository
                  if($interval < 12) {
                     return 'Cancellation is not allowed';                    
                 }
-            $cancelPolicies = $booking_detail[0]->booking->bus->cancellationslabs->cancellationSlabInfo;
+            $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                 foreach($cancelPolicies as $cancelPolicy){
                     $duration = $cancelPolicy->duration;
                     $deduction = $cancelPolicy->deduction;
@@ -200,7 +200,7 @@ class CancelTicketRepository
                
                 $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
               
-                $emailData['refundAmount'] = $refundAmt;
+                $emailData['refundAmount'] = round($refundAmt,2);
                 $emailData['deductionPercentage'] = $percentage;
                 $emailData['totalfare'] = $paidAmount;
                 if($emailData['email'] != ''){
