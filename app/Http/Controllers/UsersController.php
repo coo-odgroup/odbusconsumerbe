@@ -254,13 +254,26 @@ public function userProfile() {
     return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
   }
 }
+  
+  public function updateProfile(Request $request) {
+  $user = auth()->user();
+    if(!is_null($user)) {     
+      $response =  $this->usersService->updateProfile($request);  
+    return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+  }
+  else {
+    return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+  }
+}
+  
 
 public function refreshToken() {
 
   $res = [  
     'access_token' => auth()->refresh(),
     'token_type' => 'bearer',
-    'expires_in' => Auth()->factory()->getTTL() * 60
+    'expires_in' => Auth()->factory()->getTTL() * 60,
+    'user' => Auth()->user() 
 ]; 
 
    return $this->successResponse($res,Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);

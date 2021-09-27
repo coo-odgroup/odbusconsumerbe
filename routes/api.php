@@ -66,6 +66,7 @@ Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
+    Route::put('/updateProfile', [UsersController::class, 'updateProfile']);
     Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);    
     Route::post('/AddReview', [ReviewController::class, 'createReview']);
     Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);

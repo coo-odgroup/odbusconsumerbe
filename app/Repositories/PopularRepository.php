@@ -91,6 +91,7 @@ class PopularRepository
 
     public function allRoutes($request){ 
         $allRoutes = array();
+       
         $routenames = $this->ticketPrice
         ->select('source_id','destination_id',(DB::raw('count(*) as count')))
         ->groupBy('source_id', 'destination_id')
@@ -118,6 +119,13 @@ class PopularRepository
     }
 
     public function operatorDetails($request){ 
+      
+       $allRoutes = array();
+       $allAmenity=array();
+       $allreviews=array();    
+       $Totalrating=0;
+          
+      
         $operatorId = $request['operator_id'];
         $this->entry_date = date("Y-m-d", strtotime($request['entry_date']));
         $operatorDetails = BusOperator::where('id', $operatorId)->with(['bus' => function ($q){ 
@@ -131,20 +139,58 @@ class PopularRepository
                 $q->with(['review' => function ($query) {
                     $query->select('bus_id','users_id','title','rating_overall','comments');
                     $query->with(['users' =>  function ($u){
-                        $u->select('id','name');
+                        $u->select('id','name','district','profile_image');
                     }]);
                     }]);
             }])   
            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
            ->get();
-           return $operatorDetails;
+      
+      //return $operatorDetails;
+    
         $buses = $operatorDetails[0]->bus;
         $busIds =$buses->pluck('id');
-        
+      
+      
         if(!sizeof($busIds)){
-            $opNameDetails = ['buses' => [],'routes' => [],'popularRoutes' => []];
+            $opNameDetails['id'] = $operatorDetails[0]->id;
+            $opNameDetails['operator_name'] = $operatorDetails[0]->operator_name;
+            $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info; 
+            $opNameDetails['buses'] = [];
+            $opNameDetails['routes'] = [];
+           $opNameDetails['total_rating'] = $Totalrating;
+            $opNameDetails['amenities'] = $allAmenity;
+            $opNameDetails['reviews'] = $allreviews;
+            $opNameDetails['popularRoutes'] = [];
             return $opNameDetails;
         }
+      
+     
+      
+      
+        foreach($buses as $bus){  
+          if($bus->busAmenities){
+            foreach($bus->busAmenities as $bus_amenity){
+              $allAmenity[] = $bus_amenity;
+            }
+          }
+          
+      
+          
+          if(count($bus->review)>0){
+            foreach($bus->review as $rv){
+              $Totalrating += $rv->rating_overall;
+              $allreviews[] = $rv;
+            }
+            
+            $Totalrating = $Totalrating/count($bus->review);
+            
+          }
+	
+        }
+      
+     
+      
         //>>Find the popular routes of that Operator   
         $bookingRoutes = Booking::whereIn('bus_id', $busIds)
             ->select('source_id','destination_id',(DB::raw('count(*) as count')))
@@ -197,6 +243,9 @@ class PopularRepository
         $opNameDetails['operator_name'] = $operatorDetails[0]->operator_name;
         $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info;
         $opNameDetails['buses'] = $buses;
+        $opNameDetails['amenities'] = $allAmenity;
+        $opNameDetails['reviews'] = $allreviews;        
+        $opNameDetails['total_rating'] = $Totalrating;
         $opNameDetails['routes'] = $allRoutes;
         $opNameDetails['popularRoutes'] = $popularRoutes;
 

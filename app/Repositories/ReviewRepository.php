@@ -33,7 +33,9 @@ class ReviewRepository
      */
     public function getAllReview()
     {
-        return $this->review->with('users')->where('status', 1)->get();
+        return $this->review->where('status', 1)->with(['users' =>  function ($u){
+                        $u->select('id','name','district','profile_image');
+                    }])->get();
     }
 
     /**
