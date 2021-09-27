@@ -176,7 +176,9 @@ class ListingRepository
             $safetyName = $safetyDatas->pluck('safety.name');
             $safetyIcon = $safetyDatas->pluck('safety.icon');
             $busPhotoDatas = $record->busGallery;
-            $busPhotos = $busPhotoDatas->pluck('image');
+              
+            $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
+          
             $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
             $cSlabDuration = $cSlabDatas->pluck('duration');
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
@@ -405,7 +407,9 @@ class ListingRepository
                 $safetyName = $safetyDatas->pluck('safety.name');
                 $safetyIcon = $safetyDatas->pluck('safety.icon');
                 $busPhotoDatas = $record->busGallery;
-                $busPhotos = $busPhotoDatas->pluck('image');
+              
+                $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
+              
                 $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
                 $cSlabDuration = $cSlabDatas->pluck('duration');
                 $cSlabDeduction = $cSlabDatas->pluck('deduction');

@@ -390,9 +390,22 @@ class ChannelRepository
 
 
         $seatStatus = $this->viewSeatsRepository->getAllViewSeats($request); 
-        $lb = collect($seatStatus['lower_berth']);
-        $ub = collect($seatStatus['upper_berth']);
-        $collection= $lb->merge($ub);
+        if(isset($seatStatus['lower_berth'])){
+            $lb = collect($seatStatus['lower_berth']);
+            $collection= $lb;
+        }
+
+        if(isset($seatStatus['upper_berth'])){
+            $ub = collect($seatStatus['upper_berth']);
+            $collection= $ub;
+        }
+
+        if(isset($lb) && isset($ub)){
+            $collection= $lb->merge($ub);
+        }
+        
+        
+        
         $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
         $filtered = $checkBookedSeat->reject(function ($value, $key) {                   //remove the null value
             return $value == null;
