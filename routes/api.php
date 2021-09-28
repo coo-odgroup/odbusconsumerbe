@@ -76,5 +76,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 });
 
 
+Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
+
 
 

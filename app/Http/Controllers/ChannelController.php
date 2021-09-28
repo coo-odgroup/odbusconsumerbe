@@ -13,16 +13,20 @@ use App\Services\ChannelService;
 use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
+use App\Models\CustomerPayment;
 
 class ChannelController extends Controller
 {
     use ApiResponser;
     protected $channelService;
-    protected $channelRepository;
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository)
+    protected $channelRepository;  
+    protected $customerPayment;
+  
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
+            $this->customerPayment = $customerPayment;
         }
 
     public function storeGWInfo(Request $request)
@@ -95,32 +99,14 @@ class ChannelController extends Controller
  *     description="generating razorpay order Id",
  *     summary="generating razorpay order Id",
  *     @OA\Parameter(
- *          name="busId",
+ *          name="bus_id",
  *          description="BusId",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
  *              type="integer"
  *          )
- *      ), 
- *     @OA\Parameter(
- *          name="sourceId",
- *          description="sourceId",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="integer"
- *          )
- *      ),  
- *     @OA\Parameter(
- *          name="destinationId",
- *          description="destinationId",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="integer"
- *          )
- *      ),      
+ *      ),        
  *     @OA\Parameter(
  *          name="transaction_id",
  *          description="customer transaction id against booking",
@@ -133,29 +119,6 @@ class ChannelController extends Controller
  *     @OA\Parameter(
  *          name="amount",
  *          description="total price",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="string"
- *          )
- *      ),
- *     @OA\Parameter(
- *          name="seatIds[]",
- *          description="seat Ids",
- *          in="query",
- *          required=false,
- *          @OA\Schema(
- *          type="array",
-*          @OA\Items(
- *              type="integer",
- *              format="int64",
- *              example=31,
- *              )
- *          )
- *      ),
- *     @OA\Parameter(
- *          name="entry_date",
- *          description="journey date",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
@@ -369,6 +332,36 @@ class ChannelController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
     }
+  
+  public function RazorpayWebhook(){
+    
+    
+    $post = file_get_contents('php://input');
+
+    $res = json_decode($post);
+    
+    
+     $response=$res->payload->payment->entity; 
+    
+
+    $myfile = fopen("razorpaywebhook.txt", "a");
+    fwrite($myfile, '\n'.$response->status."--".$response->id."--".$response->order_id."--".$response->error_description.'\n');
+    //fwrite($myfile, '\n Event - '.$res->event);
+    //fwrite($myfile, '\n Account ID - '.$res->account_id.'\n');
+    fclose($myfile);
+    
+      
+    
+    $razorpay_status_updated_at= date("Y-m-d H:i:s",$response->created_at);
+    
+    $this->customerPayment->where('razorpay_id', $response->id)
+                          ->where('order_id', $response->order_id)
+                          ->update(['razorpay_status' => $response->status,
+                                    'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]); 
+    
+    
+    
+  }
 
 
 }
