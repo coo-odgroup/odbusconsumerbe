@@ -95,14 +95,32 @@ class ChannelController extends Controller
  *     description="generating razorpay order Id",
  *     summary="generating razorpay order Id",
  *     @OA\Parameter(
- *          name="bus_id",
+ *          name="busId",
  *          description="BusId",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
  *              type="integer"
  *          )
- *      ),        
+ *      ), 
+ *     @OA\Parameter(
+ *          name="sourceId",
+ *          description="sourceId",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),  
+ *     @OA\Parameter(
+ *          name="destinationId",
+ *          description="destinationId",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),      
  *     @OA\Parameter(
  *          name="transaction_id",
  *          description="customer transaction id against booking",
@@ -115,6 +133,29 @@ class ChannelController extends Controller
  *     @OA\Parameter(
  *          name="amount",
  *          description="total price",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="seatIds[]",
+ *          description="seat Ids",
+ *          in="query",
+ *          required=false,
+ *          @OA\Schema(
+ *          type="array",
+*          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=31,
+ *              )
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="entry_date",
+ *          description="journey date",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
