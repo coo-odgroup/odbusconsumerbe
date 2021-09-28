@@ -245,9 +245,27 @@
                 "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
                 "parameters": [
                     {
-                        "name": "bus_id",
+                        "name": "busId",
                         "in": "query",
                         "description": "BusId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "sourceId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destinationId",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -266,6 +284,29 @@
                         "name": "amount",
                         "in": "query",
                         "description": "total price",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seatIds[]",
+                        "in": "query",
+                        "description": "seat Ids",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 31
+                            }
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -969,6 +1010,43 @@
                 "responses": {
                     "200": {
                         "description": "Authorized User details"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/UserReviews": {
+            "get": {
+                "tags": [
+                    "JWT Auth"
+                ],
+                "summary": "Get userReviews of an authenticated user",
+                "description": "Get user  review details",
+                "operationId": "getAuthUser",
+                "responses": {
+                    "200": {
+                        "description": "authorized user reviews",
+                        "headers": {
+                            "X-Rate-Limit": {
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                }
+                            },
+                            "X-Expires-After": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Unauthorized user"
