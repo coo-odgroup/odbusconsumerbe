@@ -199,7 +199,7 @@ class UsersRepository
                     $b->with(["busSeats" => function($s){
                         $s->with("seats");
                       } ]);
-                } ]);
+                } ])->orderBy('journey_dt','desc');
 
         }
         
@@ -218,7 +218,7 @@ class UsersRepository
                     $b->with(["busSeats" => function($s){
                         $s->with("seats");
                       } ]);
-                } ]);
+                } ])->orderBy('journey_dt','desc');
 
         }
 
@@ -237,7 +237,7 @@ class UsersRepository
                     $b->with(["busSeats" => function($s){
                         $s->with("seats");
                       } ]);
-                } ]);
+                } ])->orderBy('journey_dt','desc');
 
         }
 
@@ -253,7 +253,7 @@ class UsersRepository
                     $b->with(["busSeats" => function($s){
                         $s->with("seats");
                       } ]);
-                } ]);
+                } ])->orderBy('journey_dt','desc');
 
         } 
       
@@ -278,6 +278,8 @@ class UsersRepository
                     $l['booking_status']= "Completed";
                 }elseif($l->status!=2 && $today < $l->journey_dt){
                     $l['booking_status']= "Upcoming";
+                }elseif($l->status!=2 && $today == $l->journey_dt){
+                    $l['booking_status']= "Ongoing";
                 }
             }
         }
