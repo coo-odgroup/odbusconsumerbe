@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\CancelTicketService;
+use App\AppValidator\CancelTicketValidator;
 
 class CancelTicketController extends Controller
 {
@@ -19,15 +20,17 @@ class CancelTicketController extends Controller
      * @var cancelTicketService
      */
     protected $cancelTicketService;
+    protected $cancelTicketValidator;
     /**
      * cancelTicketController Constructor
      *
      * @param CancelTicketService $cancelTicketService
      *
      */
-    public function __construct(CancelTicketService $cancelTicketService)
+    public function __construct(CancelTicketService $cancelTicketService,CancelTicketValidator $cancelTicketValidator)
     {
-        $this->cancelTicketService = $cancelTicketService;      
+        $this->cancelTicketService = $cancelTicketService; 
+        $this->cancelTicketValidator = $cancelTicketValidator;     
     }
 
 /**
@@ -60,7 +63,13 @@ class CancelTicketController extends Controller
  */
 
     public function cancelTicket(Request $request) {
-        
+          $data = $request->all();
+          $cancelTicketValidator = $this->cancelTicketValidator->validate($data);
+
+          if ($cancelTicketValidator->fails()) {
+          $errors = $cancelTicketValidator->errors();
+          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+          } 
          try {
           $response =  $this->cancelTicketService->cancelTicket($request); 
           if($response == 'refunded'){

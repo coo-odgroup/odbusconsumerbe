@@ -245,27 +245,9 @@
                 "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
                 "parameters": [
                     {
-                        "name": "busId",
+                        "name": "bus_id",
                         "in": "query",
                         "description": "BusId",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "sourceId",
-                        "in": "query",
-                        "description": "sourceId",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "destinationId",
-                        "in": "query",
-                        "description": "destinationId",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -284,29 +266,6 @@
                         "name": "amount",
                         "in": "query",
                         "description": "total price",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "seatIds[]",
-                        "in": "query",
-                        "description": "seat Ids",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer",
-                                "format": "int64",
-                                "example": 31
-                            }
-                        }
-                    },
-                    {
-                        "name": "entry_date",
-                        "in": "query",
-                        "description": "journey date",
                         "required": true,
                         "schema": {
                             "type": "string"
