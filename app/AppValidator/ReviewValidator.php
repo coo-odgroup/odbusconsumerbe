@@ -12,7 +12,7 @@ class ReviewValidator
         $rules = [
             'pnr' => 'required',
             'bus_id' => 'required',
-            'customer_id' => 'required',
+            'users_id' => 'required',
             'reference_key' => 'required',
             'rating_overall' => 'required',
             'rating_comfort' => 'required',
@@ -20,6 +20,7 @@ class ReviewValidator
             'rating_behavior' => 'required',
             'rating_timing' => 'required',
             'comments' => 'required',
+             'title' => 'required',
             'created_by'=> 'required'
         ];      
       

@@ -242,7 +242,9 @@ protected function createNewToken($token){
  *  @OA\Response(response=401, description="Unauthorized user"),
  *  security={{ "apiAuth": {} }}
  * )
- */  
+ */
+
+  
 public function userProfile() {
   $user = auth()->user();
   if(!is_null($user)) {
@@ -290,37 +292,6 @@ public function refreshToken() {
     }
 
   }
-/**
- * @OA\Get(path="/api/UserReviews",
- *   tags={"JWT Auth"},
- *   summary="Get userReviews of an authenticated user",
- *   description="Get user  review details",
- *   operationId="getAuthUser",
- *   @OA\Response(
- *     response=200,
- *     description="authorized user reviews",
- *     @OA\Schema(type="string"),
- *     @OA\Header(
- *       header="X-Rate-Limit",
- *       @OA\Schema(
- *           type="integer",
- *           format="int32"
- *       ),
- *     ),
- *     @OA\Header(
- *       header="X-Expires-After",
- *       @OA\Schema(
- *          type="string",
- *          format="date-time",
- *       ),
- *     )
- *   ),
- *  @OA\Response(response=401, description="Unauthorized user"),
- *     security={
- *       {"apiAuth": {}}
- *     }
- * )
- */
   public function userReviews(Request $request)
   {  
     $data = $request->all();  

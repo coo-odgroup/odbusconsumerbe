@@ -57,6 +57,7 @@ class ReviewController extends Controller
           return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) { 
+          
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }	
     } 

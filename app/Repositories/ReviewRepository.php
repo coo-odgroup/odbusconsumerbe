@@ -54,7 +54,7 @@ class ReviewRepository
     {
 
         $result= $this->review::addSelect(['cname' => $this->user::select('first_name')
-        ->whereColumn('Review.customer_id', 'id')])
+        ->whereColumn('Review.users_id', 'id')])
         ->whereNotIn('status', [2])
         ->where('bus_id', $bid)
         ->orderBy('id', 'desc')
@@ -72,11 +72,14 @@ class ReviewRepository
      */
     public function createReview($data)
     {
+      
+     
+      
         $post = new $this->review;
 
         $post->pnr = $data['pnr'];
         $post->bus_id  = $data['bus_id'];
-        $post->customer_id = $data['customer_id'];
+        $post->users_id = $data['users_id'];
         $post->reference_key = $data['reference_key'];
         $post->rating_overall = $data['rating_overall'];
         $post->rating_comfort = $data['rating_comfort'];
@@ -84,9 +87,9 @@ class ReviewRepository
         $post->rating_behavior = $data['rating_behavior'];
         $post->rating_timing = $data['rating_timing'];
         $post->comments = $data['comments'];
-        // $post->created_date = date('Y-m-d H:i:s');
+        $post->title = $data['title'];
         $post->created_by = $data['created_by'];
-
+      
         $post->save();
 
         return $post;
@@ -105,7 +108,7 @@ class ReviewRepository
 
         $post->pnr = $data['pnr'];
         $post->bus_id  = $data['bus_id'];
-        $post->customer_id = $data['customer_id'];
+        $post->users_id = $data['users_id'];
         $post->reference_key = $data['reference_key'];
         $post->rating_overall = $data['rating_overall'];
         $post->rating_comfort = $data['rating_comfort'];

@@ -84,8 +84,7 @@ class ReviewService
 
         try {
             $review = $this->reviewRepository->updateReview($data, $id);
-        } catch (Exception $e) {
-            Log::info($e->getMessage());
+        } catch (Exception $e) {           
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));
         }
         return $review;
@@ -102,10 +101,13 @@ class ReviewService
      */
     public function createReview($data)
     {
+      
+      Log::info($data);
 
         try { 
             $review = $this->reviewRepository->createReview($data);
         } catch (Exception $e) { 
+            Log::info($e);
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $review;

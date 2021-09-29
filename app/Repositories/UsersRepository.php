@@ -39,10 +39,11 @@ class UsersRepository
     protected $busType;
     protected $busClass;
     protected $customerPayment;
+    protected $review;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository)
+    ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository,Review $review)
     {
         $this->users = $users;
         $this->channelRepository = $channelRepository;  
@@ -56,6 +57,7 @@ class UsersRepository
         $this->busType = $busType;
         $this->busClass = $busClass;
         $this->customerPayment = $customerPayment;
+        $this->review = $review;
 
     }
   
@@ -270,14 +272,27 @@ class UsersRepository
 
                 $l['source']=$this->location->where('id',$l->source_id)->get();
                 $l['destination']=$this->location->where('id',$l->destination_id)->get();
+              
+                $l['review']= false;
+                $l['cancel']= false;
 
                 if($l->status==2){
                     $l['booking_status']= "Cancelled";
+                    
                 }
                 else if($l->status!=2 && $today > $l->journey_dt){
+                  
+                   $review=$this->review->where('users_id',$l->users_id)->where('pnr',$l->pnr)->get();
+              
+                    if(isset($review[0])){
+                    }else{
+                      $l['review']= true;
+                    }
+                  
                     $l['booking_status']= "Completed";
                 }elseif($l->status!=2 && $today < $l->journey_dt){
                     $l['booking_status']= "Upcoming";
+                    $l['cancel']= true;
                 }elseif($l->status!=2 && $today == $l->journey_dt){
                     $l['booking_status']= "Ongoing";
                 }
@@ -307,6 +322,7 @@ class UsersRepository
                                 });
                             })
                             ->with('users')
+                            ->orderBy('id','desc')
                             ->get();
         $userReviews = collect($userReviews);
         if($userReviews){

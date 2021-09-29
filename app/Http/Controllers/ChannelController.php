@@ -354,8 +354,7 @@ class ChannelController extends Controller
     
     $razorpay_status_updated_at= date("Y-m-d H:i:s",$response->created_at);
     
-    $this->customerPayment->where('razorpay_id', $response->id)
-                          ->where('order_id', $response->order_id)
+    $this->customerPayment->where('order_id', $response->order_id)
                           ->update(['razorpay_status' => $response->status,
                                     'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]); 
     
