@@ -121,17 +121,18 @@ class BookingManageRepository
                   } ]);
             } ]);
         }])->get();
-
+      
+      
+      
      
-        if(isset($booking_detail[0])){          
+        if(isset($booking_detail[0])){  
+          
+        
 
-            if(isset($booking_detail[0]->booking)){
+            if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
               
                  $booking_detail[0]->booking[0]['source']=$this->location->where('id',$booking_detail[0]->booking[0]->source_id)->get();
-                 $booking_detail[0]->booking[0]['destination']=$this->location->where('id',$booking_detail[0]->booking[0]->destination_id)->get();
-              
-              
-                  
+                 $booking_detail[0]->booking[0]['destination']=$this->location->where('id',$booking_detail[0]->booking[0]->destination_id)->get();                  
                  
                   return $booking_detail;                  
             }

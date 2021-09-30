@@ -344,15 +344,15 @@ class ChannelController extends Controller
      $response=$res->payload->payment->entity; 
     
 
-    $myfile = fopen("razorpaywebhook.txt", "a");
-    fwrite($myfile, '\n'.$response->status."--".$response->id."--".$response->order_id."--".$response->error_description.'\n');
+    //$myfile = fopen("razorpaywebhook.txt", "a");
+   // fwrite($myfile, '\n'.$response->status."--".$response->id."--".$response->order_id."--".$response->error_description.'\n');
     //fwrite($myfile, '\n Event - '.$res->event);
     //fwrite($myfile, '\n Account ID - '.$res->account_id.'\n');
-    fclose($myfile);
+   // fclose($myfile);
     
       
     
-    $razorpay_status_updated_at= date("Y-m-d H:i:s",$response->created_at);
+    $razorpay_status_updated_at= date("Y-m-d H:i:s");
     
     $this->customerPayment->where('order_id', $response->order_id)
                           ->update(['razorpay_status' => $response->status,
