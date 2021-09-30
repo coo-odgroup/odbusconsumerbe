@@ -71,7 +71,7 @@ class BookingManageRepository
 
         if($journey_detail){            
 
-            if(isset($journey_detail[0]->booking)){
+            if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                  $journey_detail[0]->booking['source']=$this->location->where('id',$journey_detail[0]->booking[0]->source_id)->get();
                  $journey_detail[0]->booking['destination']=$this->location->where('id',$journey_detail[0]->booking[0]->destination_id)->get();
             }
@@ -234,7 +234,7 @@ class BookingManageRepository
       
         if(isset($booking_detail[0])){          
 
-            if(isset($booking_detail[0]->booking[0])){
+             if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
 
                 
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;

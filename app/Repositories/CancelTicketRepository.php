@@ -71,7 +71,7 @@ class CancelTicketRepository
         //return $booking_detail;
         if(isset($booking_detail[0])){          
 
-            if(isset($booking_detail[0]->booking)){
+            if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
  
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
