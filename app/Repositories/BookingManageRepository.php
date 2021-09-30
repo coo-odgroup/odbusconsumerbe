@@ -274,6 +274,13 @@ class BookingManageRepository
                         $emailData['deductAmount'] =$paidAmt-$refundAmt;
                         $emailData['totalfare'] = $paidAmt;
 
+                        if($booking_detail[0]->booking[0]->status==2){
+                            $emailData['cancel_status'] = false;
+                        }else{
+                            $emailData['cancel_status'] = true;
+                        }
+                       
+
                         return $emailData;
     
                     }elseif($min < $interval && $interval < $max){ 
@@ -287,6 +294,12 @@ class BookingManageRepository
                         $emailData['deductionPercentage'] = $deduction."%";
                         $emailData['deductAmount'] =$paidAmt-$refundAmt;
                         $emailData['totalfare'] = $paidAmt;
+                        
+                        if($booking_detail[0]->booking[0]->status==2){
+                            $emailData['cancel_status'] = false;
+                        }else{
+                            $emailData['cancel_status'] = true;
+                        }
 
                         return $emailData;
                        
