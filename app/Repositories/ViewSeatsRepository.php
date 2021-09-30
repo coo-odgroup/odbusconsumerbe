@@ -55,7 +55,8 @@ class ViewSeatsRepository
     public function getAllViewSeats($request)
     { 
         $booked = Config::get('constants.BOOKED_STATUS');
-
+        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+        
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
         $busId = $request['busId'];
@@ -63,18 +64,15 @@ class ViewSeatsRepository
         $journeyDate = date("Y-m-d", strtotime($journeyDate));
 
         $requestedSeq = $this->busLocationSequence->whereIn('location_id',[$sourceId,$destinationId])
-                                        ->pluck('sequence');
+                                                  ->pluck('sequence');
 
         $reqRange = Arr::sort($requestedSeq);
         //$busSeatsIds = $this->busSeats->where('bus_id',$busId)->pluck('id');                     
-        //1,2,3,4,5,6....
-        ///////////////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        //$bookingDetail = $this->booking->where('bus_id',$busId)->where('status',$booked)->with('bookingDetail')->get();         
+        //1,2,3,4,5,6.... 
         $bookingIds = $this->booking->where('bus_id',$busId)
                                     ->where('journey_dt',$journeyDate)
-                                    ->where('status',$booked)
-                                    ->pluck('id');
-                                
+                                    ->whereIn('status',[$booked,$seatHold])
+                                    ->pluck('id');                          
        if (sizeof($bookingIds)){
         $blockedSeats=array();
         foreach($bookingIds as $bookingId){

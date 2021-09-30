@@ -37,6 +37,7 @@ return [
     'LOWER_BERTH' => 1,
     'UPPER_BERTH' => 2,
     'BOOKED_STATUS' => 1,
+    'SEAT_HOLD_STATUS' => 4,
     'BOOKED_STATUS_FAILED' => 0,
     'BOOKED_CANCELLED' => 2,
     'PAYMENT_DONE' => 1,

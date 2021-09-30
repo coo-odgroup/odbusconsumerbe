@@ -233,11 +233,14 @@ class ListingRepository
  //Calculate Booked seats and remove it from total count
     public function getBookedSeats($sourceID,$destinationID,$entry_date,$busId){
         $booked = Config::get('constants.BOOKED_STATUS');
+        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+
         $booked_seats = $this->booking->where('journey_dt',$entry_date)
             ->where('bus_id',$busId)
             ->where('source_id',$sourceID)
             ->where('destination_id',$destinationID)
-            ->where('status',$booked)
+            ->whereIn('status',[$booked,$seatHold])
+            //->where('status',$booked)
             ->with(["bookingDetail.busSeats.seats"]) 
             ->get();
         $collection = collect($booked_seats);

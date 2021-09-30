@@ -384,30 +384,26 @@ class ChannelRepository
 
       public function makePayment(Request $request)
     {   
+        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $busId = $request['busId'];    
         $transationId = $request['transaction_id']; 
         $seatIds = $request['seatIds'];
-
 
         $seatStatus = $this->viewSeatsRepository->getAllViewSeats($request); 
         if(isset($seatStatus['lower_berth'])){
             $lb = collect($seatStatus['lower_berth']);
             $collection= $lb;
         }
-
         if(isset($seatStatus['upper_berth'])){
             $ub = collect($seatStatus['upper_berth']);
             $collection= $ub;
         }
-
         if(isset($lb) && isset($ub)){
             $collection= $lb->merge($ub);
         }
         
-        
-        
         $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
-        $filtered = $checkBookedSeat->reject(function ($value, $key) {                   //remove the null value
+        $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
             return $value == null;
         });
         if(sizeof($filtered->all())==0){
@@ -432,8 +428,11 @@ class ChannelRepository
         $user_pay->amount = $amount;
         $user_pay->order_id = $orderId;
         $user_pay->save();
-           
-        //Update Ticket Status in booking Change status to 1(Booked)             
+  
+        //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
+        
+        $this->booking->where('id', $bookingId)->update(['status' => $seatHold]);
+
         $data = array(
             'name' => $name,
             'amount' => $amount,
@@ -489,7 +488,8 @@ class ChannelRepository
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
            }
-          //Update Ticket Status in booking Change status to 1(Booked)  
+        //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+
         $this->booking->where('id', $bookingId)->update(['status' => $booked]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
