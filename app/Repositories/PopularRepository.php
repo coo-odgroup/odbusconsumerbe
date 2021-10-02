@@ -183,7 +183,7 @@ class PopularRepository
               $allreviews[] = $rv;
             }
             
-            $Totalrating = $Totalrating/count($bus->review);
+            $Totalrating = number_format($Totalrating/count($bus->review),1);
             
           }
 	
