@@ -123,6 +123,13 @@ class ListingRepository
                     ->with('BusSitting')
                     ->with('busGallery')
                     ->with('cancellationslabs.cancellationSlabInfo')
+                    ->with(['review' => function ($query) {                    
+                        $query->where('status',1);
+                        $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                        $query->with(['users' =>  function ($u){
+                            $u->select('id','name','profile_image');
+                        }]);                      
+                        }])
                     ->where('status','1')
                     ->where('id',$busId)
                     ->get();
@@ -176,6 +183,34 @@ class ListingRepository
             $safetyName = $safetyDatas->pluck('safety.name');
             $safetyIcon = $safetyDatas->pluck('safety.icon');
             $busPhotoDatas = $record->busGallery;
+
+            $reviews=  $record->review;
+
+            $Totalrating=0;
+            $Totalrating_comfort=0;
+            $Totalrating_clean=0;
+            $Totalrating_behavior=0;
+            $Totalrating_timing=0;
+
+            if(count($record->review)>0){
+                foreach($record->review as $rv){
+                  $Totalrating += $rv->rating_overall;                  
+                  $Totalrating_comfort += $rv->rating_comfort;                  
+                  $Totalrating_clean += $rv->rating_clean;                  
+                  $Totalrating_behavior += $rv->rating_behavior;                  
+                  $Totalrating_timing += $rv->rating_timing;           
+                }
+                
+                $Totalrating = number_format($Totalrating/count($record->review),1);
+                $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
+                $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
+                $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
+                $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);
+                
+              }
+
+           $cancellationPolicyContent=$record->cancellation_policy_desc;
+           $TravelPolicyContent=$record->travel_policy_desc;
               
             $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
           
@@ -224,6 +259,14 @@ class ListingRepository
                 "busPhotos" => $busPhotos,
                 "cancellationDuration" => $cSlabDuration,
                 "cancellationDuduction" => $cSlabDeduction,
+                "cancellationPolicyContent" => $cancellationPolicyContent,
+                "TravelPolicyContent" => $TravelPolicyContent,
+                "Totalrating" => $Totalrating,
+                "Totalrating_comfort" => $Totalrating_comfort,
+                "Totalrating_clean" => $Totalrating_clean,
+                "Totalrating_behavior" => $Totalrating_behavior,
+                "Totalrating_timing" => $Totalrating_timing,
+                "reviews" => $reviews,
             );
                     
         }
