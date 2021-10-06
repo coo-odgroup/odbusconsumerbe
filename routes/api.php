@@ -15,6 +15,8 @@ use App\Http\Controllers\CancelTicketController;
 use App\Http\Controllers\BookingManageController;
 use App\Http\Middleware\LogRoute;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ContactController;
+
 
 //Route::middleware([LogRoute::class])->group(function () {
 Route::get('/coreTable', [DTController::class, 'coreTable']);
@@ -42,6 +44,7 @@ Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
 Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
 Route::get('/AllOperators', [PopularController::class, 'allOperators']);
 Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
+Route::post('/saveContacts', [ContactController::class, 'save']);
 Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
 
 
