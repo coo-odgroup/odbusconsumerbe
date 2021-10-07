@@ -10,6 +10,7 @@ use App\Models\BusOperator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Review;
 use DB;
 use Carbon\Carbon;
 
@@ -18,13 +19,15 @@ class PopularRepository
     protected $bus;
     protected $ticketPrice;
     protected $location;
+   protected $review;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location,Review $review)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
         $this->booking = $booking;
         $this->location = $location;
+        $this->review = $review;
     }   
     
     public function getPopularRoutes($request)
@@ -135,20 +138,15 @@ class PopularRepository
                     $query->with(['amenities' =>  function ($a){
                         $a->select('id','name','icon');
                     }]);
-                }]);
-                $q->with(['review' => function ($query) {                    
-                    $query->where('status',1);
-                    $query->select('bus_id','users_id','title','rating_overall','comments');
-                    $query->with(['users' =>  function ($u){
-                        $u->select('id','name','district','profile_image');
-                    }]);
-                    }]);
+                }]);         
             }])   
            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
            ->get();
       
-        $buses = $operatorDetails[0]->bus;
+          $buses = $operatorDetails[0]->bus;
         $busIds =$buses->pluck('id');
+      
+     
       
       
         if(!sizeof($busIds)){
@@ -167,7 +165,8 @@ class PopularRepository
      
       
       
-        foreach($buses as $bus){  
+        foreach($buses as $bus){           
+          
           if($bus->busAmenities){
             foreach($bus->busAmenities as $bus_amenity){
               $allAmenity[] = $bus_amenity;
@@ -175,18 +174,27 @@ class PopularRepository
           }
           
       
-          
-          if(count($bus->review)>0){
-            foreach($bus->review as $rv){
+          $review =$this->review->where('bus_id',$bus->id)
+                           ->where('status',1)
+                           ->with(['users' =>  function ($u){
+                            $u->select('id','name','district','profile_image');
+                           }])
+            
+                          ->get();
+            
+            foreach($review as $rv){
               $Totalrating += $rv->rating_overall;
-              $allreviews[] = $rv;
+              array_push($allreviews,$rv);
             }
-            
-            $Totalrating = number_format($Totalrating/count($bus->review),1);
-            
+          
+          
+          if(count($allreviews)>0){           
+            $Totalrating = number_format($Totalrating/count($allreviews),1);            
           }
 	
         }
+      
+      
       
      
       
