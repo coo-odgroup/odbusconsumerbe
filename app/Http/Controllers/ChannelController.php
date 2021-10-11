@@ -137,7 +137,7 @@ class ChannelController extends Controller
         try {
             $response = $this->channelService->makePayment($request); 
             if($response == 'SEAT UN-AVAIL'){
-                return $this->successResponse($response,Config::get('constants.BOOKED'),Response::HTTP_OK);
+                return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
             }
             else{
                 return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);

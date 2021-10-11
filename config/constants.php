@@ -34,6 +34,7 @@ return [
     'REFUNDED_COMPLETED' => 'Already refunded',
     'NO_PAYMENT' => 'Not a successful payment',
     'BOOKED' => 'Seats already booked',
+    'HOLD' => 'Someone is trying to book this selected seater/sleeper. Please choose another seater/sleeper.',
     'LOWER_BERTH' => 1,
     'UPPER_BERTH' => 2,
     'BOOKED_STATUS' => 1,
