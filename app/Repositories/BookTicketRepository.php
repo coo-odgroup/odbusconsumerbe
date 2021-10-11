@@ -74,7 +74,8 @@ class BookTicketRepository
         $busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])->where('destination_id',$bookingInfo['destination_id'])->get();
+        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
+                                                ->where('destination_id',$bookingInfo['destination_id'])->get();
         $booking->j_day = $ticketPriceDetails[0]->j_day;
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
@@ -119,7 +120,7 @@ class BookTicketRepository
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
-        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
                 ->where('bus_id',$busId)
