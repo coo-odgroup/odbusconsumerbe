@@ -44,4 +44,6 @@ return [
     'PAYMENT_DONE' => 1,
     'REFUNDED' => 2,
     'NEED_GST_BILL' => 1,
+    'Bus_Offers' => 'Bus Offers',
+    'Festive_Offers' => 'Festive Offers',
 ];

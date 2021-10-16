@@ -16,6 +16,7 @@ use App\Http\Controllers\BookingManageController;
 use App\Http\Middleware\LogRoute;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\OfferController;
 
 
 //Route::middleware([LogRoute::class])->group(function () {
@@ -46,7 +47,7 @@ Route::get('/AllOperators', [PopularController::class, 'allOperators']);
 Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
 Route::post('/saveContacts', [ContactController::class, 'save']);
 Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
-
+Route::get('/Offers', [OfferController::class, 'offers']);
 
 Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
 Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
