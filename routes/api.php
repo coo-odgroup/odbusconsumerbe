@@ -23,7 +23,10 @@ use App\Http\Controllers\OfferController;
 Route::get('/coreTable', [DTController::class, 'coreTable']);
 Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
+Route::group(['middleware' => ['jwt']], function() {
+
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
+
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
 Route::get('/Filter', [ListingController::class, 'filter']);
@@ -66,9 +69,12 @@ Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']);
 Route::post('/Logout', [UsersController::class, 'logout']);
-Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);
+Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);  
+
+});
 
 Route::group(['middleware' => ['jwt.verify']], function() {
+  
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
     Route::put('/updateProfile', [UsersController::class, 'updateProfile']);
     Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);    
@@ -77,6 +83,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::get('/UserReviews', [UsersController::class, 'userReviews']);
+  
 });
 
 
