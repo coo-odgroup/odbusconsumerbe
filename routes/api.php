@@ -23,58 +23,44 @@ use App\Http\Controllers\OfferController;
 Route::get('/coreTable', [DTController::class, 'coreTable']);
 Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
-//Route::group(['middleware' => ['jwt']], function() {
+Route::group(['middleware' => ['jwt']], function() {
 
-Route::get('/getLocation', [ListingController::class, 'getLocation']);
-
-Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
-Route::get('/Listing', [ListingController::class, 'getAllListing']);
-Route::get('/Filter', [ListingController::class, 'filter']);
-Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
-Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
-Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
-Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
-Route::post('/SendSms', [ChannelController::class, 'sendSms']);
-//Route::post('/SendSmsTicket', [ChannelController::class, 'sendSmsTicket']);
-Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
-Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
-Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
-//Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
-//Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
-Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
-Route::get('/BusDetails', [ListingController::class, 'busDetails']);
-Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
-Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
-Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
-Route::get('/AllOperators', [PopularController::class, 'allOperators']);
-Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
-Route::post('/saveContacts', [ContactController::class, 'save']);
-Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
-Route::get('/Offers', [OfferController::class, 'offers']);
-
-Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
-Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
-Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
-Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
-Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
-
-
-
-Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
-Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
-
-
-
-Route::post('/Register', [UsersController::class, 'Register']);
-Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
-Route::post('/Login', [UsersController::class, 'login']);
-Route::post('/Logout', [UsersController::class, 'logout']);
-Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);  
-
-//});
-
-Route::group(['middleware' => ['jwt.verify']], function() {
-  
+    Route::get('/getLocation', [ListingController::class, 'getLocation']);
+    Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
+    Route::get('/Listing', [ListingController::class, 'getAllListing']);
+    Route::get('/Filter', [ListingController::class, 'filter']);
+    Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
+    Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
+    Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
+    Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
+    Route::post('/SendSms', [ChannelController::class, 'sendSms']);
+    //Route::post('/SendSmsTicket', [ChannelController::class, 'sendSmsTicket']);
+    Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
+    Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
+    Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
+    //Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
+    //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
+    Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
+    Route::get('/BusDetails', [ListingController::class, 'busDetails']);
+    Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
+    Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
+    Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
+    Route::get('/AllOperators', [PopularController::class, 'allOperators']);
+    Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
+    Route::post('/saveContacts', [ContactController::class, 'save']);
+    Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
+    Route::get('/Offers', [OfferController::class, 'offers']);
+    Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
+    Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
+    Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
+    Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
+    Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
+    Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
+    Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
+    Route::post('/Register', [UsersController::class, 'Register']);
+    Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
+    Route::post('/Login', [UsersController::class, 'login']);
+    Route::post('/Logout', [UsersController::class, 'logout']);   
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
     Route::put('/updateProfile', [UsersController::class, 'updateProfile']);
     Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);    
