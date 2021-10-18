@@ -23,7 +23,7 @@ use App\Http\Controllers\OfferController;
 Route::get('/coreTable', [DTController::class, 'coreTable']);
 Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
-Route::group(['middleware' => ['jwt']], function() {
+//Route::group(['middleware' => ['jwt']], function() {
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 
@@ -71,7 +71,7 @@ Route::post('/Login', [UsersController::class, 'login']);
 Route::post('/Logout', [UsersController::class, 'logout']);
 Route::post('/RefreshToken', [UsersController::class, 'refreshToken']);  
 
-});
+//});
 
 Route::group(['middleware' => ['jwt.verify']], function() {
   

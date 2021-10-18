@@ -23,7 +23,7 @@ class OfferRepository
         $festiveOffers = $this->slider->where('occassion',$festiveOffer)->get();
         $allOffers = $this->slider->get();
 
-        $offers[] = array(
+        $offers = array(
             "busOffers" => $busOffers, 
             "festiveOffers" => $festiveOffers, 
             "allOffers" => $allOffers
