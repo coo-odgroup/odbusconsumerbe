@@ -28,5 +28,9 @@ class OfferService
         }
         return $offer;
     }   
+    public function coupons($request)
+    {
+        return $this->offerRepository->coupons($request);
+    }
    
 }

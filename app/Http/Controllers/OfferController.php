@@ -27,4 +27,9 @@ class OfferController extends Controller
         $allOffers = $this->offerService->offers($request);
         return $this->successResponse($allOffers,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function coupons(Request $request) {
+        $response = $this->offerService->coupons($request);
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
 }

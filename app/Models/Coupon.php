@@ -14,5 +14,17 @@ class Coupon extends Model
                             'max_use_limit','category','from_date','to_date','short_desc','full_desc',
                             'created_by'];
  
+    public function couponAssignedBus()
+     {
+        return $this->hasMany(CouponAssignedBus::class);        
+     }
+     public function couponOperator()
+     {
+        return $this->hasMany(CouponOperator::class);        
+     }
+     public function couponRoute()
+     {
+        return $this->hasMany(CouponRoute::class);        
+     }
 
 }

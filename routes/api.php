@@ -50,6 +50,7 @@ Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
     Route::post('/saveContacts', [ContactController::class, 'save']);
     Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
     Route::get('/Offers', [OfferController::class, 'offers']);
+    Route::get('/Coupons', [OfferController::class, 'coupons']);
     Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
     Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
     Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
