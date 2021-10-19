@@ -36,7 +36,11 @@ class UsersService
         $user = $this->usersRepository->login($request);
         return $user;
     }
+    public function userProfile($request){
 
+        $user = $this->usersRepository->userProfile($request);
+        return $user;     
+    }
     public function BookingHistory($request){
 
         $result = $this->usersRepository->BookingHistory($request);
@@ -45,11 +49,16 @@ class UsersService
         
     }
 
-    public function updateProfile($request){
+    public function updateProfile($request, $userId,$token){
 
-        $result = $this->usersRepository->updateProfile($request);
+        $result = $this->usersRepository->updateProfile($request, $userId,$token);
         return $result;
-
+        // try {
+        //     $result = $this->usersRepository->updateProfile($request,$id,$token);
+        // } catch (Exception $e) {
+        //     throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        // }
+        return $result;
         
     }
 

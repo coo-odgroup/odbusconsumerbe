@@ -23,7 +23,7 @@ use App\Http\Controllers\OfferController;
 Route::get('/coreTable', [DTController::class, 'coreTable']);
 Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
-Route::group(['middleware' => ['jwt']], function() {
+//Route::group(['middleware' => ['jwt']], function() {
 
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['jwt']], function() {
     Route::post('/Login', [UsersController::class, 'login']);
     Route::post('/Logout', [UsersController::class, 'logout']);   
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
-    Route::put('/updateProfile', [UsersController::class, 'updateProfile']);
+    Route::put('/updateProfile/{userId}/{token}', [UsersController::class, 'updateProfile']);
     Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);    
     Route::post('/AddReview', [ReviewController::class, 'createReview']);
     Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
@@ -70,7 +70,7 @@ Route::group(['middleware' => ['jwt']], function() {
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::get('/UserReviews', [UsersController::class, 'userReviews']);
   
-});
+//});
 
 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);

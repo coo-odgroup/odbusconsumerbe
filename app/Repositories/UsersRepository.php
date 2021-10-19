@@ -8,6 +8,7 @@ use App\Repositories\ChannelRepository;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\Bus;
 use App\Models\Location;
 use App\Models\Booking;
@@ -115,21 +116,27 @@ class UsersRepository
         return  $otp;
     }
     public function verifyOtp($request){
+
         $rcvOtp = trim($request['otp']);
         $userId = $request['userId'];
         $existingOtp = $this->users->where('id', $userId)->get('otp');
         $existingOtp = $existingOtp[0]['otp'];
         $user = $this->users->where('id', $userId)->first()->only('name','email');
         if(($rcvOtp=="")){
-            return "Null";
+            return "";
             }
         elseif($existingOtp == $rcvOtp){
-            $this->users->where('id', $userId)->update(array('is_verified' => '1'));
-            $this->users->where('id', $userId)->update(array('otp' => Null));
-            return "success"; 
+
+             $users = $this->users->where('id', $userId)->update(array(
+                'is_verified' => '1',
+                'token' => Str::random('10'),
+                'otp' => Null
+             ));
+             $usersDetails = $this->users->where('id', $userId)->get();
+            return $usersDetails; 
         }
         else{
-            return 'Invalid OTP';
+            return 'Inval OTP';
         }
     }
 
@@ -154,12 +161,17 @@ class UsersRepository
             return "un_registered";
         }      
     }
-  
-    public function updateProfile($request){
+    public function userProfile($request)
+    {
+        $userId = $request['userId'];
+        $token = $request['token']; 
+        $userDetails = $this->users->where('id', $userId)->where('token', $token)->get();
+        return $userDetails;
+    }
+
+    public function updateProfile($request,$userId,$token){
       
-       $user = auth()->user();
-      
-        $post = $this->users->find($user->id);
+        $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
 
         $post->name = $request['name'];
         $post->email  = $request['email'];
@@ -315,9 +327,9 @@ class UsersRepository
 
     public function userReviews($request){
             
-        $user = auth()->user();
-        
-        $userReviews = Review::where('users_id',$user->id)
+        $userId = $request['userId']; 
+
+        $userReviews = Review::where('users_id', $userId)
                             ->with('bus', function ($q) {
                                 $q->with('busGallery');
                                 $q->with('booking', function ($b){

@@ -136,28 +136,16 @@ class UsersController extends Controller
    public function verifyOtp(Request $request) 
    {
     $data = $request->all();
-    $user = Users::where('id', $data)->first()->only('name','email','phone');
-    $user['password'] = 'odbus123';
-    $response = $this->usersService->verifyOtp($request); 
-      if($response == 'Null'){
-       return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
-    }  
-      elseif($response == 'success'){
-        try {
-          if (! $token = Auth()->attempt($user)) {
-            return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
-            }
-            return $this->createNewToken($token);
-          }
-          catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-          }  
-      return $this->successResponse(Config::get('constants.VERIFIED'),Response::HTTP_OK);
+    $verify = $this->usersService->verifyOtp($request);
+    if($verify == ''){
+      return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
+    }elseif($verify == 'Inval OTP'){
+     return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);
     }
-      else{
-        return $this->errorResponse($response,Response::HTTP_OK);       
-      }
+    else{
+    return $this->successResponse($verify,Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }
+   }
 
 /**
  * @OA\Post(
@@ -245,25 +233,22 @@ protected function createNewToken($token){
  */
 
   
-public function userProfile() {
-  $user = auth()->user();
-  if(!is_null($user)) {
-    return $this->successResponse($user,Config::get('constants.USER_DETAILS'),Response::HTTP_OK);
-  }
-  else {
-    return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-  }
+public function userProfile(Request $request) {
+ 
+  $userDetails = $this->usersService->userProfile($request);
+  return $this->successResponse($userDetails,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+ 
 }
   
-  public function updateProfile(Request $request) {
-  $user = auth()->user();
-    if(!is_null($user)) {     
-      $response =  $this->usersService->updateProfile($request);  
+  public function updateProfile(Request $request,$userId,$token) {
+  // $user = auth()->user();
+  //   if(!is_null($user)) {     
+    $response = $this->usersService->updateProfile($request, $userId,$token);  
     return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
-  }
-  else {
-    return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-  }
+  // }
+  // else {
+  //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+  // }
 }
   
 
@@ -325,15 +310,15 @@ public function refreshToken() {
  */
   public function userReviews(Request $request)
   {  
-    $data = $request->all();  
-    $user = auth()->user();
-    if(!is_null($user)) {     
+    // $data = $request->all();  
+    // $user = auth()->user();
+    // if(!is_null($user)) {     
       $response =  $this->usersService->userReviews($request);  
       return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-    else {
-      return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-    }
+    // }
+    // else {
+    //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+    // }
   }
 
 
