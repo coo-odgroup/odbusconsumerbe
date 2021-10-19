@@ -8,6 +8,7 @@ return [
     'RECORD_UPDATED' => 'Record Updated Successfully',
     'RECORD_NOT_FOUND' => 'Record Not Found',
     'INVALID_ARGUMENT_PASSED' => 'Invalid Argument Passed',
+    'INVALID_TOKEN' => 'Invalid User / Token',
     'UNABLE_CHANGE_STATUS' => 'Unable to Change Status',
     'ALL_RECORDS'=>10000,
     'PAYMENT_DONE' => 'Payment successfully done',
