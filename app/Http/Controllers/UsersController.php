@@ -236,15 +236,29 @@ protected function createNewToken($token){
 public function userProfile(Request $request) {
  
   $userDetails = $this->usersService->userProfile($request);
-  return $this->successResponse($userDetails,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+  
+   if($userDetails=='Invalid'){
+        return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($userDetails,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+  
  
 }
   
   public function updateProfile(Request $request,$userId,$token) {
   // $user = auth()->user();
   //   if(!is_null($user)) {     
-    $response = $this->usersService->updateProfile($request, $userId,$token);  
-    return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+    $response = $this->usersService->updateProfile($request, $userId,$token); 
+    
+    if($response=='Invalid'){
+        return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+      }
+    
   // }
   // else {
   //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
@@ -267,14 +281,19 @@ public function refreshToken() {
   public function BookingHistory(Request $request){  
 
     $data = $request->all();  
-    $user = auth()->user();
-    if(!is_null($user)) {     
-      $response =  $this->usersService->BookingHistory($request);  
-      return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }
-    else {
-      return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-    }
+    //$user = auth()->user();
+    //if(!is_null($user)) {     
+      $response =  $this->usersService->BookingHistory($request); 
+      if($response=='Invalid'){
+        return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+   // }
+   // else {
+    //  return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+    //}
 
   }
   /**
@@ -313,8 +332,14 @@ public function refreshToken() {
     // $data = $request->all();  
     // $user = auth()->user();
     // if(!is_null($user)) {     
-      $response =  $this->usersService->userReviews($request);  
-      return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      $response =  $this->usersService->userReviews($request); 
+      if($response=='Invalid'){
+        return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+    
     // }
     // else {
     //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);

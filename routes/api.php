@@ -23,7 +23,7 @@ use App\Http\Controllers\OfferController;
 Route::get('/coreTable', [DTController::class, 'coreTable']);
 Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
-//Route::group(['middleware' => ['jwt']], function() {
+Route::group(['middleware' => ['jwt']], function() {
 
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -70,7 +70,7 @@ Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::get('/UserReviews', [UsersController::class, 'userReviews']);
   
-//});
+});
 
 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);

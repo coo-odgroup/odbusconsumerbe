@@ -166,8 +166,16 @@ class UsersRepository
         $userId = $request['userId'];
         $token = $request['token']; 
         $userDetails = $this->users->where('id', $userId)->where('token', $token)->get();
-        return $userDetails;
+      	
+        if(isset($userDetails[0])){
+          return $userDetails;
+        }else{
+          return 'Invalid';
+        }
+        
     }
+  
+   
 
     public function updateProfile($request,$userId,$token){
       
@@ -192,8 +200,12 @@ class UsersRepository
 
     public function BookingHistory($request){
 
-         $user = auth()->user();
-
+        $user= $this->userProfile($request);
+      
+       if($user!='Invalid'){
+         
+         $user = $user[0];
+                   
         $status = $request['status'];
         $paginate = $request['paginate'];
         $filter = $request['filter'];  
@@ -319,17 +331,25 @@ class UsersRepository
             "count" => $list->count(), 
             "total" => $list->total(),
             "data" => $list
-           );   
+           ); 
+          
            return $response;
-
+         
+       }else{
+         return $user;
+       }
 
     }
 
     public function userReviews($request){
             
-        $userId = $request['userId']; 
+        $user= $this->userProfile($request);
+       
+      if($user!='Invalid'){
+         
+         $user = $user[0];
 
-        $userReviews = Review::where('users_id', $userId)
+        $userReviews = Review::where('users_id', $user->id)
                             ->with('bus', function ($q) {
                                 $q->with('busGallery');
                                 $q->with('booking', function ($b){
@@ -347,6 +367,10 @@ class UsersRepository
             }
         }
         return $userReviews;
+       }
+      else{
+        return $user;
+      }
     }
 
 }   
