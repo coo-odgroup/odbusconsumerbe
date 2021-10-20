@@ -2,7 +2,10 @@
 
 namespace App\Repositories;
 use Illuminate\Http\Request;
+use App\Models\Bus;
 use App\Models\Slider;
+use App\Models\Coupon;
+use App\Models\CouponAssignedBus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -28,8 +31,30 @@ class OfferRepository
             "festiveOffers" => $festiveOffers, 
             "allOffers" => $allOffers
         );
-        return $offers;
-        
+        return $offers;    
+    }
+    public function coupons($request)
+    {   
+        $busId = $request['busId'];
+        $sourceId = $request['sourceId'];
+        $destId = $request['destinationId'];
+        $operatorId = Bus::where('id',$busId)->first()->bus_operator_id;
+       
+        $coupon = Coupon::with(['couponAssignedBus' => function ($query) use($busId) {                    
+                                                        $query->where('bus_id',$busId);                     
+                                                        }])
+                        ->with(['couponOperator' => function ($query) use($operatorId) {                    
+                                                            $query->where('operator_id',$operatorId);                     
+                                                            }])
+                        ->with(['couponRoute' => function ($query) use($sourceId,$destId) {                    
+                                                                $query->where([
+                                                                    ['source_id', $sourceId],
+                                                                    ['destination_id', $destId],
+                                                                ]);                    
+                                                                }])
+                                                        ->get();
+       
+        return  $coupon;
     }
       
 
