@@ -10,8 +10,7 @@ class BookTicketValidator
     public function validate($data) { 
         
         $rules = [
-            'customerInfo.phone' => 'required',
-            'journey_dt' => 'required|date_format:"Y-m-d"'
+            'customerInfo.phone' => 'required'
         ];      
       
         $bookTicketValidation = Validator::make($data, $rules);
