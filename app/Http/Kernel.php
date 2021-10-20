@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'log.route' => \App\Http\Middleware\LogRoute::class ,
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
         'jwt' => \App\Http\Middleware\CheckJWT::class,
+        'check.scope' => \App\Http\Middleware\CheckScope::class,
     ];
 }

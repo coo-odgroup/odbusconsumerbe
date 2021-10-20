@@ -20,10 +20,12 @@ use App\Http\Controllers\OfferController;
 
 
 //Route::middleware([LogRoute::class])->group(function () {
-Route::get('/coreTable', [DTController::class, 'coreTable']);
-Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
-Route::group(['middleware' => ['jwt']], function() {
+Route::group(['middleware' => ['check.scope:read:messages']], function() {
+  
+    
+    Route::get('/coreTable', [DTController::class, 'coreTable']);
+    Route::get('/HelloWorld', [DTController::class, 'HelloWorld']);
 
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -50,7 +52,6 @@ Route::group(['middleware' => ['jwt']], function() {
     Route::post('/saveContacts', [ContactController::class, 'save']);
     Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
     Route::get('/Offers', [OfferController::class, 'offers']);
-    Route::get('/Coupons', [OfferController::class, 'coupons']);
     Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
     Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
     Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
