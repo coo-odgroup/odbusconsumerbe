@@ -40,15 +40,22 @@ class ListingController extends Controller
  * @OA\Info(title="ODBUS Consumer APIs", version="0.1",
  * description="L5 Swagger OpenApi description for ODBUS Consumer APIs",
  * )
- * 
  */
-
 /**
- * @OA\Get(
- *     path="/api/getLocation",
- *     tags={"getLocation API"},
- *     description="Locations with SearchValue params",
- *     summary="Get List of Locations",
+ * @OA\SecurityScheme(
+ *     type="http",
+ *     name="Token based",
+ *     in="header",
+ *     scheme="bearer",
+ *     bearerFormat="AUTH0",
+ *     securityScheme="apiAuth",
+ * )
+ */
+/**
+ * @OA\Get(path="/api/getLocation",
+ *   tags={"getLocation API"},
+ *   summary="Get List of Locations",
+ *   description="Locations with SearchValue params",
  *     @OA\Parameter(
  *          name="locationName",
  *          description="name or synonym of Location",
@@ -58,10 +65,14 @@ class ListingController extends Controller
  *              type="string"
  *          )
  *      ),
- *     @OA\Response(response="200", description="all locations")
+ *  @OA\Response(response="200", description="all locations"),
+ *  @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
- * 
  */
+
     public function getLocation(Request $request) {
         $location = $this->listingService->getLocation($request);
         return $this->successResponse($location,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
@@ -99,7 +110,11 @@ class ListingController extends Controller
  *              type="string"
  *          )
  *      ),
- *     @OA\Response(response="200", description="List of Buses")
+ *  @OA\Response(response="200", description="List of Buses"),
+ *  @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -246,7 +261,11 @@ class ListingController extends Controller
  *              )
  *          )
  *      ),
- *     @OA\Response(response="200", description="List of Buses")
+ *  @OA\Response(response="200", description="List of Buses"),
+ *  @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */ 
@@ -279,7 +298,11 @@ class ListingController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description="get all Filter Options")
+ *  @OA\Response(response="200", description="get all Filter Options"),
+ *  @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -321,7 +344,11 @@ class ListingController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description="Bus Details")
+ *     @OA\Response(response="200", description="Bus Details"),
+ *  @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */

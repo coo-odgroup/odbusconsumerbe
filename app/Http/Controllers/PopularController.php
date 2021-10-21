@@ -28,7 +28,9 @@ class PopularController extends Controller
  *     tags={"PopularRoutes API"},
  *     description="get all Popular Routes",
  *     summary="get all Popular Routes",
- *     @OA\Response(response="200", description="get all Popular Routes")
+ *     @OA\Response(response="200", description="get all Popular Routes"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */
@@ -42,7 +44,9 @@ class PopularController extends Controller
  *     tags={"TopOperators API"},
  *     description="get all Top Operators",
  *     summary="get all Top Operators",
- *     @OA\Response(response="200", description="get all Top Operators")
+ *     @OA\Response(response="200", description="get all Top Operators"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */
@@ -56,7 +60,9 @@ class PopularController extends Controller
  *     tags={"All Routes API"},
  *     description="get all Routes of bus running",
  *     summary="get all Routes of bus running",
- *     @OA\Response(response="200", description="Record Fetched Successfully")
+ *     @OA\Response(response="200", description="Record Fetched Successfully"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */
@@ -70,7 +76,9 @@ class PopularController extends Controller
  *     tags={"All Operators API"},
  *     description="get all Operators names",
  *     summary="get all Operators names",
- *     @OA\Response(response="200", description="Record Fetched Successfully")
+ *     @OA\Response(response="200", description="Record Fetched Successfully"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */
@@ -93,7 +101,9 @@ class PopularController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description="Record Fetched Successfully")
+ *     @OA\Response(response="200", description="Record Fetched Successfully"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */

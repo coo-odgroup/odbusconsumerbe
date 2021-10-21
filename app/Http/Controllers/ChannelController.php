@@ -127,7 +127,9 @@ class ChannelController extends Controller
  *      ),
  *     @OA\Response(response="201", description="Order Id generated Successfully"),
  *     @OA\Response(response="406", description="seats already booked"),
- *     @OA\Response(response="404", description="Invalid Argument Passed")
+ *     @OA\Response(response="404", description="Invalid Argument Passed"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */
@@ -315,7 +317,9 @@ class ChannelController extends Controller
  *     ),
  *     @OA\Response(response="200", description="Payment successfully done"),
  *     @OA\Response(response="402", description="Payment required"),
- *     @OA\Response(response="404", description="Invalid Argument Passed")
+ *     @OA\Response(response="404", description="Invalid Argument Passed"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  */
     public function pay(Request $request){
