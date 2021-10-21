@@ -138,12 +138,12 @@ class BookingManageRepository
             }
             
             else{                
-                 return "PNR is invalid";                
+                 return "PNR doesn't match";                
             }
         }
         
         else{            
-            return "Mobile no is invalid";            
+            return "Mobile no doesn't match";            
         }
     }
 
@@ -309,13 +309,13 @@ class BookingManageRepository
             }
             
             else{                
-                 return "PNR is invalid";                
-            }
-        }
-        
-        else{            
-            return "Mobile no is invalid";            
-        }
+                return "PNR doesn't match";                
+           }
+       }
+       
+       else{            
+           return "Mobile no doesn't match";            
+       }
 
         return $booking_detail;
         
