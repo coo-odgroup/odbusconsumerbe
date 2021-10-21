@@ -196,6 +196,7 @@ class CancelTicketRepository
                      'paidAmount' => $paidAmount/100,
                 );
                 $refundAmt = $refundAmount/100;
+                $paidAmount = $paidAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
                
                 $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
