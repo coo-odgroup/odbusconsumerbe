@@ -198,7 +198,7 @@
                                             <td align="left" style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;"><img src="https://www.odbus.in/frontassets/emailimages/38.png" /> &nbsp;&nbsp;
                                                 <strong style="vertical-align: top;"> Boarding At: </strong> 
                                                 <span style="vertical-align: top;">&nbsp;  
-                                                {{$boarding_point}}      
+                                                {{$source}} ( {{$boarding_point}} )      
                                                 &nbsp;&nbsp;|&nbsp;&nbsp;
                                                   {{$departureTime}}                                                 </span> 
                                                 </td>
@@ -216,7 +216,7 @@
                                                 <img src="https://www.odbus.in/frontassets/emailimages/39.png" /> &nbsp;&nbsp;
                                                  <strong style="vertical-align: top;"> Dropping At: </strong>
                                                  <span style="vertical-align: top;">
-                                               &nbsp;{{$dropping_point}} &nbsp;&nbsp;|&nbsp;&nbsp; {{$arrivalTime}}                                            </span>  
+                                               &nbsp;{{$destination}}  ( {{$dropping_point}} ) &nbsp;&nbsp;|&nbsp;&nbsp; {{$arrivalTime}}                                            </span>  
                                                 </td>
                                             
                                         </tr>
@@ -347,6 +347,31 @@
                                         <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
+                                                  
+                                                  <tr>
+                                                        <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal; padding-left:40px;">Base Fare 
+                                                        </td>
+                                                        
+                                                        <td align="right" style="padding: 10px; font-size: 14px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Rs. {{$owner_fare}}/-
+                                                        </td>                                                        
+                                                    </tr>
+                                                  
+                                                  <tr>
+                                                        <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal; padding-left:40px;">ODBUS Service Charges
+                                                        </td>
+                                                        
+                                                        <td align="right" style="padding: 10px; font-size: 14px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Rs. {{$odbus_charges}}/-
+                                                        </td>                                                        
+                                                    </tr>
+                                                  
+                                                  <tr>
+                                                        <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal; padding-left:40px;">Transaction fee + GST
+                                                        </td>
+                                                        
+                                                        <td align="right" style="padding: 10px; font-size: 14px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Rs. {{$odbus_gst}}/-
+                                                        </td>                                                        
+                                                    </tr>
+                                                  
                                                     <tr>
                                                         <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal; padding-left:40px;">Total Fare 
                                                         </td>
@@ -385,7 +410,7 @@
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr>
                                                         <td align="left" style="padding: 10px; font-size: 16px; font-family: Tahoma, sans-serif; color: #0f204c; font-weight:normal; padding-left:40px;"><strong>You Paid </strong>
-                                                        </td>
+                                                        </td> 
                                                         
                                                          <td align="right" style="padding: 10px; font-size: 18px; font-family: Tahoma, sans-serif; color: #0f204c; font-weight:normal;"> 
                                                           <strong>Rs. 

@@ -149,7 +149,13 @@ class BookingManageRepository
 
     public function emailSms($request)
     { 
-        $b= $this->getBookingDetails($request);      
+      
+     
+      
+        $b= $this->getBookingDetails($request);
+              
+         
+      
       
         if($b && isset($b[0])){
 
@@ -157,45 +163,51 @@ class BookingManageRepository
 
             $seat_arr=[];
             $seat_no='';
-            $totalfare=0;
           
-            foreach($b->booking->bookingDetail as $bd){
-                array_push($seat_arr,$bd->busSeats->seats->seatText);
-                $totalfare += $bd->total_fare;
-            }           
-
-            
+            foreach($b->booking[0]->bookingDetail as $bd){
+                array_push($seat_arr,$bd->busSeats->seats->seatText);              
+              
+            }            
 
             $body = [
                 'name' => $b->name,
                 'phone' => $b->phone,
                 'email' => $b->email,
-                'pnr' => $b->booking->pnr,
-                'bookingdate'=> $b->booking->created_at,
-                'journeydate' => $b->booking->journey_dt ,
-                'boarding_point'=> $b->booking->boarding_point,
-                'dropping_point' => $b->booking->dropping_point,
-                'departureTime'=> $b->booking->boarding_time,
-                'arrivalTime'=> $b->booking->dropping_time,
+                'pnr' => $b->booking[0]->pnr,
+                'bookingdate'=> $b->booking[0]->created_at,
+                'journeydate' => $b->booking[0]->journey_dt ,
+                'boarding_point'=> $b->booking[0]->boarding_point,
+                'dropping_point' => $b->booking[0]->dropping_point,
+                'departureTime'=> $b->booking[0]->boarding_time,
+                'arrivalTime'=> $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
-                'busname'=> $b->booking->bus->name,
-                'busNumber'=> $b->booking->bus->bus_number,
-                'bustype' => $b->booking->bus->busType->name,
-                'busTypeName' => $b->booking->bus->busType->busClass->class_name,
-                'sittingType' => $b->booking->bus->busSitting->name, 
-                'conductor_number'=> $b->booking->bus->busContacts->phone,
-                'passengerDetails' => $b->booking->bookingDetail ,
-                'totalfare'=> $totalfare,
-                'routedetails' => $b->booking->source[0]->name."-".$b->booking->destination[0]->name
+                'busname'=> $b->booking[0]->bus->name,
+                'source'=> $b->booking[0]->source[0]->name,
+                'destination'=> $b->booking[0]->destination[0]->name,
+                'busNumber'=> $b->booking[0]->bus->bus_number,
+                'bustype' => $b->booking[0]->bus->busType->name,
+                'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
+                'sittingType' => $b->booking[0]->bus->busSitting->name, 
+                'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
+                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                'totalfare'=> $b->booking[0]->total_fare,
+                'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
+                'odbus_charges'=> $b->booking[0]->odbus_charges,
+                'owner_fare'=> $b->booking[0]->owner_fare,
+                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name
                 
             ];
           
+          
+           
+          
             if($b->email != ''){
-                 $sendEmailTicket = $this->sendEmailTicket($body,$b->booking->pnr); 
+              
+                 $sendEmailTicket = $this->sendEmailTicket($body,$b->booking[0]->pnr); 
             }
 
             if($b->phone != ''){
-                 $sendEmailTicket = $this->sendSmsTicket($body,$b->booking->pnr); 
+                 $sendEmailTicket = $this->sendSmsTicket($body,$b->booking[0]->pnr); 
             }
 
             return "Email & SMS has been sent to ".$b->email." & ".$b->phone;

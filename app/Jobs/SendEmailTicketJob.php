@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SendEmailTicketJob implements ShouldQueue
 {
@@ -29,11 +30,16 @@ class SendEmailTicketJob implements ShouldQueue
     protected $arrivalTime;
     protected $seat_no;
     protected $busname;
+    protected $source;
+    protected $destination;
     protected $busNumber;      
     protected $bustype;
     protected $busTypeName;
     protected $sittingType;
     protected $totalfare;
+    protected $odbus_gst;
+    protected $odbus_charges;
+    protected $owner_fare;
     protected $conductor_number;
     protected $passengerDetails;
 
@@ -44,6 +50,8 @@ class SendEmailTicketJob implements ShouldQueue
     public function __construct($request, $email_pnr)
 
     {
+       
+      
         //$this->$request[] = $request;
         $this->name = $request['name'];
         $this->to = $request['email'];
@@ -55,11 +63,16 @@ class SendEmailTicketJob implements ShouldQueue
         $this->arrivalTime = $request['arrivalTime'];
         $this->seat_no = $request['seat_no'];
         $this->busname = $request['busname'];
+        $this->source = $request['source'];
+        $this->destination = $request['destination'];
         $this->busNumber = $request['busNumber'];
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
         $this->sittingType = $request['sittingType'];
         $this->totalfare = $request['totalfare'];
+        $this->odbus_gst = $request['odbus_gst'];
+        $this->odbus_charges = $request['odbus_charges'];
+        $this->owner_fare = $request['owner_fare'];
         $this->conductor_number = $request['conductor_number'];
         $this->passengerDetails = $request['passengerDetails'];
     
@@ -88,6 +101,8 @@ class SendEmailTicketJob implements ShouldQueue
             'arrivalTime'=> $this->arrivalTime,
             'seat_no' => $this->seat_no,
             'busname'=> $this->busname,
+            'source'=> $this->source,
+            'destination'=> $this->destination,
             'busNumber'=> $this->busNumber,
             'bustype' => $this->bustype,
             'busTypeName' => $this->busTypeName,
@@ -95,9 +110,12 @@ class SendEmailTicketJob implements ShouldQueue
             'conductor_number'=> $this->conductor_number,
             'passengerDetails' => $this->passengerDetails ,
             'totalfare'=> $this->totalfare,
+            'odbus_gst'=> $this->odbus_gst,
+            'odbus_charges'=> $this->odbus_charges,
+            'owner_fare'=> $this->owner_fare,
             
         ];
-        //dd($data);
+             
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
         //dd($this->subject);
