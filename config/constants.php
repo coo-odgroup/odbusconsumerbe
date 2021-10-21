@@ -47,4 +47,5 @@ return [
     'NEED_GST_BILL' => 1,
     'Bus_Offers' => 'Bus Offers',
     'Festive_Offers' => 'Festive Offers',
+    'REVIEW_ADDED'=>'Review is added'
 ];

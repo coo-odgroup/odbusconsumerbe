@@ -54,7 +54,7 @@ class ReviewController extends Controller
       } 
         try {
           $response =  $this->reviewService->createReview($request); 
-          return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+          return $this->successResponse($response,Config::get('constants.REVIEW_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) { 
           
