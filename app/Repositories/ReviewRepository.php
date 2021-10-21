@@ -88,6 +88,7 @@ class ReviewRepository
         $post->rating_timing = $data['rating_timing'];
         $post->comments = $data['comments'];
         $post->title = $data['title'];
+        $post->status = 1;
         $post->created_by = $data['created_by'];
       
         $post->save();
