@@ -57,7 +57,9 @@ class CancelTicketController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="201", description=" refund initiated")
+ *     @OA\Response(response="201", description=" refund initiated"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */

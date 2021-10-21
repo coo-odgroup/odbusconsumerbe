@@ -196,8 +196,16 @@
                     },
                     "404": {
                         "description": "not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/CancelTicket": {
@@ -231,8 +239,16 @@
                 "responses": {
                     "201": {
                         "description": " refund initiated"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/MakePayment": {
@@ -281,8 +297,16 @@
                     },
                     "404": {
                         "description": "Invalid Argument Passed"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/PaymentStatus": {
@@ -448,8 +472,16 @@
                     },
                     "404": {
                         "description": "Invalid Argument Passed"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/getLocation": {
@@ -474,8 +506,16 @@
                 "responses": {
                     "200": {
                         "description": "all locations"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/Listing": {
@@ -518,8 +558,16 @@
                 "responses": {
                     "200": {
                         "description": "List of Buses"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/Filter": {
@@ -655,8 +703,16 @@
                 "responses": {
                     "200": {
                         "description": "List of Buses"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/FilterOptions": {
@@ -690,8 +746,16 @@
                 "responses": {
                     "200": {
                         "description": "get all Filter Options"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/BusDetails": {
@@ -734,8 +798,16 @@
                 "responses": {
                     "200": {
                         "description": "Bus Details"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/PopularRoutes": {
@@ -749,8 +821,16 @@
                 "responses": {
                     "200": {
                         "description": "get all Popular Routes"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/TopOperators": {
@@ -764,8 +844,16 @@
                 "responses": {
                     "200": {
                         "description": "get all Top Operators"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/AllRoutes": {
@@ -779,8 +867,16 @@
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/AllOperators": {
@@ -794,8 +890,16 @@
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/OperatorDetails": {
@@ -820,8 +924,16 @@
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/Register": {
@@ -876,17 +988,25 @@
                     },
                     "206": {
                         "description": "not a valid credential"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/VerifyOtp": {
             "post": {
                 "tags": [
-                    "JWT Auth"
+                    "Verify Otp"
                 ],
-                "summary": "otp verification and  generating authentication token",
-                "description": "otp verification and  generating authentication token",
+                "summary": "otp verification",
+                "description": "otp verification",
                 "operationId": "App\\Http\\Controllers\\UsersController::verifyOtp",
                 "parameters": [
                     {
@@ -901,7 +1021,7 @@
                     {
                         "name": "otp",
                         "in": "query",
-                        "description": "otp set to user",
+                        "description": "otp sent to user",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -917,8 +1037,16 @@
                     },
                     "406": {
                         "description": "Invalid otp"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/Login": {
@@ -955,14 +1083,22 @@
                     },
                     "206": {
                         "description": "not a valid credential"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/UserProfile": {
             "get": {
                 "tags": [
-                    "JWT Auth"
+                    "User Profile"
                 ],
                 "summary": "Get user details",
                 "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
@@ -984,7 +1120,7 @@
         "/api/UserReviews": {
             "get": {
                 "tags": [
-                    "JWT Auth"
+                    "User Reviews"
                 ],
                 "summary": "Get userReviews of an authenticated user",
                 "description": "Get user  review details",
@@ -1067,8 +1203,16 @@
                 "responses": {
                     "200": {
                         "description": " get all seats information"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/PriceOnSeatsSelection": {
@@ -1139,8 +1283,16 @@
                 "responses": {
                     "200": {
                         "description": " get Total Price on seats selection"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         },
         "/api/BoardingDroppingPoints": {
@@ -1183,8 +1335,16 @@
                 "responses": {
                     "200": {
                         "description": " get all Boarding Dropping Points"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
             }
         }
     },
@@ -1194,7 +1354,7 @@
                 "type": "http",
                 "name": "Token based",
                 "in": "header",
-                "bearerFormat": "JWT",
+                "bearerFormat": "AUTH0",
                 "scheme": "bearer"
             }
         }

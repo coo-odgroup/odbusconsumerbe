@@ -232,6 +232,8 @@ class BookTicketController extends Controller
  *  ),
  *     @OA\Response(response="201", description="records added"),
  *     @OA\Response(response="404", description="not found"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
  * )
  * 
  */

@@ -75,7 +75,11 @@ class ViewSeatsController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description=" get all seats information")
+ *     @OA\Response(response="200", description=" get all seats information"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -145,7 +149,11 @@ class ViewSeatsController extends Controller
  *              )
  *          )
  *      ),
- *     @OA\Response(response="200", description=" get Total Price on seats selection")
+ *     @OA\Response(response="200", description=" get Total Price on seats selection"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -188,7 +196,11 @@ class ViewSeatsController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description=" get all Boarding Dropping Points")
+ *     @OA\Response(response="200", description=" get all Boarding Dropping Points"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */

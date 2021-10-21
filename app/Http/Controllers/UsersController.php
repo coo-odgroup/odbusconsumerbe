@@ -75,6 +75,10 @@ class UsersController extends Controller
  *      ),
  *     @OA\Response(response="200", description="otp generated"),
  *     @OA\Response(response="206", description="not a valid credential"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -105,9 +109,9 @@ class UsersController extends Controller
     /**
  * @OA\Post(
  *     path="/api/VerifyOtp",
- *     tags={"JWT Auth"},
- *     description="otp verification and  generating authentication token",
- *     summary="otp verification and  generating authentication token",
+ *     tags={"Verify Otp"},
+ *     description="otp verification",
+ *     summary="otp verification",
  *     @OA\Parameter(
  *          name="userId",
  *          description="user Id",
@@ -119,7 +123,7 @@ class UsersController extends Controller
  *      ),
  *     @OA\Parameter(
  *          name="otp",
- *          description="otp set to user",
+ *          description="otp sent to user",
  *          required=false,
  *          in="query",
  *          @OA\Schema(
@@ -128,7 +132,11 @@ class UsersController extends Controller
  *      ),
  *     @OA\Response(response="200", description="Registered successfully"),
  *     @OA\Response(response="206", description="otp not provided"),
- *     @OA\Response(response="406", description="Invalid otp")
+ *     @OA\Response(response="406", description="Invalid otp"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */  
@@ -173,6 +181,10 @@ class UsersController extends Controller
  *      ),
  *     @OA\Response(response="200", description="otp generated"),
  *     @OA\Response(response="206", description="not a valid credential"),
+ *     @OA\Response(response=401, description="Unauthorized"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
  * )
  * 
  */
@@ -193,8 +205,6 @@ class UsersController extends Controller
       }else{
         return $this->successResponse($response,Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
       }
-
-      //return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);  
   }
    catch (Exception $e) {
     return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
@@ -211,21 +221,11 @@ protected function createNewToken($token){
  ]; 
  return $this->successResponse($loginUser,Config::get('constants.OTP_VERIFIED'),Response::HTTP_OK);
 }
-/**
- * @OA\SecurityScheme(
- *     type="http",
- *     name="Token based",
- *     in="header",
- *     scheme="bearer",
- *     bearerFormat="JWT",
- *     securityScheme="apiAuth",
- * )
- */
  /**
  * @OA\Get(
  *  path="/api/UserProfile",
  *  summary="Get user details",
- *  tags={"JWT Auth"},
+ *  tags={"User Profile"},
  *  @OA\Response(response=200, description="Authorized User details"),
  *  @OA\Response(response=401, description="Unauthorized user"),
  *  security={{ "apiAuth": {} }}
@@ -248,8 +248,7 @@ public function userProfile(Request $request) {
 }
   
   public function updateProfile(Request $request,$userId,$token) {
-  // $user = auth()->user();
-  //   if(!is_null($user)) {     
+   
     $response = $this->usersService->updateProfile($request, $userId,$token); 
     
     if($response=='Invalid'){
@@ -258,11 +257,6 @@ public function userProfile(Request $request) {
       else{
         return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
       }
-    
-  // }
-  // else {
-  //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-  // }
 }
   
 
@@ -280,9 +274,7 @@ public function refreshToken() {
 
   public function BookingHistory(Request $request){  
 
-    $data = $request->all();  
-    //$user = auth()->user();
-    //if(!is_null($user)) {     
+    $data = $request->all();    
       $response =  $this->usersService->BookingHistory($request); 
       if($response=='Invalid'){
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
@@ -290,15 +282,10 @@ public function refreshToken() {
       else{
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
-   // }
-   // else {
-    //  return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-    //}
-
   }
   /**
  * @OA\Get(path="/api/UserReviews",
- *   tags={"JWT Auth"},
+ *   tags={"User Reviews"},
  *   summary="Get userReviews of an authenticated user",
  *   description="Get user  review details",
  *   operationId="getAuthUser",
@@ -328,10 +315,7 @@ public function refreshToken() {
  * )
  */
   public function userReviews(Request $request)
-  {  
-    // $data = $request->all();  
-    // $user = auth()->user();
-    // if(!is_null($user)) {     
+  {      
       $response =  $this->usersService->userReviews($request); 
       if($response=='Invalid'){
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
@@ -339,11 +323,6 @@ public function refreshToken() {
       else{
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
-    
-    // }
-    // else {
-    //   return $this->errorResponse(Config::get('constants.USER_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
-    // }
   }
 
 
