@@ -17,6 +17,7 @@ use App\Http\Middleware\LogRoute;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\CommonController;
 
 
 //Route::middleware([LogRoute::class])->group(function () {
@@ -79,3 +80,4 @@ Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 
 
 
+Route::post('/CommonService', [CommonController::class, 'getAll']);
