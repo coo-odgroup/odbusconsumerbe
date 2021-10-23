@@ -18,6 +18,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CommonController;
+use App\Http\Controllers\TestimonialController;
 
 
 //Route::middleware([LogRoute::class])->group(function () {
@@ -81,3 +82,4 @@ Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 
 
 Route::post('/CommonService', [CommonController::class, 'getAll']);
+Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
