@@ -8,6 +8,7 @@ use App\Models\Coupon;
 use App\Models\CouponAssignedBus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class OfferRepository
 {
@@ -21,10 +22,28 @@ class OfferRepository
     { 
         $busOffer = Config::get('constants.Bus_Offers');
         $festiveOffer = Config::get('constants.Festive_Offers');
+        $busOperatorId = $request['bus_operator_id'];
+        // $currentDate = date('Y-m-d');
+        // $busOff = $this->slider->where('occassion', $busOffer)
+        //                           ->get();
+        // $startDate = $busOff[0]->start_date;
+        // $endDate = $busOff[0]->end_date;
+        
+        // if (($currentDate >= $startDate) && ($currentDate <= $endDate)){  
+        //     $busOffers = $this->slider->where('occassion', $busOffer)
+        //                               ->get();
+        // }else{
+        //      return "not applicable";
+        // }
 
-        $busOffers = $this->slider->where('occassion', $busOffer)->get();
-        $festiveOffers = $this->slider->where('occassion',$festiveOffer)->get();
-        $allOffers = $this->slider->get();
+        $busOffers = $this->slider->where('occassion', $busOffer)
+                                  ->where('bus_operator_id', $busOperatorId)
+                                  ->get();    
+        $festiveOffers = $this->slider->where('occassion',$festiveOffer)
+                                      ->where('bus_operator_id', $busOperatorId)
+                                      ->get();
+
+        $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)->get();
 
         $offers = array(
             "busOffers" => $busOffers, 

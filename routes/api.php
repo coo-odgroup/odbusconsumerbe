@@ -52,7 +52,7 @@ Route::group(['middleware' => ['check.scope:read:messages']], function() {
     Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
     Route::post('/saveContacts', [ContactController::class, 'save']);
     Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
-    Route::get('/Offers', [OfferController::class, 'offers']);
+    Route::post('/Offers', [OfferController::class, 'offers']);
     Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
     Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
     Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
