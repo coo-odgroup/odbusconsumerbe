@@ -1,0 +1,21 @@
+<?php
+namespace App\Repositories;
+use App\Models\PageContent;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
+class PageContentRepository
+{
+   protected $pagecontent;
+   public function __construct(PageContent $pagecontent )
+   {
+      $this->pagecontent = $pagecontent ;
+   }    
+   public function getAll($request)
+   {
+      $bus_operator_id=$request['bus_operator_id'];
+      $page_url=$request['page_url'];
+      return $this->pagecontent->where('bus_operator_id',$bus_operator_id)
+                               ->where('page_url',$page_url)
+                               ->where('status', 1)->get();
+   }
+}

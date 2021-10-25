@@ -19,11 +19,12 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\PageContentController;
 
 
 //Route::middleware([LogRoute::class])->group(function () {
 
-Route::group(['middleware' => ['check.scope:read:messages']], function() {
+// Route::group(['middleware' => ['check.scope:read:messages']], function() {
   
     
     Route::get('/coreTable', [DTController::class, 'coreTable']);
@@ -74,7 +75,7 @@ Route::group(['middleware' => ['check.scope:read:messages']], function() {
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::get('/UserReviews', [UsersController::class, 'userReviews']);
   
-});
+// });
 
 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
@@ -83,3 +84,4 @@ Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 
 Route::post('/CommonService', [CommonController::class, 'getAll']);
 Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
+Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
