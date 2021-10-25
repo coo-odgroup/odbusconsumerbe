@@ -44,6 +44,7 @@ class BookTicketRepository
     { 
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $customerInfo = $request['customerInfo'];
+
         $existingUser = $this->users->where('phone',$customerInfo['phone'])
                                 //->orWhere('email', $customerInfo['email'])
                                 ->exists(); 
@@ -88,13 +89,13 @@ class BookTicketRepository
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        $odbusGstPercent = OdbusCharges::first()->odbus_gst_charges;
+        $odbusGstPercent = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->first()->odbus_gst_charges;
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
-
-        $operatorId = $ticketPriceDetails[0]->bus_operator_id;
-        $busOperator = BusOperator::where("id",$operatorId)->get();
+        //$operatorId = $ticketPriceDetails[0]->bus_operator_id;
+        //$busOperator = BusOperator::where("id",$operatorId)->get();
+        $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
     
         if($busOperator[0]->need_gst_bill == $needGstBill){   
             $ownerGstPercentage = $busOperator[0]->gst_amount;
