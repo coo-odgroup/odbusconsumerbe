@@ -80,6 +80,7 @@ class ListingRepository
         $source = $request['source'];
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
+        $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
 
         $sourceID =  $this->location->where("name", $source)->get('id');
@@ -92,7 +93,10 @@ class ListingRepository
 
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
-                ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);  
+                ->where('destination_id', $destinationID)
+                ->where('bus_operator_id', $busOperatorId)
+                ->get(['bus_id','start_j_days']);  
+
         $records = array();
         $ListingRecords = array();
         foreach($busDetails as $busDetail){
@@ -113,6 +117,7 @@ class ListingRepository
                 if(in_array($new_date, $dates))
                 {
                     $records[] = $this->bus
+                    ->where('bus_operator_id', $busOperatorId)
                     ->with('busContacts')
                     ->with('busOperator')       
                     ->with('busAmenities.amenities')
@@ -336,7 +341,8 @@ class ListingRepository
         $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
         $sourceID = $request['sourceID'];      
-        $destinationID = $request['destinationID']; 
+        $destinationID = $request['destinationID'];
+        $busOperatorId = $request['bus_operator_id']; 
         $entry_date = $request['entry_date'];   
         if($sourceID==null ||  $destinationID==null || $entry_date==null)
             return ""; 
@@ -350,7 +356,9 @@ class ListingRepository
 
         $busDetails = $this->ticketPrice
         ->where('source_id', $sourceID)
-        ->where('destination_id', $destinationID)->get(['bus_id','start_j_days']);
+        ->where('destination_id', $destinationID)
+        ->where('bus_operator_id', $busOperatorId)
+        ->get(['bus_id','start_j_days']);
 
         $records = array();
         $FilterRecords = array();
@@ -373,6 +381,7 @@ class ListingRepository
                 if(in_array($new_date, $dates))
                 {
                     $records[] = $this->bus
+                    ->where('bus_operator_id', $busOperatorId)
                     ->with('busOperator')
                     ->with('busAmenities.amenities')
                     ->with('busSafety.safety')
@@ -560,7 +569,8 @@ class ListingRepository
         $busId = $request['bus_id'];
         $sourceID = $request['source_id'];      
         $destinationID = $request['destination_id']; 
-        $result['busDetails'] = $this->bus->where('id',$busId)
+
+        $result['busDetails'] = $this->bus->where('id',$busId)->where('id',$busId)
                                 ->with('cancellationslabs.cancellationSlabInfo')
                                 ->with('busAmenities.amenities')
                                 ->with('busSafety.safety')
