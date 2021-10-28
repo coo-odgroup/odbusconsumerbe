@@ -4,8 +4,61 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98f89968f455fafafc71404366fc1a7a",
+    "content-hash": "9357d94bbccf48445f0e469ac7305c89",
     "packages": [
+        {
+            "name": "artisaninweb/laravel-soap",
+            "version": "0.3.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/notfalsedev/laravel-soap.git",
+                "reference": "809073fe1116e3e3daadcf8571fc58b0a9603574"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/notfalsedev/laravel-soap/zipball/809073fe1116e3e3daadcf8571fc58b0a9603574",
+                "reference": "809073fe1116e3e3daadcf8571fc58b0a9603574",
+                "shasum": ""
+            },
+            "require": {
+                "ext-soap": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Artisaninweb\\SoapWrapper\\ServiceProvider"
+                    ],
+                    "aliases": {
+                        "SoapWrapper": "Artisaninweb\\SoapWrapper\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Artisaninweb\\SoapWrapper": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael van de Rijt",
+                    "email": "me@mvdrijt.com"
+                }
+            ],
+            "description": "A SoapClient wrapper integration for Laravel",
+            "keywords": [
+                "client",
+                "laravel",
+                "soap",
+                "wrapper"
+            ],
+            "time": "2021-05-04T14:48:03+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.0.1",
@@ -110,10 +163,6 @@
             ],
             "description": "Auth0 PHP SDK.",
             "homepage": "https://github.com/auth0/auth0-PHP",
-            "support": {
-                "issues": "https://github.com/auth0/auth0-PHP/issues",
-                "source": "https://github.com/auth0/auth0-PHP/tree/7.9.0"
-            },
             "time": "2021-05-04T00:30:48+00:00"
         },
         {
@@ -171,10 +220,6 @@
                 "MIT"
             ],
             "description": "Laravel plugin that helps authenticate with the Auth0 service",
-            "support": {
-                "issues": "https://github.com/auth0/laravel-auth0/issues",
-                "source": "https://github.com/auth0/laravel-auth0/tree/6.4.0"
-            },
             "time": "2021-03-25T22:17:00+00:00"
         },
         {
@@ -230,9 +275,6 @@
                 "JWS",
                 "jwt"
             ],
-            "support": {
-                "source": "https://github.com/auth0/php-jwt/tree/3.3.4"
-            },
             "funding": [
                 {
                     "url": "https://github.com/lcobucci",
@@ -7633,6 +7675,7 @@
                 "faker",
                 "fixtures"
             ],
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {
@@ -9354,6 +9397,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2020-09-28T06:45:17+00:00"
         },
         {
@@ -9508,12 +9552,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -9562,5 +9606,5 @@
         "php": "^7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "1.1.0"
 }
