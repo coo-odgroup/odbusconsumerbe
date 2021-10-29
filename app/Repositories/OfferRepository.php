@@ -23,7 +23,9 @@ class OfferRepository
         $busOffer = Config::get('constants.Bus_Offers');
         $festiveOffer = Config::get('constants.Festive_Offers');
         $busOperatorId = $request['bus_operator_id'];
-        // $currentDate = date('Y-m-d');
+      
+        $currentDate = date('Y-m-d');
+        $currentTime = date('H:i:s');
         // $busOff = $this->slider->where('occassion', $busOffer)
         //                           ->get();
         // $startDate = $busOff[0]->start_date;
@@ -38,12 +40,22 @@ class OfferRepository
 
         $busOffers = $this->slider->where('occassion', $busOffer)
                                   ->where('bus_operator_id', $busOperatorId)
+          						  ->where('start_date','<=',$currentDate)
+                                  ->where('end_date','>=',$currentDate)
+                                  ->where('status',1)
                                   ->get();    
         $festiveOffers = $this->slider->where('occassion',$festiveOffer)
                                       ->where('bus_operator_id', $busOperatorId)
+          							  ->where('start_date','<=',$currentDate)
+                                      ->where('end_date','>=',$currentDate)	
+          							  ->where('status',1)		
                                       ->get();
 
-        $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)->get();
+        $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)
+                                  ->where('start_date','<=',$currentDate)
+                                  ->where('end_date','>=',$currentDate)
+                                  ->where('status',1)
+                                  ->get();
 
         $offers = array(
             "busOffers" => $busOffers, 
