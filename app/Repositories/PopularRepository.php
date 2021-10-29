@@ -231,9 +231,17 @@ class PopularRepository
             foreach($items as $item){
                 $srcName = $this->getRouteNames($item['source_id']);
                 $destName = $this->getRouteNames($item['destination_id']);
+              
+               $depTime = TicketPrice::where('source_id',$item['source_id']) 
+                            ->where('destination_id',$item['destination_id'])
+                            ->whereIn('bus_id', $busIds) 
+                            ->orderBy('dep_time', 'ASC')  
+                            ->first()->dep_time;  
+              
                 $allRoutes[] = [   
                     "sourceName" => $srcName, 
-                    "destinationName" => $destName
+                    "destinationName" => $destName,
+                    "depTime" => date("H:i",strtotime($depTime))
                 ];       
             }
             
