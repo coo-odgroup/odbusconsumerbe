@@ -9,13 +9,15 @@ use App\Models\CouponAssignedBus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Repositories\ListingRepository;
 
 class OfferRepository
 {
     protected $slider;
-    public function __construct(Slider $slider)
+    public function __construct(Slider $slider,ListingRepository $listingRepository)
     {
         $this->slider = $slider;  
+        $this->listingRepository = $listingRepository;
     }   
     
     public function offers($request)
@@ -54,26 +56,71 @@ class OfferRepository
     }
     public function coupons($request)
     {   
-        $busId = $request['busId'];
-        $sourceId = $request['sourceId'];
-        $destId = $request['destinationId'];
-        $operatorId = Bus::where('id',$busId)->first()->bus_operator_id;
-       
-        $coupon = Coupon::with(['couponAssignedBus' => function ($query) use($busId) {                    
-                                                        $query->where('bus_id',$busId);                     
-                                                        }])
-                        ->with(['couponOperator' => function ($query) use($operatorId) {                    
-                                                            $query->where('operator_id',$operatorId);                     
-                                                            }])
-                        ->with(['couponRoute' => function ($query) use($sourceId,$destId) {                    
-                                                                $query->where([
-                                                                    ['source_id', $sourceId],
-                                                                    ['destination_id', $destId],
-                                                                ]);                    
-                                                                }])
-                                                        ->get();
-       
-        return  $coupon;
+        $requestedCouponCode = $request['coupon_code'];
+        $busId = $request['bus_id'];
+        $sourceId = $request['source_id'];
+        $destId = $request['destinatin_id'];
+        $busOperatorId = $request['bus_operator_id'];
+        $jDate = $request['journey_date'];
+        $totalFare = $request['total_fare'];
+
+        // $coupon = Coupon::where('bus_operator_id',$busOperatorId)
+        //                 ->where('from_date', '<=', $jDate)
+        //                 ->where('to_date', '>=', $jDate)
+
+        //                 ->with(['couponAssignedBus' => function ($query) use($busId) {                    
+        //                                                 $query->where('bus_id',$busId);                     
+        //                                                 }])
+        //                 ->with(['couponRoute' => function ($query) use($sourceId,$destId) {                    
+        //                                                         $query->where([
+        //                                                             ['source_id', $sourceId],
+        //                                                             ['destination_id', $destId],
+        //                                                         ]);                    
+        //                                                         }])
+        //                                                 ->pluck('coupon_code');
+        
+        $coupon = Coupon::where('coupon_code',$requestedCouponCode)->get();
+        if(isset($coupon)){ 
+            $couponType = $coupon[0]->type;  
+            $maxDiscount = $coupon[0]->max_discount_price;
+            if($couponType == '1'){
+                $percentage = $coupon[0]->percentage;
+                $discount = ($totalFare*($percentage))/100;
+                if($discount <=  $maxDiscount ){
+                    $totalAmount = $totalFare - $discount; 
+                    $couponRecords = array(
+                        "totalAmount" => $totalAmount, 
+                        "discount" => $discount,
+                    );
+                    return $couponRecords;
+                }else{
+                    $discount = $maxDiscount;
+                    $totalAmount = $totalFare - $maxDiscount;
+                    $couponRecords = array(
+                        "totalAmount" => $totalAmount, 
+                        "discount" => $discount,
+                    );
+                    return $couponRecords;
+                }
+            }elseif($couponType == '2'){  
+                $minTransactionAmount = $coupon[0]->min_tran_amount;
+                if($totalFare >= $minTransactionAmount ){
+                    $discount = $coupon[0]->amount;
+                    $totalAmount = $totalFare - $discount; 
+                    $couponRecords = array(
+                        "totalAmount" => $totalAmount, 
+                        "discount" => $discount,
+                    );
+                    return $couponRecords;
+                }else{
+                    return "coupon is not applicable";
+                }
+            }
+
+        }else{
+            return "invalid coupon code";
+        }
+
     }
       
 

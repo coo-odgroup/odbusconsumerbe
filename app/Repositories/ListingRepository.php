@@ -20,6 +20,7 @@ use App\Models\TicketPrice;
 use App\Models\BusScheduleDate;
 use App\Models\Booking;
 use App\Models\BusSchedule;
+use App\Models\CouponRoute;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 
@@ -82,6 +83,7 @@ class ListingRepository
         $entry_date = $request['entry_date'];
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
+        
 
         $sourceID =  $this->location->where("name", $source)->get('id');
         $destinationID =  $this->location->where("name", $destination)->get('id');
@@ -91,12 +93,26 @@ class ListingRepository
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;  
 
+        $routeCoupon = CouponRoute::where('source_id', $sourceID)
+                                    ->where('destination_id', $destinationID)
+                                    ->with(['coupon' => function ($query) use($entry_date) {                    
+                                        $query->where([
+                                            ['from_date', '<=', $entry_date],
+                                            ['to_date', '>=', $entry_date],
+                                         ]);                    
+                                        }])
+                                  ->get();
+             if(isset($routeCoupon[0]->coupon)){                           
+                $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;
+             }else{
+                 $routeCouponCode =[];
+             }
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)
                 ->where('bus_operator_id', $busOperatorId)
                 ->get(['bus_id','start_j_days']);  
-
+    
         $records = array();
         $ListingRecords = array();
         foreach($busDetails as $busDetail){
@@ -117,7 +133,9 @@ class ListingRepository
                 if(in_array($new_date, $dates))
                 {
                     $records[] = $this->bus
-                    ->where('bus_operator_id', $busOperatorId)
+                    ->where('bus_operator_id', $busOperatorId) 
+                    ->with('couponAssignedBus.coupon')
+                    ->with('busOperator.coupon')
                     ->with('busContacts')
                     ->with('busOperator')       
                     ->with('busAmenities.amenities')
@@ -142,14 +160,26 @@ class ListingRepository
             } 
         }
         $records = Arr::flatten($records);
-        //return $records;
+        
         foreach($records as $record){
-           
+            //return $record;
             $busId = $record->id; 
             $busName = $record->name;
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
             $via = $record->via;
+              
+            if(isset($record->couponAssignedBus[0]->coupon)){                       //Bus wise coupon
+                $busCouponCode = $record->couponAssignedBus[0]->coupon->coupon_code;
+            }
+            if(isset($record->busOperator->coupon)){                                ///operator wise coupon
+                $couponCodeRecords = $record->busOperator->coupon;
+                $opCouponCode = $couponCodeRecords->pluck('coupon_code');
+            }
+            $CouponRecords = collect([$busCouponCode,$opCouponCode,$routeCouponCode]);
+
+            $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
+
             $maxSeatBook = $record->max_seat_book;
             $conductor_number = $record->busContacts->phone;
             $operatorId = $record->busOperator->id;
@@ -245,6 +275,8 @@ class ListingRepository
                 "busNumber" => $busNumber,
                 "maxSeatBook" => $maxSeatBook,
                 "conductor_number" => $conductor_number,
+                //"couponCode" => $couponCode,
+                "couponCode" =>$CouponRecords,
                 "operatorId" => $operatorId,
                 "operatorName" => $operatorName,
                 "sittingType" => $sittingType,

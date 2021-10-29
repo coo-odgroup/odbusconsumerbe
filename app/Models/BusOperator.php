@@ -21,5 +21,9 @@ class BusOperator extends Model
     {
     	return $this->hasMany(TicketPrice::class);
     }
+    public function coupon()
+    {
+    	return $this->hasMany(Coupon::class);
+    }
 
 }

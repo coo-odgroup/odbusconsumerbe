@@ -105,5 +105,9 @@ class Bus extends Model
     {        
         return $this->hasMany(BusLocationSequence::class);        
     }
+    public function couponAssignedBus()
+    {        
+        return $this->hasMany(CouponAssignedBus::class);        
+    }
     
 }

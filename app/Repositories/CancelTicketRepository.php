@@ -55,9 +55,14 @@ class CancelTicketRepository
     { 
         $pnr = $request['pnr'];
         $phone = $request['phone'];
+        $booked = Config::get('constants.BOOKED_STATUS');
 
-        $booking_detail  = $this->users->where('phone',$phone)->with(["booking" => function($u) use($pnr){
-            $u->where('booking.pnr', '=', $pnr); 
+        $booking_detail  = $this->users->where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
+            $u->where([
+                ['booking.pnr', '=', $pnr],
+                ['status', '=', $booked],
+            ]);
+            //$u->where('booking.pnr', '=', $pnr); 
             $u->with("customerPayment");           
             $u->with(["bus" => function($bs){
                 $bs->with('cancellationslabs.cancellationSlabInfo');
@@ -158,7 +163,7 @@ class CancelTicketRepository
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
 
-         $key = $this->credentials->first()->razorpay_key;
+        $key = $this->credentials->first()->razorpay_key;
         $secretKey = $this->credentials->first()->razorpay_secret;
  
         $api = new Api($key, $secretKey);
