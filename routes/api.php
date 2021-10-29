@@ -20,8 +20,11 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PageContentController;
+use App\Http\Controllers\SoapController;
 
 
+
+Route::post('/countries', [SoapController::class, 'getCountries']);
 //Route::middleware([LogRoute::class])->group(function () {
 
 Route::group(['middleware' => ['check.scope:read:messages']], function() {

@@ -179,6 +179,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
+        Artisaninweb\SoapWrapper\ServiceProvider::class,
 
     ],
 
@@ -235,6 +236,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         //'Mailjet' => Mailjet\LaravelMailjet\Facades\Mailjet::class,
+        'SoapWrapper' => Artisaninweb\SoapWrapper\Facade\SoapWrapper::class, 
 
     ],
 
