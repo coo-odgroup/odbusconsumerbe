@@ -24,7 +24,7 @@ use App\Http\Controllers\SoapController;
 
 
 
-Route::get('/countries', [SoapController::class, 'getCountries']);
+Route::post('/countries', [SoapController::class, 'getCountries']);
 //Route::middleware([LogRoute::class])->group(function () {
 
 Route::group(['middleware' => ['check.scope:read:messages']], function() {

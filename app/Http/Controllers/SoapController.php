@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Artisaninweb\SoapWrapper\SoapWrapper;
-use App\Soap\Request\GetConversionAmount;
-use App\Soap\Response\GetConversionAmountResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Config;
 
 class SoapController
 {
@@ -12,6 +14,8 @@ class SoapController
    * @var SoapWrapper
    */
   protected $soapWrapper;
+
+  use ApiResponser;
 
   /**
    * SoapController constructor.
@@ -26,38 +30,17 @@ class SoapController
   /**
    * Use the SoapWrapper
    */
-  public function getCountries() 
+  public function getCountries(Request $request) 
   {
     $this->soapWrapper->add('Countries', function ($service) {
       $service
         ->wsdl('http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL')
         ->trace(true);
-        /*->classmap([
-          GetConversionAmount::class,
-          GetConversionAmountResponse::class,
-        ]);*/
     });
 
-    // Without classmap
-    $response = $this->soapWrapper->call('Countries.ListOfCountryNamesByName', [
-      
-        "body" => '<?xml version="1.0" encoding="utf-8"?>
-        <soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
-  <soap12:Body>
-    <ListOfCountryNamesByName xmlns="http://www.oorsprong.org/websamples.countryinfo">
-    </ListOfCountryNamesByName>
-  </soap12:Body>
-</soap12:Envelope>'
-    ]);
+    $response = $this->soapWrapper->call('Countries.ListOfCountryNamesByName', [$request]);
 
-    var_dump($response);
-
-    // With classmap
-   /* $response = $this->soapWrapper->call('Currency.GetConversionAmount', [
-      new GetConversionAmount('USD', 'EUR', '2014-06-05', '1000')
-    ]);
-
-    var_dump($response);*/
-    exit;
+    return $this->successResponse($response->ListOfCountryNamesByNameResult->tCountryCodeAndName,Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
+  
   }
 }
