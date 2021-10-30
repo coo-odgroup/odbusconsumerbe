@@ -255,7 +255,7 @@ public function userProfile(Request $request) {
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
       }
       else{
-        return $this->successResponse($response,Config::get('constants.RECORD_UPDATED'),Response::HTTP_CREATED);
+        return $this->successResponse($response,Config::get('constants.PROFILE_UPDATED'),Response::HTTP_CREATED);
       }
 }
   
