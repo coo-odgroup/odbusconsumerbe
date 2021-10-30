@@ -104,7 +104,6 @@ class OfferRepository
         $maxRedeemCount = $coupon[0]->max_redeem;
         
         if($couponCount <= $maxRedeemCount){
-            Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
             if(isset($coupon)){ 
                 $couponType = $coupon[0]->type;  
                 $maxDiscount = $coupon[0]->max_discount_price;
@@ -117,6 +116,7 @@ class OfferRepository
                             "totalAmount" => $totalAmount, 
                             "discount" => $discount,
                         );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
                         return $couponRecords;
                     }else{
                         $discount = $maxDiscount;
@@ -125,6 +125,7 @@ class OfferRepository
                             "totalAmount" => $totalAmount, 
                             "discount" => $discount,
                         );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
                         return $couponRecords;
                     }
                 }elseif($couponType == '2'){  
@@ -136,6 +137,7 @@ class OfferRepository
                             "totalAmount" => $totalAmount, 
                             "discount" => $discount,
                         );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
                         return $couponRecords;
                     }else{
                         return "coupon is not applicable";
