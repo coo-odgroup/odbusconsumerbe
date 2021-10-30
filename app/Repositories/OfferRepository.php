@@ -62,8 +62,6 @@ class OfferRepository
                                   ->get();
 
         $offers = array(
-            "busOffers" => $busOffers, 
-            "festiveOffers" => $festiveOffers, 
             "allOffers" => $allOffers
         );
         return $offers;    
