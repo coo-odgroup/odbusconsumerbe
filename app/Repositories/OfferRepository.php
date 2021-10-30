@@ -77,8 +77,8 @@ class OfferRepository
         $busOperatorId = $request['bus_operator_id'];
         $jDate = $request['journey_date'];
         $totalFare = $request['total_fare'];
-        $userPhone = $request['user_phone'];
-
+        //$userPhone = $request['user_phone'];
+        $transactionId = $request['transaction_id'];
         // $coupon = Coupon::where('bus_operator_id',$busOperatorId)
         //                 ->where('from_date', '<=', $jDate)
         //                 ->where('to_date', '>=', $jDate)
@@ -95,11 +95,18 @@ class OfferRepository
         //                                                 ->pluck('coupon_code');
         
         // $existingUser = Users::where('phone',$userPhone) ->exists(); 
-                                                        
-            $userId = Users::where('phone',$userPhone) ->first()->id;
-            $couponCount = Booking::where('coupon_code',$requestedCouponCode)
-                                    ->whereIn('status',[1,2])->count('id');
-                          
+        //$existingUser = $userId = Users::where('phone',$userPhone)->exists();;
+        
+        // if($existingUser==true){
+        //     $userId = Users::where('phone',$userPhone)->first()->id;  
+        // }
+        // else{
+          
+        // }     
+        $userId = Booking::where('transaction_id',$transactionId)->first()->users_id;                               
+        //$userId = Users::where('phone',$userPhone) ->first()->id;
+        $couponCount = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->count('id');
+                                                       
         $coupon = Coupon::where('coupon_code',$requestedCouponCode)->get();
         $maxRedeemCount = $coupon[0]->max_redeem;
         
