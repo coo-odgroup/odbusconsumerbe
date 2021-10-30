@@ -48,5 +48,8 @@ return [
     'Bus_Offers' => 'Bus Offers',
     'Festive_Offers' => 'Festive Offers',
     'REVIEW_ADDED'=>'Review is added',
-    'PROFILE_UPDATED' => 'Profile is updated'
+    'PROFILE_UPDATED' => 'Profile is updated',
+    'COUPON_NOT_APPLICABLE' => 'Coupon not applicable for this amount of transaction',
+    'INVALID_COUPON' => 'Coupon is not valid',
+    'COUPON_EXPIRED' => 'Coupon is expired'
 ];

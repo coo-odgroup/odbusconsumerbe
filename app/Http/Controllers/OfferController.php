@@ -30,6 +30,18 @@ class OfferController extends Controller
 
     public function coupons(Request $request) {
         $response = $this->offerService->coupons($request);
-        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        switch($response){
+            case('min_tran_amount'):   //Transaction amount is Less then Minimum Transation
+                return $this->successResponse(Config::get('constants.COUPON_NOT_APPLICABLE'),Response::HTTP_OK);
+            break;
+            case('inval_coupon'):     //Invalid or Unknown Coupon ID
+                return $this->successResponse(Config::get('constants.INVALID_COUPON'),Response::HTTP_OK);   
+            break;
+            case('coupon_expired'):   //Validity of Coupon Has Expired
+                return $this->successResponse(Config::get('constants.COUPON_EXPIRED'),Response::HTTP_OK);
+            break;
+        
+        }
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);    
     }
 }

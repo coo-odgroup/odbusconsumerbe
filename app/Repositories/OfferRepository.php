@@ -94,19 +94,18 @@ class OfferRepository
         //                                                         }])
         //                                                 ->pluck('coupon_code');
         
-        // $existingUser = Users::where('phone',$userPhone) ->exists(); 
-        //$existingUser = $userId = Users::where('phone',$userPhone)->exists();;
-        
-        // if($existingUser==true){
-        //     $userId = Users::where('phone',$userPhone)->first()->id;  
-        // }
-        // else{
-          
-        // }     
         $userId = Booking::where('transaction_id',$transactionId)->first()->users_id;                               
         //$userId = Users::where('phone',$userPhone) ->first()->id;
-        $couponCount = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->count('id');
-                                                       
+
+        $couponExists = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->exists();
+        //return $couponExists;
+        if($couponExists == true){
+            $couponCount = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->count('id');
+
+        }else{
+            return "inval_coupon";
+        }
+                                                  
         $coupon = Coupon::where('coupon_code',$requestedCouponCode)->get();
         $maxRedeemCount = $coupon[0]->max_redeem;
         
@@ -120,19 +119,30 @@ class OfferRepository
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
                         $couponRecords = array(
-                            "totalAmount" => $totalAmount, 
+                            "totalAmount" => $totalFare, 
                             "discount" => $discount,
+                            "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        Booking::where('users_id', $userId)
+                        //->update(['coupon_code' => $requestedCouponCode]);
+                                                            ->update([
+                                                                'coupon_code' => $requestedCouponCode,
+                                                                'coupon_discount' => $discount
+                                                            ]);
+
                         return $couponRecords;
                     }else{
                         $discount = $maxDiscount;
                         $totalAmount = $totalFare - $maxDiscount;
                         $couponRecords = array(
-                            "totalAmount" => $totalAmount, 
+                            "totalAmount" => $totalFare, 
                             "discount" => $discount,
+                            "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        Booking::where('users_id', $userId)->update([
+                                                                'coupon_code' => $requestedCouponCode,
+                                                                'coupon_discount' => $discount
+                                                            ]);
                         return $couponRecords;
                     }
                 }elseif($couponType == '2'){  
@@ -141,21 +151,25 @@ class OfferRepository
                         $discount = $coupon[0]->amount;
                         $totalAmount = $totalFare - $discount; 
                         $couponRecords = array(
-                            "totalAmount" => $totalAmount, 
+                            "totalAmount" => $totalFare, 
                             "discount" => $discount,
+                            "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        Booking::where('users_id', $userId)->update([
+                                                                'coupon_code' => $requestedCouponCode,
+                                                                'coupon_discount' => $discount
+                                                            ]);
                         return $couponRecords;
                     }else{
-                        return "coupon is not applicable";
+                        return "min_tran_amount";
                     }
                 }
     
             }else{
-                return "invalid coupon code";
+                return "inval_coupon";
             }
         }else{
-            return "coupon code expired";
+            return "coupon_expired";
         }
     }
       
