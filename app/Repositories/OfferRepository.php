@@ -42,18 +42,18 @@ class OfferRepository
         //      return "not applicable";
         // }
 
-        $busOffers = $this->slider->where('occassion', $busOffer)
-                                  ->where('bus_operator_id', $busOperatorId)
-          						  ->where('start_date','<=',$currentDate)
-                                  ->where('end_date','>=',$currentDate)
-                                  ->where('status',1)
-                                  ->get();    
-        $festiveOffers = $this->slider->where('occassion',$festiveOffer)
-                                      ->where('bus_operator_id', $busOperatorId)
-          							  ->where('start_date','<=',$currentDate)
-                                      ->where('end_date','>=',$currentDate)	
-          							  ->where('status',1)		
-                                      ->get();
+        // $busOffers = $this->slider->where('occassion', $busOffer)
+        //                           ->where('bus_operator_id', $busOperatorId)
+        //   						  ->where('start_date','<=',$currentDate)
+        //                           ->where('end_date','>=',$currentDate)
+        //                           ->where('status',1)
+        //                           ->get();    
+        // $festiveOffers = $this->slider->where('occassion',$festiveOffer)
+        //                               ->where('bus_operator_id', $busOperatorId)
+        //   							  ->where('start_date','<=',$currentDate)
+        //                               ->where('end_date','>=',$currentDate)	
+        //   							  ->where('status',1)		
+        //                               ->get();
 
         $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)
                                   ->where('start_date','<=',$currentDate)
