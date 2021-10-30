@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\OfferService;
+use App\AppValidator\CouponValidator;
 
 class OfferController extends Controller
 {
@@ -17,10 +18,12 @@ class OfferController extends Controller
     use ApiResponser;
     
     protected $offerService;
+    protected $couponValidator;
    
-    public function __construct(OfferService $offerService)
+    public function __construct(OfferService $offerService,CouponValidator $couponValidator)
     {
-        $this->offerService = $offerService;   
+        $this->offerService = $offerService;  
+        $this->couponValidator = $couponValidator;  
     }
 
     public function offers(Request $request) {
@@ -29,19 +32,31 @@ class OfferController extends Controller
     }
 
     public function coupons(Request $request) {
-        $response = $this->offerService->coupons($request);
-        switch($response){
-            case('min_tran_amount'):   //Transaction amount is Less then Minimum Transation
-                return $this->successResponse(Config::get('constants.COUPON_NOT_APPLICABLE'),Response::HTTP_OK);
-            break;
-            case('inval_coupon'):     //Invalid or Unknown Coupon ID
-                return $this->successResponse(Config::get('constants.INVALID_COUPON'),Response::HTTP_OK);   
-            break;
-            case('coupon_expired'):   //Validity of Coupon Has Expired
-                return $this->successResponse(Config::get('constants.COUPON_EXPIRED'),Response::HTTP_OK);
-            break;
-        
-        }
-        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);    
+
+        $data = $request->all();
+           $couponValidation = $this->couponValidator->validate($data);
+         
+           if ($couponValidation->fails()) {
+             $errors = $couponValidation->errors();
+             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+           }
+            try {
+            $response = $this->offerService->coupons($request);
+            switch($response){
+                case('min_tran_amount'):   //Transaction amount is Less then Minimum Transation
+                    return $this->successResponse(Config::get('constants.COUPON_NOT_APPLICABLE'),Response::HTTP_OK);
+                break;
+                case('inval_coupon'):     //Invalid or Unknown Coupon ID
+                    return $this->successResponse(Config::get('constants.INVALID_COUPON'),Response::HTTP_OK);   
+                break;
+                case('coupon_expired'):   //Validity of Coupon Has Expired
+                    return $this->successResponse(Config::get('constants.COUPON_EXPIRED'),Response::HTTP_OK);
+                break;
+            }
+            return $this->successResponse($response,Config::get('constants.COUPON_APPLIED'),Response::HTTP_OK);    
+            }
+            catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+            }         
     }
 }

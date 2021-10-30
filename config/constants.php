@@ -51,5 +51,6 @@ return [
     'PROFILE_UPDATED' => 'Profile is updated',
     'COUPON_NOT_APPLICABLE' => 'Coupon not applicable for this amount of transaction',
     'INVALID_COUPON' => 'Coupon is not valid',
-    'COUPON_EXPIRED' => 'Coupon is expired'
+    'COUPON_EXPIRED' => 'Coupon is expired',
+    'COUPON_APPLIED' => 'Coupon Apply successful'
 ];

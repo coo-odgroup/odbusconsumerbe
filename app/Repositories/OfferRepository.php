@@ -11,15 +11,13 @@ use App\Models\CouponAssignedBus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-use App\Repositories\ListingRepository;
 
 class OfferRepository
 {
     protected $slider;
-    public function __construct(Slider $slider,ListingRepository $listingRepository)
+    public function __construct(Slider $slider)
     {
         $this->slider = $slider;  
-        $this->listingRepository = $listingRepository;
     }   
     
     public function offers($request)
