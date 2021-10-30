@@ -21,8 +21,10 @@ use App\Models\BusScheduleDate;
 use App\Models\Booking;
 use App\Models\BusSchedule;
 use App\Models\CouponRoute;
+use App\Models\Coupon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
+use Carbon\Carbon;
 
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -84,7 +86,6 @@ class ListingRepository
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
         
-
         $sourceID =  $this->location->where("name", $source)->get('id');
         $destinationID =  $this->location->where("name", $destination)->get('id');
 
@@ -93,20 +94,24 @@ class ListingRepository
         $sourceID =  $this->location->where("name", $source)->first()->id;
         $destinationID =  $this->location->where("name", $destination)->first()->id;  
 
+        $selCouponRecords = Coupon::where('status','1')->get();
+
         $routeCoupon = CouponRoute::where('source_id', $sourceID)
                                     ->where('destination_id', $destinationID)
-                                    ->with(['coupon' => function ($query) use($entry_date) {                    
-                                        $query->where([
-                                            ['from_date', '<=', $entry_date],
-                                            ['to_date', '>=', $entry_date],
-                                         ]);                    
-                                        }])
+                                    ->with('coupon')
+                                    // ->with(['coupon' => function ($query) use($entry_date) {                    
+                                    //     $query->where([
+                                    //         ['from_date', '<=', $entry_date],
+                                    //         ['to_date', '>=', $entry_date],
+                                    //      ]);                    
+                                    //     }])
                                   ->get();
+
              if(isset($routeCoupon[0]->coupon)){                           
                 $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;
              }else{
                  $routeCouponCode =[];
-             }
+             }  
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)
@@ -160,7 +165,7 @@ class ListingRepository
             } 
         }
         $records = Arr::flatten($records);
-        
+      
         foreach($records as $record){
             //return $record;
             $busId = $record->id; 
@@ -177,8 +182,30 @@ class ListingRepository
                 $opCouponCode = $couponCodeRecords->pluck('coupon_code');
             }
             $CouponRecords = collect([$busCouponCode,$opCouponCode,$routeCouponCode]);
-
             $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
+
+            ///Coupon applicable for specific date range
+            $appliedCoupon = collect([]);
+            $date = Carbon::now();
+            $bookingDate = $date->toDateString();
+            foreach($CouponRecords as $key => $coupon){
+                $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
+                switch($type){
+                    case(1):    //Coupon available on journey date
+                        $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                    ->where('from_date', '<=', $entry_date)
+                                    ->where('to_date', '>=', $entry_date)->all();           
+                        break;
+                    case(2):    //Coupon available on booking date
+                        $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                        ->where('from_date', '<=', $bookingDate)
+                        ->where('to_date', '>=', $bookingDate)->all();
+                        break;      
+                }
+                if($dateInRange){
+                    $appliedCoupon->push($coupon);
+                 }
+            }
 
             $maxSeatBook = $record->max_seat_book;
             $conductor_number = $record->busContacts->phone;
@@ -276,7 +303,7 @@ class ListingRepository
                 "maxSeatBook" => $maxSeatBook,
                 "conductor_number" => $conductor_number,
                 //"couponCode" => $couponCode,
-                "couponCode" =>$CouponRecords,
+                "couponCode" =>$appliedCoupon->all(),
                 "operatorId" => $operatorId,
                 "operatorName" => $operatorName,
                 "sittingType" => $sittingType,

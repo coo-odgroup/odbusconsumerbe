@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Slider;
 use App\Models\Coupon;
+use App\Models\Booking;
+use App\Models\Users;
 use App\Models\CouponAssignedBus;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -75,6 +77,7 @@ class OfferRepository
         $busOperatorId = $request['bus_operator_id'];
         $jDate = $request['journey_date'];
         $totalFare = $request['total_fare'];
+        $userPhone = $request['user_phone'];
 
         // $coupon = Coupon::where('bus_operator_id',$busOperatorId)
         //                 ->where('from_date', '<=', $jDate)
@@ -91,48 +94,62 @@ class OfferRepository
         //                                                         }])
         //                                                 ->pluck('coupon_code');
         
+        // $existingUser = Users::where('phone',$userPhone) ->exists(); 
+                                                        
+            $userId = Users::where('phone',$userPhone) ->first()->id;
+            $couponCount = Booking::where('coupon_code',$requestedCouponCode)
+                                    ->whereIn('status',[1,2])->count('id');
+                          
         $coupon = Coupon::where('coupon_code',$requestedCouponCode)->get();
-        if(isset($coupon)){ 
-            $couponType = $coupon[0]->type;  
-            $maxDiscount = $coupon[0]->max_discount_price;
-            if($couponType == '1'){
-                $percentage = $coupon[0]->percentage;
-                $discount = ($totalFare*($percentage))/100;
-                if($discount <=  $maxDiscount ){
-                    $totalAmount = $totalFare - $discount; 
-                    $couponRecords = array(
-                        "totalAmount" => $totalAmount, 
-                        "discount" => $discount,
-                    );
-                    return $couponRecords;
-                }else{
-                    $discount = $maxDiscount;
-                    $totalAmount = $totalFare - $maxDiscount;
-                    $couponRecords = array(
-                        "totalAmount" => $totalAmount, 
-                        "discount" => $discount,
-                    );
-                    return $couponRecords;
+        $maxRedeemCount = $coupon[0]->max_redeem;
+        
+        if($couponCount <= $maxRedeemCount){
+            if(isset($coupon)){ 
+                $couponType = $coupon[0]->type;  
+                $maxDiscount = $coupon[0]->max_discount_price;
+                if($couponType == '1'){
+                    $percentage = $coupon[0]->percentage;
+                    $discount = ($totalFare*($percentage))/100;
+                    if($discount <=  $maxDiscount ){
+                        $totalAmount = $totalFare - $discount; 
+                        $couponRecords = array(
+                            "totalAmount" => $totalAmount, 
+                            "discount" => $discount,
+                        );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        return $couponRecords;
+                    }else{
+                        $discount = $maxDiscount;
+                        $totalAmount = $totalFare - $maxDiscount;
+                        $couponRecords = array(
+                            "totalAmount" => $totalAmount, 
+                            "discount" => $discount,
+                        );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        return $couponRecords;
+                    }
+                }elseif($couponType == '2'){  
+                    $minTransactionAmount = $coupon[0]->min_tran_amount;
+                    if($totalFare >= $minTransactionAmount ){
+                        $discount = $coupon[0]->amount;
+                        $totalAmount = $totalFare - $discount; 
+                        $couponRecords = array(
+                            "totalAmount" => $totalAmount, 
+                            "discount" => $discount,
+                        );
+                        Booking::where('users_id', $userId)->update(['coupon_code' => $requestedCouponCode]);
+                        return $couponRecords;
+                    }else{
+                        return "coupon is not applicable";
+                    }
                 }
-            }elseif($couponType == '2'){  
-                $minTransactionAmount = $coupon[0]->min_tran_amount;
-                if($totalFare >= $minTransactionAmount ){
-                    $discount = $coupon[0]->amount;
-                    $totalAmount = $totalFare - $discount; 
-                    $couponRecords = array(
-                        "totalAmount" => $totalAmount, 
-                        "discount" => $discount,
-                    );
-                    return $couponRecords;
-                }else{
-                    return "coupon is not applicable";
-                }
+    
+            }else{
+                return "invalid coupon code";
             }
-
         }else{
-            return "invalid coupon code";
+            return "coupon code expired";
         }
-
     }
       
 
