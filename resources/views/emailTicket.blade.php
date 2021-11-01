@@ -379,21 +379,18 @@
                                                         <td align="right" style="padding: 10px; font-size: 14px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Rs. {{$totalfare}}/-
                                                         </td>                                                        
                                                     </tr>
-                                                                                                    </table>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <table style="display: none;" border="0" cellpadding="0" cellspacing="0" width="100%" >
-                                                    <tr>
-                                                        <td align="left" style="padding: 10px; font-size: 16px; font-family: Tahoma, sans-serif; color: #808080; font-weight:normal;  padding-left:40px;">Coupon Code :</td>
+                                                  
+                                                   <tr>
+                                                        <td align="left" style="padding: 10px; font-size: 13px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal; padding-left:40px;">Discount 
+                                                        </td>
                                                         
-                                                        <td align="right" style="padding: 10px; font-size: 16px; font-family: Tahoma, sans-serif; color: #808080; font-weight:normal;"> --
+                                                        <td align="right" style="padding: 10px; font-size: 14px; font-family: Tahoma, sans-serif; color: #484646; font-weight:normal;">Rs. {{$discount}}/-
                                                         </td>                                                        
-                                                    </tr>                                                    
-                                                </table>
+                                                    </tr>
+                                              </table>
                                             </td>
                                         </tr>
+                                       
                                         <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
@@ -413,9 +410,7 @@
                                                         </td> 
                                                         
                                                          <td align="right" style="padding: 10px; font-size: 18px; font-family: Tahoma, sans-serif; color: #0f204c; font-weight:normal;"> 
-                                                          <strong>Rs. 
-                                                             
-                                                            {{$totalfare}}                                                          /-</strong>
+                                                          <strong>Rs. {{$payable_amount}}/-</strong>
                                                         </td>                                                        
                                                     </tr>                                                    
                                                 </table>

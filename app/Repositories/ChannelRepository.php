@@ -490,7 +490,7 @@ class ChannelRepository
            }
         //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
-        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $data['payable_amount'] ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
             return "Payment Done";

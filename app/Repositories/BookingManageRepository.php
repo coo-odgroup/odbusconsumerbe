@@ -191,6 +191,8 @@ class BookingManageRepository
                 'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
                 'passengerDetails' => $b->booking[0]->bookingDetail ,
                 'totalfare'=> $b->booking[0]->total_fare,
+                'discount'=> $b->booking[0]->coupon_discount,
+                'payable_amount'=> $b->booking[0]->payable_amount,
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
