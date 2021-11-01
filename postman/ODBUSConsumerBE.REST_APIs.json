@@ -16,7 +16,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ4MTMyMzIsImV4cCI6MTYzNDg5OTYzMiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.YWJmASpM4L36VrmQv29joB4Clxc50fGNMx5gZLGNEI8AFrksNManw3mI-MF8BEjk3-3_KpTyvY62O-QnCbHLwWxiH87EY_9vIgQEbSY_ejzht2Q3Uwl1L0oI2WvW6Pm5ryGFOIEWYAIRCUEwRMWNjvJ79y0yMvgL7OaHVJvmDJpR-xUeq0pVI2W0qfo6EsBbLienC0yPzTvncrUCtmdYh8gFe95cCRKvDbcYzC9fmhdkxJ60EC5LK2VuvqMZk1VZcXx0GJICPQmq9F4k2TACtbSYfo65ZZPRisTXhuzIOAs0byZob8PIvkjZX61fuQsA9L6SWljYO40X6rM62qqH5A",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU1OTIwODUsImV4cCI6MTYzNTY3ODQ4NSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.XVMlOmMm6OvSFRClE_0eEXEUfsKcRVlRYJ_0RxyxS-rXYC0PNFIf0tp5pyof621lHdUJFJHCgnBG6ApjBztxYVMqnlHXc4gqtHQYHC5h75YhKZ8Yl_iVEg9cKq1YKYHn6hw3M_YdF9a6aFcflfYpblHEgmmVBqoAslqOtRyo1IL1N3o4gIG-Qu00cgxsLOQj0mW84RTh71V-B66SfJko316wDWTn0cetPuDAFuST-7FmQuC03rDBmPvJ3SzG9dZNtXyDH6XzwogwvJbGSjNHFkihHYOYPkmR_dPy1G-Q7Ava0KGirE2RLD0-saaqRgSwXKggX_HPPThI_pn-NUJeCw",
 							"type": "string"
 						}
 					]
@@ -25,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"source\":\"Bhubaneswar\",\r\n    \"destination\":\"Bhadrak\",\r\n    \"entry_date\":\"28-10-2021\",\r\n    \"bus_operator_id\":\"1\"\r\n}",
+					"raw": "{\r\n    \"source\":\"Bhubaneswar\",\r\n    \"destination\":\"Bhadrak\",\r\n    \"entry_date\":\"30-10-2021\",\r\n    \"bus_operator_id\":\"1\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -473,7 +473,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20210724095204519174\",\r\n\t\"razorpay_payment_id\": \"pay_Hcj1eWjjZSwhRE\",\r\n\t\"razorpay_order_id\": \"order_Hcj19Qn4JhM6ln\",\r\n\t\"razorpay_signature\": \"249837c8bdc28ee188d7f7467d3c04ac48fbe4af4bf11f1c7d0f86f30b046831\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"8763447921\",\r\n\t\"email\": \"\",\r\n\t\"routedetails\": \"Bhubaneswar-Sambalpur\",\r\n\t\"bookingdate\": \"24-07-2021\",\r\n\t\"journeydate\": \"25-07-2021\",\r\n\t\"boarding_point\": \"Bermunda\",\r\n\t\"departureTime\": \"21:00\",\r\n\t\"dropping_point\": \"Sambalpur Town\",\r\n\t\"arrivalTime\": \"06:30\",\r\n\t\"seat_id\": [\"10\"],\r\n    \"seat_no\":[\"SL1\"],\r\n    \"bus_id\": 8,\r\n\t\"busname\": \"Jagakalia\",\r\n    \"source\": \"Bhubaneswar\",\r\n    \"destination\": \"Sambalpur\",\r\n\t\"busNumber\": \"OD B 8657\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"2345678987\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": [\"37\",\"38\"],\r\n\t\t\"passenger_name\": \"fdf\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"12\",\r\n\t\t\"created_by\": \"Customer\"\r\n\r\n\t}],\r\n\t\"totalfare\": 350,\r\n    \"odbus_charges\":34,\r\n    \"odbus_gst\":16, \r\n    \"owner_fare\":300  \r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20210813070023725187\",\r\n\t\"razorpay_payment_id\": \"pay_HdqCuwk1Rcarl1\",\r\n\t\"razorpay_order_id\": \"order_HdqChuap4AEY1V\",\r\n\t\"razorpay_signature\": \"4906adfdcbc868ebe689f32342fa0961fa35285b1559c6844fc5ee85dcdc6247\",\r\n\t\"name\": \"Sonny\",\r\n    \"phone\":\"\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"27-07-2021\",\r\n\t\"journeydate\": \"28-07-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"04:45\",\r\n\t\"dropping_point\": \"Bus Stand\",\r\n\t\"arrivalTime\": \"23:30\",\r\n    \"seat_id\": [\"31\",\"36\"],\r\n\t\"seat_no\": [\"ST1\",\"ST6\"],\r\n    \"bus_id\": \"8\",\r\n\t\"busname\": \"LIMA BUS\",\r\n\t\"busNumber\": \"OD 02 FE 1779\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"VOLVO\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"seat_no\": \"ST1\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t},\r\n    {\r\n\t\t\"seat_no\": \"ST6\",\r\n\t\t\"passenger_name\": \"lima1\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}\r\n    ],\r\n\t\"totalfare\": 600,\r\n     \"discount\":0,\r\n     \"payable_amount\":600,  \r\n    \"odbus_charges\":34,\r\n    \"odbus_gst\":16, \r\n    \"owner_fare\":300,\r\n\t\"source\": \"Bhubaneswar\",\r\n    \"destination\": \"Sambalpur\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1344,13 +1344,22 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ1Mzk5OTksImV4cCI6MTYzNDYyNjM5OSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.rKY1-8mfDCX0lr0v6zu_dUy9Qom5d2zfrtZwuQz_1AcTFCSKdIAchRAYXRIp63l9ghLu4ZfNpistMw0xrHsayqBSJIE8iqwKYphvwmYruO3VilxONzPIARKGF01AxOmjaXUEhGVfOmlpR1oWa8gSsvXYCKy1Z_FoYU0gbZLmx7X5_PUURojC_zq0ZSW3y1PsOmAltOWiQ9dUQoVrzlvSNK7Zh7wo4lM3Vnuz2zsECnrck_AMUrr4CKruwUdZBTeWJwTvdA-kEh2LtnsSVdIl7ivXZC9zSnh0DnDqa7HNgi8iYpaJymL89nvIuwoMoq12CqSN0vM_WxOAz41EDxx18A",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU1MDQwODAsImV4cCI6MTYzNTU5MDQ4MCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.Km35gKYwr9fjIwP8UC6gCvoaLYM4mflQYmTzQXT5wQJKD4VCfMXlkCHoB14UIcbXNZH_C0Za7DENPOUXp5iG4awUGvn-CR-fPx5iuuWY9wx_0CZh_-oIjHROH7m9g55EmQddtMoITd3LJEAB151jJ6zL3YTG8FjjgE0vl9wRhN8itUnTDIA5dqxRhkxtJWzKorzWHF0Kaz1SAkkrkVDpRkxeRv7PHn2O6tMZRfyNAjAMZFfiWDdHoV0U3qcbAGkMqoEIgfJp9UnYa06L4cSIcrUXMuB8FFkVWjza0qspsuz2Rc4LO3vLBFBRcG723Y8BkATHGEwpDWKMWvtl21pcvA",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bus_operator_id\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "https://consumer.neoflix.in/api/Offers",
 					"protocol": "https",
@@ -1424,6 +1433,86 @@
 					"path": [
 						"oauth",
 						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Coupon",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"coupon_code\":\"OD50OFF\",\r\n    \"bus_id\":9,  \r\n    \"source_id\":\"1291\", \r\n    \"destination_id\":\"1374\",\r\n    \"journey_date\":\"2021-10-30\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211101125010611902\"\r\n}\r\n\r\n ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://consumer.neoflix.in/api/Coupons",
+					"protocol": "http",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"Coupons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Offers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bus_operator_id\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://consumer.neoflix.in/api/Offers",
+					"protocol": "http",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"Offers"
 					]
 				}
 			},
