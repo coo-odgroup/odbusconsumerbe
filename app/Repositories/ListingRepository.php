@@ -412,6 +412,18 @@ class ListingRepository
         $dropingingPointId = $request['dropingingPointId'];
         $operatorId = $request['operatorId'];
         $amenityId = $request['amenityId'];
+        
+        $selCouponRecords = Coupon::where('status','1')->get();
+        $routeCoupon = CouponRoute::where('source_id', $sourceID)
+                                    ->where('destination_id', $destinationID)
+                                    ->with('coupon')
+                                    ->get();
+
+             if(isset($routeCoupon[0]->coupon)){                           
+                $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;
+             }else{
+                 $routeCouponCode =[];
+             }  
 
         $busDetails = $this->ticketPrice
         ->where('source_id', $sourceID)
@@ -441,6 +453,8 @@ class ListingRepository
                 {
                     $records[] = $this->bus
                     ->where('bus_operator_id', $busOperatorId)
+                    ->with('couponAssignedBus.coupon')
+                    ->with('busOperator.coupon')
                     ->with('busOperator')
                     ->with('busAmenities.amenities')
                     ->with('busSafety.safety')
@@ -495,6 +509,39 @@ class ListingRepository
                 $popularity = $record->popularity;
                 $busNumber = $record->bus_number;
                 $via = $record->via;
+
+                if(isset($record->couponAssignedBus[0]->coupon)){                       //Bus wise coupon
+                    $busCouponCode = $record->couponAssignedBus[0]->coupon->coupon_code;
+                }
+                if(isset($record->busOperator->coupon)){                                ///operator wise coupon
+                    $couponCodeRecords = $record->busOperator->coupon;
+                    $opCouponCode = $couponCodeRecords->pluck('coupon_code');
+                }
+                $CouponRecords = collect([$busCouponCode,$opCouponCode,$routeCouponCode]);
+                $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
+    
+                ///Coupon applicable for specific date range
+                $appliedCoupon = collect([]);
+                $date = Carbon::now();
+                $bookingDate = $date->toDateString();
+                foreach($CouponRecords as $key => $coupon){
+                    $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
+                    switch($type){
+                        case(1):    //Coupon available on journey date
+                            $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                        ->where('from_date', '<=', $entry_date)
+                                        ->where('to_date', '>=', $entry_date)->all();           
+                            break;
+                        case(2):    //Coupon available on booking date
+                            $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                            ->where('from_date', '<=', $bookingDate)
+                            ->where('to_date', '>=', $bookingDate)->all();
+                            break;      
+                    }
+                    if($dateInRange){
+                        $appliedCoupon->push($coupon);
+                     }
+                }
                 $maxSeatBook = $record->max_seat_book;
                 $conductor_number = $record->busContacts->phone;
                 $operatorId = $record->busOperator->id;
@@ -584,6 +631,7 @@ class ListingRepository
                     "busNumber" => $busNumber, 
                     "maxSeatBook" => $maxSeatBook,
                     "conductor_number" => $conductor_number,
+                    "couponCode" =>$appliedCoupon->all(),
                     "operatorId" => $operatorId,
                     "operatorName" => $operatorName,
                     "sittingType" => $sittingType,
