@@ -32,8 +32,36 @@ class BookingManageController extends Controller
         $this->bookingManageService = $bookingManageService;  
         $this->bookingManageValidator = $bookingManageValidator;      
     }
-
-
+    /**
+     * @OA\Post(
+     *     path="/api/JourneyDetails",
+     *     tags={"Journey details of a costumer"},
+     *     description="Journey Details",
+     *     summary="Journey Details",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="get all Journey details"),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function getJourneyDetails(Request $request) {
          $data = $request->all();
            $bookingManageValidator = $this->bookingManageValidator->validate($data);
@@ -50,7 +78,36 @@ class BookingManageController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }      
     } 
-
+    /**
+     * @OA\Post(
+     *     path="/api/PassengerDetails",
+     *     tags={"Passenger details"},
+     *     description="Passenger Details",
+     *     summary="Passenger Details",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="get all Passenger details"),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function getPassengerDetails(Request $request) {
       $data = $request->all();
         $bookingManageValidator = $this->bookingManageValidator->validate($data);
@@ -67,7 +124,36 @@ class BookingManageController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
-
+     /**
+     * @OA\Post(
+     *     path="/api/BookingDetails",
+     *     tags={"Booking details of a customer"},
+     *     description="Booking Details",
+     *     summary="Booking Details",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="get all Booking details of a customer"),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function getBookingDetails(Request $request) {
       $data = $request->all();
         $bookingManageValidator = $this->bookingManageValidator->validate($data);
@@ -85,7 +171,36 @@ class BookingManageController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
-
+    /**
+     * @OA\Post(
+     *     path="/api/EmailSms",
+     *     tags={"email/sms send"},
+     *     description="send email/sms",
+     *     summary="send email/sms",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="send email/sms"),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function emailSms(Request $request) {
       $data = $request->all();
         $bookingManageValidator = $this->bookingManageValidator->validate($data);
@@ -102,7 +217,36 @@ class BookingManageController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
-
+    /**
+     * @OA\Post(
+     *     path="/api/cancelTicketInfo",
+     *     tags={"Ticket Cancel Information"},
+     *     description="Ticket Cancel Information",
+     *     summary="Ticket Cancel Information",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="Ticket Cancel Information"),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
 
     public function cancelTicketInfo(Request $request) {
       $data = $request->all();
@@ -119,13 +263,5 @@ class BookingManageController extends Controller
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
-    } 
-    
-
-    
-
-
-    
-
-    
+    }     
 }

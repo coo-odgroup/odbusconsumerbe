@@ -157,7 +157,8 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
+                                                            ->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);
@@ -171,7 +172,8 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
+                                                            ->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);
@@ -187,7 +189,8 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
+                                                            ->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);

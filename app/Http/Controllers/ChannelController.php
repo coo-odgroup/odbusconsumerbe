@@ -276,6 +276,41 @@ class ChannelController extends Controller
  *                 @OA\Items(type="string",
  *                  ),
  *                 ),
+ *            @OA\Property(
+ *                property="discount",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="payable_amount",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="odbus_charges",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="odbus_gst",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="owner_fare",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="source",
+ *                type="string",
+ *                example="0"
+ *                ),
+ *            @OA\Property(
+ *                property="destination",
+ *                type="string",
+ *                example="0"
+ *                ),
  *             @OA\Property(
  *                property="passengerDetails",
  *                type="array",

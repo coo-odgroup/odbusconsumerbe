@@ -65,39 +65,44 @@ class BookTicketController extends Controller
  *                  example="Bob"
  *                  )
  *                ),
-
  *             @OA\Property(
  *                property="bookingInfo",
  *                type="object",
  *                @OA\Property(
+ *                  property="bus_operator_id",
+ *                  type="number",
+ *                  default=1,
+ *                  example=1
+ *                  ),
+ *                @OA\Property(
  *                  property="bus_id",
  *                  type="number",
- *                  default=12,
- *                  example=12
+ *                  default=3,
+ *                  example=3
  *                  ),
  *                @OA\Property(
  *                  property="source_id",
  *                  type="number",
- *                  default=1291,
- *                  example=1291
+ *                  default=1345,
+ *                  example=1345
  *                  ),
  *                @OA\Property(
  *                  property="destination_id",
  *                  type="number",
- *                  default=1294,
- *                  example=1294
+ *                  default=1374,
+ *                  example=1374
  *                  ),
  *                @OA\Property(
  *                  property="journey_dt",
  *                  type="string",
- *                  default="2021-08-16",
- *                  example="2021-08-16" ,
+ *                  default="2021-10-09",
+ *                  example="2021-10-09" ,
  *                  ),
  *                @OA\Property(
  *                  property="boarding_point",
  *                  type="string",
- *                  default="Bermunda",
- *                  example="Bermunda" ,
+ *                  default="Bus stand",
+ *                  example="Bus stand" ,
  *                  ),
  *                @OA\Property(
  *                  property="dropping_point",
@@ -187,13 +192,13 @@ class BookTicketController extends Controller
  *                  property="bookingDetail",
  *                  type="array",
  *                  example={{
- *                    "bus_seats_id" : "31",
+ *                    "bus_seats_id" : "49",
  *                    "passenger_name": "Bob",
  *                    "passenger_gender": "M",
  *                    "passenger_age": "22",
  *                    "created_by": "Customer"
  *                  }, {
- *                    "bus_seats_id" : "32",
+ *                    "bus_seats_id" : "50",
  *                    "passenger_name": "Mom",
  *                    "passenger_gender": "F",
  *                    "passenger_age": "20",

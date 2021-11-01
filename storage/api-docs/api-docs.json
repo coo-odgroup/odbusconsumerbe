@@ -42,30 +42,35 @@
                                     },
                                     "bookingInfo": {
                                         "properties": {
+                                            "bus_operator_id": {
+                                                "type": "number",
+                                                "default": 1,
+                                                "example": 1
+                                            },
                                             "bus_id": {
                                                 "type": "number",
-                                                "default": 12,
-                                                "example": 12
+                                                "default": 3,
+                                                "example": 3
                                             },
                                             "source_id": {
                                                 "type": "number",
-                                                "default": 1291,
-                                                "example": 1291
+                                                "default": 1345,
+                                                "example": 1345
                                             },
                                             "destination_id": {
                                                 "type": "number",
-                                                "default": 1294,
-                                                "example": 1294
+                                                "default": 1374,
+                                                "example": 1374
                                             },
                                             "journey_dt": {
                                                 "type": "string",
-                                                "default": "2021-08-16",
-                                                "example": "2021-08-16"
+                                                "default": "2021-10-09",
+                                                "example": "2021-10-09"
                                             },
                                             "boarding_point": {
                                                 "type": "string",
-                                                "default": "Bermunda",
-                                                "example": "Bermunda"
+                                                "default": "Bus stand",
+                                                "example": "Bus stand"
                                             },
                                             "dropping_point": {
                                                 "type": "string",
@@ -166,14 +171,14 @@
                                                 },
                                                 "example": [
                                                     {
-                                                        "bus_seats_id": "31",
+                                                        "bus_seats_id": "49",
                                                         "passenger_name": "Bob",
                                                         "passenger_gender": "M",
                                                         "passenger_age": "22",
                                                         "created_by": "Customer"
                                                     },
                                                     {
-                                                        "bus_seats_id": "32",
+                                                        "bus_seats_id": "50",
                                                         "passenger_name": "Mom",
                                                         "passenger_gender": "F",
                                                         "passenger_age": "20",
@@ -196,6 +201,221 @@
                     },
                     "404": {
                         "description": "not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/JourneyDetails": {
+            "post": {
+                "tags": [
+                    "Journey details of a costumer"
+                ],
+                "summary": "Journey Details",
+                "description": "Journey Details",
+                "operationId": "App\\Http\\Controllers\\BookingManageController::getJourneyDetails",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Journey details"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/PassengerDetails": {
+            "post": {
+                "tags": [
+                    "Passenger details"
+                ],
+                "summary": "Passenger Details",
+                "description": "Passenger Details",
+                "operationId": "App\\Http\\Controllers\\BookingManageController::getPassengerDetails",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Passenger details"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/BookingDetails": {
+            "post": {
+                "tags": [
+                    "Booking details of a customer"
+                ],
+                "summary": "Booking Details",
+                "description": "Booking Details",
+                "operationId": "App\\Http\\Controllers\\BookingManageController::getBookingDetails",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Booking details of a customer"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/EmailSms": {
+            "post": {
+                "tags": [
+                    "email/sms send"
+                ],
+                "summary": "send email/sms",
+                "description": "send email/sms",
+                "operationId": "App\\Http\\Controllers\\BookingManageController::emailSms",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "send email/sms"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cancelTicketInfo": {
+            "post": {
+                "tags": [
+                    "Ticket Cancel Information"
+                ],
+                "summary": "Ticket Cancel Information",
+                "description": "Ticket Cancel Information",
+                "operationId": "App\\Http\\Controllers\\BookingManageController::cancelTicketInfo",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ticket Cancel Information"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -419,6 +639,34 @@
                                             "type": "string"
                                         }
                                     },
+                                    "discount": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "payable_amount": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "odbus_charges": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "odbus_gst": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "owner_fare": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "destination": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
                                     "passengerDetails": {
                                         "type": "array",
                                         "items": {
@@ -553,6 +801,15 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
@@ -613,6 +870,15 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     },
                     {
@@ -810,6 +1076,137 @@
                 ]
             }
         },
+        "/api/Offers": {
+            "post": {
+                "tags": [
+                    "Offers API"
+                ],
+                "summary": "Get all Offers",
+                "description": "get all Offers",
+                "operationId": "App\\Http\\Controllers\\OfferController::offers",
+                "parameters": [
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Offers"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/Coupons": {
+            "post": {
+                "tags": [
+                    "Coupons API"
+                ],
+                "summary": "Get all Valid Coupons",
+                "description": "get all Valid Coupons",
+                "operationId": "App\\Http\\Controllers\\OfferController::coupons",
+                "parameters": [
+                    {
+                        "name": "coupon_code",
+                        "in": "query",
+                        "description": "coupon code",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "bus_id",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "source_id",
+                        "in": "query",
+                        "description": "source id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destination_id",
+                        "in": "query",
+                        "description": "destination id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "journey_date",
+                        "in": "query",
+                        "description": "journey id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "total_fare",
+                        "in": "query",
+                        "description": "total fare",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "transaction id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Valid Coupons"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/PopularRoutes": {
             "get": {
                 "tags": [
@@ -927,6 +1324,162 @@
                     },
                     "401": {
                         "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/allReviews": {
+            "get": {
+                "tags": [
+                    "All Reviews"
+                ],
+                "summary": "get all Reviews of a customer",
+                "description": "get all Reviews of a customer",
+                "operationId": "App\\Http\\Controllers\\ReviewController::getAllReview",
+                "responses": {
+                    "200": {
+                        "description": "get all Reviews of a customer"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/AddReview": {
+            "post": {
+                "tags": [
+                    "Add Review by a customer"
+                ],
+                "summary": "Add Review of a customer",
+                "description": "Add Review of a customer",
+                "operationId": "App\\Http\\Controllers\\ReviewController::createReview",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "bus_id",
+                        "in": "query",
+                        "description": "bus Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "users_id",
+                        "in": "query",
+                        "description": "users id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "reference_key",
+                        "in": "query",
+                        "description": "reference key",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "rating_overall",
+                        "in": "query",
+                        "description": "rating overall",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "rating_comfort",
+                        "in": "query",
+                        "description": "rating comfort",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "rating_clean",
+                        "in": "query",
+                        "description": "rating_clean",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "rating_behavior",
+                        "in": "query",
+                        "description": "rating_behavior",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "rating_timing",
+                        "in": "query",
+                        "description": "rating_timing",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "comments",
+                        "in": "query",
+                        "description": "comments",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "title",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "created_by",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add reviews by a customer"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [

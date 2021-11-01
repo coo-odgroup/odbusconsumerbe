@@ -25,12 +25,119 @@ class OfferController extends Controller
         $this->offerService = $offerService;  
         $this->couponValidator = $couponValidator;  
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/Offers",
+     *     tags={"Offers API"},
+     *     description="get all Offers",
+     *     summary="Get all Offers",
+     *     @OA\Parameter(
+     *          name="bus_operator_id",
+     *          description="bus operator Id",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="get all Offers"),
+     *  @OA\Response(response=401, description="Unauthorized"),
+     *     security={
+     *       {"apiAuth": {}}
+     *     }
+     * )
+     * 
+     */
     public function offers(Request $request) {
         $allOffers = $this->offerService->offers($request);
         return $this->successResponse($allOffers,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
+    /**
+         * @OA\Post(
+         *     path="/api/Coupons",
+         *     tags={"Coupons API"},
+         *     description="get all Valid Coupons",
+         *     summary="Get all Valid Coupons",
+         *     @OA\Parameter(
+         *          name="coupon_code",
+         *          description="coupon code",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="bus_id",
+         *          description="bus Id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="source_id",
+         *          description="source id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="destination_id",
+         *          description="destination id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="journey_date",
+         *          description="journey id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="bus_operator_id",
+         *          description="bus operator id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="total_fare",
+         *          description="total fare",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="transaction_id",
+         *          description="transaction id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *  @OA\Response(response="200", description="get all Valid Coupons"),
+         *  @OA\Response(response=401, description="Unauthorized"),
+         *     security={
+         *       {"apiAuth": {}}
+         *     }
+         * )
+         * 
+         */
     public function coupons(Request $request) {
 
         $data = $request->all();
