@@ -165,7 +165,8 @@ class ListingRepository
             } 
         }
         $records = Arr::flatten($records);
-      
+        $busCouponCode = [];
+        $opCouponCode = [];
         foreach($records as $record){
             //return $record;
             $busId = $record->id; 
@@ -502,6 +503,8 @@ class ListingRepository
             }  
         }
         $records = Arr::flatten($records); 
+        $busCouponCode = [];
+        $opCouponCode = [];
         //return $records;
             foreach($records as $record){
                 $busId = $record->id; 
