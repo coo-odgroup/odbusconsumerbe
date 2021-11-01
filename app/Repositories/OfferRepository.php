@@ -140,14 +140,16 @@ class OfferRepository
         }                                            
         $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)->get();
         $maxRedeemCount = $couponDetails[0]->max_redeem;
-        
+       
         if($couponCount <= $maxRedeemCount){
             if(isset($couponDetails)){ 
                 $couponType = $couponDetails[0]->type;  
                 $maxDiscount = $couponDetails[0]->max_discount_price;
+              
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;
                     $discount = ($totalFare*($percentage))/100;
+                  
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
                         $couponRecords = array(
@@ -155,7 +157,7 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);
@@ -169,7 +171,7 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);
@@ -185,7 +187,7 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
                         );
-                        Booking::where('users_id', $userId)->update([
+                        Booking::where('users_id', $userId)->where('transaction_id', $transactionId)->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount
                                                             ]);
