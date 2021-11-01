@@ -232,7 +232,7 @@ class ChannelRepository
             $message = str_replace("<name>",$nameList,$message);
             $message = str_replace("<gender>",$genderList,$message);
             $message = str_replace("<seat>",$seatList,$message);
-            $message = str_replace("<fare>",$data['totalfare'],$message);
+            $message = str_replace("<fare>",$data['payable_amount'],$message);
             $message = str_replace("<conmob>",$data['conductor_number'],$message);
             //return $message;
             $message = rawurlencode($message);
