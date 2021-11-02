@@ -189,7 +189,137 @@ class ReviewController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }	
     } 
-   
+  /**
+   * @OA\Put(
+   *     path="/api/UpdateReview/{id}",
+   *     tags={"Update existing Review"},
+   *     summary="Update Review",
+   *     @OA\Parameter(
+   *         description="Add Review of a customer",
+   *         in="path",
+   *         name="id",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *     ),
+   *     @OA\Parameter(
+   *          name="pnr",
+   *          description="pnr",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="bus_id",
+   *          description="bus Id",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="users_id",
+   *          description="users id",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="reference_key",
+   *          description="reference key",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="rating_overall",
+   *          description="rating overall",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="rating_comfort",
+   *          description="rating comfort",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="rating_clean",
+   *          description="rating_clean",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="rating_behavior",
+   *          description="rating_behavior",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="rating_timing",
+   *          description="rating_timing",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="comments",
+   *          description="comments",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="title",
+   *          description="title",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="created_by",
+   *          description="created_by",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *  @OA\Response(response="201", description="Updated reviews by a customer"),
+   *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response=401, description="Unauthorized"),
+   *     security={
+   *       {"apiAuth": {}}
+   *     }
+   *     )
+   * )
+   */  
     public function updateReview(Request $request, $id) {
       $data = $request->all();
       $reviewValidator = $this->reviewValidator->validate($data);
@@ -201,7 +331,29 @@ class ReviewController extends Controller
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
     }
     }
-
+  /**
+   * @OA\Delete(
+   *     path="/api/DeleteReview/{id}",
+   *     tags={"Delete Review"},
+   *     summary="Delete Review",
+   *     @OA\Parameter(
+   *         description="Delete Review of a customer",
+   *         in="path",
+   *         name="id",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *     ), 
+   *  @OA\Response(response="202", description="Delete Review"),
+   *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response=401, description="Unauthorized"),
+   *     security={
+   *       {"apiAuth": {}}
+   *     }
+   *     )
+   * )
+   */  
     public function deleteReview($id) {
 
       try{
@@ -210,10 +362,31 @@ class ReviewController extends Controller
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
-      } 
-     
+      }   
     }
-
+  /**
+   * @OA\Get(
+   *     path="/api/ReviewDetail/{id}",
+   *     tags={"Review detail of a customer"},
+   *     summary="Review detail of a customer",
+   *     @OA\Parameter(
+   *         description="Review detail of a customer",
+   *         in="path",
+   *         name="id",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *     ), 
+   *  @OA\Response(response="200", description="Get Review of a Customer"),
+   *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response=401, description="Unauthorized"),
+   *     security={
+   *       {"apiAuth": {}}
+   *     }
+   *     )
+   * )
+   */  
     public function getReview($id) {
 
       try{
@@ -224,6 +397,29 @@ class ReviewController extends Controller
       }
       return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
     }
+    /**
+   * @OA\Get(
+   *     path="/api/SingleBusReviewList/{bid}",
+   *     tags={"Reviews on Single Bus"},
+   *     summary="Reviews on Single Bus",
+   *     @OA\Parameter(
+   *         description="Reviews on Single Bus",
+   *         in="path",
+   *         name="bid",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *     ), 
+   *  @OA\Response(response="200", description="Get Review of a Single Bus"),
+   *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response=401, description="Unauthorized"),
+   *     security={
+   *       {"apiAuth": {}}
+   *     }
+   *     )
+   * )
+   */  
     public function getReviewByBid($bid) {
 
       try{
@@ -233,12 +429,6 @@ class ReviewController extends Controller
         
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }
-      return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
-
-
-       
-    }
-    
-
-
+      return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);   
+    }    
 }

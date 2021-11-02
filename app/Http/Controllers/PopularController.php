@@ -93,12 +93,12 @@ class PopularController extends Controller
  *     description="Operator's Details",
  *     summary="Operator's Details",
  *     @OA\Parameter(
- *          name="operator_id",
- *          description="operator Id",
+ *          name="operator_url",
+ *          description="operator url",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="string"
  *          )
  *      ),
  *     @OA\Response(response="200", description="Record Fetched Successfully"),

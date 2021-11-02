@@ -231,7 +231,6 @@ protected function createNewToken($token){
  *  security={{ "apiAuth": {} }}
  * )
  */
-
   
 public function userProfile(Request $request) {
  
@@ -242,11 +241,94 @@ public function userProfile(Request $request) {
       }
       else{
         return $this->successResponse($userDetails,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
-  
- 
+      } 
 }
-  
+   /**
+   * @OA\Put(
+   *     path="/api/updateProfile/{id}{token}",
+   *     tags={"update User Profile"},
+   *     summary="Update User Profile",
+   *     @OA\Parameter(
+   *         description="User Id",
+   *         in="path",
+   *         name="id",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer"
+   *          )
+   *     ),
+   *     @OA\Parameter(
+   *         description="User Token",
+   *         in="path",
+   *         name="token",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *     ),
+   *     @OA\Parameter(
+   *          name="name",
+   *          description="user name",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="email",
+   *          description="user email",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="pincode",
+   *          description="pincode",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="street",
+   *          description="street",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="district",
+   *          description="district",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="address",
+   *          description="address",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *     @OA\Parameter(
+   *          name="profile_image",
+   *          description="profile image",
+   *          in="query",
+   *          @OA\Schema(
+   *              type="string"
+   *          )
+   *      ),
+   *  @OA\Response(response=200, description="Update User Profile"),
+   *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response=401, description="Unauthorized user"),
+   *  security={{ "apiAuth": {} }}
+   * )
+   */ 
   public function updateProfile(Request $request,$userId,$token) {
    
     $response = $this->usersService->updateProfile($request, $userId,$token); 
@@ -271,7 +353,71 @@ public function refreshToken() {
 
    return $this->successResponse($res,Config::get('constants.REFRESH_TOKEN'),Response::HTTP_OK);
 }
-
+/**
+         * @OA\Post(
+         *     path="/api/BookingHistory",
+         *     tags={"Booking History of a Customer"},
+         *     description="Get Booking History of a Customer",
+         *     summary="Get Booking History of a Customer",
+         *     @OA\Parameter(
+         *          name="status",
+         *          description="status",
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="paginate",
+         *          description="paginate",
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="filter",
+         *          description="filter",
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="userId",
+         *          description="user Id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="rating_overall",
+         *          description="rating overall",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="number"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="token",
+         *          description="token",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *  @OA\Response(response="200", description="Get Booking Details Of a Customer"),
+         *  @OA\Response(response=401, description="Unauthorized"),
+         *     security={
+         *       {"apiAuth": {}}
+         *     }
+         * )
+         * 
+         */
   public function BookingHistory(Request $request){  
 
     $data = $request->all();    

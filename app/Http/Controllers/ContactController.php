@@ -26,7 +26,65 @@ class ContactController extends Controller
             $this->contactService = $contactService;
             $this->contactValidator = $contactValidator;  
         }
-
+/**
+         * @OA\Post(
+         *     path="/api/saveContacts",
+         *     tags={"Add Contacts"},
+         *     description="Add Contacts",
+         *     summary="Add Contacts",
+         *     @OA\Parameter(
+         *          name="name",
+         *          description="name",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="email",
+         *          description="email",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="phone",
+         *          description="phone",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="service",
+         *          description="service",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="message",
+         *          description="message",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
+         *  @OA\Response(response="200", description="Add Contacts of a acustomer"),
+         *  @OA\Response(response=401, description="Unauthorized"),
+         *     security={
+         *       {"apiAuth": {}}
+         *     }
+         * )
+         * 
+         */
     public function save(Request $request)
         {
 

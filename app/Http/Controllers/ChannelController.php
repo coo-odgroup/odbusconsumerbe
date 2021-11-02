@@ -162,7 +162,7 @@ class ChannelController extends Controller
  *             @OA\Property(
  *                property="transaction_id",
  *                type="string",
- *                example="20210722102640458159"
+ *                example="20211102112722583214"
  *                ),
  *             @OA\Property(
  *                property="name",
@@ -182,67 +182,67 @@ class ChannelController extends Controller
  *              @OA\Property(
  *                property="routedetails",
  *                type="string",
- *                example="Bhubaneswar-Sambalpur"
+ *                example="Bhubaneswar-Bhadrak"
  *                ),
  *              @OA\Property(
  *                property="razorpay_order_id",
  *                type="string",
- *                example="order_HYnmFzO1W4mj8P"
+ *                example="order_IGcyPNVZ9fkc2t"
  *                ),
  *              @OA\Property(
  *                property="razorpay_payment_id",
  *                type="string",
- *                example="pay_HYnmWNISavDZN8"
+ *                example="pay_IGcyXMFeqdRA23"
  *                ),
  *              @OA\Property(
  *                property="razorpay_signature",
  *                type="string",
- *                example="d94a898e130f431394466bd3a06ffc5f2a0471a0d4923b0b190b5576d52b6d95"
+ *                example="d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
  *                ),
  *               @OA\Property(
  *                property="bookingdate",
  *                type="string",
- *                example="02-05-2021"
+ *                example="02-11-2021"
  *                ),
  *              @OA\Property(
  *                property="journeydate",
  *                type="string",
- *                example="08-05-2021"
+ *                example="02-11-2021"
  *                ),
  *            @OA\Property(
  *                property="boarding_point",
  *                type="string",
- *                example="Bermunda"
+ *                example="Rasulgarh"
  *                ),
  *            @OA\Property(
  *                property="departureTime",
  *                type="string",
- *                example="21:00PM"
+ *                example="05:00"
  *                ),
  *            @OA\Property(
  *                property="dropping_point",
  *                type="string",
- *                example="Hirakud"
+ *                example="Bonth Chhawk"
  *                ),
  *            @OA\Property(
  *                property="arrivalTime",
  *                type="string",
- *                example="06:30AM"
+ *                example="07:30"
  *                ),
  *            @OA\Property(
  *                property="busname",
  *                type="string",
- *                example="Jagakalia"
+ *                example="Bus 2"
  *                ),
  *            @OA\Property(
  *                property="busNumber",
  *                type="string",
- *                example="OD B 8657"
+ *                example="OD 01 AW 1234"
  *                ),
  *            @OA\Property(
  *                property="bustype",
  *                type="string",
- *                example="AC"
+ *                example="NON AC"
  *                ),
  *            @OA\Property(
  *                property="busTypeName",
@@ -257,23 +257,25 @@ class ChannelController extends Controller
  *            @OA\Property(
  *                property="conductor_number",
  *                type="string",
- *                example="9912334563"
+ *                example="7978817539"
  *                ),
  *            @OA\Property(
  *                property="totalfare",
  *                type="string",
- *                example="800"
+ *                example="285"
  *                ),
  *            @OA\Property(
  *                 property="seat_id",
  *                 type="array",
  *                 @OA\Items(type="string",
+ *                 example="26",
  *                  ),
  *                 ),
  *             @OA\Property(
  *                 property="seat_no",
  *                 type="array",
  *                 @OA\Items(type="string",
+ *                 example="sl6",
  *                  ),
  *                 ),
  *            @OA\Property(
@@ -284,7 +286,7 @@ class ChannelController extends Controller
  *            @OA\Property(
  *                property="payable_amount",
  *                type="string",
- *                example="0"
+ *                example="285"
  *                ),
  *            @OA\Property(
  *                property="odbus_charges",
@@ -294,22 +296,22 @@ class ChannelController extends Controller
  *            @OA\Property(
  *                property="odbus_gst",
  *                type="string",
- *                example="0"
+ *                example="25"
  *                ),
  *            @OA\Property(
  *                property="owner_fare",
  *                type="string",
- *                example="0"
+ *                example="250"
  *                ),
  *            @OA\Property(
  *                property="source",
  *                type="string",
- *                example="0"
+ *                example="Bhubaneswar"
  *                ),
  *            @OA\Property(
  *                property="destination",
  *                type="string",
- *                example="0"
+ *                example="Bhadrak"
  *                ),
  *             @OA\Property(
  *                property="passengerDetails",
