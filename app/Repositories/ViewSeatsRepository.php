@@ -235,6 +235,7 @@ class ViewSeatsRepository
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
+        $busOperatorId = $request['busOperatorId'];
 
         $busWithTicketPrice = $this->ticketPrice
                 ->where('source_id', $sourceId)
@@ -245,9 +246,10 @@ class ViewSeatsRepository
         $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
         
         $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
-        count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
+                     count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
+                    
+        $ticketFareSlabs = $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
         
-        $ticketFareSlabs = $this->ticketFareSlab->get();
         foreach($ticketFareSlabs as $ticketFareSlab){
 
             $startingFare = $ticketFareSlab->starting_fare;
@@ -263,7 +265,6 @@ class ViewSeatsRepository
                 $totalFare = round($ownerFare + $odbusServiceCharges + $transactionFee);
             }  
         } 
-
         $seatWithPriceRecords[] = array(
             "seaterPrice" => $seaterPrice,
             "sleeperPrice" => $sleeperPrice,
@@ -272,9 +273,8 @@ class ViewSeatsRepository
             "transactionFee" => $transactionFee,
             "totalFare" => $totalFare,
             ); 
-        return $seatWithPriceRecords;
+        return $seatWithPriceRecords; 
     }
-
     public function getBoardingDroppingPoints($request)
     { 
         $busId = $request['busId'];
