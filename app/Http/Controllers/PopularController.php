@@ -108,7 +108,14 @@ class PopularController extends Controller
  * 
  */
     public function operatorDetails(Request $request) {
-        $allRoutes = $this->popularService->operatorDetails($request);
-        return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        $response = $this->popularService->operatorDetails($request);
+      
+          switch($response){
+                case('operator-not-found'):   //Transaction amount is Less then Minimum Transation
+                    return $this->errorResponse(Config::get('constants.OPERATOR_NOT_FOUND'),Response::HTTP_OK);
+                break;
+          }
+            
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 }

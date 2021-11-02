@@ -116,7 +116,7 @@ class PopularRepository
 
     public function allOperators($request){  
 
-        $operators = BusOperator::get(['id','operator_name','operator_info']);
+        $operators = BusOperator::get(['id','operator_name','operator_url','operator_info']);
         return $operators;
 
     }
@@ -129,9 +129,9 @@ class PopularRepository
        $Totalrating=0;
           
       
-        $operatorId = $request['operator_id'];
+        $operator_url = $request['operator_url'];
         $this->entry_date = date("Y-m-d", strtotime($request['entry_date']));
-        $operatorDetails = BusOperator::where('id', $operatorId)->with(['bus' => function ($q){ 
+        $operatorDetails = BusOperator::where('operator_url', $operator_url)->with(['bus' => function ($q){ 
            $q->select('bus_operator_id','id','name');
            $q->with(['busAmenities' => function ($query) {
                 $query->select('bus_id','amenities_id');
@@ -142,6 +142,8 @@ class PopularRepository
             }])   
            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
            ->get();
+      
+      if($operatorDetails){
       
           $buses = $operatorDetails[0]->bus;
         $busIds =$buses->pluck('id');
@@ -264,7 +266,11 @@ class PopularRepository
         $opNameDetails['routes'] = $allRoutes;
         $opNameDetails['popularRoutes'] = $popularRoutes;
 
-        return $opNameDetails;   
+        return $opNameDetails;  
+        
+      }else{
+        return 'operator-not-found';
+      }
    }
 
 
