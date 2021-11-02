@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "ea495365-6bc2-4c8f-bced-974f11d52c4f",
-		"name": "CONSUMER API (Added By Lima)",
+		"name": "CONSUMER APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU1OTIwODUsImV4cCI6MTYzNTY3ODQ4NSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.XVMlOmMm6OvSFRClE_0eEXEUfsKcRVlRYJ_0RxyxS-rXYC0PNFIf0tp5pyof621lHdUJFJHCgnBG6ApjBztxYVMqnlHXc4gqtHQYHC5h75YhKZ8Yl_iVEg9cKq1YKYHn6hw3M_YdF9a6aFcflfYpblHEgmmVBqoAslqOtRyo1IL1N3o4gIG-Qu00cgxsLOQj0mW84RTh71V-B66SfJko316wDWTn0cetPuDAFuST-7FmQuC03rDBmPvJ3SzG9dZNtXyDH6XzwogwvJbGSjNHFkihHYOYPkmR_dPy1G-Q7Ava0KGirE2RLD0-saaqRgSwXKggX_HPPThI_pn-NUJeCw",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU0NDU5NTQsImV4cCI6MTYzNTUzMjM1NCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.PaceHhAachoV_4bp4jq0cCfGIJXDd6H1HnPHihNM3wczKBHariE62DIZLSWhFfyyJXjqR63orsZwkVyfi95nug1K86rKUQLLfF23Y19uMe-CaPAvyyIIx4Gf2u-_Kzq2cRt94FSJAsq17bJQ1eylS8dVLJcYmzUTAkIvh52lf5jdKN0PAzFIJPlUYauXWAbPZI-k_DcwguJQGkRlqLW82f8ahIgORtrNt0gBAVlCimkF1kzLAReGbh8rU8E2HtjhdynA0tvpWoM4H18uVPVt9xQ7dCZuYpIeD1NFP61E-smMvfK28obrbdCECbEFxeSsmT9hLAFaYP3EgN1c9WX3lg",
 							"type": "string"
 						}
 					]
@@ -25,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"source\":\"Bhubaneswar\",\r\n    \"destination\":\"Bhadrak\",\r\n    \"entry_date\":\"30-10-2021\",\r\n    \"bus_operator_id\":\"1\"\r\n}",
+					"raw": "{\r\n    \"source\":\"bhubaneswar\",\r\n    \"destination\":\"Bhadrak\",\r\n    \"entry_date\":\"28-10-2021\",\r\n    \"bus_operator_id\":\"1\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -102,7 +102,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTEyMTMsImV4cCI6MTYzNDc5NzYxMywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.bOCFKHbaxSqS8E-2CGSZfq_FG-tmnrlNA9dxfTrn0ej5m8Cwx_Z13ezkEIHn8l-NLO3nZYjtUBO_RGPR4kuVg-Aj65wDskrV7mvHAUIgZHy79mSd46Kjf3FzODGU208xutc5G9PXGc6hXfgN-7PyDW3oacirUdhSg-9-9CHyaoacx6iz21DqT_1Ay4g1pHthzOmbcdxlnZlG8Na9_ggCS5ytAPEn0kNXseFy4dLYhBm8huwivHTJOSllSy4dRQU2HgbMXzV0zpsVtKIpa-wrnf0HS_f5NYcqagL4v8LdwJg8Y0afO7rqVLrIFX_UCkj30Q5IYYnKRlu1bu9ucLJkmA",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU4MzI0NjcsImV4cCI6MTYzNTkxODg2NywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.0IKNN92Py3zt62bYMr1hP27N6Kh3flXd5IYWfKYCayTJ-kE-Eg_Wq2bEWr-ogCeAkbPVwu621GwYZW0cbhW2bRuZ-z4PXSwWGvfmPCGx7cRCN7qFWaI_3Hr7oy8oacq2cKORhDKEnmVT0KTBV0UMbZqWoFCaoQf3Uc0Y5ajeih4otI4xONPcaEm68JpoyXAtRhZuunf4Ya586Sy5NHIaT_Hbi0irkV8qCpY9JVD3hjgI5xiPGWWtaLTNEnOcU-NZjugdK09kTYQIUkWcq0qOIFse1GneiTzljrfte8j-b9nysDO2odTMlGkpy2jAqjT3LPbnZ4FgIt5MTiDjV5ZiSw",
 							"type": "string"
 						}
 					]
@@ -111,7 +111,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n          \"busId\": 3,\r\n          \"sourceId\":1345,\r\n          \"destinationId\":1374,\r\n          \"seater\": [1],\r\n          \"sleeper\": [5]\r\n     }",
+					"raw": "{\r\n          \"busId\": 3,\r\n          \"sourceId\":1345,\r\n          \"destinationId\":1374,\r\n          \"busOperatorId\":1,\r\n          \"seater\": [1],\r\n          \"sleeper\": [5]\r\n     }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -469,11 +469,21 @@
 		{
 			"name": "PaymentStatus",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU4MzI0NjcsImV4cCI6MTYzNTkxODg2NywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.0IKNN92Py3zt62bYMr1hP27N6Kh3flXd5IYWfKYCayTJ-kE-Eg_Wq2bEWr-ogCeAkbPVwu621GwYZW0cbhW2bRuZ-z4PXSwWGvfmPCGx7cRCN7qFWaI_3Hr7oy8oacq2cKORhDKEnmVT0KTBV0UMbZqWoFCaoQf3Uc0Y5ajeih4otI4xONPcaEm68JpoyXAtRhZuunf4Ya586Sy5NHIaT_Hbi0irkV8qCpY9JVD3hjgI5xiPGWWtaLTNEnOcU-NZjugdK09kTYQIUkWcq0qOIFse1GneiTzljrfte8j-b9nysDO2odTMlGkpy2jAqjT3LPbnZ4FgIt5MTiDjV5ZiSw",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20210813070023725187\",\r\n\t\"razorpay_payment_id\": \"pay_HdqCuwk1Rcarl1\",\r\n\t\"razorpay_order_id\": \"order_HdqChuap4AEY1V\",\r\n\t\"razorpay_signature\": \"4906adfdcbc868ebe689f32342fa0961fa35285b1559c6844fc5ee85dcdc6247\",\r\n\t\"name\": \"Sonny\",\r\n    \"phone\":\"\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"27-07-2021\",\r\n\t\"journeydate\": \"28-07-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"04:45\",\r\n\t\"dropping_point\": \"Bus Stand\",\r\n\t\"arrivalTime\": \"23:30\",\r\n    \"seat_id\": [\"31\",\"36\"],\r\n\t\"seat_no\": [\"ST1\",\"ST6\"],\r\n    \"bus_id\": \"8\",\r\n\t\"busname\": \"LIMA BUS\",\r\n\t\"busNumber\": \"OD 02 FE 1779\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"VOLVO\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"seat_no\": \"ST1\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t},\r\n    {\r\n\t\t\"seat_no\": \"ST6\",\r\n\t\t\"passenger_name\": \"lima1\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"total_fare\": \"600.00\",\r\n\t\t\"owner_fare\": 0,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}\r\n    ],\r\n\t\"totalfare\": 600,\r\n     \"discount\":0,\r\n     \"payable_amount\":600,  \r\n    \"odbus_charges\":34,\r\n    \"odbus_gst\":16, \r\n    \"owner_fare\":300,\r\n\t\"source\": \"Bhubaneswar\",\r\n    \"destination\": \"Sambalpur\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20211102112722583214\",\r\n\t\"razorpay_payment_id\": \"pay_IGcyXMFeqdRA23\",\r\n\t\"razorpay_order_id\": \"order_IGcyPNVZ9fkc2t\",\r\n\t\"razorpay_signature\": \"d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"7978817539\",\r\n\t\"email\": \"banashri.seofied@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"02-11-2021\",\r\n\t\"journeydate\": \"02-11-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"Bonth Chhawk\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"26\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 10,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"Bus 2\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"26\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Customer\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -520,6 +530,16 @@
 		{
 			"name": "getjourneydetail",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ\"",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -826,11 +846,21 @@
 		{
 			"name": "UpdateReview  (Contain bearer TOEKN)",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\": \"1234567\",\r\n    \"bus_id\":\"1\",\r\n    \"customer_id\": \"1\",\r\n    \"reference_key\": \"test222@gmail.com\",\r\n    \"rating_overall\": \"5\",\r\n    \"rating_comfort\": \"5\",\r\n    \"rating_clean\": \"5\",\r\n    \"rating_behavior\": \"4\",\r\n    \"rating_timing\": \"2\",\r\n    \"comments\": \"Test comments\",\r\n    \"created_by\": \"Lima\"\r\n\r\n}",
+					"raw": "{\r\n    \"pnr\": \"1234567\",\r\n    \"bus_id\":\"1\",\r\n    \"users_id\": \"1\",\r\n    \"reference_key\": \"test222@gmail.com\",\r\n    \"rating_overall\": \"5\",\r\n    \"rating_comfort\": \"5\",\r\n    \"rating_clean\": \"5\",\r\n    \"rating_behavior\": \"4\",\r\n    \"rating_timing\": \"2\",\r\n    \"comments\": \"Test comments\",\r\n    \"created_by\": \"Lima\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1157,28 +1187,36 @@
 			"response": []
 		},
 		{
-			"name": "OperatorDetails?operator_id=8",
+			"name": "OperatorDetails",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU4NDU2NDUsImV4cCI6MTYzNTkzMjA0NSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.JvS3roWN_YNbEabeCu-z91tQP4q53I8OoQG36piY6xFn99aIdhXuH2NYthGMUaYtb7iy3vyEuA4488Bqx0Dk_iNoO0j1wQJ53ZBb8Y7QRuSZOM5qclXcvT1_g2CKwEzJ3KeuJz_fRhepX8Uuu37hgAKdTWdFwud9UX4u-ybQmLSnWjYdOZKeQMy2L3dDHACv6mS8IUI28NJ_TbhTfSuQfGDLBBYGJmYbVBDluRxqvbLzWANBlKdWd5X8EFDzF5js7a6KFkeoHDk9qZFvvA9G8zqGJ5d7-oUj7bQflWwY2u0GyY3IaRWG9XjeSd5VIoFlxF0tZTDbmARlxi2Qgo_CAQ",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/OperatorDetails?operator_id=9",
-					"protocol": "http",
+					"raw": "https://consumer.neoflix.in/api/OperatorDetails?operator_url=gpm-travels",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"neoflix",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"OperatorDetails"
 					],
 					"query": [
 						{
-							"key": "operator_id",
-							"value": "9"
+							"key": "operator_url",
+							"value": "gpm-travels"
 						}
 					]
 				}
@@ -1207,7 +1245,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ1Mzk5OTksImV4cCI6MTYzNDYyNjM5OSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.rKY1-8mfDCX0lr0v6zu_dUy9Qom5d2zfrtZwuQz_1AcTFCSKdIAchRAYXRIp63l9ghLu4ZfNpistMw0xrHsayqBSJIE8iqwKYphvwmYruO3VilxONzPIARKGF01AxOmjaXUEhGVfOmlpR1oWa8gSsvXYCKy1Z_FoYU0gbZLmx7X5_PUURojC_zq0ZSW3y1PsOmAltOWiQ9dUQoVrzlvSNK7Zh7wo4lM3Vnuz2zsECnrck_AMUrr4CKruwUdZBTeWJwTvdA-kEh2LtnsSVdIl7ivXZC9zSnh0DnDqa7HNgi8iYpaJymL89nvIuwoMoq12CqSN0vM_WxOAz41EDxx18A",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
 							"type": "string"
 						}
 					]
@@ -1282,7 +1320,7 @@
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:8000/api/saveContacts",
+			"name": "save contacts",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -1296,73 +1334,8 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/saveContacts",
+					"raw": "http://consumer.neoflix.in/api/TopOperators/saveContacts",
 					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"saveContacts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://127.0.0.1:8000/api/RefreshToken",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8000/api/RefreshToken",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"RefreshToken"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://127.0.0.1:8000/api/Offers",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU1MDQwODAsImV4cCI6MTYzNTU5MDQ4MCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.Km35gKYwr9fjIwP8UC6gCvoaLYM4mflQYmTzQXT5wQJKD4VCfMXlkCHoB14UIcbXNZH_C0Za7DENPOUXp5iG4awUGvn-CR-fPx5iuuWY9wx_0CZh_-oIjHROH7m9g55EmQddtMoITd3LJEAB151jJ6zL3YTG8FjjgE0vl9wRhN8itUnTDIA5dqxRhkxtJWzKorzWHF0Kaz1SAkkrkVDpRkxeRv7PHn2O6tMZRfyNAjAMZFfiWDdHoV0U3qcbAGkMqoEIgfJp9UnYa06L4cSIcrUXMuB8FFkVWjza0qspsuz2Rc4LO3vLBFBRcG723Y8BkATHGEwpDWKMWvtl21pcvA",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\": 1\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://consumer.neoflix.in/api/Offers",
-					"protocol": "https",
 					"host": [
 						"consumer",
 						"neoflix",
@@ -1370,7 +1343,8 @@
 					],
 					"path": [
 						"api",
-						"Offers"
+						"TopOperators",
+						"saveContacts"
 					]
 				}
 			},
