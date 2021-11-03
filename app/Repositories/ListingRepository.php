@@ -95,23 +95,16 @@ class ListingRepository
         $destinationID =  $this->location->where("name", $destination)->first()->id;  
 
         $selCouponRecords = Coupon::where('status','1')->get();
-
         $routeCoupon = CouponRoute::where('source_id', $sourceID)
                                     ->where('destination_id', $destinationID)
                                     ->with('coupon')
-                                    // ->with(['coupon' => function ($query) use($entry_date) {                    
-                                    //     $query->where([
-                                    //         ['from_date', '<=', $entry_date],
-                                    //         ['to_date', '>=', $entry_date],
-                                    //      ]);                    
-                                    //     }])
-                                  ->get();
+                                    ->get();
 
-             if(isset($routeCoupon[0]->coupon)){                           
-                $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;
-             }else{
-                 $routeCouponCode =[];
-             }  
+        if(isset($routeCoupon[0]->coupon)){                           
+           $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;//route wise coupon
+        }else{
+           $routeCouponCode =[];
+        }  
         $busDetails = $this->ticketPrice
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)
@@ -123,13 +116,13 @@ class ListingRepository
         foreach($busDetails as $busDetail){
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
-            $busEntryPresent =$this->busSchedule->where('bus_id', $busId)
-                                ->exists(); 
+            $busEntryPresent =$this->busSchedule->where('bus_id', $busId)->exists();
+                                 
             if($busEntryPresent==true){
                 $busScheduleId = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');    
                 $dates = $this->busScheduleDate
-                    ->where('bus_schedule_id', $busScheduleId)           
-                    ->pluck('entry_date')->toarray();
+                              ->where('bus_schedule_id', $busScheduleId)           
+                              ->pluck('entry_date')->toarray();
                 if($jdays>1){
                     $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
                 }else{
@@ -142,7 +135,7 @@ class ListingRepository
                     ->with('couponAssignedBus.coupon')
                     ->with('busOperator.coupon')
                     ->with('busContacts')
-                    ->with('busOperator')       
+                    //->with('busOperator')       
                     ->with('busAmenities.amenities')
                     ->with('busSafety.safety')
                     ->with('BusType.busClass')
@@ -165,10 +158,10 @@ class ListingRepository
             } 
         }
         $records = Arr::flatten($records);
+        //return $records;
         $busCouponCode = [];
         $opCouponCode = [];
         foreach($records as $record){
-            //return $record;
             $busId = $record->id; 
             $busName = $record->name;
             $popularity = $record->popularity;
@@ -194,13 +187,13 @@ class ListingRepository
                 switch($type){
                     case(1):    //Coupon available on journey date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
-                                    ->where('from_date', '<=', $entry_date)
-                                    ->where('to_date', '>=', $entry_date)->all();           
+                                                        ->where('from_date', '<=', $entry_date)
+                                                        ->where('to_date', '>=', $entry_date)->all();           
                         break;
                     case(2):    //Coupon available on booking date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
-                        ->where('from_date', '<=', $bookingDate)
-                        ->where('to_date', '>=', $bookingDate)->all();
+                                                        ->where('from_date', '<=', $bookingDate)
+                                                        ->where('to_date', '>=', $bookingDate)->all();
                         break;      
                 }
                 if($dateInRange){
@@ -236,8 +229,8 @@ class ListingRepository
             //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
             //return $seatsOpenSeats;
 
-            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
-                                            ->count('id');                      
+            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
+                                                     
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
             $amenityDatas = $record->busAmenities;
             $amenityName = $amenityDatas->pluck('amenities.name');
@@ -262,18 +255,16 @@ class ListingRepository
                   $Totalrating_clean += $rv->rating_clean;                  
                   $Totalrating_behavior += $rv->rating_behavior;                  
                   $Totalrating_timing += $rv->rating_timing;           
-                }
-                
+                } 
                 $Totalrating = number_format($Totalrating/count($record->review),1);
                 $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
                 $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
                 $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
-                $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);
-                
-              }
+                $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
+            }
 
-           $cancellationPolicyContent=$record->cancellation_policy_desc;
-           $TravelPolicyContent=$record->travel_policy_desc;
+            $cancellationPolicyContent=$record->cancellation_policy_desc;
+            $TravelPolicyContent=$record->travel_policy_desc;
               
             $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
           
@@ -281,8 +272,8 @@ class ListingRepository
             $cSlabDuration = $cSlabDatas->pluck('duration');
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
         
-             $seatClassRecords = 0;
-             $sleeperClassRecords = 0;
+            $seatClassRecords = 0;
+            $sleeperClassRecords = 0;
             foreach($seatDatas as $seatData) {  
                  $seatclass = $seatData->seats->seat_class_id;
                  if($seatclass==1){
@@ -303,7 +294,6 @@ class ListingRepository
                 "busNumber" => $busNumber,
                 "maxSeatBook" => $maxSeatBook,
                 "conductor_number" => $conductor_number,
-                //"couponCode" => $couponCode,
                 "couponCode" =>$appliedCoupon->all(),
                 "operatorId" => $operatorId,
                 "operatorName" => $operatorName,
@@ -332,8 +322,7 @@ class ListingRepository
                 "Totalrating_behavior" => $Totalrating_behavior,
                 "Totalrating_timing" => $Totalrating_timing,
                 "reviews" => $reviews
-            );
-                    
+            );             
         }
         return $ListingRecords;
     }
@@ -344,13 +333,13 @@ class ListingRepository
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
 
         $booked_seats = $this->booking->where('journey_dt',$entry_date)
-            ->where('bus_id',$busId)
-            ->where('source_id',$sourceID)
-            ->where('destination_id',$destinationID)
-            ->whereIn('status',[$booked,$seatHold])
-            //->where('status',$booked)
-            ->with(["bookingDetail.busSeats.seats"]) 
-            ->get();
+                                      ->where('bus_id',$busId)
+                                      ->where('source_id',$sourceID)
+                                      ->where('destination_id',$destinationID)
+                                      ->whereIn('status',[$booked,$seatHold])
+                                      //->where('status',$booked)
+                                      ->with(["bookingDetail.busSeats.seats"]) 
+                                      ->get();
         $collection = collect($booked_seats);
         $i = 0;
         $seaterRecords = 0;
@@ -421,16 +410,16 @@ class ListingRepository
                                     ->get();
 
              if(isset($routeCoupon[0]->coupon)){                           
-                $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;
+                $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;  //route wise coupon
              }else{
                  $routeCouponCode =[];
              }  
 
         $busDetails = $this->ticketPrice
-        ->where('source_id', $sourceID)
-        ->where('destination_id', $destinationID)
-        ->where('bus_operator_id', $busOperatorId)
-        ->get(['bus_id','start_j_days']);
+                            ->where('source_id', $sourceID)
+                            ->where('destination_id', $destinationID)
+                            ->where('bus_operator_id', $busOperatorId)
+                            ->get(['bus_id','start_j_days']);
 
         $records = array();
         $FilterRecords = array();
@@ -438,13 +427,12 @@ class ListingRepository
         foreach($busDetails as $busDetail){
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
-            $busEntryPresent =$this->busSchedule->where('bus_id', $busId)
-                                ->exists(); 
+            $busEntryPresent =$this->busSchedule->where('bus_id', $busId) ->exists(); 
+                               
             if($busEntryPresent==true){
                 $busScheduleDate = $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id');
-                $dates = $this->busScheduleDate
-                    ->where('bus_schedule_id', $busScheduleDate)           
-                    ->pluck('entry_date')->toarray();
+                $dates = $this->busScheduleDate->where('bus_schedule_id', $busScheduleDate)->pluck('entry_date')->toarray();
+                                    
                 if($jdays>1){
                     $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
                 }else{
