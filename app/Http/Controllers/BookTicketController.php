@@ -242,9 +242,6 @@ class BookTicketController extends Controller
  * )
  * 
  */
-
-
-
     public function bookTicket(Request $request) {
          $data = $request->all();
            $bookTicketValidation = $this->bookTicketValidator->validate($data);

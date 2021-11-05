@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ViewSeatsService;
+use App\AppValidator\ViewSeatsValidator;
+use App\AppValidator\PriceOnSeatSelectionValidator;
+use App\AppValidator\BoardingDroppingValidator;
 
 class ViewSeatsController extends Controller
 {
@@ -18,6 +21,9 @@ class ViewSeatsController extends Controller
     use ApiResponser;
     
     protected $viewSeatsService;
+    protected $viewSeatsValidator;
+    protected $priceOnSeatSelectionValidator;
+    protected $boardingDroppingValidator;
   
     /**
      * ViewSeatsController Constructor
@@ -28,9 +34,12 @@ class ViewSeatsController extends Controller
 
 
 
-    public function __construct(ViewSeatsService $viewSeatsService)
+    public function __construct(ViewSeatsService $viewSeatsService,ViewSeatsValidator $viewSeatsValidator,PriceOnSeatSelectionValidator $priceOnSeatSelectionValidator,BoardingDroppingValidator $boardingDroppingValidator)
     {
-        $this->viewSeatsService = $viewSeatsService;       
+        $this->viewSeatsService = $viewSeatsService;  
+        $this->viewSeatsValidator = $viewSeatsValidator;  
+        $this->priceOnSeatSelectionValidator = $priceOnSeatSelectionValidator;
+        $this->boardingDroppingValidator = $boardingDroppingValidator;    
     }
  
 /**
@@ -83,8 +92,20 @@ class ViewSeatsController extends Controller
  * )
  * 
  */
-
     public function getAllViewSeats(Request $request) {
+        $data = $request->only([
+            'busId',
+            'sourceId',
+            'entry_date',
+            'destinationId',
+        ]);
+        $viewSeatsValidation = $this->viewSeatsValidator->validate($data);
+        
+        if ($viewSeatsValidation->fails()) {
+            $errors = $viewSeatsValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        
         $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request);
         return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
@@ -167,10 +188,23 @@ class ViewSeatsController extends Controller
  * 
  */
     public function getPriceOnSeatsSelection(Request $request) {
-
+        $data = $request->only([
+            'busId',
+            'sourceId',
+            'busOperatorId',
+            'destinationId',
+            'seater',
+            'sleeper'
+        ]);
+        $priveValidation = $this->priceOnSeatSelectionValidator->validate($data);
+        
+        if ($priveValidation->fails()) {
+            $errors = $priveValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }  
         $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request);
         return $this->successResponse($priceOnSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-      }
+    }
 
       /**
  * @OA\Get(
@@ -213,9 +247,19 @@ class ViewSeatsController extends Controller
  * )
  * 
  */
-      public function getBoardingDroppingPoints(Request $request) {
+    public function getBoardingDroppingPoints(Request $request) {
+        $data = $request->only([
+            'busId',
+            'sourceId',
+            'destinationId',
+        ]);
+        $boardDropValidation = $this->boardingDroppingValidator->validate($data);
+        
+        if ($boardDropValidation->fails()) {
+            $errors = $boardDropValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }  
         $boardingPoints = $this->viewSeatsService->getBoardingDroppingPoints($request);
         return $this->successResponse($boardingPoints,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
 }

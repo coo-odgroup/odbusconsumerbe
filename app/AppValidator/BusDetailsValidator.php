@@ -4,22 +4,19 @@ namespace App\AppValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CouponValidator 
+class BusDetailsValidator 
 {   
+
     public function validate($data) { 
         
         $rules = [
             'bus_id' => 'required|numeric',
             'source_id' => 'required|numeric',
             'destination_id' => 'required|numeric',
-            'journey_date' => 'required|date_format:Y-m-d',
-            'bus_operator_id' => 'required|numeric',
-            'total_fare' => 'required|numeric',
-            'transaction_id' => 'required|numeric',
         ];      
       
-        $couponValidator = Validator::make($data, $rules);
-        return $couponValidator;
+        $busDetailsValidation = Validator::make($data, $rules);
+        return $busDetailsValidation;
     }
 
 }

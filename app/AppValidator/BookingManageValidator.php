@@ -10,8 +10,8 @@ class BookingManageValidator
     public function validate($data) { 
         
         $rules = [
-            'pnr' => 'required',
-            'mobile' => 'required'
+            'pnr' => 'required|numeric',
+            'mobile' => 'required|digits:10'
 
         ];      
       

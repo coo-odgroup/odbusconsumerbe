@@ -11,8 +11,8 @@ class ContactValidator
         
         $rules = [
             'name' => 'required',
-            'email' => 'required',
-            'phone' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required|digits:10',
             'service' => 'required',
             'message' => 'required'
         ];      

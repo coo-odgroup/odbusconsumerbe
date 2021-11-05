@@ -13,6 +13,10 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ListingService;
 use App\AppValidator\ListingValidator;
+use App\AppValidator\FilterValidator;
+use App\AppValidator\FilterOptionsValidator;
+use App\AppValidator\BusDetailsValidator;
+use App\AppValidator\LocationValidator;
 
 class ListingController extends Controller
 {
@@ -23,6 +27,10 @@ class ListingController extends Controller
      */
     protected $listingService;
     protected $listingValidator;
+    protected $filterValidator;
+    protected $filterOptionsValidator;
+    protected $busDetailsValidator;
+    protected $locationValidator;
 
 
     /**
@@ -31,10 +39,14 @@ class ListingController extends Controller
      * @param ListingService $listingService,ListingValidator $listingValidator
      *
      */
-    public function __construct(ListingService $listingService,ListingValidator $listingValidator)
+    public function __construct(ListingService $listingService,ListingValidator $listingValidator,FilterValidator $filterValidator,FilterOptionsValidator $filterOptionsValidator,BusDetailsValidator $busDetailsValidator,LocationValidator $locationValidator)
     {
         $this->listingService = $listingService;
-        $this->listingValidator = $listingValidator;       
+        $this->listingValidator = $listingValidator; 
+        $this->filterValidator = $filterValidator;
+        $this->filterOptionsValidator = $filterOptionsValidator; 
+        $this->busDetailsValidator = $busDetailsValidator; 
+        $this->locationValidator = $locationValidator;      
     }
 /**
  * @OA\Info(title="ODBUS Consumer APIs", version="0.1",
@@ -72,8 +84,17 @@ class ListingController extends Controller
  *     }
  * )
  */
-
     public function getLocation(Request $request) {
+        $data = $request->only([
+            'locationName'
+        ]);
+        $locationValidation = $this->locationValidator->validate($data);
+        
+        if ($locationValidation->fails()) {
+            $errors = $locationValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }
+        
         $location = $this->listingService->getLocation($request);
         return $this->successResponse($location,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
@@ -132,6 +153,7 @@ class ListingController extends Controller
             'source',
             'destination',
             'entry_date',
+            'bus_operator_id',
           ]);
           $listingValidation = $this->listingValidator->validate($data);
           
@@ -287,8 +309,20 @@ class ListingController extends Controller
  * )
  * 
  */ 
-
     public function filter(Request $request) {
+        $data = $request->only([
+            'price',
+            'sourceID',
+            'destinationID',
+            'entry_date',
+            'bus_operator_id',
+        ]);
+        $filterValidation = $this->filterValidator->validate($data);
+        
+        if ($filterValidation->fails()) {
+            $errors = $filterValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
         $filterData = $this->listingService->filter($request);
         return $this->successResponse($filterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
@@ -325,10 +359,19 @@ class ListingController extends Controller
  * 
  */
     public function getFilterOptions(Request $request) {
+        $data = $request->only([
+            'sourceID',
+            'destinationID'
+        ]);
+        $filterOptionsValidation = $this->filterOptionsValidator->validate($data);
+        if ($filterOptionsValidation->fails()) {
+            $errors = $filterOptionsValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
         $FilterData = $this->listingService->getFilterOptions($request);
         return $this->successResponse($FilterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-    }   
-
+    }
+   
     /**
  * @OA\Get(
  *     path="/api/BusDetails",
@@ -371,6 +414,16 @@ class ListingController extends Controller
  * 
  */
     public function busDetails(Request $request) {
+        $data = $request->only([
+            'bus_id',
+            'source_id',
+            'destination_id'
+        ]);
+        $busDetailsValidation = $this->busDetailsValidator->validate($data);
+        if ($busDetailsValidation->fails()) {
+            $errors = $busDetailsValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
         $details = $this->listingService->busDetails($request);
         return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }

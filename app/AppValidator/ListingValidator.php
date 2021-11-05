@@ -12,7 +12,8 @@ class ListingValidator
         $rules = [
             'source' => 'required|max:50',
             'destination' => 'required|max:50',
-            'entry_date' => 'required',
+            'entry_date' => 'required|date_format:Y-m-d',
+            'bus_operator_id' => 'required|numeric',
         ];      
       
         $ListingValidation = Validator::make($data, $rules);
