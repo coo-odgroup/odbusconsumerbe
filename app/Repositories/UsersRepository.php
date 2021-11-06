@@ -179,6 +179,11 @@ class UsersRepository
 
     public function updateProfile($request,$userId,$token){
       
+       $userDetails= $this->users->where('id', $userId)->where('token', $token)->get();
+      
+      if(isset($userDetails[0])){
+         
+      
         $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
 
         $post->name = $request['name'];
@@ -192,9 +197,13 @@ class UsersRepository
           $post->profile_image = $request['profile_image'];
         }
         
-        $post->update();
+        $post->update();         
 
         return $post;
+         
+       }else{
+         return 'Invalid';
+       }
       
     }
 
@@ -360,8 +369,10 @@ class UsersRepository
                             ->orderBy('id','desc')
                             ->get();
         $userReviews = collect($userReviews);
+        
+        
         if($userReviews){
-            foreach($userReviews as $key => $value){
+            foreach($userReviews as $key => $value){ 
                 $value->bus->booking['src_name']=Location::where('id',$value->bus->booking->source_id)->first()->name;
                 $value->bus->booking['dest_name']=Location::where('id',$value->bus->booking->destination_id)->first()->name;   
             }

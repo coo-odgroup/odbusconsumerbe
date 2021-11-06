@@ -76,6 +76,80 @@ class ListingRepository
          ->where('status','1')  
          ->get(['id','name','synonym']);
      }
+
+
+     public function getLocationID($name)
+     {
+         return $this->location->where("name", $name)->where("status", 1)->get('id');
+     }
+
+     public function getrouteCoupon($sourceID,$destinationID)
+     {
+         return CouponRoute::where('source_id', $sourceID)
+         ->where('destination_id', $destinationID)
+         ->with('coupon')
+         ->get();
+     }
+
+     public function getAllCoupon()
+     {
+         return Coupon::where('status','1')->get();
+     }
+
+     public function getticketPrice($sourceID,$destinationID,$busOperatorId)
+     {
+
+       return $this->ticketPrice
+                    ->where('source_id', $sourceID)
+                    ->where('destination_id', $destinationID)
+                    ->where('bus_operator_id', $busOperatorId)
+                    ->get(['bus_id','start_j_days']);  
+     }
+
+
+     public function checkBusentry($busId)
+     {
+       return $this->busSchedule->where('bus_id', $busId)->exists();
+     }
+
+     public function getBusScheduleID($busId)
+     {
+       return $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id'); 
+     }
+
+     public function getBusScheduleDates($busScheduleId)
+     {
+       return $this->busScheduleDate ->where('bus_schedule_id', $busScheduleId)->pluck('entry_date')->toarray();
+     }
+
+     public function getBusList($busOperatorId,$busId)
+     {
+       return $this->bus
+       ->where('bus_operator_id', $busOperatorId) 
+       ->with('couponAssignedBus.coupon')
+       ->with('busOperator.coupon')
+       ->with('busContacts')
+       //->with('busOperator')       
+       ->with('busAmenities.amenities')
+       ->with('busSafety.safety')
+       ->with('BusType.busClass')
+       ->with('busSeats.seats')
+       //->with('seatOpen.seatOpenSeats')
+       ->with('BusSitting')
+       ->with('busGallery')
+       ->with('cancellationslabs.cancellationSlabInfo')
+       ->with(['review' => function ($query) {                    
+           $query->where('status',1);
+           $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+           $query->with(['users' =>  function ($u){
+               $u->select('id','name','profile_image');
+           }]);                      
+           }])
+       ->where('status','1')
+       ->where('id',$busId)
+       ->get();
+     }
+    
  
     public function getAll($request)
     { 
