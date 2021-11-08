@@ -32,6 +32,9 @@ class ListingService
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
 
+      
+       
+
         $srcResult= $this->listingRepository->getLocationID($request['source']);
         $destResult= $this->listingRepository->getLocationID($request['destination']);
 
@@ -40,6 +43,18 @@ class ListingService
 
          $sourceID =  $srcResult[0]->id;
          $destinationID =  $destResult[0]->id;
+
+        //  $records= $this->listingRepository->getBusList($sourceID,$destinationID,$busOperatorId,$entry_date);
+
+        //  foreach($records as $key => $record){
+        //      if($record->ticketPrice->count() == 0 || $record->busSchedule->busScheduleDate->count() ==0 ){
+
+        //         Log::info($key);
+
+        //      }
+        //  }
+
+        //  return $records;
 
          $selCouponRecords = $this->listingRepository->getAllCoupon();
 
@@ -65,9 +80,9 @@ class ListingService
                 $new_date = $entry_date;
             }
              $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                                  
+                      
              if($busEntryPresent==true){
-                $records[] = $this->listingRepository->getBusList($busOperatorId,$busId);
+                $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
              } 
          }
 
@@ -246,7 +261,7 @@ class ListingService
 
     public function getLocation(Request $request)
     {
-        return $this->listingRepository->getLocation($request);
+        return $this->listingRepository->getLocation($request['locationName']);
     }
 
     public function filter(Request $request)
@@ -298,7 +313,7 @@ class ListingService
             $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                                   
             if($busEntryPresent==true){
-               $records[] = $this->listingRepository->getBusList($busOperatorId,$busId);
+               $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
             }   
         }
         $records = Arr::flatten($records); 
@@ -476,7 +491,28 @@ class ListingService
 
     public function getFilterOptions(Request $request)
     {
-        return $this->listingRepository->getFilterOptions($request);
+
+        $sourceID = $request['sourceID'];
+        $destinationID = $request['destinationID']; 
+
+        $busTypes =  $this->listingRepository->getbusTypes();
+        $seatTypes = $this->listingRepository->getseatTypes();
+        $boardingPoints = $this->listingRepository->getboardingPoints($sourceID);
+        $dropingPoints = $this->listingRepository->getdropingPoints($destinationID);
+        $busOperator = $this->listingRepository->getbusOperator();
+        $amenities = $this->listingRepository->getamenities();
+
+        $filterOptions[] = array(
+           "busTypes" => $busTypes,
+           "seatTypes" => $seatTypes,  
+           "boardingPoints" => $boardingPoints,
+           "dropingPoints"=> $dropingPoints,
+           "busOperator"=>$busOperator,
+           "amenities"=>$amenities   
+        );
+        return  $filterOptions;
+
+        //return $this->listingRepository->getFilterOptions($request);
     }
     public function busDetails(Request $request)
     {
