@@ -107,10 +107,15 @@ class ListingRepository
      }
 
 
-     public function checkBusentry($busId)
+     public function checkBusentry($busId,$new_date)
      {
-       return $this->busSchedule->where('bus_id', $busId)->exists();
+       return $this->busSchedule->where('bus_id', $busId)
+                                 ->with(['bus_schedule_date' => function ($bsd){
+                                     $bsd->where('entry_date',$new_date);
+                                 }])->exists();
      }
+
+
 
      public function getBusScheduleID($busId)
      {
@@ -119,7 +124,7 @@ class ListingRepository
 
      public function getBusScheduleDates($busScheduleId)
      {
-       return $this->busScheduleDate ->where('bus_schedule_id', $busScheduleId)->pluck('entry_date')->toarray();
+       return $this->busScheduleDate->where('bus_schedule_id', $busScheduleId)->pluck('entry_date')->toarray();
      }
 
      public function getBusList($busOperatorId,$busId)
@@ -149,9 +154,60 @@ class ListingRepository
        ->where('id',$busId)
        ->get();
      }
+
+     public function getFilterBusList($busOperatorId,$busId,$busType,
+     $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId){
+         return  $this->bus
+         ->where('bus_operator_id', $busOperatorId)
+         ->with('couponAssignedBus.coupon')
+         ->with('busOperator.coupon')
+         ->with('busOperator')
+         ->with('busAmenities.amenities')
+         ->with('busSafety.safety')
+         ->with('BusType.busClass')
+         ->with('busSeats.seats')
+         ->with('BusSitting')
+         ->with('busGallery')
+         ->with('cancellationslabs.cancellationSlabInfo')
+         ->with(['review' => function ($query) {                    
+             $query->where('status',1);
+             $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+             $query->with(['users' =>  function ($u){
+                 $u->select('id','name','profile_image');
+             }]);                      
+             }])
+         ->where('status','1')
+         ->where('id',$busId)
+         ->whereHas('busType.busClass', function ($query) use ($busType){
+             if($busType)
+             $query->whereIn('id', (array)$busType);            
+             })
+         ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
+             if($seatType)
+             $query->whereIn('id', (array)$seatType);            
+             })
+         ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
+             if($boardingPointId)                   
+             $query->whereIn('id', (array)$boardingPointId);
+             })    
+         ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){
+             if($dropingingPointId)  
+             $query->whereIn('id', (array)$dropingingPointId);
+             })       
+         ->whereHas('busOperator', function ($query) use ($operatorId){
+             if($operatorId)
+             $query->whereIn('id', (array)$operatorId);            
+             })
+         ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
+             if($amenityId)
+             $query->whereIn('id', (array)$amenityId);            
+             })  
+         ->where('id',$busId)
+         ->get();
+     }
     
  
-    public function getAll($request)
+    public function getAll_old($request)
     { 
        
         $source = $request['source'];
@@ -459,7 +515,7 @@ class ListingRepository
 
     }
 
-    public function filter($request)
+    public function filter_old($request)
     {   
         $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
