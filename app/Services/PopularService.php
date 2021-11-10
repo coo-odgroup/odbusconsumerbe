@@ -39,17 +39,17 @@ class PopularService
     public function getTopOperators(Request $request)
     {
       
-       $busIds = $this->popularRepository->getBusIds();
+        $busIds = $this->popularRepository->getBusIds();
 
            if($busIds->isEmpty()){
                return "No booking exist to filter top operator";
            }
            else{
                foreach($busIds as $busId){
-                   $opId = $busId->bus_id;
+                   $bus_id = $busId->bus_id;
                    $count = $busId->count;
-                   $opDetail = $this->popularRepository->getOperator($opId);
-                   $opDetail=$opDetail[0];
+                    $opDetail = $this->popularRepository->getOperator($bus_id);
+                    $opDetail=$opDetail[0];
                    $topOperators[] = array(
                        "id" => $opDetail->busOperator->id, 
                        "operatorName" => $opDetail->busOperator->operator_name, 
@@ -58,7 +58,10 @@ class PopularService
                        );
                } 
            }
-           return $topOperators;
+
+           $temp = array_unique(array_column($topOperators, 'operatorName'));
+           return $unique_arr = array_intersect_key($topOperators, $temp);
+
 
     }
     public function allRoutes(Request $request)

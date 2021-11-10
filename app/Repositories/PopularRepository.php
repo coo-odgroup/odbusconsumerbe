@@ -56,10 +56,10 @@ class PopularRepository
         ->get();
     }
 
-    public function getOperator($operatorId){ 
+    public function getOperator($bus_id){ 
        return $this->bus
         ->with('busOperator')
-        ->where('id',$operatorId)->get();
+        ->where('id',$bus_id)->get();
         
     }
 
