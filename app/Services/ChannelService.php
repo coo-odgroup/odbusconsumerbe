@@ -155,14 +155,10 @@ class ChannelService
     public function pay($request)
     {
         try {
-            //$paymentStatus = $this->channelRepository->pay($data);
-
+          
             $booked = Config::get('constants.BOOKED_STATUS');
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
-            //$key = config('services.razorpay.key');
-            //$secretKey = config('services.razorpay.secret');
-           
             $data = $request->all();
 
             $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
