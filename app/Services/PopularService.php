@@ -117,33 +117,13 @@ class PopularService
             $opNameDetails['popularRoutes'] = [];
 
             return $opNameDetails;
-        }
-      
-     
-      
-      
-        foreach($buses as $bus){           
-          
-          if($bus->busAmenities){
-            foreach($bus->busAmenities as $bus_amenity){
-              $allAmenity[] = $bus_amenity;
-            }
-          }
-          
-      
-          $review = $this->popularRepository->GetOperatorReviews($bus->id);
-            
-            foreach($review as $rv){
-              $Totalrating += $rv->rating_overall;
-              array_push($allreviews,$rv);
-            }
-          
-          
-          if(count($allreviews)>0){           
-            $Totalrating = number_format($Totalrating/count($allreviews),1);            
-          }
-	
-        }
+        }else {
+
+         $allAmenity=  $this->popularRepository->GetAllBusAmenities($busIds);
+         $allreviews=  $this->popularRepository->GetOperatorReviews($busIds);
+         $Totalrating=  $this->popularRepository->Totalrating($busIds);
+
+       
 
         //>>Find the popular routes of that Operator   
         $bookingRoutes = $this->popularRepository->GetRouteBookings($busIds);  
@@ -193,11 +173,12 @@ class PopularService
         $opNameDetails['routes'] = $allRoutes;
         $opNameDetails['popularRoutes'] = $popularRoutes;
 
-        return $opNameDetails;  
+        return $opNameDetails; 
+     }  
         
-      }else{
-        return 'operator-not-found';
-      }
-
+    }else{
+    return 'operator-not-found';
     }
+
+}
 }

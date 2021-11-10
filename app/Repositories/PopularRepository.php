@@ -7,6 +7,8 @@ use App\Models\TicketPrice;
 use App\Models\Booking;
 use App\Models\Location;
 use App\Models\BusOperator;
+use App\Models\Amenities;
+use App\Models\BusAmenities;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
@@ -81,23 +83,29 @@ class PopularRepository
     public function GetOperatorDetail($operator_url){
         return BusOperator::where('operator_url', $operator_url)->with(['bus' => function ($q){ 
             $q->select('bus_operator_id','id','name');
-            $q->with(['busAmenities' => function ($query) {
-                 $query->select('bus_id','amenities_id');
-                     $query->with(['amenities' =>  function ($a){
-                         $a->select('id','name','icon');
-                     }]);
-                 }]);         
-             }])   
+            // $q->with(['busAmenities' => function ($query) {
+            //      $query->select('bus_id','amenities_id');
+            //          $query->with(['amenities' =>  function ($a){
+            //              $a->select('id','name','icon');
+            //          }]);
+            //      }]);         
+              }])   
             ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
             ->get();
     }
 
-    public function GetOperatorReviews($bus_id){
-        return $this->review->where('bus_id',$bus_id)
+    public function GetOperatorReviews($busIds){
+        return $this->review->whereIn('bus_id',$busIds)
         ->where('status',1)
         ->with(['users' =>  function ($u){
          $u->select('id','name','district','profile_image');
         }])->get();
+    }
+
+    public function Totalrating($busIds){
+        return $this->review->whereIn('bus_id',$busIds)                            
+                            ->where('status',1)
+                            ->get()->avg('rating_overall');
     }
 
     public function GetRouteBookings($busIds){
@@ -115,6 +123,15 @@ class PopularRepository
         ->whereIn('bus_id', $busIds) 
         ->orderBy('dep_time', 'ASC')  
         ->first()->dep_time;
+    }
+
+    public function GetAllBusAmenities($busIds){
+
+      return BusAmenities::whereIn('bus_id',$busIds)
+                            ->with('amenities')  
+                            ->groupBy('amenities_id')                          
+                            ->get();
+
     }
 
 
