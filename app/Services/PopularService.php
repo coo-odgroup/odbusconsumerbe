@@ -48,10 +48,12 @@ class PopularService
                foreach($busIds as $busId){
                    $opId = $busId->bus_id;
                    $count = $busId->count;
-                   $opDetail = $this->popularRepository->getOperatorName($opId);
+                   $opDetail = $this->popularRepository->getOperator($opId);
+                   $opDetail=$opDetail[0];
                    $topOperators[] = array(
                        "id" => $opDetail->busOperator->id, 
                        "operatorName" => $opDetail->busOperator->operator_name, 
+                       "operator_url" => $opDetail->busOperator->operator_url, 
                        "count" => $count
                        );
                } 

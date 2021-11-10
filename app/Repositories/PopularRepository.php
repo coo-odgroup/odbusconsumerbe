@@ -54,12 +54,11 @@ class PopularRepository
         ->get();
     }
 
-    public function getOperatorName($operatorId){ 
-        $records = $this->bus
+    public function getOperator($operatorId){ 
+       return $this->bus
         ->with('busOperator')
         ->where('id',$operatorId)->get();
-        $opDetail = $records[0];
-        return $opDetail;
+        
     }
 
     public function getAllRoutes(){ 
