@@ -61,7 +61,9 @@ class UsersRepository
         $this->review = $review;
 
     }
-  
+
+   
+
     public function Register($request)
     {  
         $query =$this->users->where([

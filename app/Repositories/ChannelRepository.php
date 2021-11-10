@@ -15,7 +15,6 @@ use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
-use App\Repositories\ViewSeatsRepository;
 use App\Models\Credentials;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
@@ -32,9 +31,8 @@ class ChannelRepository
     protected $bookingDetail;
     protected $busSeats;
     protected $credentials;
-    protected $viewSeatsRepository;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail,ViewSeatsRepository $viewSeatsRepository)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
@@ -43,7 +41,6 @@ class ChannelRepository
         $this->busSeats = $busSeats;
         $this->credentials = $credentials;
         $this->bookingDetail = $bookingDetail;
-        $this->viewSeatsRepository = $viewSeatsRepository;
     } 
     
     public function storeGWInfo($data) {
@@ -382,41 +379,28 @@ class ChannelRepository
         SendEmailTicketCancelJob::dispatch($request);
       }
 
-      public function makePayment(Request $request)
-    {   
-        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
-        $busId = $request['busId'];    
-        $transationId = $request['transaction_id']; 
-        $seatIds = $request['seatIds'];
+      public function getBookingRecord($transationId){
+        return $this->booking->with('users')->where('transaction_id', $transationId)->get();
+      }
 
-        $seatStatus = $this->viewSeatsRepository->getAllViewSeats($request); 
-        if(isset($seatStatus['lower_berth'])){
-            $lb = collect($seatStatus['lower_berth']);
-            $collection= $lb;
-        }
-        if(isset($seatStatus['upper_berth'])){
-            $ub = collect($seatStatus['upper_berth']);
-            $collection= $ub;
-        }
-        if(isset($lb) && isset($ub)){
-            $collection= $lb->merge($ub);
-        }
+      public function getBookingData($busId,$transationId){
+          return $this->booking->where('bus_id', $busId)->where('transaction_id', $transationId)->get();
+      }
+
+      public function getRazorpayKey(){
+          return $this->credentials->first()->razorpay_key;
+      }
+
+      public function getRazorpaySecret(){
+        return $this->credentials->first()->razorpay_secret;
+    }
+
+
+      public function CreateCustomPayment($receiptId, $amount ,$name, $bookingId){
+
+        $key = $this->getRazorpayKey();
+        $secretKey = $this->getRazorpaySecret();
         
-        $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
-        $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
-            return $value == null;
-        });
-        if(sizeof($filtered->all())==0){
-
-        $records = $this->booking->with('users')->where('transaction_id', $transationId)->get();
-        $bookingId = $records[0]->id;    
-        $name = $records[0]->users->name;
-        $amount = $request['amount'];
-        $receiptId = 'rcpt_'.$transationId;
-        //$key = config('services.razorpay.key');
-        //$secretKey = config('services.razorpay.secret');
-        $key = $this->credentials->first()->razorpay_key;
-        $secretKey = $this->credentials->first()->razorpay_secret;
         $api = new Api($key, $secretKey);   
         $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
 
@@ -427,25 +411,61 @@ class ChannelRepository
         $user_pay->booking_id = $bookingId;
         $user_pay->amount = $amount;
         $user_pay->order_id = $orderId;
-        $user_pay->save();
-  
-        //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
-        
+         $user_pay->save();
+
+         return $orderId;
+
+      }
+
+      public function UpdateStatus($bookingId,$seatHold){
         $this->booking->where('id', $bookingId)->update(['status' => $seatHold]);
+      }
 
-        $data = array(
-            'name' => $name,
-            'amount' => $amount,
-            'key' => $key,
-            'razorpay_order_id' => $orderId   
-        );
-            return $data;
-            //return "SEAT AVAIL";
-        }else{
-            return "SEAT UN-AVAIL";
+      public function GetCustomerPaymentId($razorpay_order_id)
+      {
+          return $this->customerPayment->where('order_id', $razorpay_order_id)->pluck('id');
+      }
+
+
+      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
+      ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr){
+        $key = $this->getRazorpayKey();
+        $secretKey = $this->getRazorpaySecret();
+
+        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
+
+        $api = new Api($key, $secretKey);
+        $payment = $api->payment->fetch($razorpay_payment_id);
+        $paymentStatus = $payment->status;
+        if ($generated_signature == $razorpay_signature && $paymentStatus == 'authorized') { 
+            $this->customerPayment->where('id', $customerId)
+                                ->update([
+                                    'razorpay_id' => $razorpay_payment_id,
+                                    'razorpay_signature' => $razorpay_signature,
+                                    'payment_done' => $paymentDone
+                                ]);
+            if($request['phone']){
+                $sendsms = $this->sendSmsTicket($request,$pnr); 
+            } 
+            if($request['email']){
+                $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
         }
+        //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
-    }
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
+        $booking = $this->booking->find($bookingId);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+            return "Payment Done";
+        }
+        else{ 
+            $this->booking->where('id', $bookingId)
+                        ->where('transaction_id', $transationId)
+                        ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
+            return "Payment Failed"; 
+        }
+      }
+
+  
     public function pay($request)
     {   
         $booked = Config::get('constants.BOOKED_STATUS');

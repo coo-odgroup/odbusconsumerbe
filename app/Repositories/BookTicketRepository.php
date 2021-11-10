@@ -38,33 +38,33 @@ class BookTicketRepository
         $this->booking = $booking;
         $this->channelRepository = $channelRepository;
         $this->busLocationSequence = $busLocationSequence;       
-    }   
-    
-    public function bookTicket($request)
-    { 
-        $needGstBill = Config::get('constants.NEED_GST_BILL');
-        $customerInfo = $request['customerInfo'];
+    } 
 
-        $existingUser = $this->users->where('phone',$customerInfo['phone'])
-                                //->orWhere('email', $customerInfo['email'])
-                                ->exists(); 
-        if($existingUser==true){
-            $userId = $this->users->where('phone',$customerInfo['phone'])
-                            //->orWhere('email',$customerInfo['email'])
-                            ->first('id');
-           $this->users->whereIn('id', $userId)->update($customerInfo);     
-        }
-        else{
-            $userId = $this->users->create($request['customerInfo'])->latest('id')->first('id');   
-        }
-        
-        $bookingInfo = $request['bookingInfo'];
+    public function CheckExistingUser($phone){
+        return $this->users->where('phone',$phone)
+        //->orWhere('email', $customerInfo['email'])
+        ->exists(); 
+    }
+    public function GetUserId($phone){
+      return $this->users->where('phone',$phone)
+      //->orWhere('email',$customerInfo['email'])
+      ->first('id');
+    }
+  
+    public function UpdateInfo($userId,$customerInfo){
+      return $this->users->whereIn('id', $userId)->update($customerInfo);  
+    }
+  
+    public function CreateUser($customerInfo){
+      return $this->users->create($customerInfo)->latest('id')->first('id');   ;  
+    }
 
-        //Save Booking 
+    public function SaveBooking($bookingInfo,$userId,$needGstBill){
+
         $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
-           } while ( $booking ->where('transaction_id', $transactionId )->exists());
+           } while ( $booking->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
         do {
             $PNR = substr(str_shuffle("0123456789"), 0, 8);
@@ -92,10 +92,10 @@ class BookTicketRepository
         $odbusGstPercent = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->first()->odbus_gst_charges;
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
-        $booking->odbus_gst_amount = $odbusGstAmount;
+         $booking->odbus_gst_amount = $odbusGstAmount;
         //$operatorId = $ticketPriceDetails[0]->bus_operator_id;
         //$busOperator = BusOperator::where("id",$operatorId)->get();
-        $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
+         $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
     
         if($busOperator[0]->need_gst_bill == $needGstBill){   
             $ownerGstPercentage = $busOperator[0]->gst_amount;
@@ -115,12 +115,12 @@ class BookTicketRepository
         $bookingSequence->sequence_start_no = $seq_no_start;
         $bookingSequence->sequence_end_no = $seq_no_end;
             
-        $booking->bookingSequence()->save($bookingSequence);
+         $booking->bookingSequence()->save($bookingSequence);
 
         //Update Booking Details >>>>>>>>>>
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
-        $bookingDetail = $request['bookingInfo']['bookingDetail'];
+         $bookingDetail = $bookingInfo['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
@@ -138,6 +138,7 @@ class BookTicketRepository
         }    
         $booking->bookingDetail()->saveMany($bookingDetailModels);      
         return $booking; 
-       
     }
+
+   
 }

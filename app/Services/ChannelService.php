@@ -7,13 +7,16 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use App\Services\ViewSeatsService;
 use InvalidArgumentException;
 
 class ChannelService
 {
-    protected $channelRepository;    
-    public function __construct(ChannelRepository $channelRepository)
+    protected $channelRepository; 
+    protected $viewSeatsService;   
+    public function __construct(ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService)
     {
+        $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
     }
     public function storeGWInfo($data)
@@ -84,28 +87,108 @@ class ChannelService
         }
         return $sendEmail;
     }   
-    public function makePayment($data)
+    public function makePayment($request)
     {
         try {
-            $payment = $this->channelRepository->makePayment($data);
+
+            //$payment = $this->channelRepository->makePayment($data);
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+                $busId = $request['busId'];    
+                $transationId = $request['transaction_id']; 
+                $seatIds = $request['seatIds'];
+
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+                if(isset($seatStatus['lower_berth'])){
+                    $lb = collect($seatStatus['lower_berth']);
+                    $collection= $lb;
+                }
+                if(isset($seatStatus['upper_berth'])){
+                    $ub = collect($seatStatus['upper_berth']);
+                    $collection= $ub;
+                }
+                if(isset($lb) && isset($ub)){
+                    $collection= $lb->merge($ub);
+                }
+                
+                $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+                $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
+                    return $value == null;
+                });
+                if(sizeof($filtered->all())==0){
+
+                $records = $this->channelRepository->getBookingRecord($transationId);
+
+                $bookingId = $records[0]->id;    
+                $name = $records[0]->users->name;
+                $amount = $request['amount'];
+                $receiptId = 'rcpt_'.$transationId;
+                //$key = config('services.razorpay.key');
+                //$secretKey = config('services.razorpay.secret');
+
+                $key= $this->channelRepository->getRazorpayKey();
+                
+                $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                 
+                //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
+                $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+
+                $data = array(
+                    'name' => $name,
+                    'amount' => $amount,
+                    'key' => $key,
+                    'razorpay_order_id' => $GetOrderId   
+                );
+                    return $data;
+                    //return "SEAT AVAIL";
+                }else{
+                    return "SEAT UN-AVAIL";
+                }
+
 
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $payment;
+       
     }  
     
-    public function pay($data)
+    public function pay($request)
     {
         try {
-            $paymentStatus = $this->channelRepository->pay($data);
+            //$paymentStatus = $this->channelRepository->pay($data);
+
+            $booked = Config::get('constants.BOOKED_STATUS');
+            $paymentDone = Config::get('constants.PAYMENT_DONE');
+            $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
+            //$key = config('services.razorpay.key');
+            //$secretKey = config('services.razorpay.secret');
+           
+            $data = $request->all();
+
+            $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
+
+            $customerId = $customerId[0];
+            $busId = $request['bus_id'];
+            $seatIds = $request['seat_id'];
+            $razorpay_signature = $data['razorpay_signature'];
+            $razorpay_payment_id = $data['razorpay_payment_id'];
+            $razorpay_order_id = $data['razorpay_order_id'];
+            $transationId = $data['transaction_id'];
+        
+            $bookingRecord = $this->channelRepository->getBookingData($busId,$transationId);
+
+            $pnr = $bookingRecord[0]->pnr;
+            $bookingId = $bookingRecord[0]->id;    
+
+            return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
+            ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr);
+
 
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $paymentStatus;
+        
     }   
    
 }
