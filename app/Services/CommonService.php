@@ -22,10 +22,14 @@ class CommonService
     public function getAll($request)
     {
         try {
-            $cancelTicket = $this->commonRepository->getAll($request);
+            $data['banner']=$this->commonRepository->getOperatorBanner($request['bus_operator_id']);
+            $data['socialMedia']=$this->commonRepository->getOperatorSocialMedia($request['bus_operator_id']);
+            $data['common']=$this->commonRepository->getCommonSettings($request['bus_operator_id']);
+       
+            return $data;
+
         } catch (Exception $e) {
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $cancelTicket;
     }
 }

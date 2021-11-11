@@ -49,12 +49,13 @@ return [
     'Festive_Offers' => 'Festive Offers',
     'REVIEW_ADDED'=>'Review is added',
     'PROFILE_UPDATED' => 'Profile is updated',
-    'COUPON_NOT_APPLICABLE' => 'Coupon not applicable for this amount of transaction',
+    'COUPON_NOT_APPLICABLE' => 'Coupon is not applicable for this amount of transaction',
     'INVALID_COUPON' => 'Coupon is not valid',
     'COUPON_EXPIRED' => 'Coupon is expired',
     'COUPON_APPLIED' => 'Coupon Apply successful',
     'OPERATOR_NOT_FOUND' => 'Operator is not available',
     'PNR_NOT_MATCH'=> "PNR does not match",
     'MOBILE_NOT_MATCH'=> "Mobile no doesn't match",
-    'CANCEL_NOT_ALLOWED' =>'Cancellation is not allowed'
+    'CANCEL_NOT_ALLOWED' =>'Cancellation is not allowed',
+    'USER_INVALID' => 'Invalid User ID'
 ];

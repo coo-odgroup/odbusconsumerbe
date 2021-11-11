@@ -62,49 +62,41 @@ class UsersRepository
 
     }
 
-   
+   public function GetUserData($phone,$email){
+    return $this->users->where([
+          ['phone', $phone],
+          ['phone', '<>', null]
+          ])
+          ->orWhere([
+          ['email', $email],
+          ['email', '<>', null]
+          ]);
+   }
 
-    public function Register($request)
-    {  
-        $query =$this->users->where([
-                ['phone', $request['phone']],
-                ['phone', '<>', null]
-                ])
-                ->orWhere([
-                ['email', $request['email']],
-                ['email', '<>', null]
-                ]);
- 
-        $guestUser = $query->latest()->exists();
-        
-        if(!$guestUser){
-            $user = new $this->users;
-            $user->name= $request['name'];
-            $user->password= bcrypt('odbus123');
-            $user->created_by= $request['created_by'];
-            $otp = $this->sendOtp($request);
-            $user->phone = $request['phone'];
-            $user->email = $request['email'];
-            $user->otp = $otp;
-            $user->save();
-            return  $user;
-        }else{
-            $verifiedUser = $query->latest()->first()->is_verified;
-            if($verifiedUser==0){
-                $otp = $this->sendOtp($request);
-                $user = $query
-                    ->update([
-                    'name' => $request['name'],
-                    'otp' => $otp,
-                    'password' => bcrypt('odbus123')
-                   ]);
-                   return $query->latest()->first();
-            }
-            else{
-                    return "Existing User";
-            }
-        }
-    }
+   public function saveUser($request){
+        $user = new $this->users;
+        $user->name= $request['name'];
+        $user->password= bcrypt('odbus123');
+        $user->created_by= $request['created_by'];
+        $otp = $this->sendOtp($request);
+        $user->phone = $request['phone'];
+        $user->email = $request['email'];
+        $user->otp = $otp;
+        $user->save();
+        return  $user;
+   }
+
+   public function updateUser($query,$name,$otp){
+        $query->update([
+        'name' => $name,
+        'otp' => $otp,
+        'password' => bcrypt('odbus123')
+    ]);
+
+    return $query->latest()->first();
+
+   }
+
     public function sendOtp($request){
         $otp = rand(10000, 99999);
         if($request['phone']){
@@ -117,63 +109,39 @@ class UsersRepository
         }
         return  $otp;
     }
-    public function verifyOtp($request){
+    public function getOtp($userId){
 
-        $rcvOtp = trim($request['otp']);
-        $userId = $request['userId'];
-        $existingOtp = $this->users->where('id', $userId)->get('otp');
-        $existingOtp = $existingOtp[0]['otp'];
-        $user = $this->users->where('id', $userId)->first()->only('name','email');
-        if(($rcvOtp=="")){
-            return "";
-            }
-        elseif($existingOtp == $rcvOtp){
-
-             $users = $this->users->where('id', $userId)->update(array(
-                'is_verified' => '1',
-                'token' => Str::random('10'),
-                'otp' => Null
-             ));
-             $usersDetails = $this->users->where('id', $userId)->get();
-            return $usersDetails; 
-        }
-        else{
-            return 'Inval OTP';
-        }
+      return $this->users->where('id', $userId)->get('otp');
+       
     }
 
-    public function login($request){
-            $query =$this->users->where([
-                ['phone', $request['phone']],
-                ['phone', '<>', null]
-                ])
-                ->orWhere([
-                ['email', $request['email']],
-                ['email', '<>', null]
-                ]);
-        $verifiedStatus = $query->latest()->first()->is_verified;    
-        if($verifiedStatus == 1){
-            $name = $query->latest()->first()->name;        
-            $request->request->add(['name' => $name]);
-            $otp = $this->sendOtp($request);
-            $user = $query->update(array('otp' => $otp));
-            $user = $query->update(array('password' => bcrypt('odbus123')));
-            return  $query->latest()->first(); 
-        } else{
-            return "un_registered";
-        }      
+    public function userInfo($userId){
+      return $this->users->where('id', $userId)->first()->only('name','email');
     }
-    public function userProfile($request)
+
+    public function GetUserDataAfterUpdate($userId){
+      return $this->users->where('id', $userId)->get();
+    }
+
+
+    public function updateOTP($userId){
+      $this->users->where('id', $userId)->update(array(
+        'is_verified' => '1',
+        'token' => Str::random('10'),
+        'otp' => Null
+     ));
+    }
+
+    public function createOtp($query,$otp){
+
+      $query->update(array('otp' => $otp));
+      $query->update(array('password' => bcrypt('odbus123')));
+      return  $query->latest()->first(); 
+           
+    }
+    public function GetuserByToken($userId,$token)
     {
-        $userId = $request['userId'];
-        $token = $request['token']; 
-        $userDetails = $this->users->where('id', $userId)->where('token', $token)->get();
-      	
-        if(isset($userDetails[0])){
-          return $userDetails;
-        }else{
-          return 'Invalid';
-        }
+       return $this->users->where('id', $userId)->where('token', $token)->get();
         
     }
   
@@ -181,68 +149,45 @@ class UsersRepository
 
     public function updateProfile($request,$userId,$token){
       
-       $userDetails= $this->users->where('id', $userId)->where('token', $token)->get();
-      
-      if(isset($userDetails[0])){
-         
-      
-        $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
-
-        $post->name = $request['name'];
-        $post->email  = $request['email'];
-        $post->pincode = $request['pincode'];
-        $post->street = $request['street'];
-        $post->district = $request['district'];
-        $post->address = $request['address'];
-      
-        if($request['profile_image']!=''){
-          $post->profile_image = $request['profile_image'];
-        }
+          $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
+  
+          $post->name = $request['name'];
+          $post->email  = $request['email'];
+          $post->pincode = $request['pincode'];
+          $post->street = $request['street'];
+          $post->district = $request['district'];
+          $post->address = $request['address'];
         
-        $post->update();         
-
-        return $post;
-         
-       }else{
-         return 'Invalid';
-       }
+          if($request['profile_image']!=''){
+            $post->profile_image = $request['profile_image'];
+          }
+          
+          $post->update();         
+  
+          return $post;
       
     }
 
-    public function BookingHistory($request){
+    public function CancelledBookings($user_id){
 
-        $user= $this->userProfile($request);
+      return Booking::where('users_id',$user_id)
+      ->where('status','=',2)
+      ->with(["bus" => function($bs){
+          $bs->with('BusType.busClass');
+          $bs->with('BusSitting');                
+          $bs->with('busContacts');
+        } ] )
+      ->with(["bookingDetail" => function($b){
+              $b->with(["busSeats" => function($s){
+                  $s->with("seats");
+                } ]);
+          } ])->orderBy('journey_dt','desc');
       
-       if($user!='Invalid'){
-         
-         $user = $user[0];
-                   
-        $status = $request['status'];
-        $paginate = $request['paginate'];
-        $filter = $request['filter'];  
 
-        $today=date("Y-m-d");
+    }
 
-        if($status=='Cancelled'){   
-            
-            $list = Booking::where('users_id',$user->id)
-            ->where('status','=',2)
-            ->with(["bus" => function($bs){
-                $bs->with('BusType.busClass');
-                $bs->with('BusSitting');                
-                $bs->with('busContacts');
-              } ] )
-            ->with(["bookingDetail" => function($b){
-                    $b->with(["busSeats" => function($s){
-                        $s->with("seats");
-                      } ]);
-                } ])->orderBy('journey_dt','desc');
-
-        }
-        
-        else if($status=='Completed'){ 
-
-            $list = Booking::where('users_id',$user->id)
+    public function CompletedBookings($user_id,$today){
+      return Booking::where('users_id',$user_id)
             ->where('status','!=',2)
               ->where('status','!=',0)
               ->where('status','!=',4)
@@ -257,13 +202,11 @@ class UsersRepository
                         $s->with("seats");
                       } ]);
                 } ])->orderBy('journey_dt','desc');
+    }
 
-        }
-
-        else if($status=='Upcoming'){    
-
-            $list = Booking::where('users_id',$user->id)
-             ->where('status','!=',2)
+    public function UpcomingBookings($user_id,$today){
+      return  Booking::where('users_id',$user_id)
+              ->where('status','!=',2)
               ->where('status','!=',0)
               ->where('status','!=',4)
             ->where('journey_dt','>',$today)
@@ -277,114 +220,51 @@ class UsersRepository
                         $s->with("seats");
                       } ]);
                 } ])->orderBy('journey_dt','desc');
-
-        }
-
-      else{
-            $list = Booking::where('users_id',$user->id)
-             ->where('status','!=',0)
-             ->where('status','!=',4)
-            ->with(["bus" => function($bs){
-                $bs->with('BusType.busClass');
-                $bs->with('BusSitting');                
-                $bs->with('busContacts');
-              } ] )
-            ->with(["bookingDetail" => function($b){
-                    $b->with(["busSeats" => function($s){
-                        $s->with("seats");
-                      } ]);
-                } ])->orderBy('journey_dt','desc');
-
-        } 
-      
-      
-
-        $list =  $list->paginate($paginate);
-      
-     
-
-     
-
-        if($list){
-            foreach($list as $k => $l){
-
-                $l['source']=$this->location->where('id',$l->source_id)->get();
-                $l['destination']=$this->location->where('id',$l->destination_id)->get();
-              
-                $l['review']= false;
-                $l['cancel']= false;
-
-                if($l->status==2){
-                    $l['booking_status']= "Cancelled";
-                    
-                }
-                else if($l->status!=2 && $today > $l->journey_dt){
-                  
-                   $review=$this->review->where('users_id',$l->users_id)->where('pnr',$l->pnr)->get();
-              
-                    if(isset($review[0])){
-                    }else{
-                      $l['review']= true;
-                    }
-                  
-                    $l['booking_status']= "Completed";
-                }elseif($l->status!=2 && $today < $l->journey_dt){
-                    $l['booking_status']= "Upcoming";
-                    $l['cancel']= true;
-                }elseif($l->status!=2 && $today == $l->journey_dt){
-                    $l['booking_status']= "Ongoing";
-                }
-            }
-        }
-
-      
-        $response = array(
-            "count" => $list->count(), 
-            "total" => $list->total(),
-            "data" => $list
-           ); 
-          
-           return $response;
-         
-       }else{
-         return $user;
-       }
-
     }
 
-    public function userReviews($request){
+    public function AllBookings($user_id){
+      return  Booking::where('users_id',$user_id)
+      ->where('status','!=',0)
+      ->where('status','!=',4)
+     ->with(["bus" => function($bs){
+         $bs->with('BusType.busClass');
+         $bs->with('BusSitting');                
+         $bs->with('busContacts');
+       } ] )
+     ->with(["bookingDetail" => function($b){
+             $b->with(["busSeats" => function($s){
+                 $s->with("seats");
+               } ]);
+         } ])->orderBy('journey_dt','desc');
+    }
+
+    public function getLocation($location_id){
+      return $this->location->where('id',$location_id)->get();
+    }
+
+    public function getLocationName($location_id){
+      return Location::where('id',$location_id)->first()->name;
+    }
+
+    public function UserCanReviewStatus($users_id,$pnr){
+      return $this->review->where('users_id',$users_id)->where('pnr',$pnr)->get();
+    }
+
+    public function userReviews($user_id){
             
-        $user= $this->userProfile($request);
-       
-      if($user!='Invalid'){
-         
-         $user = $user[0];
+      return Review::where('users_id', $user_id)
+          ->with('bus', function ($q) {
+              $q->with('busGallery');
+              $q->with('booking', function ($b){
+                  $b ->where('status','!=',0);
+              });
+          })
+          ->with('users')
+          ->orderBy('id','desc')
+          ->get();
 
-        $userReviews = Review::where('users_id', $user->id)
-                            ->with('bus', function ($q) {
-                                $q->with('busGallery');
-                                $q->with('booking', function ($b){
-                                    $b ->where('status','!=',0);
-                                });
-                            })
-                            ->with('users')
-                            ->orderBy('id','desc')
-                            ->get();
-        $userReviews = collect($userReviews);
-        
-        
-        if($userReviews){
-            foreach($userReviews as $key => $value){ 
-                $value->bus->booking['src_name']=Location::where('id',$value->bus->booking->source_id)->first()->name;
-                $value->bus->booking['dest_name']=Location::where('id',$value->bus->booking->destination_id)->first()->name;   
-            }
-        }
-        return $userReviews;
-       }
-      else{
-        return $user;
-      }
-    }
+   }   
+  
 
 }   
  

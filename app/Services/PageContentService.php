@@ -18,6 +18,6 @@ class PageContentService
     
     public function getAll($request)
     {      
-        return $this->pagecontentRepository->getAll($request);
+        return $this->pagecontentRepository->getAll($request['bus_operator_id'],$request['page_url']);
     }
 }

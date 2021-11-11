@@ -21,51 +21,210 @@ class UsersService
         $this->usersRepository = $usersRepository;
     }
 
-    public function Register($data)
+    public function Register($request)
     {   
-        $user = $this->usersRepository->Register($data);
-        return $user;
+        
+          $query = $this->usersRepository->GetUserData($request['phone'],$request['email']);
+
+            $guestUser = $query->latest()->exists();
+            
+            if(!$guestUser){
+                return $this->usersRepository->saveUser($request);                
+            }else{
+                $verifiedUser = $query->latest()->first()->is_verified;
+
+                if($verifiedUser==0){
+                    $otp = $this->usersRepository->sendOtp($request);
+                    return $this->usersRepository->updateUser($query,$request['name'],$otp);
+                }
+                else{
+                        return "Existing User";
+                }
+            }
+
     }
-    public function verifyOtp($data)
-    {   
-        $user = $this->usersRepository->verifyOtp($data);
-        return $user;
+    public function verifyOtp($request)
+    { 
+        $rcvOtp = trim($request['otp']);
+        $userId = $request['userId'];
+        $existingOtp = $this->usersRepository->getOtp($userId);
+
+        if(isset($existingOtp[0])){
+        $existingOtp = $existingOtp[0]['otp'];
+
+        $user = $this->usersRepository->userInfo($userId);
+
+        if(($rcvOtp=="")){
+            return "";
+            }
+        elseif($existingOtp == $rcvOtp){
+             $this->usersRepository->updateOTP($userId);
+             $usersDetails = $this->usersRepository->GetUserDataAfterUpdate($userId);
+             return $usersDetails; 
+        }
+        else{
+            return 'Inval OTP';
+        }
+    }else{
+        return 'Invalid User ID';
+    }
+
     }
     public function login($request)
     {   
-        $user = $this->usersRepository->login($request);
-        return $user;
+      
+        $query = $this->usersRepository->GetUserData($request['phone'],$request['email']);
+      
+        $verifiedStatus = $query->latest()->first()->is_verified;    
+        if($verifiedStatus == 1){
+            $name = $query->latest()->first()->name;        
+            $request->request->add(['name' => $name]);
+            $otp = $this->usersRepository->sendOtp($request);
+
+            return $this->usersRepository->createOtp($query,$otp);
+
+        } else{
+            return "un_registered";
+        }      
+
     }
     public function userProfile($request){
 
-        $user = $this->usersRepository->userProfile($request);
-        return $user;     
+       $userId = $request['userId'];
+       $token = $request['token']; 
+
+       $userDetails = $this->usersRepository->GetuserByToken($userId,$token);
+         
+       if(isset($userDetails[0])){
+         return $userDetails;
+       }else{
+         return 'Invalid';
+       }
+
     }
     public function BookingHistory($request){
+        //$result = $this->usersRepository->BookingHistory($request);
+        //return $result;
 
-        $result = $this->usersRepository->BookingHistory($request);
-        return $result;
+        $user= $this->userProfile($request);
+      
+        if($user!='Invalid'){
+          
+          $user = $user[0];
+                    
+         $status = $request['status'];
+         $paginate = $request['paginate'];
+         $filter = $request['filter'];  
+ 
+         $today=date("Y-m-d");
+ 
+         if($status=='Cancelled'){
+             $list = $this->usersRepository->CancelledBookings($user->id);
+         }
+         
+         else if($status=='Completed'){  
+             $list = $this->usersRepository->CancelledBookings($user->id,$today); 
+         }
+ 
+         else if($status=='Upcoming'){ 
+             $list = $this->usersRepository->UpcomingBookings($user->id,$today); 
+         }
+ 
+       else{
+             $list = $this->usersRepository->AllBookings($user->id);  
+         } 
+       
+       
+ 
+         $list =  $list->paginate($paginate);
+ 
+         if($list){
+             foreach($list as $k => $l){
+ 
+                 $l['source']=$this->usersRepository->getLocation($l->source_id);
+                 $l['destination']=$this->usersRepository->getLocation($l->destination_id);
+               
+                 $l['review']= false;
+                 $l['cancel']= false;
+ 
+                 if($l->status==2){
+                     $l['booking_status']= "Cancelled";
+                     
+                 }
+                 else if($l->status!=2 && $today > $l->journey_dt){
+                   
+                    $review= $this->usersRepository->UserCanReviewStatus($l->users_id,$l->pnr);                   
+               
+                     if(isset($review[0])){
+                     }else{
+                       $l['review']= true;
+                     }
+                   
+                     $l['booking_status']= "Completed";
+                 }elseif($l->status!=2 && $today < $l->journey_dt){
+                     $l['booking_status']= "Upcoming";
+                     $l['cancel']= true;
+                 }elseif($l->status!=2 && $today == $l->journey_dt){
+                     $l['booking_status']= "Ongoing";
+                 }
+             }
+         }
+ 
+       
+         $response = array(
+             "count" => $list->count(), 
+             "total" => $list->total(),
+             "data" => $list
+            ); 
+           
+            return $response;
+          
+        }else{
+          return $user;
+        }
 
-        
     }
 
     public function updateProfile($request, $userId,$token){
 
-        $result = $this->usersRepository->updateProfile($request, $userId,$token);
-        return $result;
-        // try {
-        //     $result = $this->usersRepository->updateProfile($request,$id,$token);
-        // } catch (Exception $e) {
-        //     throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        // }
-        return $result;
+        $userDetails=$this->usersRepository->GetuserByToken($userId,$token);
+      
+        if(isset($userDetails[0])){
+            return $this->usersRepository->updateProfile($request, $userId,$token);
+           
+         }else{
+           return 'Invalid';
+         }
+
         
     }
 
     
     public function userReviews($request)
     {
-        $result = $this->usersRepository->userReviews($request);
-        return $result;
-    }
+      
+       $user= $this->userProfile($request);
+       
+       if($user!='Invalid'){
+          
+          $user = $user[0];
+ 
+         $userReviews =  $this->usersRepository->userReviews($user->id,);
+
+         $userReviews = collect($userReviews);
+         
+         
+         if($userReviews){
+             foreach($userReviews as $key => $value){ 
+                 $value->bus->booking['src_name']=$this->usersRepository->getLocationName($value->bus->booking->source_id);
+                 $value->bus->booking['dest_name']=$this->usersRepository->getLocationName($value->bus->booking->destination_id);   
+             }
+         }
+         return $userReviews;
+        }
+       else{
+         return $user;
+       }
+     }
+
 }

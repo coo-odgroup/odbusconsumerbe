@@ -19,6 +19,6 @@ class TestimonialService
     }
     public function getAll($request)
     {      
-        return $this->testimonialRepository->getAll($request);
+        return $this->testimonialRepository->getAll($request['bus_operator_id']);
     }
 }

@@ -150,6 +150,9 @@ class UsersController extends Controller
     }elseif($verify == 'Inval OTP'){
      return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);
     }
+    elseif($verify == 'Invalid User ID'){
+      return $this->errorResponse(Config::get('constants.USER_INVALID'),Response::HTTP_OK);
+     }
     else{
     return $this->successResponse($verify,Config::get('constants.VERIFIED'),Response::HTTP_OK);
     }

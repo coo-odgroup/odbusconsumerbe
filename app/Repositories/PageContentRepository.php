@@ -10,10 +10,8 @@ class PageContentRepository
    {
       $this->pagecontent = $pagecontent ;
    }    
-   public function getAll($request)
-   {
-      $bus_operator_id=$request['bus_operator_id'];
-      $page_url=$request['page_url'];
+   public function getAll($bus_operator_id,$page_url)
+   {      
       return $this->pagecontent->where('bus_operator_id',$bus_operator_id)
                                ->where('page_url',$page_url)
                                ->where('status', 1)->get();

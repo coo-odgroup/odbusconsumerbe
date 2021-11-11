@@ -10,12 +10,10 @@ class TestimonialRepository
     {
        $this->testimonial = $testimonial ;
     }    
-    public function getAll($request)
+    public function getAll($operator_id)
     {
-      $operator_id = $request['bus_operator_id'] ;
-      $data = $this->testimonial->where('bus_operator_id', $operator_id)
+      return $this->testimonial->where('bus_operator_id', $operator_id)
                                 ->where('status','1')
                                 ->orderBy('id','DESC')->get();
-      return $data;
     }
 }

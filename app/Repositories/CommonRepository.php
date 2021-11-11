@@ -24,12 +24,22 @@ class CommonRepository
         $this->odbusCharges = $odbusCharges;
     }   
     
-    public function getAll($request)
+    public function getOperatorBanner($bus_operator_id)
     { 
-        $data['banner']=$this->banner->where('bus_operator_id','=',$request['bus_operator_id'])->get();
-        $data['socialMedia']=$this->socialMedia->where('bus_operator_id','=',$request['bus_operator_id'])->get();
-        $data['common']=$this->odbusCharges->where('bus_operator_id','=',$request['bus_operator_id'])->get();
-        return $data;
+        return $this->banner->where('bus_operator_id','=',$bus_operator_id)->get();
+        
+    }
+
+    public function getOperatorSocialMedia($bus_operator_id)
+    { 
+        return $this->socialMedia->where('bus_operator_id','=',$bus_operator_id)->get();
+        
+    }
+
+    public function getCommonSettings($bus_operator_id)
+    { 
+        return $this->odbusCharges->where('bus_operator_id','=',$bus_operator_id)->get();
+        
     }
 
    
