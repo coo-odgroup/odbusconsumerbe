@@ -53,5 +53,7 @@ return [
     'INVALID_COUPON' => 'Coupon is not valid',
     'COUPON_EXPIRED' => 'Coupon is expired',
     'COUPON_APPLIED' => 'Coupon Apply successful',
-    'OPERATOR_NOT_FOUND' => 'Operator is not available'
+    'OPERATOR_NOT_FOUND' => 'Operator is not available',
+    'PNR_NOT_MATCH'=> "PNR does not match",
+    'MOBILE_NOT_MATCH'=> "Mobile no doesn't match"
 ];

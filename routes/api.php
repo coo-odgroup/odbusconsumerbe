@@ -75,6 +75,10 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::get('/UserReviews', [UsersController::class, 'userReviews']);
+
+    Route::post('/CommonService', [CommonController::class, 'getAll']);
+    Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
+    Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
   
 //});
 
@@ -83,6 +87,3 @@ Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 
 
 
-Route::post('/CommonService', [CommonController::class, 'getAll']);
-Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
-Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);

@@ -55,96 +55,56 @@ class BookingManageRepository
         $this->customerPayment = $customerPayment;
     }   
     
-    public function getJourneyDetails($request)
+    public function getJourneyDetails($mobile,$pnr)
     { 
 
-        $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
-
-        $journey_detail = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
             $u->where('booking.pnr', '=', $pnr);
             $u->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');
-              } ] ); 
+            }]); 
         }])->get();
-
-        if($journey_detail){            
-
-            if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-                 $journey_detail[0]->booking['source']=$this->location->where('id',$journey_detail[0]->booking[0]->source_id)->get();
-                 $journey_detail[0]->booking['destination']=$this->location->where('id',$journey_detail[0]->booking[0]->destination_id)->get();
-            }
-
-        }
-
-        return $journey_detail;
        
     }
 
-    public function getPassengerDetails($request)
+    public function GetLocationName($location_id){
+        return $this->location->where('id',$location_id)->get();
+    }
+
+    public function getPassengerDetails($mobile,$pnr)
     { 
 
-        $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
-
-        $passenger_detail = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
-            $u->where('booking.pnr', '=', $pnr);
-            $u->with(["bookingDetail" => function($b){
-                $b->with(["busSeats" => function($s){
-                    $s->with("seats");
-                  } ]);
-            } ]);
-        }])->get();
-
-        return $passenger_detail;
+       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+                                                $u->where('booking.pnr', '=', $pnr);
+                                                $u->with(["bookingDetail" => function($b){
+                                                    $b->with(["busSeats" => function($s){
+                                                        $s->with("seats");
+                                                    } ]);
+                                                } ]);
+                                            }])->get();
        
     }
 
-    public function getBookingDetails($request)
+    public function getBookingDetails($mobile,$pnr)
     { 
 
-        $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
-
-        $booking_detail = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
-            $u->where('booking.pnr', '=', $pnr);            
-            $u->with(["bus" => function($bs){
-                $bs->with('BusType.busClass');
-                $bs->with('BusSitting');                
-                $bs->with('busContacts');
-              } ] );           
-            
-            $u->with(["bookingDetail" => function($b){
-                $b->with(["busSeats" => function($s){
-                    $s->with("seats");
-                  } ]);
-            } ]);
-        }])->get();
-      
-      
-      
-     
-        if(isset($booking_detail[0])){  
-          
+      return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+        $u->where('booking.pnr', '=', $pnr);            
+        $u->with(["bus" => function($bs){
+            $bs->with('BusType.busClass');
+            $bs->with('BusSitting');                
+            $bs->with('busContacts');
+          } ] );           
         
-
-            if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-              
-                 $booking_detail[0]->booking[0]['source']=$this->location->where('id',$booking_detail[0]->booking[0]->source_id)->get();
-                 $booking_detail[0]->booking[0]['destination']=$this->location->where('id',$booking_detail[0]->booking[0]->destination_id)->get();                  
-                 
-                  return $booking_detail;                  
-            }
-            
-            else{                
-                 return "PNR doesn't match";                
-            }
-        }
+        $u->with(["bookingDetail" => function($b){
+            $b->with(["busSeats" => function($s){
+                $s->with("seats");
+              } ]);
+        }]);
         
-        else{            
-            return "Mobile no doesn't match";            
-        }
+       }])->get();
+
     }
 
     public function emailSms($request)

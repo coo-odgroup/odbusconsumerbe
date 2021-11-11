@@ -21,38 +21,95 @@ class BookingManageService
     }
     public function getJourneyDetails($request)
     {
-        try {
-            $getJourneyDetails = $this->bookingManageRepository->getJourneyDetails($request);
+        try {          
+            $pnr = $request['pnr'];
+            $mobile = $request['mobile'];
+    
+            $journey_detail = $this->bookingManageRepository->getJourneyDetails($mobile,$pnr);
+    
+            if($journey_detail){            
+    
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+                     $journey_detail[0]->booking['source']=$this->bookingManageRepository->GetLocationName($journey_detail[0]->booking[0]->source_id);
+                     $journey_detail[0]->booking['destination']=$this->bookingManageRepository->GetLocationName($journey_detail[0]->booking[0]->source_id);
+                }    
+                else{                
+                    return "PNR_NOT_MATCH";                
+               }
+           }            
+           else{            
+               return "MOBILE_NOT_MATCH";            
+           }
+    
+            return $journey_detail;
+
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $getJourneyDetails;
+        
     }   
 
     public function getPassengerDetails($request)
     {
-        try {
-            $getPassengerDetails = $this->bookingManageRepository->getPassengerDetails($request);
+        try {           
+            $pnr = $request['pnr'];
+            $mobile = $request['mobile'];
+    
+            $passenger_detail = $this->bookingManageRepository->getPassengerDetails($mobile,$pnr);
+    
+            if(isset($passenger_detail[0])){ 
+                if(isset($passenger_detail[0]->booking[0]) && !empty($passenger_detail[0]->booking[0])){                  
+                   return $passenger_detail;                  
+                }                
+                else{                
+                     return "PNR_NOT_MATCH";                
+                }
+            }            
+            else{            
+                return "MOBILE_NOT_MATCH";            
+            }
+
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $getPassengerDetails;
+        
     }  
 
     public function getBookingDetails($request)
     {
         try {
-            $getBookingDetails = $this->bookingManageRepository->getBookingDetails($request);
+            //$getBookingDetails = $this->bookingManageRepository->getBookingDetails($request);
+
+            $pnr = $request['pnr'];
+            $mobile = $request['mobile'];
+    
+            $booking_detail = $this->bookingManageRepository->getBookingDetails($mobile,$pnr); 
+         
+            if(isset($booking_detail[0])){ 
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){                  
+                     $booking_detail[0]->booking[0]['source']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
+                     $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);                  
+                     
+                    return $booking_detail;                  
+                }                
+                else{                
+                     return "PNR_NOT_MATCH";                
+                }
+            }            
+            else{            
+                return "MOBILE_NOT_MATCH";            
+            }
+
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $getBookingDetails;
+       
     }  
 
 
