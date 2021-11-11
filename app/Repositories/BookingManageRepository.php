@@ -113,9 +113,6 @@ class BookingManageRepository
      
       
         $b= $this->getBookingDetails($request);
-              
-         
-      
       
         if($b && isset($b[0])){
 
@@ -183,115 +180,21 @@ class BookingManageRepository
     }
 
 
-    public function cancelTicketInfo($request){
+    public function cancelTicketInfo($mobile,$pnr){
 
-
-        $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
-
-        $booking_detail  = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
-            $u->where('booking.pnr', '=', $pnr); 
-            $u->with("customerPayment");           
-            $u->with(["bus" => function($bs){
-                $bs->with('cancellationslabs.cancellationSlabInfo');
-              } ] );          
-            
-            $u->with(["bookingDetail" => function($b){
-                $b->with(["busSeats" => function($s){
-                    $s->with("seats");
-                  } ]);
-            } ]);
-
-            
-        }])->get();
-
-      
-        if(isset($booking_detail[0])){          
-
-             if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-
-                
-                $jDate =$booking_detail[0]->booking[0]->journey_dt;
-                $jDate = date("d-m-Y", strtotime($jDate));
-                $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
-
-                $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
-                $current_date_time = Carbon::now()->toDateTimeString(); 
-                $bookingDate = new DateTime($combinedDT);
-                $cancelDate = new DateTime($current_date_time);
-                $interval = $bookingDate->diff($cancelDate);
-                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
-
-                 if($interval < 12) {
-                    return 'Cancellation is not allowed';                    
-                }
-
-                 $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
-
-
-                 $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-                foreach($cancelPolicies as $cancelPolicy){
-                    $duration = $cancelPolicy->duration;
-                    $deduction = $cancelPolicy->deduction;
-                    $duration = explode("-", $duration, 2);
-                    $max= $duration[1];
-                    $min= $duration[0];
-    
-                    if( $interval > 240){
-                        $deduction = 10;//minimum deduction
-                        $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
-                        $refundAmt =  ($refund['refundAmount']/100);
-                        $paidAmt =  ($refund['paidAmount']/100);
-
-                        $emailData['refundAmount'] = $refundAmt;
-                        $emailData['deductionPercentage'] = $deduction."%";
-                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                        $emailData['totalfare'] = $paidAmt;
-
-                        if($booking_detail[0]->booking[0]->status==2){
-                            $emailData['cancel_status'] = false;
-                        }else{
-                            $emailData['cancel_status'] = true;
-                        }
-                       
-
-                        return $emailData;
-    
-                    }elseif($min < $interval && $interval < $max){ 
-
-                        $refund =  $this->refundPolicy($deduction,$razorpay_payment_id);
-
-                        $refundAmt =  ($refund['refundAmount']/100);
-                        $paidAmt =  ($refund['paidAmount']/100);
-
-                        $emailData['refundAmount'] = $refundAmt;
-                        $emailData['deductionPercentage'] = $deduction."%";
-                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                        $emailData['totalfare'] = $paidAmt;
-                        
-                        if($booking_detail[0]->booking[0]->status==2){
-                            $emailData['cancel_status'] = false;
-                        }else{
-                            $emailData['cancel_status'] = true;
-                        }
-
-                        return $emailData;
-                       
-                    }
-                }
-                                 
-            }
-            
-            else{                
-                return "PNR doesn't match";                
-           }
-       }
-       
-       else{            
-           return "Mobile no doesn't match";            
-       }
-
-        return $booking_detail;
+       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+        $u->where('booking.pnr', '=', $pnr); 
+        $u->with("customerPayment");           
+        $u->with(["bus" => function($bs){
+            $bs->with('cancellationslabs.cancellationSlabInfo');
+          } ] );          
+        
+        $u->with(["bookingDetail" => function($b){
+            $b->with(["busSeats" => function($s){
+                $s->with("seats");
+              } ]);
+        } ]);
+       }])->get();
         
     }
 

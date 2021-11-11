@@ -71,7 +71,7 @@ class BookingManageController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
-          $response =  $this->bookingManageService->getBookingDetails($request);  
+          $response =  $this->bookingManageService->getJourneyDetails($request);  
           if($response == 'PNR_NOT_MATCH'){
            return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
           }elseif($response == 'MOBILE_NOT_MATCH'){
@@ -125,7 +125,7 @@ class BookingManageController extends Controller
      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
      } 
      try {
-      $response =  $this->bookingManageService->getBookingDetails($request);  
+      $response =  $this->bookingManageService->getPassengerDetails($request);  
       if($response == 'PNR_NOT_MATCH'){
        return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
       }elseif($response == 'MOBILE_NOT_MATCH'){
@@ -235,8 +235,13 @@ class BookingManageController extends Controller
      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
      } 
        try {
-        $response =  $this->bookingManageService->emailSms($request);  
-         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+         $response =  $this->bookingManageService->emailSms($request);  
+         if($response=='Invalid request'){
+          return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
+         }else{
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+         }
+        
      }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -283,7 +288,20 @@ class BookingManageController extends Controller
      } 
        try {
         $response =  $this->bookingManageService->cancelTicketInfo($request);  
-         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+        if($response == 'PNR_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+         }elseif($response == 'MOBILE_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+         }
+         elseif($response == 'CANCEL_NOT_ALLOWED'){
+          return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+         }         
+         else{
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+         }
+
+         
      }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

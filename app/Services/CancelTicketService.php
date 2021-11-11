@@ -7,9 +7,12 @@ use App\Repositories\CancelTicketRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
-
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Illuminate\Support\Arr;
+
 
 class CancelTicketService
 {
@@ -22,7 +25,97 @@ class CancelTicketService
     public function cancelTicket($request)
     {
         try {
-            $cancelTicket = $this->cancelTicketRepository->cancelTicket($request);
+            //$cancelTicket = $this->cancelTicketRepository->cancelTicket($request);
+
+            $pnr = $request['pnr'];
+            $phone = $request['phone'];
+            $booked = Config::get('constants.BOOKED_STATUS');
+    
+            $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
+            //return $booking_detail;
+            if(isset($booking_detail[0])){          
+    
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+     
+                    $jDate =$booking_detail[0]->booking[0]->journey_dt;
+                    $jDate = date("d-m-Y", strtotime($jDate));
+                    $boardTime =$booking_detail[0]->booking[0]->boarding_time;
+                    $seat_arr=[];
+                    foreach($booking_detail[0]->booking[0]->bookingDetail as $bd){
+                        
+                       $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
+                    }
+                    $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
+                    $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
+                     $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
+                      $route = $sourceName .'-'. $destinationName;
+                       $userMailId =$booking_detail[0]->email;
+                     $bookingId =$booking_detail[0]->booking[0]->id;
+                      $booking = $this->cancelTicketRepository->GetBooking($bookingId);
+                     $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;
+    
+                    $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                    $current_date_time = Carbon::now()->toDateTimeString(); 
+                    $bookingDate = new DateTime($combinedDT);
+                    $cancelDate = new DateTime($current_date_time);
+                    $interval = $bookingDate->diff($cancelDate);
+                    $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                    $smsData = array(
+                        'phone' => $phone,
+                        'PNR' => $pnr,
+                        'busdetails' => $busNumber,
+                        'doj' => $jDate, 
+                        'route' => $route,
+                        'seat' => $seat_arr
+                    );
+                    $emailData = array(
+                        'email' => $userMailId,
+                        'contactNo' => $phone,
+                        'pnr' => $pnr,
+                        'journeydate' => $jDate, 
+                        'route' => $route,
+                        'seat_no' => $seat_arr,
+                        'cancellationDateTime' => $current_date_time
+                    );
+                     if($interval < 12) {
+                        return 'Cancellation is not allowed';                    
+                    }
+                $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+                    foreach($cancelPolicies as $cancelPolicy){
+                        $duration = $cancelPolicy->duration;
+                        $deduction = $cancelPolicy->deduction;
+                        $duration = explode("-", $duration, 2);
+                        $max= $duration[1];
+                        $min= $duration[0];
+        
+                        if( $interval > 240){
+                            $deduction = 10;//minimum deduction
+                            $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData);
+                            $refundAmt =  $refund['refundAmount'];
+                            $smsData['refundAmount'] = $refundAmt;
+                            
+                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                            if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            } 
+                            return $refund;
+    
+                        }
+                        elseif($min < $interval && $interval < $max){ 
+                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData)
+                            ; 
+                            return $refund;    
+                        }
+                    }                     
+                } 
+                else{                
+                     return "PNR_NOT_MATCH";                
+                }
+            }
+            else{            
+                return "MOBILE_NOT_MATCH";            
+            }
+
 
         } catch (Exception $e) {
             Log::info($e->getMessage());

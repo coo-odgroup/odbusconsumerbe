@@ -55,5 +55,6 @@ return [
     'COUPON_APPLIED' => 'Coupon Apply successful',
     'OPERATOR_NOT_FOUND' => 'Operator is not available',
     'PNR_NOT_MATCH'=> "PNR does not match",
-    'MOBILE_NOT_MATCH'=> "Mobile no doesn't match"
+    'MOBILE_NOT_MATCH'=> "Mobile no doesn't match",
+    'CANCEL_NOT_ALLOWED' =>'Cancellation is not allowed'
 ];

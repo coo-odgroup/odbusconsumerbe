@@ -7,9 +7,10 @@ use App\Repositories\BookingManageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
-
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Carbon\Carbon;
+use DateTime;
 
 class BookingManageService
 {
@@ -29,7 +30,7 @@ class BookingManageService
     
             if($journey_detail){            
     
-                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+                if(isset($journey_detail[0]->booking[0]) && !empty($journey_detail[0]->booking[0])){
                      $journey_detail[0]->booking['source']=$this->bookingManageRepository->GetLocationName($journey_detail[0]->booking[0]->source_id);
                      $journey_detail[0]->booking['destination']=$this->bookingManageRepository->GetLocationName($journey_detail[0]->booking[0]->source_id);
                 }    
@@ -116,25 +117,189 @@ class BookingManageService
     public function emailSms($request)
     {
         try {
-            $emailSms = $this->bookingManageRepository->emailSms($request);
+            $pnr = $request['pnr'];
+            $mobile = $request['mobile'];
+           
+             $b= $this->bookingManageRepository->getBookingDetails($mobile,$pnr);
+
+             
+      
+            if($b && isset($b[0])){
+
+                $b=$b[0];
+
+                $seat_arr=[];
+                $seat_no='';
+            
+                foreach($b->booking[0]->bookingDetail as $bd){
+                    array_push($seat_arr,$bd->busSeats->seats->seatText);              
+                
+                }  
+
+               $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
+               $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
+
+               $body = [
+                    'name' => $b->name,
+                    'phone' => $b->phone,
+                    'email' => $b->email,
+                    'pnr' => $b->booking[0]->pnr,
+                    'bookingdate'=> $b->booking[0]->created_at,
+                    'journeydate' => $b->booking[0]->journey_dt ,
+                    'boarding_point'=> $b->booking[0]->boarding_point,
+                    'dropping_point' => $b->booking[0]->dropping_point,
+                    'departureTime'=> $b->booking[0]->boarding_time,
+                    'arrivalTime'=> $b->booking[0]->dropping_time,
+                    'seat_no' => $seat_arr,
+                    'busname'=> $b->booking[0]->bus->name,
+                    'source'=> $source_data[0]->name,
+                    'destination'=> $dest_data[0]->name,
+                    'busNumber'=> $b->booking[0]->bus->bus_number,
+                    'bustype' => $b->booking[0]->bus->busType->name,
+                    'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
+                    'sittingType' => $b->booking[0]->bus->busSitting->name, 
+                    'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
+                    'passengerDetails' => $b->booking[0]->bookingDetail ,
+                    'totalfare'=> $b->booking[0]->total_fare,
+                    'discount'=> $b->booking[0]->coupon_discount,
+                    'payable_amount'=> $b->booking[0]->payable_amount,
+                    'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
+                    'odbus_charges'=> $b->booking[0]->odbus_charges,
+                    'owner_fare'=> $b->booking[0]->owner_fare,
+                    'routedetails' => $source_data[0]->name."-".$dest_data[0]->name
+                    
+                 
+                ];
+            
+                if($b->email != ''){
+                
+                    $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($body,$b->booking[0]->pnr); 
+                }
+
+                if($b->phone != ''){
+                    $sendEmailTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
+                }
+
+                return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
+
+            }else{
+
+                return "Invalid request";   
+
+            }
+
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $emailSms;
+        //return $emailSms;
     } 
 
     public function cancelTicketInfo($request)
     {
         try {
-            $cancelTicketInfo = $this->bookingManageRepository->cancelTicketInfo($request);
+         
+        $pnr = $request['pnr'];
+        $mobile = $request['mobile'];
+
+        $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
+      
+        if(isset($booking_detail[0])){ 
+                      
+             if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+
+                
+                $jDate =$booking_detail[0]->booking[0]->journey_dt;
+                $jDate = date("d-m-Y", strtotime($jDate));
+                $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+
+                $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                $current_date_time = Carbon::now()->toDateTimeString(); 
+                $bookingDate = new DateTime($combinedDT);
+                $cancelDate = new DateTime($current_date_time);
+                $interval = $bookingDate->diff($cancelDate);
+                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+
+                 if($interval < 12) {
+                    return 'CANCEL_NOT_ALLOWED';                    
+                }
+
+                  $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
+
+                 
+
+
+                 $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+                foreach($cancelPolicies as $cancelPolicy){
+                    $duration = $cancelPolicy->duration;
+                    $deduction = $cancelPolicy->deduction;
+                    $duration = explode("-", $duration, 2);
+                    $max= $duration[1];
+                    $min= $duration[0];
+    
+                    if( $interval > 240){
+                        $deduction = 10;//minimum deduction
+                        $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
+                        $refundAmt =  ($refund['refundAmount']/100);
+                        $paidAmt =  ($refund['paidAmount']/100);
+
+                        $emailData['refundAmount'] = $refundAmt;
+                        $emailData['deductionPercentage'] = $deduction."%";
+                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                        $emailData['totalfare'] = $paidAmt;
+
+                        if($booking_detail[0]->booking[0]->status==2){
+                            $emailData['cancel_status'] = false;
+                        }else{
+                            $emailData['cancel_status'] = true;
+                        }
+                       
+
+                        return $emailData;
+    
+                    }elseif($min < $interval && $interval < $max){ 
+
+                        $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
+
+                        $refundAmt =  ($refund['refundAmount']/100);
+                        $paidAmt =  ($refund['paidAmount']/100);
+
+                        $emailData['refundAmount'] = $refundAmt;
+                        $emailData['deductionPercentage'] = $deduction."%";
+                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                        $emailData['totalfare'] = $paidAmt;
+                        
+                        if($booking_detail[0]->booking[0]->status==2){
+                            $emailData['cancel_status'] = false;
+                        }else{
+                            $emailData['cancel_status'] = true;
+                        }
+
+                        return $emailData;
+                       
+                    }
+                }
+                                 
+            }
+            
+            else{                
+                return "PNR_NOT_MATCH";                
+           }
+       }
+       
+       else{            
+           return "MOBILE_NOT_MATCH";            
+       }
+
+        return $booking_detail;
+
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $cancelTicketInfo;
+        //return $cancelTicketInfo;
     } 
     
     
