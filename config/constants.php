@@ -66,4 +66,5 @@ return [
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',
     'IN_SUFFICIENT_BALANCE' => 'less balance in wallet to book tickets',
+    'AGENT_INVALID' => 'The agent information is not valid'
 ];

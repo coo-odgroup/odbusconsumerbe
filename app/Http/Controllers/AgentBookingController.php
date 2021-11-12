@@ -36,8 +36,12 @@ class AgentBookingController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
           try {
-           $response =  $this->agentBookingService->agentBooking($request);  
-           if($response['message']){
+           $response =  $this->agentBookingService->agentBooking($request);
+
+           if($response=='AGENT_INVALID'){
+            return $this->errorResponse(Config::get('constants.AGENT_INVALID'),Response::HTTP_OK);
+           }
+           else if($response['message']){
             return $this->errorResponse($response['note'],Response::HTTP_OK);
            }else{
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
