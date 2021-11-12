@@ -142,7 +142,9 @@ class AgentBookingRepository
         return $booking; 
         }
         else{
-            return "less_balance";
+            $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
+            $arr['message']="less_balance";
+            return $arr;
             } 
         }
     }
