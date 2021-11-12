@@ -15,6 +15,7 @@ use App\Models\BookingSequence;
 use App\Repositories\ChannelRepository;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
+use App\Models\AgentWallet;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 
@@ -43,21 +44,29 @@ class AgentBookingRepository
     public function agentBooking($request)
     { 
 
+
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $agentInfo = $request['customerInfo'];
 
         $validatedAgent = $this->user->where('phone',$agentInfo['phone'])
                                      ->where('status','1')
                                      ->exists();  
-        if($validatedAgent==true){
+         if($validatedAgent==true){
         $agentId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first('id');
-       
+        $aId = $this->user->where('phone',$agentInfo['phone'])
+                                  ->where('status','1')
+                                  ->first()->id;
+            //return $agentId; 
+        $walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
+        
         $bookingInfo = $request['bookingInfo'];
-
+        
+        if($walletBalance >= $bookingInfo['total_fare']){
         //Save Booking 
-        $booking = new $this->booking;
+     
+               $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
            } while ( $booking ->where('transaction_id', $transactionId )->exists());
@@ -90,12 +99,12 @@ class AgentBookingRepository
         $booking->odbus_gst_amount = $odbusGstAmount;
         $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
     
-        if($busOperator[0]->need_gst_bill == $needGstBill){   
-            $ownerGstPercentage = $busOperator[0]->gst_amount;
-            $booking->owner_gst_charges = $ownerGstPercentage;
-            $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
-            $booking->owner_gst_amount = $ownerGstAmount;
-        }
+            if($busOperator[0]->need_gst_bill == $needGstBill){   
+                $ownerGstPercentage = $busOperator[0]->gst_amount;
+                $booking->owner_gst_charges = $ownerGstPercentage;
+                $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
+                $booking->owner_gst_amount = $ownerGstAmount;
+            }
         $booking->created_by = $bookingInfo['created_by'];
 
         $agentId->booking()->save($booking);
@@ -133,7 +142,8 @@ class AgentBookingRepository
         return $booking; 
         }
         else{
-            return "un_registered_agent";  
+            return "less_balance";
+            } 
         }
     }
 }

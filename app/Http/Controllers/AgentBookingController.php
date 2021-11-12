@@ -38,8 +38,8 @@ class AgentBookingController extends Controller
           try {
            $response =  $this->agentBookingService->agentBooking($request);  
            switch($response){
-            case('un_registered_agent'):   //Agent is not registered
-                return $this->errorResponse(Config::get('constants.UNREGISTERED'),Response::HTTP_OK);
+            case('less_balance'):   //Agent is not registered
+                return $this->errorResponse(Config::get('constants.IN_SUFFICIENT_BALANCE'),Response::HTTP_OK);
             break;
         }
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);

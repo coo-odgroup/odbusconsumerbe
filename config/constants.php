@@ -65,4 +65,5 @@ return [
     'LOGIN_SUCCESSFUL' => 'Login successful',
     'VERIFIED' => 'otp verification is successful',
     'REGT_SUCCESS' => 'Registration Successful',
+    'IN_SUFFICIENT_BALANCE' => 'less balance in wallet to book tickets',
 ];
