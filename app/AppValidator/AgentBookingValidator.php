@@ -10,8 +10,8 @@ class AgentBookingValidator
     public function validate($data) { 
         
         $rules = [
-            'agentInfo.phone' => 'required||digits:10',
-            'agentInfo.name' => 'required|max:50',
+            'customerInfo.phone' => 'required||digits:10',
+            'customerInfo.name' => 'required|max:50',
             'bookingInfo.bus_operator_id' => 'required|numeric',
             'bookingInfo.bus_id' => 'required|numeric',
             'bookingInfo.source_id' => 'required|numeric',

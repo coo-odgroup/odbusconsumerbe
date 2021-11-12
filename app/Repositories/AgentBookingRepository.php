@@ -44,7 +44,7 @@ class AgentBookingRepository
     { 
 
         $needGstBill = Config::get('constants.NEED_GST_BILL');
-        $agentInfo = $request['agentInfo'];
+        $agentInfo = $request['customerInfo'];
 
         $validatedAgent = $this->user->where('phone',$agentInfo['phone'])
                                      ->where('status','1')
