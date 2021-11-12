@@ -49,9 +49,11 @@ return [
             'url_send' => env('TXTLOCAL_SEND_SMS_URL'),
             'url_status' => env('TXTLOCAL_STATUS_SMS_URL'),
             'message' => env('SMS_TEMPLATE'),
+            'msgAgent' => env('SMS_TEMPLATE_AGENT'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'senderid' => env('SENDER_ID'),
+            
         ],
         'indiaHub' => [
             'key' => env('SMS_TEXTLOCAL_KEY'),

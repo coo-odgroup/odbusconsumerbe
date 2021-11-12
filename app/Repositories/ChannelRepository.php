@@ -194,7 +194,73 @@ class ChannelRepository
 
         }
       }
-      //public function sendSmsTicket($data){
+
+      public function sendSmsAgent($data, $otp) {
+
+        $SmsGW = config('services.sms.otpservice');
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.msgAgent');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($data['phone']);
+            //$name = $data['name'];
+            $message = str_replace("<otp>",$otp,$message);
+            //$message = str_replace("<name>",$name,$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+             
+            // return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+            // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // $err = curl_error($ch);
+ 
+            // if ($err) { 
+            //     return "cURL Error #:" . $err;
+            // } 
+
+        }elseif($SmsGW=='IndiaHUB'){
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
+                $otp = $data['otp'];
+                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
+                // //$channel = 'transactional';
+                // //$route =  '4';
+                // //$dcs = '0';
+                // //$flashsms = '0';
+                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
+                // $receiver = urlencode($data['phone']);
+                // $sender_id = urlencode($data['sender']);
+                // $name = $data['name'];
+                // $message = $data['message'];
+                // $message = str_replace("<otp>",$otp,$message);
+                // $message = rawurlencode($message);
+    
+                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
+    
+                // $response = file_get_contents($api);
+                //return $response;
+
+        }
+      }
       public function sendSmsTicket($data, $pnr) {
 
         $seatList = implode(",",$data['seat_no']);

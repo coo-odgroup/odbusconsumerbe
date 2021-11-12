@@ -57,5 +57,12 @@ return [
     'PNR_NOT_MATCH'=> "PNR does not match",
     'MOBILE_NOT_MATCH'=> "Mobile no doesn't match",
     'CANCEL_NOT_ALLOWED' =>'Cancellation is not allowed',
-    'USER_INVALID' => 'Invalid User ID'
+    'USER_INVALID' => 'Invalid User ID',
+    'UNREGISTERED' => 'Agent is not registered',
+    'ROLE_MISMATCH' => 'Role of the agent mismatches',
+    'OTP_NOT_VERIFIED' => 'OTP is not yet validated',
+    'PWD_MISMATCH' => 'Incorrect Password',
+    'LOGIN_SUCCESSFUL' => 'Login successful',
+    'VERIFIED' => 'otp verification is successful',
+    'REGT_SUCCESS' => 'Registration Successful',
 ];

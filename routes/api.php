@@ -23,7 +23,6 @@ use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\SoapController;
 
 
-
 Route::post('/countries', [SoapController::class, 'getCountries']);
 //Route::group(['middleware' => ['check.scope:read:messages']], function() { 
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
@@ -84,7 +83,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/CommonService', [CommonController::class, 'getAll']);
     Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
     Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
-  
+    Route::post('/AgentLogin', [UserController::class, 'login']);
 //});
 
 
