@@ -1502,7 +1502,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"abcd@gmail.com\",\r\n    \"password\": \"12345\"\r\n}   ",
+					"raw": "{\r\n    \"email\":\"chandra@odgroup.in\",\r\n    \"password\": \"Admin@2010\"\r\n} ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1516,6 +1516,32 @@
 					],
 					"path": [
 						"AgentLogin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agent Booking TICKETS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"7008559705\",\r\n\t\t\"name\": \"Chandra\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"bus_operator_id\":1,\r\n\t\t\"bus_id\": \"3\",\r\n\t\t\"source_id\": \"1345\",\r\n\t\t\"destination_id\": \"1374\",\r\n\t\t\"journey_dt\": \"2021-10-09\",\r\n\t\t\"boarding_point\": \"Bus stand\",\r\n\t\t\"dropping_point\": \"bus stand\",\r\n\t\t\"boarding_time\": \"20:00\",\r\n\t\t\"dropping_time\": \"06:00\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1100,\r\n\t\t\"owner_fare\": 1000,\r\n        \"odbus_service_Charges\": 70,\r\n\t\t\"created_by\": \"Agent\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"37\",\r\n\t\t\t\t\"passenger_name\": \"sony\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\",\r\n\t\t\t\t\"created_by\": \"Agent\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n} ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/AgentBooking",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"AgentBooking"
 					]
 				}
 			},
