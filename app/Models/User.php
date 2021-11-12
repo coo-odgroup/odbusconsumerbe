@@ -52,7 +52,10 @@ class User extends Authenticatable
      ];
      public function buses()
     {
-        return $this->hasMany(Bus::class);
-        
+        return $this->hasMany(Bus::class);    
     } 
+    public function booking()
+      {
+            return $this->hasMany(Booking::class);   
+      } 
 }

@@ -21,6 +21,7 @@ use App\Http\Controllers\CommonController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\SoapController;
+use App\Http\Controllers\AgentBookingController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -84,6 +85,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);
     Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
     Route::post('/AgentLogin', [UserController::class, 'login']);
+    Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 //});
 
 

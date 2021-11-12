@@ -38,5 +38,9 @@ class Booking extends Model
       {
             return $this->hasOne(CustomerPayment::class);   
       } 
+      public function user()
+      {
+            return $this->belongsTo(User::class);
+      }
 
 }
