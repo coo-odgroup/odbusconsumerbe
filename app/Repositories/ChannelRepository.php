@@ -16,6 +16,8 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\Credentials;
+use App\Models\AgentWallet;
+use App\Models\AgentCommission;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -483,6 +485,7 @@ class ChannelRepository
 
       }
 
+  
       public function UpdateStatus($bookingId,$seatHold){
         $this->booking->where('id', $bookingId)->update(['status' => $seatHold]);
       }
@@ -530,4 +533,61 @@ class ChannelRepository
             return "Payment Failed"; 
         }
       }
+
+      public function CreateAgentPayment($agentId,$amount ,$name, $transactionId){
+        $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
+        $agetWallet = new AgentWallet();
+        $agetWallet->transaction_id = $transactionId;
+        $agetWallet->amount = $amount;
+        $agetWallet->transaction_type = 'd';
+        $agetWallet->balance = $walletBalance - $amount;
+        $agetWallet->user_id = $agentId;
+        $agetWallet->created_by = 'Agent';
+    
+        $agetWallet->save();
+      }
+
+      public function FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission){
+        $seatRecords =  Booking::with('bookingDetail')->where('user_id',$agentId)
+                                                      ->where('status', '1')->get();
+        $collection = collect($seatRecords);
+        $bookedSeatCount = 0;
+        foreach($collection as $record) {
+            $count =  $record->bookingDetail->count();
+            $bookedSeatCount = $bookedSeatCount + $count;
+        }
+        $agentComission = AgentCommission::get();
+        $currentSeatCount = count($seatIds);
+        $totalSeatCount = $bookedSeatCount+$currentSeatCount;
+
+        foreach($agentComission as $comission){
+          $rangeFrom = $comission->range_from;
+          $rangeTo = $comission->range_to;
+          if($totalSeatCount >= $rangeFrom && $totalSeatCount <= $rangeTo){
+              $comissionPerSeat = $comission->comission_per_seat;//comission per seat getting from odbus
+            break;
+          }else{
+              $comissionPerSeat = 0;
+          }    
+        }
+        $totalAgentComission=  $currentSeatCount*$comissionPerSeat;
+        $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
+        $afterTdsComission = $totalAgentComission - $tds;
+
+        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,
+        'status' => $booked, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
+
+        $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
+        $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        $agetWallet = new AgentWallet();
+        $agetWallet->transaction_id = $transactionId;
+        $agetWallet->amount = $afterTdsComission;
+        $agetWallet->transaction_type = 'c';
+        $agetWallet->balance = $walletBalance + $afterTdsComission;
+        $agetWallet->user_id = $agentId;
+        $agetWallet->created_by = 'Agent';
+        $agetWallet->save();
+        return $agetWallet;
+      }
+
 }

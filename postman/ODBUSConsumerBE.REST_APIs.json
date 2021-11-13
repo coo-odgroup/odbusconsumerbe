@@ -1546,6 +1546,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"agent_id\":2,\r\n    \"busId\": 3,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"2021111319091856455\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37,38],\r\n    \"entry_date\":\"13-11-2021\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.neoflix.in/api/AgentWalletPayment",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"AgentWalletPayment"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

@@ -37,17 +37,12 @@ class AgentBookingController extends Controller
         } 
           try {
            $response =  $this->agentBookingService->agentBooking($request);  
-           if($response['message']){
-            return $this->errorResponse($response['note'],Response::HTTP_OK);
-           }else{
+          //  if($response['message']){
+          //   return $this->errorResponse($response['note'],Response::HTTP_OK);
+          //  }
+         // else{
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
-           }
-        //    switch($response){
-        //     case('less_balance'):   //Agent is not registered
-        //         return $this->errorResponse(Config::get('constants.IN_SUFFICIENT_BALANCE'),Response::HTTP_OK);
-        //     break;
-        //     }
-        //     return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+           //}
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

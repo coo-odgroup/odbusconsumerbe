@@ -402,6 +402,22 @@ class ChannelController extends Controller
     
     
   }
+  public function walletPayment(Request $request)
+  {   
+   
+      try {
+          $response = $this->channelService->walletPayment($request); 
+          if($response == 'SEAT UN-AVAIL'){
+              return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+          }
+          else{
+              return $this->successResponse($response,Config::get('constants.WALLET_PAYMENT_SUCESS'),Response::HTTP_CREATED);
+          }
+       }
+       catch (Exception $e) {
+           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+         }  
+  }
 
 
 }

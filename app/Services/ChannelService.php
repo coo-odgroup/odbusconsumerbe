@@ -186,5 +186,64 @@ class ChannelService
         }
         
     }   
+
+    public function walletPayment($request)
+    {
+        try {
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+                $busId = $request['busId'];    
+                $transactionId = $request['transaction_id']; 
+                $seatIds = $request['seatIds'];
+                $agentId = $request['agent_id'];
+                $appliedComission = $request['applied_comission'];
+                $booked = Config::get('constants.BOOKED_STATUS');
+
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+
+                if(isset($seatStatus['lower_berth'])){
+                    $lb = collect($seatStatus['lower_berth']);
+                    $collection= $lb;
+                }
+                if(isset($seatStatus['upper_berth'])){
+                    $ub = collect($seatStatus['upper_berth']);
+                    $collection= $ub;
+                }
+                if(isset($lb) && isset($ub)){
+                    $collection= $lb->merge($ub);
+                }
+                
+                $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+                $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
+                    return $value == null;
+                });
+                if(sizeof($filtered->all())==0){
+               
+                    $records = $this->channelRepository->getBookingRecord($transactionId);
+                    $bookingId = $records[0]->id;  
+                    
+                    $name = $records[0]->user->name;
+                    $amount = $request['amount'];
+
+                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission);
+
+                    $details=$this->channelRepository->CreateAgentPayment($agentId,$amount ,$name, $bookingId,$transactionId,$appliedComission);   
+
+                    $data = array(
+                        'Comission' => $totalSeatsBookedByAgent->amount,
+                        'Total Balance' =>  $totalSeatsBookedByAgent->balance,
+                        'Agent ID' => $totalSeatsBookedByAgent->user_id,
+                    );
+                    return $data;
+                    //return "SEAT AVAIL";
+                }else{
+                    return "SEAT UN-AVAIL";
+                }
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+       
+    }  
    
 }

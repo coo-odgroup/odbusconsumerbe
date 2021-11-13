@@ -16,6 +16,8 @@ use App\Repositories\ChannelRepository;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
 use App\Models\AgentWallet;
+use App\Models\AgentFee;
+use App\Services\ViewSeatsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 
@@ -24,12 +26,13 @@ class AgentBookingRepository
     protected $bus;
     protected $ticketPrice;
     protected $location;
-    protected $users;
+    protected $user;
     protected $booking;
     protected $busSeats;
     protected $busLocationSequence;
+    protected $viewSeatsService;  
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -38,13 +41,12 @@ class AgentBookingRepository
         $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->channelRepository = $channelRepository;
-        $this->busLocationSequence = $busLocationSequence;       
+        $this->busLocationSequence = $busLocationSequence;
+        $this->viewSeatsService = $viewSeatsService;    
     }   
     
     public function agentBooking($request)
     { 
-
-
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $agentInfo = $request['customerInfo'];
 
@@ -104,10 +106,21 @@ class AgentBookingRepository
                 $booking->owner_gst_charges = $ownerGstPercentage;
                 $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
                 $booking->owner_gst_amount = $ownerGstAmount;
-            }
+            }     
+        $agentCommissionByCustomer = AgentFee::get(); 
+        foreach($agentCommissionByCustomer as $agentCom){
+            $priceFrom = $agentCom->price_from;
+            $priceTo = $agentCom->price_to;
+            if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
+                $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
+              break;
+            } else{
+                $comissionByCustomer = 0;
+            }    
+        }                   
         $booking->created_by = $bookingInfo['created_by'];
-
         $agentId->booking()->save($booking);
+        $booking->customer_comission = $comissionByCustomer;
         
         //fetch the sequence from bus_locaton_sequence
         $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
@@ -148,4 +161,5 @@ class AgentBookingRepository
             } 
         }
     }
+
 }
