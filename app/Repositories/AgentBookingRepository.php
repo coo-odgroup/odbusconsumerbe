@@ -53,13 +53,15 @@ class AgentBookingRepository
         $validatedAgent = $this->user->where('phone',$agentInfo['phone'])
                                      ->where('status','1')
                                      ->exists();  
-         if($validatedAgent==true){
+     if($validatedAgent==true){
         $agentId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first('id');
-        $aId = $this->user->where('phone',$agentInfo['phone'])
+          $aId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first()->id;
+                   
+
             //return $agentId; 
         $walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
         
@@ -159,7 +161,9 @@ class AgentBookingRepository
             $arr['message']="less_balance";
             return $arr;
             } 
-        }
+     }else{
+         return 'AGENT_INVALID';
+     }
     }
 
 }

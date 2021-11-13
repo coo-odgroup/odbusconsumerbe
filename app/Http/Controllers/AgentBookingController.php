@@ -37,12 +37,12 @@ class AgentBookingController extends Controller
         } 
           try {
            $response =  $this->agentBookingService->agentBooking($request);  
-          //  if($response['message']){
-          //   return $this->errorResponse($response['note'],Response::HTTP_OK);
-          //  }
-         // else{
+           if($response['message']){
+            return $this->errorResponse($response['note'],Response::HTTP_OK);
+           }
+         else{
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
-           //}
+           }
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
