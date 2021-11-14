@@ -194,7 +194,7 @@ class ChannelService
                 $busId = $request['busId'];    
                 $transactionId = $request['transaction_id']; 
                 $seatIds = $request['seatIds'];
-                $agentId = $request['agent_id'];
+                $agentId = $request['user_id'];
                 $appliedComission = $request['applied_comission'];
                 $booked = Config::get('constants.BOOKED_STATUS');
 
@@ -242,8 +242,31 @@ class ChannelService
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }  
+    }
+    public function agentPaymentStatus($request)
+    {
+        try {
+            $booked = Config::get('constants.BOOKED_STATUS');
+            $paymentDone = Config::get('constants.PAYMENT_DONE');
+            $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
+            $data = $request->all();
+
+            $busId = $request['bus_id'];
+            $seatIds = $request['seat_id'];
+            $transationId = $data['transaction_id'];
+            $bookingRecord = $this->channelRepository->getBookingData($busId,$transationId);
+            $pnr = $bookingRecord[0]->pnr;
+            
+            $bookingId = $bookingRecord[0]->id;    
+            return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked);
+            
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-       
-    }  
+        
+    }   
+
    
 }

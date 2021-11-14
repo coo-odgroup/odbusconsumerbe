@@ -18,6 +18,8 @@ use App\Models\BusSeats;
 use App\Models\Credentials;
 use App\Models\AgentWallet;
 use App\Models\AgentCommission;
+use App\Models\Notification;
+use App\Models\UserNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -452,6 +454,7 @@ class ChannelRepository
       }
 
       public function getBookingData($busId,$transationId){
+       
           return $this->booking->where('bus_id', $busId)->where('transaction_id', $transationId)->get();
       }
 
@@ -547,7 +550,7 @@ class ChannelRepository
         $agetWallet->save();
       }
 
-      public function FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission){
+      public function FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$seatHold,$appliedComission){
         $seatRecords =  Booking::with('bookingDetail')->where('user_id',$agentId)
                                                       ->where('status', '1')->get();
         $collection = collect($seatRecords);
@@ -574,8 +577,8 @@ class ChannelRepository
         $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
         $afterTdsComission = $totalAgentComission - $tds;
 
-        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,
-        'status' => $booked, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
+        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,'customer_comission' => $appliedComission,
+        'status' => $seatHold, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
 
         $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
         $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -588,6 +591,25 @@ class ChannelRepository
         $agetWallet->created_by = 'Agent';
         $agetWallet->save();
         return $agetWallet;
+      }
+      public function UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked)
+      {  
+             
+      if($request['phone']){
+          $sendsms = $this->sendSmsTicket($request,$pnr); 
+      } 
+      if($request['email']){
+          $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+      } 
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
+        $booking = $this->booking->find($bookingId);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+        return "Payment Done";
+       
+        $this->booking->where('id', $bookingId)
+                      ->where('transaction_id', $transationId)
+                      ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
+        return "Payment Failed"; 
       }
 
 }

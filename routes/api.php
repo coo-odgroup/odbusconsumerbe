@@ -87,6 +87,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/AgentLogin', [UserController::class, 'login']);
     Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
     Route::post('/AgentWalletPayment', [ChannelController::class, 'walletPayment']);
+    Route::post('/AgentPaymentStatus', [ChannelController::class, 'agentPaymentStatus']);
 //});
 
 
