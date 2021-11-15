@@ -1548,13 +1548,13 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "Agent Wallet Paynent",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"agent_id\":2,\r\n    \"busId\": 3,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"2021111319091856455\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37,38],\r\n    \"entry_date\":\"13-11-2021\"\r\n\r\n}",
+					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 3,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"2021111319091856455\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37,38],\r\n    \"entry_date\":\"13-11-2021\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1572,6 +1572,36 @@
 					"path": [
 						"api",
 						"AgentWalletPayment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AgentPaymentStatus",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\":2,\r\n    \"Comission\":\"10\",\r\n    \"Total_Balance\":1000,\r\n\t\"transaction_id\": \"2021111319091856455\",\r\n\t\"name\": \"Chandra\",\r\n\t\"phone\": \"9916457575\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"02-11-2021\",\r\n\t\"journeydate\": \"02-11-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"Bonth Chhawk\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"37\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 10,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"Bus 2\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"37\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Agent\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.neoflix.in/api/AgentPaymentStatus",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"AgentPaymentStatus"
 					]
 				}
 			},
