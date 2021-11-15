@@ -224,10 +224,10 @@ class ChannelService
                     $name = $records[0]->user->name;
                     $amount = $request['amount'];
 
-                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission);
-
                     $details=$this->channelRepository->CreateAgentPayment($agentId,$amount ,$name, $bookingId,$transactionId,$appliedComission);   
 
+                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission);
+                    
                     $data = array(
                         'Comission' => $totalSeatsBookedByAgent->amount,
                         'Total Balance' =>  $totalSeatsBookedByAgent->balance,

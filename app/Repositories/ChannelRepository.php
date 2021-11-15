@@ -546,7 +546,6 @@ class ChannelRepository
         $agetWallet->balance = $walletBalance - $amount;
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = 'Agent';
-    
         $agetWallet->save();
       }
 
@@ -573,11 +572,11 @@ class ChannelRepository
               $comissionPerSeat = 0;
           }    
         }
-        $totalAgentComission=  $currentSeatCount*$comissionPerSeat;
+        $totalAgentComission =  $currentSeatCount * $comissionPerSeat;
         $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
         $afterTdsComission = $totalAgentComission - $tds;
 
-        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,'customer_comission' => $appliedComission,
+        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,
         'status' => $seatHold, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
 
         $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
