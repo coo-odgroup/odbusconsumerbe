@@ -227,12 +227,12 @@ class ChannelService
                     $details=$this->channelRepository->CreateAgentPayment($agentId,$amount ,$name, $bookingId,$transactionId,$appliedComission);   
 
                     $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission);
-
+                    //return $totalSeatsBookedByAgent;
                     $data = array(
-                        'Comission' => $totalSeatsBookedByAgent->amount,
-                        'Total Balance' =>  $totalSeatsBookedByAgent->balance,
-                        'Agent ID' => $totalSeatsBookedByAgent->user_id,
-                        'notifications' => $totalSeatsBookedByAgent->notification,
+                        //'Comission' => $totalSeatsBookedByAgent->amount,
+                        //'Total Balance' =>  $totalSeatsBookedByAgent->balance,
+                        //'Agent ID' => $totalSeatsBookedByAgent->user_id,
+                        'notifications' => $totalSeatsBookedByAgent->notification_heading,
                     );
                     return $data;
                     //return "SEAT AVAIL";

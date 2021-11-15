@@ -602,7 +602,7 @@ class ChannelRepository
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = 'Agent';
         $agetWallet->save();
-        return $agetWallet;
+        //return $agetWallet;
 
         $newBalance = $walletBalance + $afterTdsComission;
         $notification = new Notification;

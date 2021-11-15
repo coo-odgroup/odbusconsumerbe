@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
 use App\AppValidator\AgentWalletPaymentValidator;
+use App\AppValidator\AgentPaymentStatusValidator;
 
 class ChannelController extends Controller
 {
@@ -23,13 +24,15 @@ class ChannelController extends Controller
     protected $channelRepository;  
     protected $customerPayment;
     protected $agentWalletPaymentValidator;
+    protected $agentPaymentStatusValidator;
   
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator)
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
             $this->customerPayment = $agentWalletPaymentValidator;
             $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
+            $this->agentPaymentStatusValidator = $agentPaymentStatusValidator;
         }
 
     public function storeGWInfo(Request $request)
@@ -421,8 +424,15 @@ class ChannelController extends Controller
   }
 
   public function agentPaymentStatus(Request $request){
-    try{ 
-        
+
+    $data = $request->all();
+    $paymentStatusValidation = $this->agentPaymentStatusValidator->validate($data);
+
+    if ($paymentStatusValidation->fails()) {
+    $errors = $paymentStatusValidation->errors();
+    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }  
+    try{  
         $response = $this->channelService->agentPaymentStatus($request); 
          If($response == 'Payment Done'){
              return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
