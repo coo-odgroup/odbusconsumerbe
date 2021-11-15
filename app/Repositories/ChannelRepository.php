@@ -547,6 +547,19 @@ class ChannelRepository
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = 'Agent';
         $agetWallet->save();
+
+        $newBalance = $walletBalance - $amount;
+        $notification = new Notification;
+        $notification->notification_heading = "New Balance is Rs.$newBalance after booking for Rs.$amount";
+        $notification->notification_details = "New Balance is Rs.$newBalance after booking for Rs.$amount";
+        $notification->created_by = 'Agent';
+        $notification->save();
+       
+        $userNotification = new UserNotification();
+        $userNotification->user_id = $agentId;
+        $userNotification->created_by= "Agent"; 
+        $notification->userNotification()->save($userNotification);
+
       }
 
       public function FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$seatHold,$appliedComission){
@@ -590,15 +603,11 @@ class ChannelRepository
         $agetWallet->created_by = 'Agent';
         $agetWallet->save();
         return $agetWallet;
-      }
-      public function UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked)
-      {  
-        $comission = $request['Comission'];
-        $balance = $request['Total_Balance'];
-        $agentId = $request['user_id'];
+
+        $newBalance = $walletBalance + $afterTdsComission;
         $notification = new Notification;
-        $notification->notification_heading = "Comission is Rs.$comission Balance is Rs.$balance";
-        $notification->notification_details = "Comission Rs.is $comission Balance is Rs.$balance";
+        $notification->notification_heading = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
+        $notification->notification_details = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
         $notification->created_by = 'Agent';
         $notification->save();
        
@@ -606,7 +615,10 @@ class ChannelRepository
         $userNotification->user_id = $agentId;
         $userNotification->created_by= "Agent"; 
         $notification->userNotification()->save($userNotification);
-            
+        return $notification;
+      }
+      public function UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked)
+      {  
         if($request['phone']){
             $sendsms = $this->sendSmsTicket($request,$pnr); 
         } 
