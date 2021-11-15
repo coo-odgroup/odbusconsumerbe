@@ -14,6 +14,7 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
+use App\AppValidator\AgentWalletPaymentValidator;
 
 class ChannelController extends Controller
 {
@@ -21,12 +22,14 @@ class ChannelController extends Controller
     protected $channelService;
     protected $channelRepository;  
     protected $customerPayment;
+    protected $agentWalletPaymentValidator;
   
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment)
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
-            $this->customerPayment = $customerPayment;
+            $this->customerPayment = $agentWalletPaymentValidator;
+            $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
         }
 
     public function storeGWInfo(Request $request)
@@ -376,25 +379,17 @@ class ChannelController extends Controller
   
   public function RazorpayWebhook(){
     
-    
     $post = file_get_contents('php://input');
-
     $res = json_decode($post);
+    $response=$res->payload->payment->entity; 
     
-    
-     $response=$res->payload->payment->entity; 
-    
-
     //$myfile = fopen("razorpaywebhook.txt", "a");
    // fwrite($myfile, '\n'.$response->status."--".$response->id."--".$response->order_id."--".$response->error_description.'\n');
     //fwrite($myfile, '\n Event - '.$res->event);
     //fwrite($myfile, '\n Account ID - '.$res->account_id.'\n');
    // fclose($myfile);
     
-      
-    
     $razorpay_status_updated_at= date("Y-m-d H:i:s");
-    
     $this->customerPayment->where('order_id', $response->order_id)
                           ->update(['razorpay_status' => $response->status,
                                     'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]); 
@@ -404,7 +399,13 @@ class ChannelController extends Controller
   }
   public function walletPayment(Request $request)
   {   
-   
+      $data = $request->all();
+      $walletPaymentValidation = $this->agentWalletPaymentValidator->validate($data);
+
+      if ($walletPaymentValidation->fails()) {
+      $errors = $walletPaymentValidation->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }  
       try {
           $response = $this->channelService->walletPayment($request); 
           if($response == 'SEAT UN-AVAIL'){

@@ -17,6 +17,7 @@ use App\Models\OdbusCharges;
 use App\Models\BusOperator;
 use App\Models\AgentWallet;
 use App\Models\AgentFee;
+use App\Models\Users;
 use App\Services\ViewSeatsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -48,28 +49,35 @@ class AgentBookingRepository
     public function agentBooking($request)
     { 
         $needGstBill = Config::get('constants.NEED_GST_BILL');
-        $agentInfo = $request['customerInfo'];
+        $agentInfo = $request['agentInfo'];
+        $customerInfo = $request['customerInfo'];
 
+        $existingUser = Users::where('phone',$customerInfo['phone'])
+                                    ->exists(); 
+        if($existingUser==true){
+            $userId = Users::where('phone',$customerInfo['phone'])
+                                  ->first()->id;
+            Users::where('id', $userId)->update($customerInfo);     
+        }
+        else{
+            $userId = Users::create($request['customerInfo'])->latest()->first()->id;   
+        }
         $validatedAgent = $this->user->where('phone',$agentInfo['phone'])
                                      ->where('status','1')
                                      ->exists();  
-     if($validatedAgent==true){
+        if($validatedAgent==true){
         $agentId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first('id');
-          $aId = $this->user->where('phone',$agentInfo['phone'])
+        $aId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first()->id;
-                   
-
-            //return $agentId; 
         $walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
         
         $bookingInfo = $request['bookingInfo'];
         
         if($walletBalance >= $bookingInfo['total_fare']){
         //Save Booking 
-     
                $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -121,6 +129,7 @@ class AgentBookingRepository
             }    
         }                   
         $booking->created_by = $bookingInfo['created_by'];
+        $booking->users_id = $userId;
         $agentId->booking()->save($booking);
         $booking->customer_comission = $comissionByCustomer;
         

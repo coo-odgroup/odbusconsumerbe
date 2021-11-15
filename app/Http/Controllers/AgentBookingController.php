@@ -29,23 +29,23 @@ class AgentBookingController extends Controller
 
     public function agentBooking(Request $request) {
          $data = $request->all();
-           $bookingValidation = $this->agentBookingValidator->validate($data);
+            $bookingValidation = $this->agentBookingValidator->validate($data);
    
         if ($bookingValidation->fails()) {
-        $errors = $bookingValidation->errors();
+         $errors = $bookingValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-          try {
-           $response =  $this->agentBookingService->agentBooking($request);  
-           if($response['message']){
-            return $this->errorResponse($response['note'],Response::HTTP_OK);
-           }
-         else{
+         try {
+            $response =  $this->agentBookingService->agentBooking($request);  
+          //   if($response['message']){
+          //    return $this->errorResponse($response['note'],Response::HTTP_OK);
+          //    }
+          //  else{
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
-           }
+           //}
         }
         catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }      
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        }      
     } 
 }

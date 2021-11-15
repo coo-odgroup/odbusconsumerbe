@@ -603,10 +603,6 @@ class ChannelRepository
         $notification->created_by = 'Agent';
         $notification->save();
        
-        //$userNotify = new UserNotification(['created_by' => 'Agent']);
-        //$agentId->userNotification()->save($userNotify);
-        //$notification->userNotification()->save($userNotify);
-
         $userNotification = new UserNotification();
         $userNotification->user_id = $agentId;
         $userNotification->created_by= "Agent"; 
