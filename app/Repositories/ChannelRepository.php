@@ -594,13 +594,30 @@ class ChannelRepository
       }
       public function UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked)
       {  
-             
-      if($request['phone']){
-          $sendsms = $this->sendSmsTicket($request,$pnr); 
-      } 
-      if($request['email']){
-          $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
-      } 
+        $comission = $request['Comission'];
+        $balance = $request['Total_Balance'];
+        $agentId = $request['user_id'];
+        $notification = new Notification;
+        $notification->notification_heading = "Comission is Rs.$comission Balance is Rs.$balance";
+        $notification->notification_details = "Comission Rs.is $comission Balance is Rs.$balance";
+        $notification->created_by = 'Agent';
+        $notification->save();
+       
+        //$userNotify = new UserNotification(['created_by' => 'Agent']);
+        //$agentId->userNotification()->save($userNotify);
+        //$notification->userNotification()->save($userNotify);
+
+        $userNotification = new UserNotification();
+        $userNotification->user_id = $agentId;
+        $userNotification->created_by= "Agent"; 
+        $notification->userNotification()->save($userNotification);
+            
+        if($request['phone']){
+            $sendsms = $this->sendSmsTicket($request,$pnr); 
+        } 
+        if($request['email']){
+            $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+        } 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));

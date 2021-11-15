@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Models\UserBankDetails;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\UserNotification;
 
 class User extends Authenticatable
 {
@@ -58,4 +59,8 @@ class User extends Authenticatable
       {
             return $this->hasMany(Booking::class);   
       } 
+    public function userNotification()
+    {
+    	 return $this->hasMany(UserNotification::class);        
+    }  
 }
