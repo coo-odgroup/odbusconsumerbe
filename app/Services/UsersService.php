@@ -75,7 +75,8 @@ class UsersService
       
         $query = $this->usersRepository->GetUserData($request['phone'],$request['email']);
       
-        $verifiedStatus = $query->latest()->first()->is_verified;    
+        $verifiedStatus = $query->latest()->first()->is_verified; 
+       
         if($verifiedStatus == 1){
             $name = $query->latest()->first()->name;        
             $request->request->add(['name' => $name]);
@@ -185,12 +186,16 @@ class UsersService
 
     }
 
-    public function updateProfile($request, $userId,$token){
+    public function updateProfile($request){
+
+        $userId = $request['userId'];
+        $token = $request['token']; 
 
         $userDetails=$this->usersRepository->GetuserByToken($userId,$token);
       
         if(isset($userDetails[0])){
-            return $this->usersRepository->updateProfile($request, $userId,$token);
+
+            return $this->usersRepository->updateProfile($request);
            
          }else{
            return 'Invalid';

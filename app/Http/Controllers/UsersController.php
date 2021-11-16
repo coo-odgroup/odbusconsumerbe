@@ -332,11 +332,10 @@ public function userProfile(Request $request) {
    *  security={{ "apiAuth": {} }}
    * )
    */ 
-  public function updateProfile(Request $request,$userId,$token) {
-   
-    $response = $this->usersService->updateProfile($request, $userId,$token); 
+  public function updateProfile(Request $request) {
+      $response = $this->usersService->updateProfile($request); 
     
-    if($response=='Invalid'){
+      if($response=='Invalid'){
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
       }
       else{

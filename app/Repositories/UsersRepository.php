@@ -147,7 +147,10 @@ class UsersRepository
   
    
 
-    public function updateProfile($request,$userId,$token){
+    public function updateProfile($request){
+
+      $userId = $request['userId'];
+      $token = $request['token'];
       
           $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
   
@@ -157,10 +160,21 @@ class UsersRepository
           $post->street = $request['street'];
           $post->district = $request['district'];
           $post->address = $request['address'];
+  
+          if ($request->hasFile('profile_image'))
+          {
+                $file      = $request->file('profile_image');
+                $filename  = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $picture   = date('His').'-'.$filename;
+                $post->profile_image = $picture;
+                $file->move('../../odbusconsumerfe/src/assets/uploads/profile', $picture);
+          } 
+
         
-          if($request['profile_image']!=''){
-            $post->profile_image = $request['profile_image'];
-          }
+          // if($request['profile_image']!=''){
+          //   $post->profile_image = $request['profile_image'];
+          // }
           
           $post->update();         
   

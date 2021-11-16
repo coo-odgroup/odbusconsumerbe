@@ -23,17 +23,12 @@ class ListingService
     }
     public function getAll(Request $request)
     {
-
-        //return $this->listingRepository->getAll($request);
-
+         
         $source = $request['source'];
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
-
-      
-       
 
         $srcResult= $this->listingRepository->getLocationID($request['source']);
         $destResult= $this->listingRepository->getLocationID($request['destination']);
@@ -42,19 +37,7 @@ class ListingService
            return "";
 
          $sourceID =  $srcResult[0]->id;
-         $destinationID =  $destResult[0]->id;
-
-        //  $records= $this->listingRepository->getBusList($sourceID,$destinationID,$busOperatorId,$entry_date);
-
-        //  foreach($records as $key => $record){
-        //      if($record->ticketPrice->count() == 0 || $record->busSchedule->busScheduleDate->count() ==0 ){
-
-        //         Log::info($key);
-
-        //      }
-        //  }
-
-        //  return $records;
+         $destinationID =  $destResult[0]->id;       
 
          $selCouponRecords = $this->listingRepository->getAllCoupon();
 
@@ -67,7 +50,7 @@ class ListingService
          }         
          
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId);  
-      
+       
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){
@@ -237,10 +220,10 @@ class ListingService
                  "arrivalTime" =>$arrTime,
                  "totalJourneyTime" =>$totalJourneyTime,
                  "amenityName" =>$amenityName,
-                 "amenityIcon" => $amenityIcon,
+                 //"amenityIcon" => $amenityIcon,
                  "safetyIconName" =>$safetyName,
-                 "safetyIcon" => $safetyIcon,
-                 "busPhotos" => $busPhotos,
+                 //"safetyIcon" => $safetyIcon,
+                // "busPhotos" => $busPhotos,
                  "cancellationDuration" => $cSlabDuration,
                  "cancellationDuduction" => $cSlabDeduction,
                  "cancellationPolicyContent" => $cancellationPolicyContent,
@@ -253,6 +236,11 @@ class ListingService
                  "reviews" => $reviews
              );             
          }
+
+
+        // return 'hello';
+        
+
          return $ListingRecords;
 
 
@@ -462,10 +450,10 @@ class ListingService
                     "arrivalTime" =>$arrTime,
                     "totalJourneyTime" =>$totalJourneyTime,
                     "amenityName" =>$amenityName,
-                    "amenityIcon" => $amenityIcon, 
+                    //"amenityIcon" => $amenityIcon, 
                     "safetyIconName" =>$safetyName,
-                    "safetyIcon" => $safetyIcon,
-                    "busPhotos" => $busPhotos,
+                    //"safetyIcon" => $safetyIcon,
+                   // "busPhotos" => $busPhotos,
                     "cancellationDuration" => $cSlabDuration,
                     "cancellationDuduction" => $cSlabDeduction,
                     "cancellationPolicyContent" => $cancellationPolicyContent,
