@@ -6,6 +6,233 @@
         "version": "0.1"
     },
     "paths": {
+        "/api/AgentBooking": {
+            "post": {
+                "tags": [
+                    "AgentBooking API"
+                ],
+                "summary": "Ticket Booking by an Agent with customer details",
+                "operationId": "App\\Http\\Controllers\\AgentBookingController::agentBooking",
+                "requestBody": {
+                    "description": "Ticket Booking by an Agent",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "customerInfo": {
+                                        "properties": {
+                                            "email": {
+                                                "type": "string",
+                                                "default": "abc@gmail.com",
+                                                "example": "abc@gmail.com"
+                                            },
+                                            "phone": {
+                                                "type": "number",
+                                                "default": 9912345678,
+                                                "example": 9912345678
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "default": "Bob",
+                                                "example": "Bob"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "agentInfo": {
+                                        "properties": {
+                                            "email": {
+                                                "type": "string",
+                                                "default": "abcdfr@gmail.com",
+                                                "example": "abcdfr@gmail.com"
+                                            },
+                                            "phone": {
+                                                "type": "number",
+                                                "default": 9912345673,
+                                                "example": 9912345673
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "default": "Bob",
+                                                "example": "Bob"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "bookingInfo": {
+                                        "properties": {
+                                            "bus_operator_id": {
+                                                "type": "number",
+                                                "default": 1,
+                                                "example": 1
+                                            },
+                                            "bus_id": {
+                                                "type": "number",
+                                                "default": 3,
+                                                "example": 3
+                                            },
+                                            "source_id": {
+                                                "type": "number",
+                                                "default": 1345,
+                                                "example": 1345
+                                            },
+                                            "destination_id": {
+                                                "type": "number",
+                                                "default": 1374,
+                                                "example": 1374
+                                            },
+                                            "journey_dt": {
+                                                "type": "string",
+                                                "default": "2021-10-09",
+                                                "example": "2021-10-09"
+                                            },
+                                            "boarding_point": {
+                                                "type": "string",
+                                                "default": "Bus stand",
+                                                "example": "Bus stand"
+                                            },
+                                            "dropping_point": {
+                                                "type": "string",
+                                                "default": "bus stand",
+                                                "example": "bus stand"
+                                            },
+                                            "boarding_time": {
+                                                "type": "string",
+                                                "default": "21:00",
+                                                "example": "21:00"
+                                            },
+                                            "dropping_time": {
+                                                "type": "string",
+                                                "default": "06:30",
+                                                "example": "06:30"
+                                            },
+                                            "origin": {
+                                                "type": "string",
+                                                "default": "ODBUS",
+                                                "example": "ODBUS"
+                                            },
+                                            "app_type": {
+                                                "type": "string",
+                                                "default": "WEB",
+                                                "example": "WEB"
+                                            },
+                                            "typ_id": {
+                                                "type": "number",
+                                                "default": "1",
+                                                "example": "1"
+                                            },
+                                            "total_fare": {
+                                                "type": "double",
+                                                "default": "1000",
+                                                "example": "1000"
+                                            },
+                                            "owner_fare": {
+                                                "type": "double",
+                                                "default": "900",
+                                                "example": "900"
+                                            },
+                                            "odbus_service_Charges": {
+                                                "type": "double",
+                                                "default": "70",
+                                                "example": "70"
+                                            },
+                                            "odbus_gst_charges": {
+                                                "type": "number",
+                                                "default": "5",
+                                                "example": "5"
+                                            },
+                                            "odbus_gst_amount": {
+                                                "type": "double",
+                                                "default": "50",
+                                                "example": "50"
+                                            },
+                                            "owner_gst_charges": {
+                                                "type": "number",
+                                                "default": "5",
+                                                "example": "5"
+                                            },
+                                            "owner_gst_amount": {
+                                                "type": "double",
+                                                "default": "50",
+                                                "example": "50"
+                                            },
+                                            "created_by": {
+                                                "type": "string",
+                                                "default": "Customer",
+                                                "example": "Customer"
+                                            },
+                                            "bookingDetail": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "bus_seats_id": {
+                                                            "type": "string",
+                                                            "example": "ST1"
+                                                        },
+                                                        "passenger_name": {
+                                                            "type": "string",
+                                                            "example": "Bob"
+                                                        },
+                                                        "passenger_gender": {
+                                                            "type": "string",
+                                                            "example": "M"
+                                                        },
+                                                        "passenger_age": {
+                                                            "type": "string",
+                                                            "example": "22"
+                                                        },
+                                                        "created_by": {
+                                                            "type": "string",
+                                                            "example": "Customer"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "example": [
+                                                    {
+                                                        "bus_seats_id": "49",
+                                                        "passenger_name": "Bob",
+                                                        "passenger_gender": "M",
+                                                        "passenger_age": "22",
+                                                        "created_by": "Customer"
+                                                    },
+                                                    {
+                                                        "bus_seats_id": "50",
+                                                        "passenger_name": "Mom",
+                                                        "passenger_gender": "F",
+                                                        "passenger_age": "20",
+                                                        "created_by": "Customer"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "records added"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/BookTicket": {
             "post": {
                 "tags": [
@@ -481,9 +708,27 @@
                 "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
                 "parameters": [
                     {
-                        "name": "bus_id",
+                        "name": "busId",
                         "in": "query",
                         "description": "BusId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "sourceId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destinationId",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -493,6 +738,29 @@
                         "name": "transaction_id",
                         "in": "query",
                         "description": "customer transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seatIds[]",
+                        "in": "query",
+                        "description": "Seat ids",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "37",
+                                "example": 37
+                            }
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -536,6 +804,319 @@
                 ],
                 "summary": "payment status success or failure",
                 "operationId": "App\\Http\\Controllers\\ChannelController::pay",
+                "requestBody": {
+                    "description": "updating payment status and sending email/sms to customers with ticket booking details",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "transaction_id": {
+                                        "type": "string",
+                                        "example": "20211102112722583214"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Bob"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": ""
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "exapmle@gmail.com"
+                                    },
+                                    "routedetails": {
+                                        "type": "string",
+                                        "example": "Bhubaneswar-Bhadrak"
+                                    },
+                                    "razorpay_order_id": {
+                                        "type": "string",
+                                        "example": "order_IGcyPNVZ9fkc2t"
+                                    },
+                                    "razorpay_payment_id": {
+                                        "type": "string",
+                                        "example": "pay_IGcyXMFeqdRA23"
+                                    },
+                                    "razorpay_signature": {
+                                        "type": "string",
+                                        "example": "d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
+                                    },
+                                    "bookingdate": {
+                                        "type": "string",
+                                        "example": "02-11-2021"
+                                    },
+                                    "journeydate": {
+                                        "type": "string",
+                                        "example": "02-11-2021"
+                                    },
+                                    "boarding_point": {
+                                        "type": "string",
+                                        "example": "Rasulgarh"
+                                    },
+                                    "departureTime": {
+                                        "type": "string",
+                                        "example": "05:00"
+                                    },
+                                    "dropping_point": {
+                                        "type": "string",
+                                        "example": "Bonth Chhawk"
+                                    },
+                                    "arrivalTime": {
+                                        "type": "string",
+                                        "example": "07:30"
+                                    },
+                                    "busname": {
+                                        "type": "string",
+                                        "example": "Bus 2"
+                                    },
+                                    "busNumber": {
+                                        "type": "string",
+                                        "example": "OD 01 AW 1234"
+                                    },
+                                    "bustype": {
+                                        "type": "string",
+                                        "example": "NON AC"
+                                    },
+                                    "busTypeName": {
+                                        "type": "string",
+                                        "example": "DELUX"
+                                    },
+                                    "sittingType": {
+                                        "type": "string",
+                                        "example": "2+2"
+                                    },
+                                    "conductor_number": {
+                                        "type": "string",
+                                        "example": "7978817539"
+                                    },
+                                    "totalfare": {
+                                        "type": "string",
+                                        "example": "285"
+                                    },
+                                    "seat_id": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "26"
+                                        }
+                                    },
+                                    "seat_no": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "sl6"
+                                        }
+                                    },
+                                    "discount": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "payable_amount": {
+                                        "type": "string",
+                                        "example": "285"
+                                    },
+                                    "odbus_charges": {
+                                        "type": "string",
+                                        "example": "0"
+                                    },
+                                    "odbus_gst": {
+                                        "type": "string",
+                                        "example": "25"
+                                    },
+                                    "owner_fare": {
+                                        "type": "string",
+                                        "example": "250"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "example": "Bhubaneswar"
+                                    },
+                                    "destination": {
+                                        "type": "string",
+                                        "example": "Bhadrak"
+                                    },
+                                    "passengerDetails": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "seat_no": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "passenger_name": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "passenger_gender": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                },
+                                                "passenger_age": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "example": [
+                                            {
+                                                "seat_no": "ST1",
+                                                "passenger_name": "Bob",
+                                                "passenger_gender": "M",
+                                                "passenger_age": "25"
+                                            },
+                                            {
+                                                "seat_no": "ST2",
+                                                "passenger_name": "Mom",
+                                                "passenger_gender": "F",
+                                                "passenger_age": "45"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment successfully done"
+                    },
+                    "402": {
+                        "description": "Payment required"
+                    },
+                    "404": {
+                        "description": "Invalid Argument Passed"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/AgentWalletPayment": {
+            "post": {
+                "tags": [
+                    "AgentWalletPayment API"
+                ],
+                "summary": "Agent Wallet Payment to book tickets for customer",
+                "description": "Agent Wallet Payment to book tickets for customer",
+                "operationId": "App\\Http\\Controllers\\ChannelController::walletPayment",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "user id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "busId",
+                        "in": "query",
+                        "description": "BusId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sourceId",
+                        "in": "query",
+                        "description": "sourceId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "destinationId",
+                        "in": "query",
+                        "description": "destinationId",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "customer transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "seatIds[]",
+                        "in": "query",
+                        "description": "Seat ids",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "37",
+                                "example": 37
+                            }
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "description": "total price",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Wallet Payment Successful"
+                    },
+                    "406": {
+                        "description": "seats already booked"
+                    },
+                    "404": {
+                        "description": "Invalid Argument Passed"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/AgentPaymentStatus": {
+            "post": {
+                "tags": [
+                    "AgentPaymentStatus API"
+                ],
+                "summary": "payment status success or failure",
+                "operationId": "App\\Http\\Controllers\\ChannelController::agentPaymentStatus",
                 "requestBody": {
                     "description": "updating payment status and sending email/sms to customers with ticket booking details",
                     "required": true,
