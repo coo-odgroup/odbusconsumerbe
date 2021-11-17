@@ -21,6 +21,7 @@ use App\Models\BusContacts;
 use App\Models\Seats;
 use App\Models\TicketPrice;
 use App\Models\Review;
+use Illuminate\Support\Facades\File; 
 
 
 class UsersRepository
@@ -151,6 +152,8 @@ class UsersRepository
 
       $userId = $request['userId'];
       $token = $request['token'];
+
+      $userDetails = $this->GetuserByToken($userId,$token);
       
           $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
   
@@ -169,6 +172,22 @@ class UsersRepository
                 $picture   = date('His').'-'.$filename;
                 $post->profile_image = $picture;
                 $file->move('../../odbusconsumerfe/src/assets/uploads/profile', $picture);
+
+
+                if($userDetails[0]->profile_image!=''){
+                  $image_path = '../../odbusconsumerfe/src/assets/uploads/profile/'.$userDetails[0]->profile_image;
+                  
+                  if (File::exists($image_path)) {
+                    //File::delete($image_path);
+                    unlink($image_path);
+                  }              
+                
+                }
+
+                
+
+               
+
           } 
 
         
