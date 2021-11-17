@@ -171,11 +171,11 @@ class UsersRepository
                 $extension = $file->getClientOriginalExtension();
                 $picture   = date('His').'-'.$filename;
                 $post->profile_image = $picture;
-                $file->move('../../odbusconsumerfe/src/assets/uploads/profile', $picture);
+                $file->move(Config::get('constants.UPLOAD_PATH').'profile', $picture);
 
 
                 if($userDetails[0]->profile_image!=''){
-                  $image_path = '../../odbusconsumerfe/src/assets/uploads/profile/'.$userDetails[0]->profile_image;
+                  $image_path =Config::get('constants.UPLOAD_PATH').'profile/'.$userDetails[0]->profile_image;
                   
                   if (File::exists($image_path)) {
                     //File::delete($image_path);
