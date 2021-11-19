@@ -22,6 +22,7 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\SoapController;
 use App\Http\Controllers\AgentBookingController;
+use App\Http\Controllers\SeoController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -89,6 +90,9 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
     Route::post('/AgentWalletPayment', [ChannelController::class, 'walletPayment']);
     Route::post('/AgentPaymentStatus', [ChannelController::class, 'agentPaymentStatus']);
+
+
+    Route::get('/seolist', [SeoController::class, 'seolist']);
 //});
 
 
