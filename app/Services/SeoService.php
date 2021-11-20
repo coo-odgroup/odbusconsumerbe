@@ -19,6 +19,32 @@ class SeoService
     }
     public function getAll($request)
     {      
-        return $this->seoRepository->getAll($request['bus_operator_id']);
+        $seolist = $this->seoRepository->getAll($request['bus_operator_id']);
+
+        $records = array();
+        
+        if($seolist){
+            foreach($seolist as $item){
+               $sourcedata = $this->seoRepository->getLocation($item->source_id);
+               $destdata = $this->seoRepository->getLocation($item->destination_id);
+
+                $records[] = array(
+                    "source" => $sourcedata, 
+                    "destination" => $destdata,
+                    "seo_type" => $item->seo_type,
+                    "bus_operator_id" =>  $item->bus_operator_id,
+                    "url_description" =>  $item->url_description,
+                    "page_url" =>  $item->page_url,
+                    "meta_title" =>  $item->meta_title,
+                    "meta_keyword" =>  $item->meta_keyword,
+                    "meta_description" =>  $item->meta_description,
+                    "extra_meta" =>  $item->extra_meta,
+                    "canonical_url" =>  $item->canonical_url
+                );        
+
+            }
+
+        }
+        return $records;
     }
 }
