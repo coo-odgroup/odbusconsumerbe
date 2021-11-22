@@ -145,11 +145,15 @@ class ListingService
                                                       
              $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
              $amenityDatas = $record->busAmenities;
+             //$amenityName = $amenityDatas->pluck('amenities.name');
+             //$amenityIcon = $amenityDatas->pluck('amenities.icon');
              $amenityName = $amenityDatas->pluck('amenities.name');
-             $amenityIcon = $amenityDatas->pluck('amenities.icon');
+             $amenityIcon = $amenityDatas->pluck('amenities.amenities_image');
              $safetyDatas = $record->busSafety;
+            //  $safetyName = $safetyDatas->pluck('safety.name');
+            //  $safetyIcon = $safetyDatas->pluck('safety.icon');
              $safetyName = $safetyDatas->pluck('safety.name');
-             $safetyIcon = $safetyDatas->pluck('safety.icon');
+             $safetyIcon = $safetyDatas->pluck('safety.safety_image');
              $busPhotoDatas = $record->busGallery;
  
              $reviews=  $record->review;
@@ -374,11 +378,15 @@ class ListingService
 
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 $amenityDatas = $record->busAmenities;
+                //$amenityName = $amenityDatas->pluck('amenities.name');
+                //$amenityIcon = $amenityDatas->pluck('amenities.icon');
                 $amenityName = $amenityDatas->pluck('amenities.name');
-                $amenityIcon = $amenityDatas->pluck('amenities.icon');
+                $amenityIcon = $amenityDatas->pluck('amenities.amenities_image');
                 $safetyDatas = $record->busSafety;
+                //$safetyName = $safetyDatas->pluck('safety.name');
+                //$safetyIcon = $safetyDatas->pluck('safety.icon');
                 $safetyName = $safetyDatas->pluck('safety.name');
-                $safetyIcon = $safetyDatas->pluck('safety.icon');
+                $safetyIcon = $safetyDatas->pluck('safety.safety_image');
                 $busPhotoDatas = $record->busGallery;
               
                 $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
