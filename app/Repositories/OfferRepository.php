@@ -59,6 +59,7 @@ class OfferRepository
                                   ->where('start_date','<=',$currentDate)
                                   ->where('end_date','>=',$currentDate)
                                   ->where('status',1)
+                                  ->where('slider_photo', '!=', 'null')
                                   ->get();
 
         $offers = array(

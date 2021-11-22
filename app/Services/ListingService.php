@@ -182,7 +182,7 @@ class ListingService
              $cancellationPolicyContent=$record->cancellation_policy_desc;
              $TravelPolicyContent=$record->travel_policy_desc;
                
-             $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
+             $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('bus_image') : [];
            
              $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
              $cSlabDuration = $cSlabDatas->pluck('duration');
@@ -389,7 +389,7 @@ class ListingService
                 $safetyIcon = $safetyDatas->pluck('safety.safety_image');
                 $busPhotoDatas = $record->busGallery;
               
-                $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('image') : [];
+                $busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('bus_image') : [];
 
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
