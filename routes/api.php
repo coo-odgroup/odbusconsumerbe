@@ -23,6 +23,7 @@ use App\Http\Controllers\PageContentController;
 use App\Http\Controllers\SoapController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\SeoController;
+use App\Http\Controllers\FilePathUrlsController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -91,7 +92,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/AgentWalletPayment', [ChannelController::class, 'walletPayment']);
     Route::post('/AgentPaymentStatus', [ChannelController::class, 'agentPaymentStatus']);
 
-
+    Route::get('/AllPathUrls', [OfferController::class, 'getPathUrls']);
     Route::get('/seolist', [SeoController::class, 'seolist']);
 //});
 

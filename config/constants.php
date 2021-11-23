@@ -68,5 +68,4 @@ return [
     'IN_SUFFICIENT_BALANCE' => 'less balance in wallet to book tickets',
     'WALLET_PAYMENT_SUCESS' =>  'Wallet Payment Successful',
     'AGENT_INVALID' => 'The agent information is not valid',
-    'UPLOAD_PATH' => '../../odbusconsumerfe/src/assets/uploads/'
 ];

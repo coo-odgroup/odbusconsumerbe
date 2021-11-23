@@ -166,4 +166,9 @@ class OfferController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }         
     }
+    public function getPathUrls(Request $request) {
+        $allUrls = $this->offerService->getPathUrls($request);
+        return $this->successResponse($allUrls,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+    
 }

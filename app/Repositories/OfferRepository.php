@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Users;
 use App\Models\CouponRoute;
 use App\Models\CouponAssignedBus;
+use App\Models\FilePathUrls;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -208,6 +209,9 @@ class OfferRepository
             return "coupon_expired";
         }
     }
-      
+   public function getPathUrls(Request $request)
+    {    
+        return FilePathUrls::get();
+    }   
 
 }

@@ -173,7 +173,6 @@ class UsersRepository
                 $post->profile_image = $picture;
                 $file->move(public_path('uploads/profile'), $picture);
 
-
                 if($userDetails[0]->profile_image!=''){
                   $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
                   
@@ -181,12 +180,7 @@ class UsersRepository
                     //File::delete($image_path);
                     unlink($image_path);
                   }              
-                
-                }
-
-                
-
-            
+                }     
           } 
 
         

@@ -32,5 +32,9 @@ class OfferService
     {
         return $this->offerRepository->coupons($request);
     }
+    public function getPathUrls($request)
+    {
+        return $this->offerRepository->getPathUrls($request);
+    }
    
 }
