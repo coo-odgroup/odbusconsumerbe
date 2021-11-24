@@ -91,7 +91,7 @@ class Bus extends Model
     }
     public function busGallery()
     {        
-        return $this->hasOne(BusGallery::class);        
+        return $this->hasMany(BusGallery::class);        
     }
     public function cancellationslabs()
     {        

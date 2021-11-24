@@ -139,7 +139,7 @@ class ListingRepository
        ->with('busOperator.coupon')
        ->with('busContacts')
        //->with('busOperator')       
-       ->with('busAmenities.amenities')
+       ->with('busAmenities.amenities')     
        ->with('busSafety.safety')
        ->with('BusType.busClass')
        ->with('busSeats.seats')
@@ -166,18 +166,30 @@ class ListingRepository
        ->with('busOperator.coupon')
        ->with('busContacts')
        //->with('busOperator')       
-       ->with('busAmenities.amenities')
-       ->with('busSafety.safety')
+       //->with('busAmenities.amenities')
+       ->with(['busAmenities'  => function ($query) {
+        $query->with(['amenities' =>function ($a){
+              $a->select('id','name','amenities_image');
+          }]);
+       }]) 
+       //->with('busSafety.safety')
+       ->with(['busSafety'  => function ($query) {
+        $query->with(['safety' =>function ($a){
+              $a->select('id','name','safety_image');
+          }]);
+       }]) 
        ->with('BusType.busClass')
        ->with('busSeats.seats')
        //->with('seatOpen.seatOpenSeats')
        ->with('BusSitting')
-       ->with('busGallery')
+       ->with(['busGallery' => function ($a){
+          $a->select('id','bus_id','alt_tag','bus_image');
+        }])
        ->with('cancellationslabs.cancellationSlabInfo')
        ->with(['review' => function ($query) {                    
            $query->where('status',1);
            $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
-           $query->with(['users' =>  function ($u){
+           $query->with(['users' => function ($u){
                $u->select('id','name','profile_image');
            }]);                      
            }])

@@ -126,9 +126,11 @@ class PopularRepository
     }
 
     public function GetAllBusAmenities($busIds){
-
+        
       return BusAmenities::whereIn('bus_id',$busIds)
-                            ->with('amenities')  
+                            ->with(['amenities'  => function ($query) {
+                                $query->select('id','name','amenities_image');
+                            }])  
                             ->groupBy('amenities_id')                          
                             ->get();
 
