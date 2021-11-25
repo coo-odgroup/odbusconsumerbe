@@ -56,12 +56,13 @@ class OfferRepository
         //   							  ->where('status',1)		
         //                               ->get();
 
+       
         $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)
                                   ->where('start_date','<=',$currentDate)
                                   ->where('end_date','>=',$currentDate)
-                                  ->where('status',1)
-                                  ->where('slider_photo', '!=', 'null')
-                                  ->get();
+                                  ->where('status',1) 
+                                  ->where('slider_photo','!=','')
+                                  ->get(['id','bus_operator_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time']);
 
         $offers = array(
             "allOffers" => $allOffers
