@@ -1860,6 +1860,29 @@
                 ]
             }
         },
+        "/api/AllPathUrls": {
+            "get": {
+                "tags": [
+                    "All PathUrls API"
+                ],
+                "summary": "get all Path Urls",
+                "description": "get all Path Urls",
+                "operationId": "App\\Http\\Controllers\\OfferController::getPathUrls",
+                "responses": {
+                    "200": {
+                        "description": "get all Path Urls"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/PopularRoutes": {
             "get": {
                 "tags": [

@@ -166,6 +166,20 @@ class OfferController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
             }         
     }
+    /**
+     * @OA\Get(
+     *     path="/api/AllPathUrls",
+     *     tags={"All PathUrls API"},
+     *     description="get all Path Urls",
+     *     summary="get all Path Urls",
+     *  @OA\Response(response="200", description="get all Path Urls"),
+     *  @OA\Response(response=401, description="Unauthorized"),
+     *     security={
+     *       {"apiAuth": {}}
+     *     }
+     * )
+     * 
+     */
     public function getPathUrls(Request $request) {
         $allUrls = $this->offerService->getPathUrls($request);
         return $this->successResponse($allUrls,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
