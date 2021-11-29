@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Users;
 use App\Models\CouponRoute;
 use App\Models\CouponAssignedBus;
+use App\Models\CouponOperator;
 use App\Models\FilePathUrls;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -80,7 +81,8 @@ class OfferRepository
         $totalFare = $request['total_fare'];
         $transactionId = $request['transaction_id'];
         $selCouponRecords = Coupon::where('status','1')->get();
-        $routeCoupon = CouponRoute::where('source_id', $sourceId)
+        
+        $routeCoupon = CouponRoute::where('source_id', $sourceId)////Route wise coupon
                                     ->where('destination_id', $destId)
                                     ->with('coupon')
                                     ->get();
@@ -90,25 +92,28 @@ class OfferRepository
              }else{
                  $routeCouponCode =[];
              } 
+
         $records = Bus::where('bus_operator_id', $busOperatorId)  
                         ->with('couponAssignedBus.coupon')
                         ->with('busOperator.coupon') 
                         ->where('status','1')
                         ->get();
+
         $busCouponCode = [];
         $opCouponCode = [];
         foreach($records as $record){        
-                    if(isset($record->couponAssignedBus[0]->coupon)){                       //Bus wise coupon
+                    if(isset($record->couponAssignedBus[0]->coupon)){                //Bus wise coupon
                         $busCouponCode = $record->couponAssignedBus[0]->coupon->coupon_code;     
                     }
-                    if(isset($record->busOperator->coupon)){                                ///operator wise coupon
+                    if(isset($record->busOperator->coupon)){                       ///operator wise coupon
                         $couponCodeRecords = $record->busOperator->coupon;
                         $opCouponCode = $couponCodeRecords->pluck('coupon_code');
                     }
                     
                     $CouponRecords = collect([$busCouponCode,$opCouponCode,$routeCouponCode]);
+                    
                     $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
-        
+                    
                     ///Coupon applicable for specific date range
                     $appliedCoupon = collect([]);
                     $date = Carbon::now();
@@ -133,7 +138,8 @@ class OfferRepository
                     }   
         }   
 
-    $couponExists  = $appliedCoupon->contains($requestedCouponCode);
+    $couponExists = $appliedCoupon->contains($requestedCouponCode);
+  
         if($couponExists)
         {
             $userId = Booking::where('transaction_id',$transactionId)->first()->users_id;
@@ -143,10 +149,11 @@ class OfferRepository
         }                                            
         $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)->get();
         $maxRedeemCount = $couponDetails[0]->max_redeem;
-       
-        if($couponCount <= $maxRedeemCount){
+
+        if($couponCount < $maxRedeemCount){
+            
             if(isset($couponDetails)){ 
-                $couponType = $couponDetails[0]->type;  
+                $couponType = $couponDetails[0]->type;  ///type:1 for percentage and 2 for amount
                 $maxDiscount = $couponDetails[0]->max_discount_price;
               
                 if($couponType == '1'){
