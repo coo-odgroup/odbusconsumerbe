@@ -105,12 +105,19 @@ class AgentBookingRepository
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        if(isset($bookingInfo['bus_operator_id'])){
         $odbusGstPercent = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->first()->odbus_gst_charges;
+        }else{
+            $odbusGstPercent = OdbusCharges::first()->odbus_gst_charges;  
+        }
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
-        $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
-    
+        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
+        $busOperator = BusOperator::where("id",$busOperatorId)->get();
+        
+        //$busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
+        
             if($busOperator[0]->need_gst_bill == $needGstBill){   
                 $ownerGstPercentage = $busOperator[0]->gst_amount;
                 $booking->owner_gst_charges = $ownerGstPercentage;
