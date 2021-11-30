@@ -102,6 +102,7 @@ class ListingRepository
                     ->where('source_id', $sourceID)
                     ->where('destination_id', $destinationID)
                     ->where('bus_operator_id', $busOperatorId)
+                    ->orderBy('dep_time', 'asc')
                     ->get(['bus_id','start_j_days']);  
         }else{
             return $this->ticketPrice
