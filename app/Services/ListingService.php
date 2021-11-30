@@ -22,8 +22,7 @@ class ListingService
         $this->listingRepository = $listingRepository;
     }
     public function getAll(Request $request)
-    {
-         
+    {  
         $source = $request['source'];
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
@@ -142,20 +141,11 @@ class ListingService
              //return $seatsOpenSeats;
  
              $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-                                                      
+                                          
              $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
              $amenityDatas = $record->busAmenities;
-             //$amenityName = $amenityDatas->pluck('amenities.name');
-             //$amenityIcon = $amenityDatas->pluck('amenities.icon');
-             //$amenityName = $amenityDatas->pluck('amenities.name');
-            // $amenityIcon = $amenityDatas->pluck('amenities.amenities_image');
              $safetyDatas = $record->busSafety;
-            //  $safetyName = $safetyDatas->pluck('safety.name');
-            //  $safetyIcon = $safetyDatas->pluck('safety.icon');
-             //$safetyName = $safetyDatas->pluck('safety.name');
-             //$safetyIcon = $safetyDatas->pluck('safety.safety_image');
              $busPhotoDatas = $record->busGallery;
- 
              $reviews=  $record->review;
  
              $Totalrating=0;
@@ -181,14 +171,6 @@ class ListingService
  
              $cancellationPolicyContent=$record->cancellation_policy_desc;
              $TravelPolicyContent=$record->travel_policy_desc;
-            //  $busPhotos =[];
-            //  if($busPhotoDatas != null && $busPhotoDatas[0]){
-            //  foreach($busPhotoDatas[0] as $b){
-            //     $busPhotos[] = $b->bus_image;
-            //  }
-            // }
-             //$busPhotos = $busPhotoDatas; 
-             //$busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('bus_image') : [];
            
              $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
              $cSlabDuration = $cSlabDatas->pluck('duration');
@@ -229,12 +211,7 @@ class ListingService
                  "departureTime" =>$depTime,
                  "arrivalTime" =>$arrTime,
                  "totalJourneyTime" =>$totalJourneyTime,
-                 //"amenityName" =>$amenityName,
-                 //"amenityIcon" => $amenityIcon,
-                // "safetyIconName" =>$safetyName,
-                // "safetyIcon" => $safetyIcon,
-                // "busPhotos" => $busPhotos,
-                "amenity" =>$amenityDatas,
+                 "amenity" =>$amenityDatas,
                  "safety" => $safetyDatas,
                  "busPhotos" => $busPhotoDatas,
                  "cancellationDuration" => $cSlabDuration,
@@ -249,13 +226,7 @@ class ListingService
                  "reviews" => $reviews
              );             
          }
-
-
-        // return 'hello';
-        
-
          return $ListingRecords;
-
 
        // return $this->listingRepository->getAll($request);
     }
@@ -387,19 +358,9 @@ class ListingService
 
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 $amenityDatas = $record->busAmenities;
-                //$amenityName = $amenityDatas->pluck('amenities.name');
-                //$amenityIcon = $amenityDatas->pluck('amenities.icon');
-                //$amenityName = $amenityDatas->pluck('amenities.name');
-                //$amenityIcon = $amenityDatas->pluck('amenities.amenities_image');
                 $safetyDatas = $record->busSafety;
-                //$safetyName = $safetyDatas->pluck('safety.name');
-                //$safetyIcon = $safetyDatas->pluck('safety.icon');
-                //$safetyName = $safetyDatas->pluck('safety.name');
-                //$safetyIcon = $safetyDatas->pluck('safety.safety_image');
                 $busPhotoDatas = $record->busGallery;
               
-                //$busPhotos = (!empty($busPhotoDatas)) ? $busPhotoDatas->pluck('bus_image') : [];
-
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
@@ -466,11 +427,6 @@ class ListingService
                     "departureTime" =>$depTime,
                     "arrivalTime" =>$arrTime,
                     "totalJourneyTime" =>$totalJourneyTime,
-                    // "amenityName" =>$amenityName,
-                    // "amenityIcon" => $amenityIcon, 
-                    // "safetyIconName" =>$safetyName,
-                    // "safetyIcon" => $safetyIcon,
-                    // "busPhotos" => $busPhotos,
                     "amenity" =>$amenityDatas,
                     "safety" => $safetyDatas,
                     "busPhotos" => $busPhotoDatas,

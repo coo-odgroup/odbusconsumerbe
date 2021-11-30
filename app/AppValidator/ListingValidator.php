@@ -13,7 +13,7 @@ class ListingValidator
             'source' => 'required|max:50',
             'destination' => 'required|max:50',
             'entry_date' => 'required|date_format:d-m-Y',
-            'bus_operator_id' => 'required|numeric',
+            //'bus_operator_id' => 'required|numeric',
         ];      
       
         $ListingValidation = Validator::make($data, $rules);

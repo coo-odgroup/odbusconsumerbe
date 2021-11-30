@@ -97,14 +97,19 @@ class ListingRepository
 
      public function getticketPrice($sourceID,$destinationID,$busOperatorId)
      {
-
-       return $this->ticketPrice
+        if(isset($busOperatorId)){
+            return $this->ticketPrice
                     ->where('source_id', $sourceID)
                     ->where('destination_id', $destinationID)
                     ->where('bus_operator_id', $busOperatorId)
                     ->get(['bus_id','start_j_days']);  
+        }else{
+            return $this->ticketPrice
+                    ->where('source_id', $sourceID)
+                    ->where('destination_id', $destinationID)
+                    ->get(['bus_id','start_j_days']); 
+        }
      }
-
 
      public function checkBusentry($busId,$new_date)
      {
@@ -114,8 +119,6 @@ class ListingRepository
                                  }])->exists();
      }
 
-
-
      public function getBusScheduleID($busId)
      {
        return $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id'); 
@@ -123,79 +126,145 @@ class ListingRepository
 
      public function getBusList($source,$destination,$busOperatorId,$entry_date)
      {
-       return $this->bus
-       ->where('bus_operator_id', $busOperatorId) 
-       ->with(['ticketPrice' => function ($tp) use($source,$destination,$busOperatorId) {
-            $tp->where('source_id', $source);
-            $tp->where('destination_id', $destination);
-            $tp->where('bus_operator_id', $busOperatorId);
-       }])
-       ->with(['busSchedule' => function ($bs) use($entry_date) {
-            $bs->with(['busScheduleDate' => function ($bsd) use($entry_date){
-                $bsd->where('entry_date',$entry_date);
-            }]);
-       }])
-       ->with('couponAssignedBus.coupon')
-       ->with('busOperator.coupon')
-       ->with('busContacts')
-       //->with('busOperator')       
-       ->with('busAmenities.amenities')     
-       ->with('busSafety.safety')
-       ->with('BusType.busClass')
-       ->with('busSeats.seats')
-       //->with('seatOpen.seatOpenSeats')
-       ->with('BusSitting')
-       ->with('busGallery')
-       ->with('cancellationslabs.cancellationSlabInfo')
-       ->with(['review' => function ($query) {                    
-           $query->where('status',1);
-           $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
-           $query->with(['users' =>  function ($u){
-               $u->select('id','name','profile_image');
-           }]);                      
-           }])
-       ->where('status','1')
-       ->get();
+        if(isset($busOperatorId)){
+            return $this->bus
+                        ->where('bus_operator_id', $busOperatorId) 
+                        ->with(['ticketPrice' => function ($tp) use($source,$destination,$busOperatorId) {
+                                 $tp->where('source_id', $source);
+                                 $tp->where('destination_id', $destination);
+                                 $tp->where('bus_operator_id', $busOperatorId);
+                              }])
+                        ->with(['busSchedule' => function ($bs) use($entry_date) {
+                        $bs->with(['busScheduleDate' => function ($bsd) use($entry_date){
+                        $bsd->where('entry_date',$entry_date);
+                        }]);
+                        }])
+                        ->with('couponAssignedBus.coupon')
+                        ->with('busOperator.coupon')
+                        ->with('busContacts')       
+                        ->with('busAmenities.amenities')     
+                        ->with('busSafety.safety')
+                        ->with('BusType.busClass')
+                        ->with('busSeats.seats')
+                        //->with('seatOpen.seatOpenSeats')
+                        ->with('BusSitting')
+                        ->with('busGallery')
+                        ->with('cancellationslabs.cancellationSlabInfo')
+                        ->with(['review' => function ($query) {                    
+                        $query->where('status',1);
+                        $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                        $query->with(['users' =>  function ($u){
+                            $u->select('id','name','profile_image');
+                        }]);                      
+                        }])
+                        ->where('status','1')
+                        ->get();
+        }else{
+            return $this->bus
+                        ->with(['ticketPrice' => function ($tp) use($source,$destination,$busOperatorId){
+                                 $tp->where('source_id', $source);
+                                 $tp->where('destination_id', $destination);
+                              }])
+                        ->with(['busSchedule' => function ($bs) use($entry_date) {
+                        $bs->with(['busScheduleDate' => function ($bsd) use($entry_date){
+                        $bsd->where('entry_date',$entry_date);
+                        }]);
+                        }])
+                        ->with('couponAssignedBus.coupon')
+                        ->with('busOperator.coupon')
+                        ->with('busContacts')       
+                        ->with('busAmenities.amenities')     
+                        ->with('busSafety.safety')
+                        ->with('BusType.busClass')
+                        ->with('busSeats.seats')
+                        //->with('seatOpen.seatOpenSeats')
+                        ->with('BusSitting')
+                        ->with('busGallery')
+                        ->with('cancellationslabs.cancellationSlabInfo')
+                        ->with(['review' => function ($query) {                    
+                        $query->where('status',1);
+                        $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                        $query->with(['users' =>  function ($u){
+                            $u->select('id','name','profile_image');
+                        }]);                      
+                        }])
+                        ->where('status','1')
+                        ->get();
+        }
      }
 
      public function getBusData($busOperatorId,$busId)
      {
-       return $this->bus
-       ->where('bus_operator_id', $busOperatorId) 
-       ->with('couponAssignedBus.coupon')
-       ->with('busOperator.coupon')
-       ->with('busContacts')
-       //->with('busOperator')       
-       //->with('busAmenities.amenities')
-       ->with(['busAmenities'  => function ($query) {
-        $query->with(['amenities' =>function ($a){
-              $a->select('id','name','amenities_image');
-          }]);
-       }]) 
-       //->with('busSafety.safety')
-       ->with(['busSafety'  => function ($query) {
-        $query->with(['safety' =>function ($a){
-              $a->select('id','name','safety_image');
-          }]);
-       }]) 
-       ->with('BusType.busClass')
-       ->with('busSeats.seats')
-       //->with('seatOpen.seatOpenSeats')
-       ->with('BusSitting')
-       ->with(['busGallery' => function ($a){
-          $a->select('id','bus_id','alt_tag','bus_image');
-        }])
-       ->with('cancellationslabs.cancellationSlabInfo')
-       ->with(['review' => function ($query) {                    
-           $query->where('status',1);
-           $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
-           $query->with(['users' => function ($u){
-               $u->select('id','name','profile_image');
-           }]);                      
-           }])
-       ->where('status','1')
-       ->where('id',$busId)
-       ->get();
+       if(isset($busOperatorId)){
+        return $this->bus
+                    ->where('bus_operator_id', $busOperatorId) 
+                    ->with('couponAssignedBus.coupon')
+                    ->with('busOperator.coupon')
+                    ->with('busContacts')       
+                    //->with('busAmenities.amenities')
+                    ->with(['busAmenities'  => function ($query) {
+                        $query->with(['amenities' =>function ($a){
+                            $a->select('id','name','amenities_image');
+                        }]);
+                    }]) 
+                //->with('busSafety.safety')
+                ->with(['busSafety'  => function ($query) {
+                    $query->with(['safety' =>function ($a){
+                        $a->select('id','name','safety_image');
+                    }]);
+                }]) 
+                ->with('BusType.busClass')
+                ->with('busSeats.seats')
+                //->with('seatOpen.seatOpenSeats')
+                ->with('BusSitting')
+                ->with(['busGallery' => function ($a){
+                    $a->select('id','bus_id','alt_tag','bus_image');
+                    }])
+                ->with('cancellationslabs.cancellationSlabInfo')
+                ->with(['review' => function ($query) {                    
+                    $query->where('status',1);
+                    $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                    $query->with(['users' => function ($u){
+                        $u->select('id','name','profile_image');
+                    }]);                      
+                    }])
+                ->where('status','1')
+                ->where('id',$busId)
+                ->get();
+        }else{
+            return $this->bus
+                        ->with('couponAssignedBus.coupon')
+                        ->with('busOperator.coupon')
+                        ->with('busContacts')       
+                        ->with(['busAmenities'  => function ($query) {
+                            $query->with(['amenities' =>function ($a){
+                                $a->select('id','name','amenities_image');
+                            }]);
+                        }]) 
+                        ->with(['busSafety'  => function ($query) {
+                            $query->with(['safety' =>function ($a){
+                                $a->select('id','name','safety_image');
+                            }]);
+                        }]) 
+                        ->with('BusType.busClass')
+                        ->with('busSeats.seats')
+                        //->with('seatOpen.seatOpenSeats')
+                        ->with('BusSitting')
+                        ->with(['busGallery' => function ($a){
+                            $a->select('id','bus_id','alt_tag','bus_image');
+                            }])
+                        ->with('cancellationslabs.cancellationSlabInfo')
+                        ->with(['review' => function ($query) {                    
+                            $query->where('status',1);
+                            $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                            $query->with(['users' => function ($u){
+                                $u->select('id','name','profile_image');
+                            }]);                      
+                            }])
+                        ->where('status','1')
+                        ->where('id',$busId)
+                        ->get();
+        }
      }
 
      public function getFilterBusList($busOperatorId,$busId,$busType,
@@ -864,9 +933,5 @@ class ListingRepository
 
         return $result;
     }
-
-
-
-
 
 }
