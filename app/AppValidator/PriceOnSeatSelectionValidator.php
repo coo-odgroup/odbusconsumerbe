@@ -13,7 +13,7 @@ class PriceOnSeatSelectionValidator
             'busId' => 'required|numeric',
             'sourceId' => 'required|numeric',
             'destinationId' => 'required|numeric',
-            'busOperatorId' => 'required|numeric',
+            //'busOperatorId' => 'required|numeric',
             //'seater' => 'required',
             //'sleeper' => 'required',
             'seater' => 'required_without:sleeper',

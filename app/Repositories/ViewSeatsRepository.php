@@ -132,7 +132,11 @@ class ViewSeatsRepository
     }
 
     public function ticketFareSlab($busOperatorId){
-        return  $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+        if(isset($busOperatorId)){
+        return $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+        }else{
+        return $this->ticketFareSlab->get();
+        }
     }
 
     public function odbusCharges(){

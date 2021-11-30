@@ -68,8 +68,6 @@ class ViewSeatsService
                 $flag = 'true';
                // $viewSeat = $this->viewSeatsRepository->getSeatInfo($busId,$blockedSeats,$flag,$journeyDate);
            }
-
-
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
@@ -97,11 +95,9 @@ class ViewSeatsService
                $viewSeat['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
            }
 
-      
                 // Add Gender into Booked seat List
                 if (sizeof($bookingIds)){
                     $i=0;
-                  
                   if(isset($viewSeat['lower_berth'])){
                     foreach($viewSeat['lower_berth'] as &$lb){
                         if(in_array($lb['id'], $blockedSeats)){
@@ -119,19 +115,14 @@ class ViewSeatsService
                             $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
                         } 
                         $i++;
+                       }     
                     }   
-                      
-                    }
-                    
                 }
-
             return $viewSeat;
-
     }
 
     public function getPriceOnSeatsSelection(Request $request)
     {
-
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
         $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
         $busId = $request['busId'];
