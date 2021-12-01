@@ -267,7 +267,7 @@ class AgentBookingController extends Controller
         } 
          try {
             $response =  $this->agentBookingService->agentBooking($request);  
-            if($response['message']){
+            if(isset($response['message'])){
              return $this->errorResponse($response['note'],Response::HTTP_OK);
              }
            else{

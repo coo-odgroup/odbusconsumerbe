@@ -48,6 +48,7 @@ class AgentBookingRepository
     
     public function agentBooking($request)
     { 
+
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $agentInfo = $request['agentInfo'];
         $customerInfo = $request['customerInfo'];
@@ -72,7 +73,15 @@ class AgentBookingRepository
         $aId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first()->id;
-        $walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
+         $walletDetail = AgentWallet::where('user_id',$aId)->get();
+        if(isset($walletDetail[0])){
+            $walletBalance = $walletDetail[0]->latest()->first()->balance;
+        }else{
+            $arr['note']="Your do not have any wallet balance. Kindly recharge your wallet to book tickets";
+            $arr['message']="less_balance";
+            return $arr;
+        }
+        //$walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
         
         $bookingInfo = $request['bookingInfo'];
         
