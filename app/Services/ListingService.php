@@ -285,7 +285,8 @@ class ListingService
             $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                                   
             if($busEntryPresent==true){
-               $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+               $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
+               $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
             }   
         }
         $records = Arr::flatten($records); 

@@ -276,17 +276,34 @@ class ListingRepository
 
      public function getFilterBusList($busOperatorId,$busId,$busType,
      $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId){
+        if(isset($busOperatorId)){
          return  $this->bus
          ->where('bus_operator_id', $busOperatorId)
          ->with('couponAssignedBus.coupon')
          ->with('busOperator.coupon')
-         ->with('busOperator')
-         ->with('busAmenities.amenities')
-         ->with('busSafety.safety')
+         //->with('busOperator')
+         //->with('busAmenities.amenities')
+         //->with('busSafety.safety')
+         ->with(['busAmenities'  => function ($query) {
+            $query->with(['amenities' =>function ($a){
+                $a->where('status',1);
+                $a->select('id','name','amenities_image');
+            }]);
+        }]) 
+        ->with(['busSafety'  => function ($query) {
+            $query->with(['safety' =>function ($a){
+                $a->where('status',1);
+                $a->select('id','name','safety_image');
+            }]);
+        }]) 
          ->with('BusType.busClass')
          ->with('busSeats.seats')
          ->with('BusSitting')
-         ->with('busGallery')
+         //->with('busGallery')
+         ->with(['busGallery' => function ($a){
+            $a->where('status',1);
+            $a->select('id','bus_id','alt_tag','bus_image');
+            }])
          ->with('cancellationslabs.cancellationSlabInfo')
          ->with(['review' => function ($query) {                    
              $query->where('status',1);
@@ -313,16 +330,82 @@ class ListingRepository
              if($dropingingPointId)  
              $query->whereIn('id', (array)$dropingingPointId);
              })       
-         ->whereHas('busOperator', function ($query) use ($operatorId){
-             if($operatorId)
-             $query->whereIn('id', (array)$operatorId);            
-             })
+        //  ->whereHas('busOperator', function ($query) use ($operatorId){
+        //      if($operatorId)
+        //      $query->whereIn('id', (array)$operatorId);            
+        //      })
          ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
              if($amenityId)
              $query->whereIn('id', (array)$amenityId);            
              })  
          ->where('id',$busId)
+         ->where('status','1')
          ->get();
+        }else{
+            return  $this->bus
+         ->with('couponAssignedBus.coupon')
+         ->with('busOperator.coupon')
+         //->with('busOperator')
+         //->with('busAmenities.amenities')
+         //->with('busSafety.safety')
+         ->with(['busAmenities'  => function ($query) {
+            $query->with(['amenities' =>function ($a){
+                $a->where('status',1);
+                $a->select('id','name','amenities_image');
+            }]);
+        }]) 
+        ->with(['busSafety'  => function ($query) {
+            $query->with(['safety' =>function ($a){
+                $a->where('status',1);
+                $a->select('id','name','safety_image');
+            }]);
+        }]) 
+         ->with('BusType.busClass')
+         ->with('busSeats.seats')
+         ->with('BusSitting')
+         //->with('busGallery')
+         ->with(['busGallery' => function ($a){
+            $a->where('status',1);
+            $a->select('id','bus_id','alt_tag','bus_image');
+            }])
+         ->with('cancellationslabs.cancellationSlabInfo')
+         ->with(['review' => function ($query) {                    
+             $query->where('status',1);
+             $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+             $query->with(['users' =>  function ($u){
+                 $u->select('id','name','profile_image');
+             }]);                      
+             }])
+         ->where('status','1')
+         ->where('id',$busId)
+         ->whereHas('busType.busClass', function ($query) use ($busType){
+             if($busType)
+             $query->whereIn('id', (array)$busType);            
+             })
+         ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
+             if($seatType)
+             $query->whereIn('id', (array)$seatType);            
+             })
+         ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
+             if($boardingPointId)                   
+             $query->whereIn('id', (array)$boardingPointId);
+             })    
+         ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($dropingingPointId){
+             if($dropingingPointId)  
+             $query->whereIn('id', (array)$dropingingPointId);
+             })       
+        //  ->whereHas('busOperator', function ($query) use ($operatorId){
+        //      if($operatorId)
+        //      $query->whereIn('id', (array)$operatorId);            
+        //      })
+         ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
+             if($amenityId)
+             $query->whereIn('id', (array)$amenityId);            
+             })  
+         ->where('id',$busId)
+         ->where('status','1')
+         ->get();
+        }
      }
     
  
@@ -622,22 +705,22 @@ class ListingRepository
 
     public function getboardingPoints($sourceID)
     {
-        return  $this->boardingDroping->where('location_id', $sourceID)->get(['id','boarding_point']);
+        return $this->boardingDroping->where('location_id', $sourceID)->get(['id','boarding_point']);
     }
 
     public function getdropingPoints($destinationID)
     {
-        return   $this->boardingDroping->where('location_id', $destinationID)->get(['id','boarding_point']);       
+        return $this->boardingDroping->where('location_id', $destinationID)->get(['id','boarding_point']);       
     }
 
     public function getbusOperator()
     {
-        return  $this->busOperator->get(['id','operator_name']);
+        return $this->busOperator->get(['id','operator_name']);
     }
 
     public function getamenities()
     {
-        return $this->amenities->get(['id','name','icon']);
+        return $this->amenities->where('status', '1')->get(['id','name','icon']);
     }
 
     public function filter_old($request)
