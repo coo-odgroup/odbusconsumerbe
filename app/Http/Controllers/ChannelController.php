@@ -16,6 +16,7 @@ use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
 use App\AppValidator\AgentWalletPaymentValidator;
 use App\AppValidator\AgentPaymentStatusValidator;
+use App\Jobs\TestingEmailJob;
 
 class ChannelController extends Controller
 {
@@ -34,6 +35,15 @@ class ChannelController extends Controller
             $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
             $this->agentPaymentStatusValidator = $agentPaymentStatusValidator;
         }
+
+    public function testingEmail(Request $request) {
+
+            $to = $request['email'];
+            $name = $request['name'];
+    
+            TestingEmailJob::dispatch($to, $name); 
+            return "email sent successfully";    
+          }
 
     public function storeGWInfo(Request $request)
         {
