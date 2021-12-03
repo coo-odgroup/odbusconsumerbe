@@ -42,7 +42,7 @@ class PopularService
         $busIds = $this->popularRepository->getBusIds();
 
            if($busIds->isEmpty()){
-               return "No booking exist to filter top operator";
+               return [];
            }
            else{
                foreach($busIds as $busId){
