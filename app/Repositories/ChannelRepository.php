@@ -520,7 +520,7 @@ class ChannelRepository
                 $sendsms = $this->sendSmsTicket($request,$pnr); 
             } 
             if($request['email']){
-                $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+               // $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
         }
         //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
@@ -623,7 +623,7 @@ class ChannelRepository
             $sendsms = $this->sendSmsTicket($request,$pnr); 
         } 
         if($request['email']){
-            $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+            //$sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
         } 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
         $booking = $this->booking->find($bookingId);

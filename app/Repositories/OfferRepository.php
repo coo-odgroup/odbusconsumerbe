@@ -32,31 +32,6 @@ class OfferRepository
       
         $currentDate = date('Y-m-d');
         $currentTime = date('H:i:s');
-        // $busOff = $this->slider->where('occassion', $busOffer)
-        //                           ->get();
-        // $startDate = $busOff[0]->start_date;
-        // $endDate = $busOff[0]->end_date;
-        
-        // if (($currentDate >= $startDate) && ($currentDate <= $endDate)){  
-        //     $busOffers = $this->slider->where('occassion', $busOffer)
-        //                               ->get();
-        // }else{
-        //      return "not applicable";
-        // }
-
-        // $busOffers = $this->slider->where('occassion', $busOffer)
-        //                           ->where('bus_operator_id', $busOperatorId)
-        //   						  ->where('start_date','<=',$currentDate)
-        //                           ->where('end_date','>=',$currentDate)
-        //                           ->where('status',1)
-        //                           ->get();    
-        // $festiveOffers = $this->slider->where('occassion',$festiveOffer)
-        //                               ->where('bus_operator_id', $busOperatorId)
-        //   							  ->where('start_date','<=',$currentDate)
-        //                               ->where('end_date','>=',$currentDate)	
-        //   							  ->where('status',1)		
-        //                               ->get();
-
        
         $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)
                                   ->where('start_date','<=',$currentDate)
@@ -65,10 +40,8 @@ class OfferRepository
                                   ->where('slider_photo','!=','')
                                   ->get(['id','bus_operator_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time']);
 
-        $offers = array(
-            "allOffers" => $allOffers
-        );
-        return $offers;    
+       
+        return $allOffers;    
     }
     public function coupons($request)
     {   
