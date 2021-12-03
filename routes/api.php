@@ -24,6 +24,7 @@ use App\Http\Controllers\SoapController;
 use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\FilePathUrlsController;
+use App\Http\Controllers\BotManController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -45,6 +46,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
     Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
     Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
+    Route::post('/TestingEmail', [ChannelController::class, 'testingEmail']);
     //Route::post('/SendEmail', [ChannelController::class, 'sendEmail']);
     //Route::post('/SendEmailTicket', [ChannelController::class, 'sendEmailTicket']);
     Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
@@ -98,6 +100,6 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
 
 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
-
+Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 
 
