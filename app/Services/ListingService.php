@@ -4,6 +4,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\Repositories\ListingRepository;
+use App\Repositories\CommonRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,9 +18,10 @@ class ListingService
 {
     
     protected $listingRepository;    
-    public function __construct(ListingRepository $listingRepository)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository)
     {
         $this->listingRepository = $listingRepository;
+        $this->commonRepository = $commonRepository;
     }
     public function getAll(Request $request)
     {  
@@ -28,6 +30,10 @@ class ListingService
         $entry_date = $request['entry_date'];
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
+
+
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
 
         $srcResult= $this->listingRepository->getLocationID($request['source']);
         $destResult= $this->listingRepository->getLocationID($request['destination']);
@@ -143,9 +149,38 @@ class ListingService
              $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
                                           
              $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
-             $amenityDatas = $record->busAmenities;
+             $amenityDatas = $record->busAmenities;  
+            if($amenityDatas)
+            {
+                foreach($amenityDatas as $a){
+                    if($a->amenities != null || isset($a->amenities->amenities_image) )
+                    {
+                        $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
+                    }
+                }
+            }
+
              $safetyDatas = $record->busSafety;
+             if($safetyDatas)
+            {
+                foreach($safetyDatas as $sd){
+                    if($sd->safety != null || isset($sd->safety->safety_image) )
+                    {
+                        $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
+                    }
+                }
+            }
              $busPhotoDatas = $record->busGallery;
+             if($busPhotoDatas)
+             {
+                 foreach($busPhotoDatas as $bp){
+                     if($bp->bus_image != null || isset($bp->bus_image) )
+                     {
+                         $bp->bus_image = $path->busphoto_url.$bp->bus_image;   
+                     }
+                 }
+             }
+             
              $reviews=  $record->review;
  
              $Totalrating=0;
@@ -210,7 +245,7 @@ class ListingService
                  "startingFromPrice" => $startingFromPrice,
                  "departureTime" =>$depTime,
                  "arrivalTime" =>$arrTime,
-                 "totalJourneyTime" =>$totalJourneyTime,
+                 "totalJourneyTime" =>$totalJourneyTime, 
                  "amenity" =>$amenityDatas,
                  "safety" => $safetyDatas,
                  "busPhotos" => $busPhotoDatas,
@@ -245,7 +280,9 @@ class ListingService
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID'];
         $busOperatorId = $request['bus_operator_id']; 
-        $entry_date = $request['entry_date'];   
+        $entry_date = $request['entry_date']; 
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];  
         if($sourceID==null ||  $destinationID==null || $entry_date==null)
             return ""; 
 
@@ -359,9 +396,35 @@ class ListingService
 
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 $amenityDatas = $record->busAmenities;
+                if($amenityDatas)
+            {
+                foreach($amenityDatas as $a){
+                    if($a->amenities != null || isset($a->amenities->amenities_image) )
+                    {
+                        $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
+                    }
+                }
+            }
                 $safetyDatas = $record->busSafety;
+                if($safetyDatas)
+            {
+                foreach($safetyDatas as $sd){
+                    if($sd->safety != null || isset($sd->safety->safety_image) )
+                    {
+                        $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
+                    }
+                }
+            }
                 $busPhotoDatas = $record->busGallery;
-              
+                if($busPhotoDatas)
+                {
+                    foreach($busPhotoDatas as $bp){
+                        if($bp->bus_image != null || isset($bp->bus_image) )
+                        {
+                            $bp->bus_image = $path->busphoto_url.$bp->bus_image;   
+                        }
+                    }
+                }
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
