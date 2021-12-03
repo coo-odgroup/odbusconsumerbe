@@ -24,6 +24,7 @@ class CommonService
     {
         $path= $this->commonRepository->getPathurls();
         $path= $path[0];
+        
         try {
             $today=date("Y-m-d");
             $banner=$this->commonRepository->getOperatorBanner($request['bus_operator_id'],$today);
@@ -32,14 +33,15 @@ class CommonService
 
             $banner_image='';
             $common_data=[];
+            $social_media=[];
 
-            if($banner && $banner[0] && $banner[0]->banner_image){
+            if($banner && isset($banner[0]) && $banner[0]->banner_image){
 
                 $banner= $banner[0];
                  $banner_image =  $path->banner_url.$banner->banner_image;
             }
 
-            if($common && $common[0]){
+            if($common && isset($common[0])){
 
                 $common_data= $common[0];
                 
@@ -56,10 +58,13 @@ class CommonService
                   }
             }
 
+            if($socialMedia && isset($socialMedia[0])){
+                $social_media=$socialMedia[0];
+            }
+
             $data['banner_image']=$banner_image;
             $data['common']=$common_data;
-            $data['socialMedia']=$socialMedia[0];
-                   
+            $data['socialMedia']=$social_media;                   
             return $data;
 
         } catch (Exception $e) {

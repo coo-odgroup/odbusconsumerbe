@@ -31,7 +31,7 @@ class OfferService
             $offer = $this->offerRepository->offers($request);
             if($offer){
                 foreach($offer as $o){
-                    $o->slider_photo= $path->banner_url.$o->slider_photo;
+                    $o->slider_photo= $path->sliderphoto_url.$o->slider_photo;
                 }
             }
             return $offer;
