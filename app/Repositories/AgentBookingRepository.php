@@ -133,15 +133,15 @@ class AgentBookingRepository
                 $booking->owner_gst_amount = $ownerGstAmount;
             }     
         $agentCommissionByCustomer = AgentFee::get(); 
+
+        $comissionByCustomer = 0;
         foreach($agentCommissionByCustomer as $agentCom){
             $priceFrom = $agentCom->price_from;
             $priceTo = $agentCom->price_to;
             if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
                 $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
               break;
-            } else{
-                $comissionByCustomer = 0;
-            }    
+            }  
         }                   
         $booking->created_by = $bookingInfo['created_by'];
         $booking->users_id = $userId;

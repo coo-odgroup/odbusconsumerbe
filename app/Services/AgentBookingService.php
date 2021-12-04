@@ -22,12 +22,12 @@ class AgentBookingService
     {
         try {
             $bookTicket = $this->agentBookingRepository->agentBooking($request);
+            return $bookTicket;
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $bookTicket;
+       
     }   
    
 }
