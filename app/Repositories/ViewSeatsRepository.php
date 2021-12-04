@@ -132,15 +132,26 @@ class ViewSeatsRepository
     }
 
     public function ticketFareSlab($busOperatorId){
-        if(isset($busOperatorId)){
-        return $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+    $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 
+        
+    $ticketFareRecord = $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+        if(isset($ticketFareRecord[0])){
+            return $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
         }else{
-        return $this->ticketFareSlab->get();
-        }
+            return $this->ticketFareSlab->where('bus_operator_id', $defOperatorId)->get();
+        }  
     }
 
-    public function odbusCharges(){
-        return $this->odbusCharges->get();
+    public function odbusCharges($busOperatorId){
+        $defOperatorId = Config::get('constants.BUS_OPERATOR_ID');
+
+        $odbusChargesRec = $this->odbusCharges->where('bus_operator_id', $busOperatorId)->get();
+        if(isset($odbusChargesRec[0])){
+            return $this->odbusCharges->where('bus_operator_id', $busOperatorId)->get();
+        }else{
+            return $this->odbusCharges->where('bus_operator_id', $defOperatorId)->get();
+        }  
+
     }
  
     public function busStoppageTiming($busId){

@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\Bus;
 use App\Repositories\ViewSeatsRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -128,8 +129,9 @@ class ViewSeatsService
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
-        $busOperatorId = $request['busOperatorId'];
-
+        //$busOperatorId = $request['busOperatorId'];
+        $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
+        
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
         $seaterPrice = $busWithTicketPrice->base_seat_fare;
         $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
@@ -146,7 +148,7 @@ class ViewSeatsService
             if($startingFare <= $ownerFare && $uptoFare >= $ownerFare){
                 $percentage = $ticketFareSlab->odbus_commision;
                 $odbusServiceCharges = round($ownerFare * ($percentage/100));
-                $odbusCharges = $this->viewSeatsRepository->odbusCharges();
+                $odbusCharges = $this->viewSeatsRepository->odbusCharges($busOperatorId);
                 $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
                 $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
                 $gwCharges = (($ownerFare + $odbusServiceCharges + $smsEmailCharges) * $gwPercentage);
