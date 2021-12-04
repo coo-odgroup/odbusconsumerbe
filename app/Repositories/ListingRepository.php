@@ -101,7 +101,7 @@ class ListingRepository
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
-        ->when($busOperatorId != null, function ($query,$busOperatorId){
+        ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
         ->orderBy('dep_time', 'asc')
@@ -125,7 +125,7 @@ class ListingRepository
      {
             return $this->bus
                         //->where('bus_operator_id', $busOperatorId) 
-                        ->when($busOperatorId != null, function ($query,$busOperatorId){
+                        ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
                             $query->where('bus_operator_id',$busOperatorId);
                             })
                         ->with(['ticketPrice' => function ($tp) use($source,$destination,$busOperatorId) {
@@ -165,7 +165,7 @@ class ListingRepository
      {
         return $this->bus
         //->where('bus_operator_id', $busOperatorId) 
-        ->when($busOperatorId != null, function ($query,$busOperatorId){
+        ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
         ->with('couponAssignedBus.coupon')
@@ -209,7 +209,7 @@ class ListingRepository
      public function getFilterBusList($busOperatorId,$busId,$busType,
      $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId){
          return  $this->bus
-         ->when($busOperatorId != null, function ($query,$busOperatorId){
+         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
          ->with('couponAssignedBus.coupon')
