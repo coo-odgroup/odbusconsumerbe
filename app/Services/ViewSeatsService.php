@@ -140,6 +140,11 @@ class ViewSeatsService
                      count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
                     
         $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($busOperatorId);
+
+        $odbusServiceCharges=0;
+        $transactionFee=0;
+
+        $totalFare= $ownerFare;
         
         foreach($ticketFareSlabs as $ticketFareSlab){
 
@@ -154,8 +159,8 @@ class ViewSeatsService
                 $gwCharges = (($ownerFare + $odbusServiceCharges + $smsEmailCharges) * $gwPercentage);
                 $transactionFee = round($smsEmailCharges + $gwCharges);
                 $totalFare = round($ownerFare + $odbusServiceCharges + $transactionFee);
+                }     
             }  
-        } 
         $seatWithPriceRecords[] = array(
             "seaterPrice" => $seaterPrice,
             "sleeperPrice" => $sleeperPrice,
