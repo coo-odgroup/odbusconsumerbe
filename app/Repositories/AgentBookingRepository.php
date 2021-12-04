@@ -52,6 +52,9 @@ class AgentBookingRepository
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $agentInfo = $request['agentInfo'];
         $customerInfo = $request['customerInfo'];
+        $bookingInfo = $request['bookingInfo'];
+        $defOperatorId = Config::get('constants.BUS_OPERATOR_ID');
+        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
 
         $existingUser = Users::where('phone',$customerInfo['phone'])
                                     ->exists(); 
@@ -80,11 +83,7 @@ class AgentBookingRepository
             $arr['note']="Your do not have any wallet balance. Kindly recharge your wallet to book tickets";
             $arr['message']="less_balance";
             return $arr;
-        }
-        //$walletBalance = AgentWallet::where('user_id',$aId)->latest()->first()->balance;
-        
-        $bookingInfo = $request['bookingInfo'];
-        
+        } 
         if($walletBalance >= $bookingInfo['total_fare']){
         //Save Booking 
                $booking = new $this->booking;
@@ -114,18 +113,18 @@ class AgentBookingRepository
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        if(isset($bookingInfo['bus_operator_id'])){
-        $odbusGstPercent = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->first()->odbus_gst_charges;
+
+        $odbusChargesRecord = OdbusCharges::where('bus_operator_id',$busOperatorId)->get();
+        if(isset($odbusChargesRecord[0])){
+            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$busOperatorId)->first()->odbus_gst_charges;
         }else{
-            $odbusGstPercent = OdbusCharges::first()->odbus_gst_charges;  
+            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$defOperatorId)->first()->odbus_gst_charges;
         }
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
-        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
-        $busOperator = BusOperator::where("id",$busOperatorId)->get();
         
-        //$busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
+        $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
             if($busOperator[0]->need_gst_bill == $needGstBill){   
                 $ownerGstPercentage = $busOperator[0]->gst_amount;
