@@ -153,7 +153,7 @@ class ListingService
             if($amenityDatas)
             {
                 foreach($amenityDatas as $a){
-                    if($a->amenities != null || isset($a->amenities->amenities_image) )
+                    if($a->amenities != null && isset($a->amenities->amenities_image) )
                     {
                         $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
                     }
@@ -164,7 +164,7 @@ class ListingService
              if($safetyDatas)
             {
                 foreach($safetyDatas as $sd){
-                    if($sd->safety != null || isset($sd->safety->safety_image) )
+                    if($sd->safety != null && isset($sd->safety->safety_image) )
                     {
                         $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
                     }

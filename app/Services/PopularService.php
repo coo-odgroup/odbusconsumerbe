@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Http\Request;
 use App\Repositories\PopularRepository;
+use App\Repositories\CommonRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
@@ -11,9 +12,10 @@ use InvalidArgumentException;
 class PopularService
 {
     protected $popularRepository;    
-    public function __construct(PopularRepository $popularRepository)
+    public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository)
     {
         $this->popularRepository = $popularRepository;
+        $this->commonRepository = $commonRepository;
     }
     public function getPopularRoutes(Request $request)
     {
@@ -90,7 +92,8 @@ class PopularService
     }
     public function operatorDetails(Request $request)
     {
-       // return $this->popularRepository->operatorDetails($request);
+       $path= $this->commonRepository->getPathurls();
+       $path= $path[0];
 
        $allRoutes = array();
        $allAmenity=array();
@@ -122,7 +125,17 @@ class PopularService
             return $opNameDetails;
         }else {
 
-         $allAmenity=  $this->popularRepository->GetAllBusAmenities($busIds);
+         $allAmenity = $this->popularRepository->GetAllBusAmenities($busIds);
+         if($allAmenity)
+            {
+                foreach($allAmenity as $a){
+                    if($a->amenities != null && isset($a->amenities->amenities_image) )
+                    {
+                        $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
+                    }
+                }
+            }
+        
          $allreviews=  $this->popularRepository->GetOperatorReviews($busIds);
          $Totalrating=  $this->popularRepository->Totalrating($busIds);
 
