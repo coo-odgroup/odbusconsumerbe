@@ -61,6 +61,8 @@ class BookTicketRepository
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill){
         $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 
+
+        
         
         $booking = new $this->booking;
         do {
@@ -74,6 +76,9 @@ class BookTicketRepository
         $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
         $busId = $bookingInfo['bus_id'];
+
+        $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
+
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
         $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
@@ -91,16 +96,16 @@ class BookTicketRepository
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
         
-        $odbusChargesRecord = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->get();
+        $odbusChargesRecord = OdbusCharges::where('bus_operator_id',$busOperatorId)->get();
         if(isset($odbusChargesRecord[0])){
-            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$bookingInfo['bus_operator_id'])->first()->odbus_gst_charges;
+            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$busOperatorId)->first()->odbus_gst_charges;
         }else{
             $odbusGstPercent = OdbusCharges::where('bus_operator_id',$defOperatorId)->first()->odbus_gst_charges;
         }
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
-        $busOperator = BusOperator::where("id",$bookingInfo['bus_operator_id'])->get();
+        $busOperator = BusOperator::where("id",$busOperatorId)->get();
     
         if($busOperator[0]->need_gst_bill == $needGstBill){   
             $ownerGstPercentage = $busOperator[0]->gst_amount;

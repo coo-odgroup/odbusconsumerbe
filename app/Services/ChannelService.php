@@ -146,7 +146,7 @@ class ChannelService
 
 
         } catch (Exception $e) {
-            Log::info($e->getMessage());
+            Log::info($e);
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        
