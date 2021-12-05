@@ -22,6 +22,7 @@ use App\Models\Seats;
 use App\Models\TicketPrice;
 use App\Models\Review;
 use Illuminate\Support\Facades\File; 
+use App\Repositories\CommonRepository;
 
 
 class UsersRepository
@@ -45,7 +46,7 @@ class UsersRepository
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository,Review $review)
+    ,BusType $busType,CustomerPayment $customerPayment,ChannelRepository $channelRepository,Review $review,CommonRepository $commonRepository)
     {
         $this->users = $users;
         $this->channelRepository = $channelRepository;  
@@ -60,6 +61,7 @@ class UsersRepository
         $this->busClass = $busClass;
         $this->customerPayment = $customerPayment;
         $this->review = $review;
+        $this->commonRepository = $commonRepository;
 
     }
 
@@ -154,44 +156,38 @@ class UsersRepository
       $token = $request['token'];
 
       $userDetails = $this->GetuserByToken($userId,$token);
-      
-          $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
   
-          $post->name = $request['name'];
-          $post->email  = $request['email'];
-          $post->pincode = $request['pincode'];
-          $post->street = $request['street'];
-          $post->district = $request['district'];
-          $post->address = $request['address'];
+      $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
+      $post->name = $request['name'];
+      $post->email  = $request['email'];
+      $post->pincode = $request['pincode'];
+      $post->street = $request['street'];
+      $post->district = $request['district'];
+      $post->address = $request['address'];
   
-          if ($request->hasFile('profile_image'))
-          {
-                $file      = $request->file('profile_image');
-                $filename  = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
-                $picture   = date('His').'-'.$filename;
-                $post->profile_image = $picture;
-                $file->move(public_path('uploads/profile'), $picture);
+      if ($request->hasFile('profile_image'))
+      {
+            $file      = $request->file('profile_image');
+            $filename  = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $picture   = date('His').'-'.$filename;
+            $post->profile_image = $picture;
+            $file->move(public_path('uploads/profile'), $picture);
 
-                if($userDetails[0]->profile_image!=''){
-                  $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
-                  
-                  if (File::exists($image_path)) {
-                    //File::delete($image_path);
-                    unlink($image_path);
-                  }              
-                }     
-          } 
-
-        
-          // if($request['profile_image']!=''){
-          //   $post->profile_image = $request['profile_image'];
-          // }
-          
-          $post->update();         
-  
-          return $post;
-      
+            if($userDetails[0]->profile_image!=''){
+              $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
+              
+              if (File::exists($image_path)) {
+                unlink($image_path);
+              }              
+            }     
+      } 
+      $post->update();      
+      if($request->profile_image!=null){
+        $path= $this->commonRepository->getPathurls();
+        $post->profile_image = $path[0]->profile_url.$request->profile_image;  
+      }
+      return $post;
     }
 
     public function CancelledBookings($user_id){

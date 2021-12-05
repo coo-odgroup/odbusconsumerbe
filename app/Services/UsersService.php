@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
 use App\Repositories\CommonRepository;
+use Illuminate\Support\Arr;
 
 class UsersService
 {
@@ -192,45 +193,29 @@ class UsersService
         }
 
     }
-
     public function updateProfile($request){
-
         $userId = $request['userId'];
         $token = $request['token']; 
 
         $userDetails=$this->usersRepository->GetuserByToken($userId,$token);
-      
         if(isset($userDetails[0])){
-
             return $this->usersRepository->updateProfile($request);
-           
          }else{
            return 'Invalid';
          }
-
-        
-    }
-
-    
+    }   
     public function userReviews($request)
-    {
-      
-       $user= $this->userProfile($request);
-       
-       if($user!='Invalid'){
-          
-          $user = $user[0];
- 
+    { 
+       $user= $this->userProfile($request); 
+       if($user!='Invalid'){ 
+         $user = $user[0];
          $userReviews =  $this->usersRepository->userReviews($user->id,);
-
-         $userReviews = collect($userReviews);
-         
-         
+         $userReviews = collect($userReviews); 
          if($userReviews){
              foreach($userReviews as $key => $value){ 
                  $value->bus->booking['src_name']=$this->usersRepository->getLocationName($value->bus->booking->source_id);
                  $value->bus->booking['dest_name']=$this->usersRepository->getLocationName($value->bus->booking->destination_id);   
-             }
+            }
          }
          return $userReviews;
         }
