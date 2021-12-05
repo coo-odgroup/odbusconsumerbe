@@ -417,36 +417,53 @@ class ListingService
                 $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
 
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
-                $amenityDatas = $record->busAmenities;
-                if($amenityDatas)
-            {
-                foreach($amenityDatas as $a){
-                    if($a->amenities != null || isset($a->amenities->amenities_image) )
-                    {
-                        $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
-                    }
-                }
-            }
-                $safetyDatas = $record->busSafety;
-                if($safetyDatas)
-            {
-                foreach($safetyDatas as $sd){
-                    if($sd->safety != null || isset($sd->safety->safety_image) )
-                    {
-                        $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
-                    }
-                }
-            }
-                $busPhotoDatas = $record->busGallery;
-                if($busPhotoDatas)
+               
+                
+                $amenityDatas = [];  
+                if($record->busAmenities)
                 {
-                    foreach($busPhotoDatas as $bp){
-                        if($bp->bus_image != null || isset($bp->bus_image) )
+                    foreach($record->busAmenities as $a){
+                        if($a->amenities != NULL)
                         {
-                            $bp->bus_image = $path->busphoto_url.$bp->bus_image;   
+                            if($a->amenities->amenities_image !=''){
+                                $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
+                      
+                            }
+                            $amenityDatas[] = $a;
+                        }
+    
+                    }
+                }
+    
+                 $safetyDatas = [];
+                 if($record->busSafety)
+                {
+                    foreach($record->busSafety as $sd){
+                        if($sd->safety != NULL)
+                        {
+                            if($sd->safety->safety_image !=''){
+                                $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image; 
+                      
+                            }
+                            $safetyDatas[] = $sd;
+                             
                         }
                     }
                 }
+                 $busPhotoDatas = [];
+                 if($record->busGallery)
+                 {
+                     foreach($record->busGallery as  $bp){
+                         if($bp->bus_image != null)
+                         {
+                            if($bp->bus_image!=''){
+                                $bp->bus_image = $path->busphoto_url.$bp->bus_image; 
+                            }
+                             $busPhotoDatas[] = $bp;
+                         }
+                     }
+                 }
+                 
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
