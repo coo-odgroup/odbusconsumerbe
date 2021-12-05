@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use InvalidArgumentException;
+use App\Repositories\CommonRepository;
 
 class UsersService
 {
@@ -16,9 +17,10 @@ class UsersService
     protected $usersRepository;
 
     
-    public function __construct(UsersRepository $usersRepository)
+    public function __construct(UsersRepository $usersRepository,CommonRepository $commonRepository)
     {
         $this->usersRepository = $usersRepository;
+        $this->commonRepository = $commonRepository;
     }
 
     public function Register($request)
@@ -93,11 +95,16 @@ class UsersService
 
        $userId = $request['userId'];
        $token = $request['token']; 
+       $path= $this->commonRepository->getPathurls();
+       $path= $path[0];
 
        $userDetails = $this->usersRepository->GetuserByToken($userId,$token);
-         
        if(isset($userDetails[0])){
-         return $userDetails;
+
+        if($userDetails[0]->profile_image!=null){ 
+            $userDetails[0]->profile_image = $path->profile_url.$userDetails[0]->profile_image;      
+        }
+        return $userDetails;
        }else{
          return 'Invalid';
        }
