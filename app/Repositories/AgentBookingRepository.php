@@ -135,14 +135,19 @@ class AgentBookingRepository
         $agentCommissionByCustomer = AgentFee::get(); 
 
         $comissionByCustomer = 0;
-        foreach($agentCommissionByCustomer as $agentCom){
-            $priceFrom = $agentCom->price_from;
-            $priceTo = $agentCom->price_to;
-            if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
-                $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
-              break;
-            }  
-        }                   
+        if($agentCommissionByCustomer){
+            foreach($agentCommissionByCustomer as $agentCom){
+                $priceFrom = $agentCom->price_from;
+                $priceTo = $agentCom->price_to;
+                if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
+                    $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
+                                     
+                    break;
+                }  
+            }   
+
+        }
+                       
         $booking->created_by = $bookingInfo['created_by'];
         $booking->users_id = $userId;
         $agentId->booking()->save($booking);

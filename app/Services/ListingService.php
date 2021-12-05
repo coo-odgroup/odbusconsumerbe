@@ -119,7 +119,12 @@ class ListingService
              }
  
              $maxSeatBook = $record->max_seat_book;
-             $conductor_number = $record->busContacts->phone;
+             $conductor_number ='';
+
+             if($record->busContacts && isset($record->busContacts->phone)){
+                $conductor_number = $record->busContacts->phone;
+             }
+             
              $operatorId = $record->busOperator->id;
              $operatorName = $record->busOperator->operator_name;
              $sittingType = $record->BusSitting->name;   
@@ -370,7 +375,11 @@ class ListingService
                      }
                 }
                 $maxSeatBook = $record->max_seat_book;
-                $conductor_number = $record->busContacts->phone;
+                $conductor_number ='';
+
+                if($record->busContacts && isset($record->busContacts->phone)){
+                   $conductor_number = $record->busContacts->phone;
+                }
                 $operatorId = $record->busOperator->id;
                 $operatorName = $record->busOperator->operator_name;
                 $sittingType = $record->BusSitting->name;
