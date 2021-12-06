@@ -25,6 +25,7 @@ use App\Models\Coupon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Carbon\Carbon;
+use App\Repositories\CommonRepository;
 
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -48,7 +49,7 @@ class ListingRepository
     protected $busSchedule;
     protected $booking;
     
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -63,6 +64,7 @@ class ListingRepository
         $this->busScheduleDate = $busScheduleDate;
         $this->busSchedule = $busSchedule;
         $this->booking=$booking;
+        $this->commonRepository = $commonRepository;
      }   
 
      public function getLocation($searchValue)
@@ -175,14 +177,14 @@ class ListingRepository
         ->with(['busAmenities'  => function ($query) {
             $query->with(['amenities' =>function ($a){
                 $a->where('status',1);
-                $a->select('id','name','amenities_image');
+                $a->select('id','name','amenities_image','android_image');
             }]);
         }]) 
         //->with('busSafety.safety')
         ->with(['busSafety'  => function ($query) {
             $query->with(['safety' =>function ($a){
                 $a->where('status',1);
-                $a->select('id','name','safety_image');
+                $a->select('id','name','safety_image','android_image');
             }]);
         }]) 
         ->with('BusType.busClass')
@@ -220,13 +222,13 @@ class ListingRepository
          ->with(['busAmenities'  => function ($query) {
             $query->with(['amenities' =>function ($a){
                 $a->where('status',1);
-                $a->select('id','name','amenities_image');
+                $a->select('id','name','amenities_image','android_image');
             }]);
         }]) 
         ->with(['busSafety'  => function ($query) {
             $query->with(['safety' =>function ($a){
                 $a->where('status',1);
-                $a->select('id','name','safety_image');
+                $a->select('id','name','safety_image','android_image');
             }]);
         }]) 
          ->with('BusType.busClass')
@@ -263,10 +265,10 @@ class ListingRepository
              if($dropingingPointId)  
              $query->whereIn('id', (array)$dropingingPointId);
              })       
-        //  ->whereHas('busOperator', function ($query) use ($operatorId){
-        //      if($operatorId)
-        //      $query->whereIn('id', (array)$operatorId);            
-        //      })
+         ->whereHas('busOperator', function ($query) use ($operatorId){
+             if($operatorId)
+             $query->whereIn('id', (array)$operatorId);            
+             })
          ->whereHas('busAmenities.amenities', function ($query) use ($amenityId){
              if($amenityId)
              $query->whereIn('id', (array)$amenityId);            
@@ -592,7 +594,22 @@ class ListingRepository
 
     public function getamenities()
     {
-        return $this->amenities->where('status', '1')->get(['id','name','icon']);
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
+        $amenityDatas = $this->amenities->where('status', '1')->get(['id','name','amenities_image','android_image']);
+        foreach($amenityDatas as $a){
+            if($a != null && isset($a->amenities_image) )
+            {
+                $a->amenities_image = $path->amenity_url.$a->amenities_image;   
+            }
+            if($a != null && isset($a->android_image) )
+            {
+                $a->android_image = $path->amenity_url.$a->android_image;   
+            }
+        }
+       return $amenityDatas;
+
     }
 
     public function filter_old($request)

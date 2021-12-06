@@ -162,9 +162,12 @@ class ListingService
                     {
                         $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
                     }
+                    if($a->amenities != null && isset($a->amenities->android_image) )
+                    {
+                        $a->amenities->android_image = $path->amenity_url.$a->amenities->android_image;   
+                    }
                 }
             }
-
              $safetyDatas = $record->busSafety;
              if($safetyDatas)
             {
@@ -172,6 +175,10 @@ class ListingService
                     if($sd->safety != null && isset($sd->safety->safety_image) )
                     {
                         $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
+                    }
+                    if($sd->safety != null && isset($sd->safety->android_image) )
+                    {
+                        $sd->safety->android_image = $path->safety_url.$sd->safety->android_image;   
                     }
                 }
             }
@@ -405,6 +412,7 @@ class ListingService
 
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
                 $amenityDatas = $record->busAmenities;
+               
                 if($amenityDatas)
             {
                 foreach($amenityDatas as $a){
@@ -412,15 +420,23 @@ class ListingService
                     {
                         $a->amenities->amenities_image = $path->amenity_url.$a->amenities->amenities_image;   
                     }
+                    if($a->amenities != null || isset($a->amenities->android_image) )
+                    {
+                        $a->amenities->android_image = $path->amenity_url.$a->amenities->android_image;   
+                    }   
                 }
             }
                 $safetyDatas = $record->busSafety;
                 if($safetyDatas)
             {
                 foreach($safetyDatas as $sd){
-                    if($sd->safety != null || isset($sd->safety->safety_image) )
+                    if($sd->safety != null && isset($sd->safety->safety_image) )
                     {
                         $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
+                    }
+                    if($sd->safety != null && isset($sd->safety->android_image) )
+                    {
+                        $sd->safety->android_image = $path->safety_url.$sd->safety->android_image;   
                     }
                 }
             }
