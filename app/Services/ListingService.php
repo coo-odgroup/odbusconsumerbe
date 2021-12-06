@@ -55,7 +55,7 @@ class ListingService
          }         
          
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId);  
-       
+ 
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){

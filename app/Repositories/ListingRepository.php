@@ -100,9 +100,12 @@ class ListingRepository
 
      public function getticketPrice($sourceID,$destinationID,$busOperatorId)
      {
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
+        ->where('dep_time','>', $CurrentDateTime)
         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
