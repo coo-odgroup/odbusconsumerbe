@@ -451,7 +451,6 @@ class ListingService
                 foreach($record->busSafety as $sd){
                     if($sd->safety != NULL)
                     {
-<<<<<<< HEAD
                         $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
                     }
                     if($sd->safety != null && isset($sd->safety->android_image) )
@@ -470,43 +469,6 @@ class ListingService
                         }
                     }
                 }
-=======
-                        $safety_image='';
-                        $safety_android_image='';
-                        
-                        if($sd->safety->safety_image !=''){
-                            $safety_image = $path->safety_url.$sd->safety->safety_image;
-                        }  
-                        
-                        if($sd->safety->android_image != '' )
-                        {
-                            $safety_android_image = $path->safety_url.$sd->safety->android_image;   
-                        }
-
-                        $sf_arr['id']=$sd->safety->id;
-                        $sf_arr['name']=$sd->safety->name;
-                        $sf_arr['safety_image']=$safety_image ;
-                        $sf_arr['safety_android_image']=$safety_android_image;
-
-                        $safetyDatas[] = $sf_arr;
-                    }
-                }
-            }
-             $busPhotoDatas = [];
-             if($record->busGallery)
-             {
-                 foreach($record->busGallery as  $bp){
-                     if($bp->bus_image != null)
-                     {
-                        if($bp->bus_image!=''){
-                            $bp->bus_image = $path->busphoto_url.$bp->bus_image; 
-                        }
-                         $busPhotoDatas[] = $bp;
-                     }
-                 }
-             }
-                 
->>>>>>> 3b5324db4baea3db09d22c04b7cebb2bad8212b0
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
