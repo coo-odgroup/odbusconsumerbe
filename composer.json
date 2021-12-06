@@ -12,6 +12,8 @@
         "artisaninweb/laravel-soap": "0.3.0.10",
         "auth0/login": "~6.0",
         "aws/aws-sdk-php": "^3.185",
+        "botman/botman": "^2.6",
+        "botman/driver-web": "^1.5",
         "curl/curl": "^2.3",
         "darkaonline/l5-swagger": "^8.0",
         "fideloper/proxy": "^4.2",
