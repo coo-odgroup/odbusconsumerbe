@@ -166,23 +166,12 @@ class ListingService
                         }
                         $amenityDatas[] = $a;
                     }
-<<<<<<< HEAD
-                    if($a->amenities != null && isset($a->amenities->android_image) )
-                    {
-                        $a->amenities->android_image = $path->amenity_url.$a->amenities->android_image;   
-                    }
-                }
-            }
-             $safetyDatas = $record->busSafety;
-             if($safetyDatas)
-=======
 
                 }
             }
 
              $safetyDatas = [];
              if($record->busSafety)
->>>>>>> eac68c74463d2c94f6622a47a3295c84bbb6a320
             {
                 foreach($record->busSafety as $sd){
                     if($sd->safety != NULL)
@@ -447,14 +436,7 @@ class ListingService
                     }   
                 }
             }
-                $safetyDatas = $record->busSafety;
-                if($safetyDatas)
-            {
-                foreach($safetyDatas as $sd){
-                    if($sd->safety != null && isset($sd->safety->safety_image) )
-                    {
-                        $sd->safety->safety_image = $path->safety_url.$sd->safety->safety_image;   
-               
+              
                 
                 $amenityDatas = [];  
                 if($record->busAmenities)
