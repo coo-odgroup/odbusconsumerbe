@@ -72,7 +72,7 @@ class ViewSeatsRepository
     }
 
     public function busSeats($bookedSeatId){
-        return $this->busSeats->where('id',$bookedSeatId)->first()->seats_id;
+        return $this->busSeats->where('id',$bookedSeatId)->where('status', '!=', '2')->first()->seats_id;
     }
 
     public function bookingGenderDetail($bookingId,$bookedSeatId){
@@ -106,8 +106,9 @@ class ViewSeatsRepository
                ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds){
                    $query->when($flag == 'false', 
                    function($q) use ($busId,$seatsIds){  //hide booked Seats
-                           $q->where('bus_id',$busId) 
-                           ->whereNotIn('seats_id',$seatsIds);
+                           $q->where('bus_id',$busId)
+                             ->where('status', '!=', '2') 
+                             ->whereNotIn('seats_id',$seatsIds);
                    },
                    function($q) use ($busId,$seatsIds){  //Display unbooked Seats
                            $q->where('bus_id',$busId); 
