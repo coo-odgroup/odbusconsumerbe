@@ -2009,6 +2009,103 @@
                 ]
             }
         },
+        "/api/RecentSearch": {
+            "post": {
+                "tags": [
+                    "Save Recent Search of a user"
+                ],
+                "summary": "Save Recent Search of a user",
+                "description": "Save Recent Search of a user",
+                "operationId": "App\\Http\\Controllers\\RecentSearchController::createSearch",
+                "parameters": [
+                    {
+                        "name": "users_id",
+                        "in": "query",
+                        "description": "users id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "source name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "description": "destination Name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "journey_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Save search details of a user"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/RecentSearch/{userId}": {
+            "get": {
+                "tags": [
+                    "Get Recent Search details of a User"
+                ],
+                "summary": "Get Recent Search details of a User",
+                "operationId": "App\\Http\\Controllers\\RecentSearchController::getSearchDetails",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "Get Recent Search details of a User",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Recent Search of a User"
+                    },
+                    "404": {
+                        "description": "Record not Found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/allReviews": {
             "get": {
                 "tags": [

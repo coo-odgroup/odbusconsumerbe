@@ -25,6 +25,7 @@ use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\FilePathUrlsController;
 use App\Http\Controllers\BotManController;
+use App\Http\Controllers\RecentSearchController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -96,6 +97,8 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
 
     Route::get('/AllPathUrls', [OfferController::class, 'getPathUrls']);
     Route::get('/seolist', [SeoController::class, 'seolist']);
+    Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
+    Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
 //});
 
 
