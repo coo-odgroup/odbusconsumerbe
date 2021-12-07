@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use App\Repositories\CommonRepository;
 
 use DateTime;
+use Time;
 use Illuminate\Support\Facades\Log;
 use DB;
 use Illuminate\Support\Facades\Config;
@@ -98,14 +99,16 @@ class ListingRepository
      }
 
 
-     public function getticketPrice($sourceID,$destinationID,$busOperatorId)
+     public function getticketPrice($sourceID,$destinationID,$busOperatorId,$journey_date)
      {
-        $CurrentDateTime = Carbon::now()->toDateTimeString();
-
+        $CurrentDate = Carbon::now()->toDateString();
+        $CurrentTime = Carbon::now()->toTimeString();
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
-        ->where('dep_time','>', $CurrentDateTime)
+        ->when($journey_date == $CurrentDate, function ($query) use ($CurrentTime){
+            $query->whereTime('dep_time','>',$CurrentTime);
+            })
         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
