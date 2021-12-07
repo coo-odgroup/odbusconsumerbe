@@ -106,6 +106,7 @@ class ListingRepository
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
+        ->where('status',1)
         ->when($journey_date == $CurrentDate, function ($query) use ($CurrentTime){
             $query->whereTime('dep_time','>',$CurrentTime);
             })
@@ -118,9 +119,10 @@ class ListingRepository
 
      public function checkBusentry($busId,$new_date)
      {
-       return $this->busSchedule->where('bus_id', $busId)
+       return $this->busSchedule->where('bus_id', $busId)->where('status',1)
                                  ->with(['busScheduleDate' => function ($bsd) use ($new_date){
                                      $bsd->where('entry_date',$new_date);
+                                     $bsd->where('status',1);
                                  }])->exists();
      }
 

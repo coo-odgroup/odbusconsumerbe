@@ -151,9 +151,11 @@ class ListingService
              //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
              //return $seatsOpenSeats;
  
-             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status",1)->count('id');
-                                          
-             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status",1)->all();
+             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->count('id');
+            
+             Log::info($totalSeats);
+
+             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->all();
              $amenityDatas = [];  
 
 
