@@ -54,8 +54,8 @@ class ListingService
             $routeCouponCode =[];
          }         
          
-         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId);  
- 
+         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date);  
+
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){
@@ -352,7 +352,7 @@ class ListingService
                  $routeCouponCode =[];
              }  
 
-        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId);         
+        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date);         
 
         $records = array();
         $FilterRecords = array();
