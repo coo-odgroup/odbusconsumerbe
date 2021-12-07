@@ -87,7 +87,7 @@ class Bus extends Model
     }
     public function busSeats()
     {        
-        return $this->hasMany(BusSeats::class);        
+        return $this->hasMany(BusSeats::class)->where('status','!=',2);        
     }
     public function busGallery()
     {        
