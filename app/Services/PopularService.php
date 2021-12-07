@@ -31,7 +31,9 @@ class PopularService
            $destName = $this->popularRepository->getRouteNames($destId);
             $popularRoutes[] = array(
                 "sourceName" => $srcName, 
+                "sourceId" =>$srcId,
                 "destinationName" => $destName,
+                "destinationId" =>$destId,
                 "count" => $count
             );
         } 
@@ -80,7 +82,9 @@ class PopularService
            $destName = $this->popularRepository->getRouteNames($destId);
             $allRoutes[] = array(
                 "sourceName" => $srcName, 
-                "destinationName" => $destName
+                "sourceId" =>$srcId,
+                "destinationName" => $destName,
+                "destinationId" =>$destId,
             );
         } 
         return $allRoutes;
