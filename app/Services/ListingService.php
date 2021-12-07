@@ -151,9 +151,9 @@ class ListingService
              //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
              //return $seatsOpenSeats;
  
-             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
+             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status",1)->count('id');
                                           
-             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
+             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status",1)->all();
              $amenityDatas = [];  
 
 
@@ -444,10 +444,11 @@ class ListingService
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->count('id');
-
-                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->all();
-                 $amenityDatas = [];  
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->count('id');
+                                          
+             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->all();
+           
+             $amenityDatas = [];  
 
 
             if($record->busAmenities)
