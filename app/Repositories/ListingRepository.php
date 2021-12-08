@@ -89,6 +89,7 @@ class ListingRepository
      {
          return CouponRoute::where('source_id', $sourceID)
          ->where('destination_id', $destinationID)
+         ->where('status','1')
          ->with('coupon')
          ->get();
      }
@@ -106,16 +107,16 @@ class ListingRepository
         $seizedTime = $this->ticketPrice
                             ->where('source_id', $sourceID)
                             ->where('destination_id', $destinationID)
-                            ->where('status',1)
+                            ->where('status','1')
                             ->first()->seize_booking_minute;
         $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
         $secs = strtotime($seizedTime) - strtotime("00:00:00");
         $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);   
-                          
+
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
-        ->where('status',1)
+        ->where('status','1')
         ->when($journey_date == $CurrentDate, function ($query) use ($FinalSeizedTime){
             $query->whereTime('dep_time','>',$FinalSeizedTime);
             })
@@ -131,13 +132,13 @@ class ListingRepository
        return $this->busSchedule->where('bus_id', $busId)->where('status',1)
                                  ->with(['busScheduleDate' => function ($bsd) use ($new_date){
                                      $bsd->where('entry_date',$new_date);
-                                     $bsd->where('status',1);
+                                     $bsd->where('status','1');
                                  }])->exists();
      }
 
      public function getBusScheduleID($busId)
      {
-       return $this->busSchedule->whereIn('bus_id', (array)$busId)->pluck('id'); 
+       return $this->busSchedule->whereIn('bus_id', (array)$busId)->where('status','1')->pluck('id'); 
      }
 
      public function getBusList($source,$destination,$busOperatorId,$entry_date)
@@ -919,14 +920,17 @@ class ListingRepository
                                 ->with('busAmenities.amenities')
                                 ->with('busSafety.safety')
                                 ->with('busGallery')
+                                ->where('status','1')
                                 ->get();        
         $result['boarding_point'] = $this->busStoppageTiming
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $sourceID)
+                                              ->where('status','1')
                                               ->get();
         $result['dropping_point'] = $this->busStoppageTiming
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $destinationID)
+                                              ->where('status','1')
                                               ->get();                                     
 
         return $result;
