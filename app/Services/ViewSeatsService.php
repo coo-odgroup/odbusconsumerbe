@@ -31,10 +31,9 @@ class ViewSeatsService
         $journeyDate = $request['entry_date'];
         $journeyDate = date("Y-m-d", strtotime($journeyDate));
 
-        $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId);
+        $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
 
         $reqRange = Arr::sort($requestedSeq);
-
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold);
 
         if (sizeof($bookingIds)){
@@ -50,7 +49,7 @@ class ViewSeatsService
                  $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
                  $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
                  
-                 $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId);
+                 $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
                  $bookedRange = Arr::sort($bookedSequence);
     
                  //seat available on requested seq so flag "true"

@@ -82,7 +82,10 @@ class BookTicketRepository
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
         $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
-                                                ->where('destination_id',$bookingInfo['destination_id'])->get();
+                                                ->where('destination_id',$bookingInfo['destination_id'])
+                                                ->where('status','1')
+                                                ->get();
+                                                
         $booking->j_day = $ticketPriceDetails[0]->j_day;
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
@@ -130,13 +133,15 @@ class BookTicketRepository
         //Update Booking Details >>>>>>>>>>
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
-         $bookingDetail = $bookingInfo['bookingDetail'];
+        $bookingDetail = $bookingInfo['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
                 ->where('bus_id',$busId)
                 ->where('ticket_price_id',$ticketPriceId)
-                ->where('seats_id',$seatId)->first()->id;
+                ->where('seats_id',$seatId)
+                ->where('status','1')
+                ->first()->id;
         }  
         $bookingDetailModels = [];  
         $i=0;
@@ -146,7 +151,8 @@ class BookTicketRepository
             $bookingDetailModels[] = new BookingDetail($merged);
             $i++;
         }    
-        $booking->bookingDetail()->saveMany($bookingDetailModels);      
+        $booking->bookingDetail()->saveMany($bookingDetailModels);  
+            
         return $booking; 
     }
 

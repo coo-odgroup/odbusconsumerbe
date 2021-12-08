@@ -52,9 +52,10 @@ class ViewSeatsRepository
         $this->odbusCharges = $odbusCharges;  
     } 
     
-    public function busLocationSequence($sourceId,$destinationId)
+    public function busLocationSequence($sourceId,$destinationId,$busId)
     {
         return $this->busLocationSequence->whereIn('location_id',[$sourceId,$destinationId])
+        ->where('bus_id',$busId)
         ->pluck('sequence');
     }
 
@@ -72,7 +73,7 @@ class ViewSeatsRepository
     }
 
     public function busSeats($bookedSeatId){
-        return $this->busSeats->where('id',$bookedSeatId)->where('status', '!=', '2')->first()->seats_id;
+        return $this->busSeats->where('id',$bookedSeatId)->where('status','1')->first()->seats_id;
     }
 
     public function bookingGenderDetail($bookingId,$bookedSeatId){
@@ -89,8 +90,9 @@ class ViewSeatsRepository
         return $this->booking->where('id',$bookingId)->first()->destination_id;
     }
 
-    public function bookedSequence($srcId,$destId){
+    public function bookedSequence($srcId,$destId,$busId){
         return $this->busLocationSequence->whereIn('location_id',[$srcId,$destId])
+        ->where('bus_id',$busId)
         ->orderBy('id')
         ->pluck('sequence');
     }
@@ -107,11 +109,12 @@ class ViewSeatsRepository
                    $query->when($flag == 'false', 
                    function($q) use ($busId,$seatsIds){  //hide booked Seats
                            $q->where('bus_id',$busId)
-                             ->where('status', '!=', '2') 
+                             ->where('status','1')
                              ->whereNotIn('seats_id',$seatsIds);
                    },
                    function($q) use ($busId,$seatsIds){  //Display unbooked Seats
-                           $q->where('bus_id',$busId); 
+                           $q->where('bus_id',$busId)
+                           ->where('status','1'); 
                    });
                }]) 
                 ->get();

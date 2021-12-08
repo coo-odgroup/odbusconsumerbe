@@ -103,12 +103,21 @@ class ListingRepository
      {
         $CurrentDate = Carbon::now()->toDateString();
         $CurrentTime = Carbon::now()->toTimeString();
+        $seizedTime = $this->ticketPrice
+                            ->where('source_id', $sourceID)
+                            ->where('destination_id', $destinationID)
+                            ->where('status',1)
+                            ->first()->seize_booking_minute;
+        $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
+        $secs = strtotime($seizedTime) - strtotime("00:00:00");
+        $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);   
+                          
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
         ->where('status',1)
-        ->when($journey_date == $CurrentDate, function ($query) use ($CurrentTime){
-            $query->whereTime('dep_time','>',$CurrentTime);
+        ->when($journey_date == $CurrentDate, function ($query) use ($FinalSeizedTime){
+            $query->whereTime('dep_time','>',$FinalSeizedTime);
             })
         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
@@ -494,6 +503,7 @@ class ListingRepository
                 }
             }
            $bookedSeats = $this->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
@@ -544,12 +554,13 @@ class ListingRepository
 
         $booked_seats = $this->booking->where('journey_dt',$entry_date)
                                       ->where('bus_id',$busId)
-                                      ->where('source_id',$sourceID)
-                                      ->where('destination_id',$destinationID)
-                                      ->whereIn('status',[$booked,$seatHold])
+                                       ->where('source_id',$sourceID)
+                                       ->where('destination_id',$destinationID)
+                                       ->whereIn('status',[$booked,$seatHold])
                                       //->where('status',$booked)
-                                      ->with(["bookingDetail.busSeats.seats"]) 
-                                      ->get();
+                                       ->with(["bookingDetail.busSeats.seats"]) 
+                                       ->get();
+       
         $collection = collect($booked_seats);
         $i = 0;
         $seaterRecords = 0;

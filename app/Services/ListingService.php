@@ -31,7 +31,6 @@ class ListingService
         $busOperatorId = $request['bus_operator_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
 
-
         $path= $this->commonRepository->getPathurls();
         $path= $path[0];
 
@@ -42,7 +41,7 @@ class ListingService
            return "";
 
          $sourceID =  $srcResult[0]->id;
-         $destinationID =  $destResult[0]->id;       
+         $destinationID =  $destResult[0]->id;    
 
          $selCouponRecords = $this->listingRepository->getAllCoupon();
 
@@ -54,8 +53,8 @@ class ListingService
             $routeCouponCode =[];
          }         
          
-         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date);  
-
+         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date); 
+         
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){
@@ -130,12 +129,13 @@ class ListingService
              $sittingType = $record->BusSitting->name;   
              $busType = $record->BusType->busClass->class_name;
              $busTypeName = $record->BusType->name;
-             $ticketPriceDatas = $record->ticketPrice;
- 
+             $ticketPriceDatas = $record->ticketPrice->where("status","1");
+             
              $ticketPriceRecords = $ticketPriceDatas
                      ->where('source_id', $sourceID)
                      ->where('destination_id', $destinationID)
                      ->first(); 
+               
              $ticketPriceId = $ticketPriceRecords->id;
              $startingFromPrice = $ticketPriceRecords->base_seat_fare;
              $departureTime = $ticketPriceRecords->dep_time;
@@ -152,12 +152,8 @@ class ListingService
              //return $seatsOpenSeats;
  
              $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->count('id');
-            
-             Log::info($totalSeats);
-
              $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->all();
              $amenityDatas = [];  
-
 
             if($record->busAmenities)
             {
@@ -178,18 +174,14 @@ class ListingService
                         {
                             $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
                         }
-
                         $am_arr['id']=$am_dt->amenities->id;
                         $am_arr['name']=$am_dt->amenities->name;
                         $am_arr['amenity_image']=$amenities_image ;
                         $am_arr['amenity_android_image']=$am_android_image;
-
                         $amenityDatas[] = $am_arr;
                     }
-
                 }
             }
-
              $safetyDatas = [];
              if($record->busSafety)
             {
@@ -198,21 +190,17 @@ class ListingService
                     {
                         $safety_image='';
                         $safety_android_image='';
-
                         if($sd->safety->safety_image !=''){
                             $safety_image = $path->safety_url.$sd->safety->safety_image;
                         }  
-                        
                         if($sd->safety->android_image != '' )
                         {
                             $safety_android_image = $path->safety_url.$sd->safety->android_image;   
                         }
-
                         $sf_arr['id']=$sd->safety->id;
                         $sf_arr['name']=$sd->safety->name;
                         $sf_arr['safety_image']=$safety_image ;
                         $sf_arr['safety_android_image']=$safety_android_image;
-
                         $safetyDatas[] = $sf_arr;
                     }
                 }
@@ -229,10 +217,8 @@ class ListingService
                          $busPhotoDatas[] = $bp;
                      }
                  }
-             }
-             
+             } 
              $reviews=  $record->review;
- 
              $Totalrating=0;
              $Totalrating_comfort=0;
              $Totalrating_clean=0;
@@ -273,6 +259,7 @@ class ListingService
                  }
              }
             $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+
             $seatClassRecords = $seatClassRecords - $bookedSeats[1];
             $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
             $totalSeats = $totalSeats - $bookedSeats[2];
@@ -355,7 +342,7 @@ class ListingService
              }  
 
         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date);         
-
+        
         $records = array();
         $FilterRecords = array();
 
@@ -430,7 +417,7 @@ class ListingService
                 $sittingType = $record->BusSitting->name;
                 $busType = $record->BusType->busClass->class_name;
                 $busTypeName = $record->BusType->name;
-                $ticketPriceDatas = $record->ticketPrice;
+                $ticketPriceDatas = $record->ticketPrice->where('status','1');
                 $ticketPriceRecords = $ticketPriceDatas
                 ->where('source_id', $sourceID)
                 ->where('destination_id', $destinationID)
