@@ -52,29 +52,50 @@ class ListingService
          }else{
             $routeCouponCode =[];
          }         
-         
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date); 
-         
+         //return $busDetails;
+         $CurrentTime = Carbon::now()->toTimeString();
+         $CurrentDate = Carbon::now()->toDateString();
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){
-             $busId = $busDetail['bus_id'];
-             $jdays = $busDetail['start_j_days'];
-
-             if($jdays>1){
-                $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-            }else{
-                $new_date = $entry_date;
+            $busId = $busDetail['bus_id'];
+            $jdays = $busDetail['start_j_days'];
+            $seizedTime = $busDetail['seize_booking_minute'];
+            $depTime = $busDetail['dep_time'];
+            $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
+            $secs = strtotime($seizedTime) - strtotime("00:00:00");
+            $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
+            if($entry_date == $CurrentDate && $depTime > $FinalSeizedTime)
+            {
+                if($jdays>1){
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                }else{
+                    $new_date = $entry_date;
+                }
+                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                          
+                 if($busEntryPresent==true){
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                 } 
             }
-             $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                      
-             if($busEntryPresent==true){
-                $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
-             } 
+            if($entry_date > $CurrentDate)
+            {
+                if($jdays>1){
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                }else{
+                    $new_date = $entry_date;
+                }
+                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                          
+                 if($busEntryPresent==true){
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                 } 
+            }
          }
 
          $records = Arr::flatten($records);
-        // return $records;
+         //return $records;
          $busCouponCode = [];
          $opCouponCode = [];
          foreach($records as $record){

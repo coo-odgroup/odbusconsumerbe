@@ -103,28 +103,29 @@ class ListingRepository
      public function getticketPrice($sourceID,$destinationID,$busOperatorId,$journey_date)
      {
         $CurrentDate = Carbon::now()->toDateString();
-        $CurrentTime = Carbon::now()->toTimeString();
-        $seizedTime = $this->ticketPrice
-                            ->where('source_id', $sourceID)
-                            ->where('destination_id', $destinationID)
-                            ->where('status','1')
-                            ->first()->seize_booking_minute;
-        $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
-        $secs = strtotime($seizedTime) - strtotime("00:00:00");
-        $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);   
+        // $CurrentTime = Carbon::now()->toTimeString();
+        // $seizedTime = $this->ticketPrice
+        //                     ->where('source_id', $sourceID)
+        //                     ->where('destination_id', $destinationID)
+        //                     ->where('status','1')
+        //                     ->first()->seize_booking_minute;
+
+        // $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
+        // $secs = strtotime($seizedTime) - strtotime("00:00:00");
+        // $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);   
 
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
         ->where('status','1')
-        ->when($journey_date == $CurrentDate, function ($query) use ($FinalSeizedTime){
-            $query->whereTime('dep_time','>',$FinalSeizedTime);
-            })
+        // ->when($journey_date == $CurrentDate, function ($query) use ($FinalSeizedTime){
+        //     $query->whereTime('dep_time','>',$FinalSeizedTime);
+        //     })
         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
         ->orderBy('dep_time', 'asc')
-        ->get(['bus_id','start_j_days']);  
+        ->get(['bus_id','start_j_days','seize_booking_minute','dep_time']);  
      }
 
      public function checkBusentry($busId,$new_date)
