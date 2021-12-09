@@ -56,16 +56,18 @@ class ListingService
          //return $busDetails;
          $CurrentTime = Carbon::now()->toTimeString();
          $CurrentDate = Carbon::now()->toDateString();
+         
          $records = array();
          $ListingRecords = array();
          foreach($busDetails as $busDetail){
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
             $seizedTime = $busDetail['seize_booking_minute'];
-            $depTime = $busDetail['dep_time'];
+            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));
             $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
             $secs = strtotime($seizedTime) - strtotime("00:00:00");
             $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
+            
             if($entry_date == $CurrentDate && $depTime > $FinalSeizedTime)
             {
                 if($jdays>1){
