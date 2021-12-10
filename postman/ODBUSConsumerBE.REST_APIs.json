@@ -111,7 +111,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n          \"busId\": 3,\r\n          \"sourceId\":1345,\r\n          \"destinationId\":1374,\r\n          \"busOperatorId\":1,\r\n          \"seater\": [1],\r\n          \"sleeper\": []\r\n     }",
+					"raw": "{\r\n          \"busId\": 3,\r\n          \"sourceId\":1345,\r\n          \"destinationId\":1374,\r\n          \"seater\": [1],\r\n          \"sleeper\": []\r\n     }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1627,6 +1627,90 @@
 					"path": [
 						"api",
 						"AllPathUrls"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save recent search of a user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"users_id\":1,\r\n    \"source\":\"bbsr\",\r\n    \"destination\":\"ctc\",\r\n    \"journey_date\":\"07-12-2021\"\r\n   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://consumer.neoflix.in/api/RecentSearch",
+					"protocol": "http",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"RecentSearch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get recent search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://consumer.neoflix.in/RecentSearch/1",
+					"protocol": "http",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"RecentSearch",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"name\":\"swagatika\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://consumer.neoflix.in/api/TestingEmail",
+					"protocol": "http",
+					"host": [
+						"consumer",
+						"neoflix",
+						"in"
+					],
+					"path": [
+						"api",
+						"TestingEmail"
 					]
 				}
 			},
