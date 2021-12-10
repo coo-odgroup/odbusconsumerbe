@@ -105,6 +105,7 @@ class ViewSeatsRepository
         return $this->seats
                ->where('bus_seat_layout_id',$bus_seat_layout_id)
                ->where('berthType', $Berth)
+               ->where('status','1')
                ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds){
                    $query->when($flag == 'false', 
                    function($q) use ($busId,$seatsIds){  //hide booked Seats
@@ -123,6 +124,7 @@ class ViewSeatsRepository
     public function seatRowColumn($bus_seat_layout_id,$Berth){
         return $this->seats
         ->where('bus_seat_layout_id',$bus_seat_layout_id)
+        ->where('status','1') 
         ->where('berthType', $Berth);
     }
     
@@ -131,7 +133,8 @@ class ViewSeatsRepository
         return  $this->ticketPrice
         ->where('source_id', $sourceId)
         ->where('destination_id', $destinationId)
-        ->where('bus_id', $busId)           
+        ->where('bus_id', $busId)
+        ->where('status','1')           
         ->first();
     }
 
