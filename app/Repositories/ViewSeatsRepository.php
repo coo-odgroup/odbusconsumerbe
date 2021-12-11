@@ -165,6 +165,7 @@ class ViewSeatsRepository
       return  $this->busStoppageTiming->with('boardingDroping')
         ->where('bus_id', $busId)
         ->orderBy('stoppage_time', 'ASC')
+        ->where('status', '1')
         ->get();
     }
 
