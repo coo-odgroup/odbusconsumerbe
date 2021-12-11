@@ -162,10 +162,12 @@ class ViewSeatsRepository
     }
  
     public function busStoppageTiming($busId){
-      return  $this->busStoppageTiming->with('boardingDroping')
+      return  $this->busStoppageTiming
+        ->with(['boardingDroping' => function ($a){
+            $a->where('status',1);
+            }])  
         ->where('bus_id', $busId)
         ->orderBy('stoppage_time', 'ASC')
-        ->where('status', '1')
         ->get();
     }
 
