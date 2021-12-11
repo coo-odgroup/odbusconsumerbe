@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\Location;
 use App\Repositories\BookingManageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -255,7 +256,7 @@ class BookingManageService
 
                         $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
 
-                        $refundAmt =  ($refund['refundAmount']/100);
+                        $refundAmt =  round(($refund['refundAmount']/100));
                         $paidAmt =  ($refund['paidAmount']/100);
 
                         $emailData['refundAmount'] = $refundAmt;
@@ -268,7 +269,14 @@ class BookingManageService
                         }else{
                             $emailData['cancel_status'] = true;
                         }
+                        $srcId = $booking_detail[0]->booking[0]->source_id;
+                        $desId = $booking_detail[0]->booking[0]->destination_id;
+                        $sourceName = Location::where('id',$srcId)->first()->name;
+                        $destinationName = Location::where('id',$desId)->first()->name;
+                        $emailData['source'] = $sourceName;
+                        $emailData['destination'] = $destinationName;
                         $emailData['bookingDetails'] = $booking_detail;
+                        
                         return $emailData;   
                     }
                 }                      
