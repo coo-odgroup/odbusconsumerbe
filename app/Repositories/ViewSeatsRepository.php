@@ -167,6 +167,7 @@ class ViewSeatsRepository
             $a->where('status',1);
             }])  
         ->where('bus_id', $busId)
+        ->where('status','!=', '2')
         ->orderBy('stoppage_time', 'ASC')
         ->get();
     }
