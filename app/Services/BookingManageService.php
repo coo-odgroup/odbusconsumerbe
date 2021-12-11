@@ -204,12 +204,11 @@ class BookingManageService
         $mobile = $request['mobile'];
 
         $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
-      
+      //return $booking_detail;
         if(isset($booking_detail[0])){ 
                       
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-
-                
+ 
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
                 $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
@@ -224,11 +223,7 @@ class BookingManageService
                  if($interval < 12) {
                     return 'CANCEL_NOT_ALLOWED';                    
                 }
-
                   $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
-
-                 
-
 
                  $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                 foreach($cancelPolicies as $cancelPolicy){
@@ -254,8 +249,6 @@ class BookingManageService
                         }else{
                             $emailData['cancel_status'] = true;
                         }
-                       
-
                         return $emailData;
     
                     }elseif($min < $interval && $interval < $max){ 
@@ -269,18 +262,16 @@ class BookingManageService
                         $emailData['deductionPercentage'] = $deduction."%";
                         $emailData['deductAmount'] =$paidAmt-$refundAmt;
                         $emailData['totalfare'] = $paidAmt;
-                        
+
                         if($booking_detail[0]->booking[0]->status==2){
                             $emailData['cancel_status'] = false;
                         }else{
                             $emailData['cancel_status'] = true;
                         }
-
-                        return $emailData;
-                       
+                        $emailData['bookingDetails'] = $booking_detail;
+                        return $emailData;   
                     }
-                }
-                                 
+                }                      
             }
             
             else{                
