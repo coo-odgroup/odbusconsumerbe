@@ -22,10 +22,15 @@ use App\Models\Booking;
 use App\Models\BusSchedule;
 use App\Models\CouponRoute;
 use App\Models\Coupon;
+use App\Models\BookingSequence;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Carbon\Carbon;
 use App\Repositories\CommonRepository;
+use App\Models\BusLocationSequence;
+use App\Repositories\ViewSeatsRepository;
+use App\Models\BookingDetail;
+
 
 use DateTime;
 use Time;
@@ -50,7 +55,7 @@ class ListingRepository
     protected $busSchedule;
     protected $booking;
     
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -66,6 +71,8 @@ class ListingRepository
         $this->busSchedule = $busSchedule;
         $this->booking=$booking;
         $this->commonRepository = $commonRepository;
+        $this->viewSeatsRepository = $viewSeatsRepository;
+        $this->busLocationSequence=$busLocationSequence;
      }   
 
      public function getLocation($searchValue)
@@ -103,24 +110,10 @@ class ListingRepository
      public function getticketPrice($sourceID,$destinationID,$busOperatorId,$journey_date)
      {
         $CurrentDate = Carbon::now()->toDateString();
-        // $CurrentTime = Carbon::now()->toTimeString();
-        // $seizedTime = $this->ticketPrice
-        //                     ->where('source_id', $sourceID)
-        //                     ->where('destination_id', $destinationID)
-        //                     ->where('status','1')
-        //                     ->first()->seize_booking_minute;
-
-        // $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
-        // $secs = strtotime($seizedTime) - strtotime("00:00:00");
-        // $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);   
-
         return $this->ticketPrice
         ->where('source_id', $sourceID)
         ->where('destination_id', $destinationID)
         ->where('status','1')
-        // ->when($journey_date == $CurrentDate, function ($query) use ($FinalSeizedTime){
-        //     $query->whereTime('dep_time','>',$FinalSeizedTime);
-        //     })
         ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
             $query->where('bus_operator_id',$busOperatorId);
             })
@@ -551,39 +544,86 @@ class ListingRepository
 
  //Calculate Booked seats and remove it from total count
     public function getBookedSeats($sourceID,$destinationID,$entry_date,$busId){
+        $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceID,$destinationID,$busId);
+        $reqRange = Arr::sort($requestedSeq);
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
 
-        $booked_seats = $this->booking->where('journey_dt',$entry_date)
-                                      ->where('bus_id',$busId)
-                                       ->where('source_id',$sourceID)
-                                       ->where('destination_id',$destinationID)
-                                       ->whereIn('status',[$booked,$seatHold])
-                                      //->where('status',$booked)
-                                       ->with(["bookingDetail.busSeats.seats"]) 
-                                       ->get();
-       
-        $collection = collect($booked_seats);
-        $i = 0;
+        $bookingRecords = $this->booking->where('journey_dt',$entry_date)
+            ->where('bus_id',$busId)
+            ->whereIn('status',[$booked,$seatHold])
+            ->get();
+            $sl = 0;
+            $st = 0;
+            $tot = 0;
+        foreach($bookingRecords as $br)
+        {
+            $srcID = $br->source_id;
+            $destID = $br->destination_id;
+            $bookingID = $br->id;
+            $bookedSequence =  $this->busLocationSequence
+                ->whereIn('location_id',[$srcID,$destID])
+                ->where('bus_id',$busId)
+                ->orderBy('id')
+                ->pluck('sequence');
+            $bookedRange = Arr::sort($bookedSequence);
+                  //seat available on requested seq 
+            if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
+                // $flag = 'true';
+                // $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag);
+                return [$sl,$st,$tot];
+            }
+            else{   //seat not available on requested seq 
+                $flag = 'false';
+                $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag);
+            }
+            $sl = $sl + $a[0];
+            $st = $st + $a[1];
+            $tot = $tot + $a[2];
+        }
+        return [$sl,$st,$tot];
+
+    }  
+    
+    public function verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag)
+    { 
+        
         $seaterRecords = 0;
         $sleeperRecords = 0;
-        foreach($collection as $cid){
-        foreach($cid->bookingDetail as $cbd)
-        {
-            $class = $cbd->busSeats->seats->seat_class_id;
-            if($class==1){
-                $seaterRecords ++;
+        $booked = Config::get('constants.BOOKED_STATUS');
+        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+        $booked_seats = BookingDetail::where('booking_id',$bookingID) 
+                        ->with(["busSeats.seats"])
+                        ->get();
+        $collection = collect($booked_seats);
+        $i = 0;
+            foreach($collection as $cid){
+                $class = $cid->busSeats->seats->seat_class_id;
+                if($class==1){
+                    $seaterRecords ++;
+                }
+                    elseif($class==2 || $class==3){
+                    $sleeperRecords ++;
+                }
+                $i++;
             }
-            elseif($class==2 || $class==3){
-                $sleeperRecords ++;
-            }
-        }
-        $i++;
-        } 
+           
+        // foreach($collection as $cid){
+        //     foreach($cid->bookingDetail as $cbd){
+        //         $class = $cbd->busSeats->seats->seat_class_id;
+        //         if($class==1){
+        //             $seaterRecords ++;
+        //         }
+        //             elseif($class==2 || $class==3){
+        //             $sleeperRecords ++;
+        //         }
+        //     }
+        //     $i++;
+        // } 
         $totalBookedCount= $sleeperRecords+$seaterRecords;
         return [$sleeperRecords,$seaterRecords,$totalBookedCount];
+    }
 
-    }   
     public function getbusTypes()
     { 
         return $this->busClass->get(['id','class_name']);

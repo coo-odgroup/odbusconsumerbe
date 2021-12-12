@@ -282,7 +282,7 @@ class ListingService
                  }
              }
             $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
-
+            //return $bookedSeats;
             $seatClassRecords = $seatClassRecords - $bookedSeats[1];
             $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
             $totalSeats = $totalSeats - $bookedSeats[2];
