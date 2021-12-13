@@ -187,6 +187,7 @@ class PopularService
 
         $opNameDetails['id'] = $operatorDetails[0]->id;
         $opNameDetails['operator_name'] = $operatorDetails[0]->operator_name;
+        $opNameDetails['organisation_name'] = $operatorDetails[0]->organisation_name;
         $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info;
         $opNameDetails['buses'] = $buses;
         $opNameDetails['amenities'] = $allAmenity;

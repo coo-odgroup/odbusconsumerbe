@@ -75,7 +75,7 @@ class PopularRepository
 
     public function allOperators($request){  
 
-        $operators = BusOperator::get(['id','operator_name','operator_url','operator_info']);
+        $operators = BusOperator::get(['id','operator_name','organisation_name','operator_url','operator_info']);
         return $operators;
 
     }
