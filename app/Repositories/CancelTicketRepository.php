@@ -139,7 +139,7 @@ class CancelTicketRepository
                 $emailData['deductionPercentage'] = $percentage;
                 $emailData['totalfare'] = $paidAmount;
                 if($emailData['email'] != ''){
-                    //$sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+                    $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
                 } 
                 return $data;
  
