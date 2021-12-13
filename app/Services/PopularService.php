@@ -57,6 +57,7 @@ class PopularService
                    $topOperators[] = array(
                        "id" => $opDetail->busOperator->id, 
                        "operatorName" => $opDetail->busOperator->operator_name, 
+                       "organisation_name" => $opDetail->busOperator->organisation_name, 
                        "operator_url" => $opDetail->busOperator->operator_url, 
                        "count" => $count
                        );
@@ -118,6 +119,7 @@ class PopularService
         if(!sizeof($busIds)){
             $opNameDetails['id'] = $operatorDetails[0]->id;
             $opNameDetails['operator_name'] = $operatorDetails[0]->operator_name;
+            $opNameDetails['organisation_name'] = $operatorDetails[0]->organisation_name;            
             $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info; 
             $opNameDetails['buses'] = [];
             $opNameDetails['routes'] = [];
