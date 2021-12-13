@@ -51,6 +51,7 @@ return [
             'message' => env('SMS_TEMPLATE'),
             'msgAgent' => env('SMS_TEMPLATE_AGENT'),
             'msgTicket' => env('SMS_TKT_TEMPLATE'),
+            'msgTicketCMO' => env('SMS_TKT_TEMPLATE_CMO'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'senderid' => env('SENDER_ID'),
             

@@ -177,7 +177,7 @@ class ChannelService
             $bookingId = $bookingRecord[0]->id;    
 
             return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
-            ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr);
+            ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId);
 
 
         } catch (Exception $e) {

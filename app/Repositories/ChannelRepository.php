@@ -20,6 +20,7 @@ use App\Models\AgentWallet;
 use App\Models\AgentCommission;
 use App\Models\Notification;
 use App\Models\UserNotification;
+use App\Models\BusContacts;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -289,7 +290,7 @@ class ChannelRepository
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.msgTicket');
             $apiKey = urlencode( $apiKey);
-            $receiver = urlencode($data['phone']);
+            $receiver = urlencode($data['phone']);/////////
             //$message = str_replace("<PNR>",$data['PNR'],$message);
             $message = str_replace("<PNR>",$pnr,$message);
             $message = str_replace("<busdetails>",$busDetails,$message);
@@ -349,6 +350,67 @@ class ChannelRepository
     
                 // $response = file_get_contents($api);
                 //return $response;
+
+        }
+      }
+      public function sendSmsCMO($data, $pnr, $contact_number) {
+
+        $seatList = implode(",",$data['seat_no']);
+        $nameList = "";
+        $genderList ="";
+        $passengerDetails = $data['passengerDetails'];
+   
+        foreach($passengerDetails as $pDetail){
+            $nameList = "{$nameList},{$pDetail['passenger_name']}";
+            $genderList = "{$genderList},{$pDetail['passenger_gender']}";
+        } 
+        $nameList = substr($nameList,1);
+        $genderList = substr($genderList,1);
+        $busDetails = $data['busname'].'-'.$data['busNumber'];
+        $SmsGW = config('services.sms.otpservice');
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.msgTicketCMO');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($contact_number);
+            //$message = str_replace("<PNR>",$data['PNR'],$message);
+            $message = str_replace("<PNR>",$pnr,$message);
+            $message = str_replace("<busdetails>",$busDetails,$message);
+            $message = str_replace("<DOJ>",$data['journeydate'],$message);
+            $message = str_replace("<routedetails>",$data['routedetails'],$message);
+            $message = str_replace("<dep>",$data['departureTime'],$message);
+            $message = str_replace("<name>",$nameList,$message);
+            $message = str_replace("<gender>",$genderList,$message);
+            $message = str_replace("<seat>",$seatList,$message);
+            $message = str_replace("<fare>",$data['payable_amount'],$message);
+            $message = str_replace("<contactmob>",$data['contact_number'],$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response); 
+            return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+            // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // $err = curl_error($ch);
+            // if ($err) { 
+            //     return "cURL Error #:" . $err;
+            // } 
 
         }
       }
@@ -500,7 +562,7 @@ class ChannelRepository
 
 
       public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
-      ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr){
+      ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
 
@@ -521,7 +583,18 @@ class ChannelRepository
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
-        }
+            }
+      ///////////////////   CMO SMS      /////////////////////////////////////////////////
+            $busContactDetails = BusContacts::where('bus_id',$busId)
+                                            ->where('status','1')
+                                            ->where('booking_sms_send','1')
+                                            ->get('phone');
+            if($busContactDetails->isNotEmpty()){
+                $contact_number = collect($busContactDetails)->implode('phone',',');
+                //$this->sendSmsCMO($request, $pnr, $contact_number);
+            }
+      ///////////////////////////////////////////////////////////////////////////////////
+
         //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
