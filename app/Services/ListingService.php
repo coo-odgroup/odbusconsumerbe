@@ -370,7 +370,7 @@ class ListingService
         $CurrentDate = Carbon::now()->toDateString();
         
         $records = array();
-        $ListingRecords = array();
+        $FilterRecords = array();
         foreach($busDetails as $busDetail){
            $busId = $busDetail['bus_id'];
            $jdays = $busDetail['start_j_days'];
@@ -390,7 +390,8 @@ class ListingService
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
                 if($busEntryPresent==true){
-                   $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                   $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
                 } 
            }
            if($entry_date > $CurrentDate)
@@ -403,7 +404,8 @@ class ListingService
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
                 if($busEntryPresent==true){
-                   $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                   $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
                 } 
            }   
         }
