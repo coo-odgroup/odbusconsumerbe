@@ -564,6 +564,7 @@ class ListingRepository
             $bookedSequence =  $this->busLocationSequence
                 ->whereIn('location_id',[$srcID,$destID])
                 ->where('bus_id',$busId)
+                ->where('status', '1')
                 ->orderBy('id')
                 ->pluck('sequence');
             $bookedRange = Arr::sort($bookedSequence);

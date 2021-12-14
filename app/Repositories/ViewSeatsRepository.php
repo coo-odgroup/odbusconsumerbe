@@ -56,6 +56,7 @@ class ViewSeatsRepository
     {
         return $this->busLocationSequence->whereIn('location_id',[$sourceId,$destinationId])
         ->where('bus_id',$busId)
+        ->where('status', '1')
         ->pluck('sequence');
     }
 
@@ -93,6 +94,7 @@ class ViewSeatsRepository
     public function bookedSequence($srcId,$destId,$busId){
         return $this->busLocationSequence->whereIn('location_id',[$srcId,$destId])
         ->where('bus_id',$busId)
+        ->where('status', '1')
         ->orderBy('id')
         ->pluck('sequence');
     }
