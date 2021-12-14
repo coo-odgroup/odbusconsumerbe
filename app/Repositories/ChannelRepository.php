@@ -388,7 +388,7 @@ class ChannelRepository
             $message = str_replace("<gender>",$genderList,$message);
             $message = str_replace("<seat>",$seatList,$message);
             $message = str_replace("<fare>",$data['payable_amount'],$message);
-            $message = str_replace("<contactmob>",$data['contact_number'],$message);
+            $message = str_replace("<contactmob>",$data['phone'],$message);
             //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
@@ -565,7 +565,7 @@ class ChannelRepository
       ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
-
+       
         $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
         $api = new Api($key, $secretKey);
@@ -584,17 +584,18 @@ class ChannelRepository
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
             }
-      ///////////////////   CMO SMS      /////////////////////////////////////////////////
-            $busContactDetails = BusContacts::where('bus_id',$busId)
-                                            ->where('status','1')
-                                            ->where('booking_sms_send','1')
-                                            ->get('phone');
-            if($busContactDetails->isNotEmpty()){
-                $contact_number = collect($busContactDetails)->implode('phone',',');
-                //$this->sendSmsCMO($request, $pnr, $contact_number);
-            }
-      ///////////////////////////////////////////////////////////////////////////////////
+      ///////////////////CMO SMS/////////////////////////////////////////////////
+        $busContactDetails = BusContacts::where('bus_id',$busId)
+                                          ->where('status','1')
+                                          ->where('booking_sms_send','1')
+                                          ->get('phone');
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+            //$this->sendSmsCMO($request, $pnr, $contact_number);
+        }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+      
         //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
