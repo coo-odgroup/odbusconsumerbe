@@ -45,7 +45,9 @@ class CancelTicketService
                         
                        $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
                     }
+                    $busName = $booking_detail[0]->booking[0]->bus->name;
                     $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
+                    $busId = $booking_detail[0]->booking[0]->bus_id;
                     $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
                      $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
                       $route = $sourceName .'-'. $destinationName;
@@ -63,7 +65,7 @@ class CancelTicketService
                     $smsData = array(
                         'phone' => $phone,
                         'PNR' => $pnr,
-                        'busdetails' => $busNumber,
+                        'busdetails' => $busName.'-'.$busNumber,
                         'doj' => $jDate, 
                         'route' => $route,
                         'seat' => $seat_arr
@@ -90,7 +92,7 @@ class CancelTicketService
         
                         if( $interval > 240){
                             $deduction = 10;//minimum deduction
-                            $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData);
+                            $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId);
                             $refundAmt =  $refund['refundAmount'];
                             $smsData['refundAmount'] = $refundAmt;
                             
@@ -102,7 +104,7 @@ class CancelTicketService
     
                         }
                         elseif($min < $interval && $interval < $max){ 
-                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData)
+                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
                             return $refund;    
                         }

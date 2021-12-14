@@ -15,6 +15,7 @@ use App\Models\CustomerPayment;
 use App\Models\CancellationSlab;
 use App\Models\CancellationSlabInfo;
 use App\Repositories\ChannelRepository;
+use App\Models\BusContacts;
 use Carbon\Carbon;
 use Razorpay\Api\Api;
 use Illuminate\Support\Arr;
@@ -87,7 +88,7 @@ class CancelTicketRepository
         }])->get();
     }
 
-    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData){
+    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
@@ -141,19 +142,18 @@ class CancelTicketRepository
                 if($emailData['email'] != ''){
                     $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
                 } 
+////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+        $busContactDetails = BusContacts::where('bus_id',$busId)
+                                        ->where('status','1')
+                                        ->where('cancel_sms_send','1')
+                                        ->get('phone');
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+            //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+        }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
                 return $data;
- 
-            }
-        //}
-        // else{
-        //     return 'noPayment';
-        // }
-    
-        
-
-
-        
+            } 
        }
-      
-
 }
