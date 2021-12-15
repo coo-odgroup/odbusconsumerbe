@@ -651,7 +651,7 @@ class ListingRepository
 
     public function getbusOperator()
     {
-        return $this->busOperator->where('status', '1')->get(['id','operator_name']);
+        return $this->busOperator->where('status', '1')->get(['id','operator_name','organisation_name']);
     }
 
     public function getamenities()

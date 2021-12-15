@@ -51,6 +51,8 @@ class TestingEmailJob implements ShouldQueue
         if (Mail::failures()) {
             return new Error(Mail::failures()); 
             //return "Email failed";
+        }else{
+            return 'success';
         }
 
     }
