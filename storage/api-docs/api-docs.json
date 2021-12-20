@@ -1315,6 +1315,41 @@
                 ]
             }
         },
+        "/api/CommonService": {
+            "post": {
+                "tags": [
+                    "Get all Social media links"
+                ],
+                "summary": "Get all Social media links",
+                "description": "Get all Social media links",
+                "operationId": "App\\Http\\Controllers\\CommonController::getAll",
+                "parameters": [
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": 152
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all Social media links"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/saveContacts": {
             "post": {
                 "tags": [
@@ -1459,7 +1494,7 @@
                         "name": "bus_operator_id",
                         "in": "query",
                         "description": "bus operator id",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "integer"
                         }
@@ -1529,7 +1564,7 @@
                         "name": "bus_operator_id",
                         "in": "query",
                         "description": "bus operator id",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "integer"
                         }
@@ -1871,6 +1906,51 @@
                 "responses": {
                     "200": {
                         "description": "get all Path Urls"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/GetPageData": {
+            "post": {
+                "tags": [
+                    "Get Page contents"
+                ],
+                "summary": "Get Page contents",
+                "description": "Get Page contents",
+                "operationId": "App\\Http\\Controllers\\PageContentController::getAllpagecontent",
+                "parameters": [
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": 152
+                        }
+                    },
+                    {
+                        "name": "page_url",
+                        "in": "query",
+                        "description": "page url",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "about-us"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all Page contents"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -2502,6 +2582,76 @@
                     },
                     "404": {
                         "description": "Record not Found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seolist": {
+            "get": {
+                "tags": [
+                    "Get all SEO lists"
+                ],
+                "summary": "Get all SEO lists",
+                "description": "Get all SEO lists",
+                "operationId": "App\\Http\\Controllers\\SeoController::seolist",
+                "parameters": [
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": 152
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all SEO lists"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/GetTestimonial": {
+            "post": {
+                "tags": [
+                    "Get all Testimonials"
+                ],
+                "summary": "Get all Testimonials",
+                "description": "Get all Testimonials",
+                "operationId": "App\\Http\\Controllers\\TestimonialController::getAlltestimonial",
+                "parameters": [
+                    {
+                        "name": "bus_operator_id",
+                        "in": "query",
+                        "description": "bus operator Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": 152
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get all Testimonials"
                     },
                     "401": {
                         "description": "Unauthorized"

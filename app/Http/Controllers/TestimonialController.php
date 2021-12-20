@@ -19,6 +19,30 @@ class TestimonialController extends Controller
     {
         $this->testimonialService = $testimonialService;
     }
+    /**
+     * @OA\Post(
+     *     path="/api/GetTestimonial",
+     *     tags={"Get all Testimonials"},
+     *     description="Get all Testimonials",
+     *     summary="Get all Testimonials",
+     *     @OA\Parameter(
+     *          name="bus_operator_id",
+     *          description="bus operator Id",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer",
+     *              default=152,
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Get all Testimonials"),
+     *  @OA\Response(response=401, description="Unauthorized"),
+     *     security={
+     *       {"apiAuth": {}}
+     *     }
+     * )
+     * 
+     */
     public function getAlltestimonial(Request $request)
     {
         $testimonial = $this->testimonialService->getAll($request);

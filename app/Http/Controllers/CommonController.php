@@ -28,6 +28,30 @@ class CommonController extends Controller
     {
         $this->commonService = $commonService;      
     }
+    /**
+     * @OA\Post(
+     *     path="/api/CommonService",
+     *     tags={"Get all Social media links"},
+     *     description="Get all Social media links",
+     *     summary="Get all Social media links",
+     *     @OA\Parameter(
+     *          name="bus_operator_id",
+     *          description="bus operator Id",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer",
+     *              default=152,
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Get all Social media links"),
+     *  @OA\Response(response=401, description="Unauthorized"),
+     *     security={
+     *       {"apiAuth": {}}
+     *     }
+     * )
+     * 
+     */
     public function getAll(Request $request) {
         
          try {

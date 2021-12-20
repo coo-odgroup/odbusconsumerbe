@@ -23,7 +23,30 @@ class SeoController extends Controller
         $this->seoValidator = $seoValidator;
         $this->seoService = $seoService;
     }
-
+    /**
+     * @OA\Get(
+     *     path="/api/seolist",
+     *     tags={"Get all SEO lists"},
+     *     description="Get all SEO lists",
+     *     summary="Get all SEO lists",
+     *     @OA\Parameter(
+     *          name="bus_operator_id",
+     *          description="bus operator Id",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer",
+     *              default=152,
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Get all SEO lists"),
+     *  @OA\Response(response=401, description="Unauthorized"),
+     *     security={
+     *       {"apiAuth": {}}
+     *     }
+     * )
+     * 
+     */
     public function seolist(Request $request){
 
         $data = $request->all();

@@ -134,7 +134,7 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="bus_operator_id",
  *          description="bus operator id",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="integer"
@@ -211,7 +211,7 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="bus_operator_id",
  *          description="bus operator id",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="integer"
