@@ -80,7 +80,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
 
     Route::post('/Register', [UsersController::class, 'Register']);
     Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
-    Route::post('/Login', [UsersController::class, 'login']); 
+    //Route::post('/Login', [UsersController::class, 'login']); 
     Route::get('/UserProfile', [UsersController::class, 'userProfile']);
     //Route::put('/updateProfile/{userId}/{token}', [UsersController::class, 'updateProfile']);
     Route::post('/updateProfile', [UsersController::class, 'updateProfile']);

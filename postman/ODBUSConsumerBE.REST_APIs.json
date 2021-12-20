@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "ea495365-6bc2-4c8f-bced-974f11d52c4f",
-		"name": "CONSUMER APIs",
+		"_postman_id": "d01115aa-1ecd-484f-9297-fc6b463eb63f",
+		"name": "ODBUSConsumerBELocal Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiIyZmdzRkNrOG1tRkpobTVFeG5lRmJYTXNUWWpBRTVOWkBjbGllbnRzIiwiYXVkIjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FwaS8iLCJpYXQiOjE2MzQ3OTU4NTgsImV4cCI6MTYzNDg4MjI1OCwiYXpwIjoiMmZnc0ZDazhtbUZKaG01RXhuZUZiWE1zVFlqQUU1TloiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.K6oyJNHZ8K0mzljzWPb5NdeqLWN_y_cow75ZlOZBnDdIgdGfjMGtiryfqBOcYSdUbFl6zEonh3eQBbqauIt9UrtUk4T0gCBytnRuh8DBoL2vuaMmQEpiUjGqUaJmaLNiRIp1VneOfyWvWCpeLfxz6RpliNHT6e7C8R349cqwJHfbkNYeBIkGkyKW2f3cGc8RUADrV-aWfLwXgP8DIVCoPZZTH2d0shFAQKL1kif-N329R4xIBKn_ME1HK5UiTUA-WA6hntIotYZrk9qtgsfCqsjWE4qTm3ukMpOZ0dGFYAskK6-lny1SncbN_t2BTHEkr9LDO3V9JnAnZlEw02YTNA",
 							"type": "string"
 						}
 					]
@@ -25,7 +25,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"source\":\"bhubaneswar\",\r\n    \"destination\":\"Bhadrak\",\r\n    \"entry_date\":\"28-10-2021\",\r\n    \"bus_operator_id\":\"1\"\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -33,16 +33,32 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/Listing",
+					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=21-12-2021",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Listing"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "Bhubaneswar"
+						},
+						{
+							"key": "destination",
+							"value": "rourkela"
+						},
+						{
+							"key": "entry_date",
+							"value": "21-12-2021"
+						}
 					]
 				}
 			},
@@ -54,21 +70,11 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"busId\": 3,\r\n    \"entry_date\":\"03-09-2021\",\r\n    \"sourceId\": \"1345\",\r\n    \"destinationId\": \"1374\"\r\n\r\n}",
+					"raw": "{\r\n    \"entry_date\":\"21-12-2021\",\r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -76,13 +82,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/viewSeats",
+					"raw": "http://127.0.0.1:8000/api/viewSeats",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"viewSeats"
@@ -97,21 +105,11 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n          \"busId\": 3,\r\n          \"sourceId\":1345,\r\n          \"destinationId\":1374,\r\n          \"seater\": [1],\r\n          \"sleeper\": []\r\n     }",
+					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":82,\r\n          \"destinationId\":434,\r\n          \"seater\": [1],\r\n          \"sleeper\": [5]\r\n     }\r\n   \r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -119,16 +117,50 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/PriceOnSeatsSelection",
+					"raw": "http://127.0.0.1:8000/api/PriceOnSeatsSelection",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"PriceOnSeatsSelection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BookTicket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/BookTicket",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"BookTicket"
 					]
 				}
 			},
@@ -145,7 +177,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA\"",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiIyZmdzRkNrOG1tRkpobTVFeG5lRmJYTXNUWWpBRTVOWkBjbGllbnRzIiwiYXVkIjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FwaS8iLCJpYXQiOjE2MzQ3OTU4NTgsImV4cCI6MTYzNDg4MjI1OCwiYXpwIjoiMmZnc0ZDazhtbUZKaG01RXhuZUZiWE1zVFlqQUU1TloiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.K6oyJNHZ8K0mzljzWPb5NdeqLWN_y_cow75ZlOZBnDdIgdGfjMGtiryfqBOcYSdUbFl6zEonh3eQBbqauIt9UrtUk4T0gCBytnRuh8DBoL2vuaMmQEpiUjGqUaJmaLNiRIp1VneOfyWvWCpeLfxz6RpliNHT6e7C8R349cqwJHfbkNYeBIkGkyKW2f3cGc8RUADrV-aWfLwXgP8DIVCoPZZTH2d0shFAQKL1kif-N329R4xIBKn_ME1HK5UiTUA-WA6hntIotYZrk9qtgsfCqsjWE4qTm3ukMpOZ0dGFYAskK6-lny1SncbN_t2BTHEkr9LDO3V9JnAnZlEw02YTNA",
 							"type": "string"
 						}
 					]
@@ -154,7 +186,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"locationName\" : \"bbu\"\r\n}",
+					"raw": "{\r\n    \"locationName\":\"bhu\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -162,13 +194,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/getLocation",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/getLocation",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"getLocation"
@@ -183,21 +217,11 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYwOTE0MDcsImV4cCI6MTYzNjE3NzgwNywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.Z_8mernZZ8H8UZ5A9xq65UeQNcOzGcQOQGoxYNKMq2JNrIfwMaTCX0iateiFqvY6L5W9SEUBxbQtKD3UYbI7COj6AX-38cD1D_qi8kE41iema8uT7i-fdzqFpOTFa-9qih9SgE4R3vn_ci4CuURzx190_Vak_ZZ26mpT68_AH6XEoGvPY07L-Ha-M-GB_xNkWWjo4BLlDsJzZI0JYJBy16ox6oGYsKv7X2UWyGLhf5GDZsrne86hG7tpM8KkumY_kMij1m5nEJCIPOFzNkjr7l9BOVkyqgKibHsC9tpSOABE1_xu77gFT_APixyYZ2fWKshTX2z__YSNigQdEjF1ZA",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"price\":1,\r\n    \"sourceID\":\"1291\",\r\n    \"destinationID\":\"1374\",\r\n    \"bus_operator_id\":\"1\",\r\n    \"entry_date\":\"28-10-2021\",\r\n    \"busType\":[],\r\n    \"seatType\":[],\r\n    \"boardingPointId\":[],\r\n    \"dropingingPointId\":[],\r\n    \"operatorId\":[],\r\n    \"amenityId\":[]\r\n\r\n}",
+					"raw": "{\r\n    \"price\":0,\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"entry_date\":\"21-12-2021\",\r\n    \"busType\":[],\r\n    \"seatType\":[],\r\n    \"boardingPointId\":[],\r\n    \"dropingingPointId\":[],\r\n    \"operatorId\":[],\r\n    \"amenityId\":[]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -205,66 +229,42 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/Filter",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=434&entry_date=21-12-2021",
+					"protocol": "https",
 					"host": [
 						"consumer",
-						"neoflix",
+						"odbus",
+						"co",
 						"in"
 					],
 					"path": [
 						"api",
 						"Filter"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "filterOptions",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
+					],
+					"query": [
 						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA\"",
-							"type": "string"
+							"key": "price",
+							"value": "0"
+						},
+						{
+							"key": "sourceID",
+							"value": "82"
+						},
+						{
+							"key": "destinationID",
+							"value": "434"
+						},
+						{
+							"key": "entry_date",
+							"value": "21-12-2021"
 						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"sourceID\":\"1291\",\r\n    \"destinationID\":\"1294\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/FilterOptions",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"FilterOptions"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "getboardingDropingpoints",
+			"name": "Get All BoardingDroping Points",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -273,7 +273,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"busId\": 3,\r\n    \"sourceId\": \"1345\",\r\n    \"destinationId\": \"1374\"\r\n\r\n}",
+					"raw": "{\r\n    \"busId\": 1,\r\n    \"sourceId\": \"82\",\r\n    \"destinationId\": \"434\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -281,13 +281,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/BoardingDroppingPoints",
+					"raw": "http://127.0.0.1:8000/api/BoardingDroppingPoints",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"BoardingDroppingPoints"
@@ -297,13 +299,13 @@
 			"response": []
 		},
 		{
-			"name": "register",
+			"name": "SendSms",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Lima\",\r\n    \"email\":\"\",\r\n    \"phone\":\"8763447921\",\r\n    \"created_by\":\"Lima\"\r\n} ",
+					"raw": "{\r\n     \"smsprovider\":\"textLocal\",\r\n    \"sender\": \"odbus\",\r\n    \"receiver\":\"9437112909\",\r\n    \"contents\":\"hello\",\r\n    \"channel_type\":\"0\",\r\n    \"acknowledgement\":\"true\"\r\n    \r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -311,29 +313,25 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/Register",
-					"protocol": "http",
+					"raw": "{{url}}/SendSms",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"Register"
+						"SendSms"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "VerifyOtp",
+			"name": "Send Email",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"userId\": \"2\",\r\n    \"otp\": \"42456\"\r\n     \r\n}",
+					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"name\":\"swagatika\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -341,30 +339,31 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/VerifyOtp",
-					"protocol": "http",
+					"raw": "{{url}}/SendEmail",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"VerifyOtp"
+						"SendEmail"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Book Ticket",
+			"name": "Make PAYMENT",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
+					"type": "basic",
+					"basic": [
 						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzYxMTEwNjgsImV4cCI6MTYzNjE5NzQ2OCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.LZXj4YhRcvbJ8YCmFRlhvZYpGlXCrBhH4dEyH6sdknu2xOYlgpalI8KvojEZaqN3OAytiuU3_RyCMMJU9HZepNvj3COiqJTYpeSxZlfBTdU7cDAxmK1EdaCRvezV9_WcJd3eGT67wvfd-UJp4-5p6NTxRdsThCyoFbPl8m0SIIemN23KUnvYthjkM5Q97Pa8ASr2WOqe78PKiEKgLzFijoX8iVO2TacY-yHNdbolYsbY-oc_3NUMLuUjAqHWHQkSpWkTbIksetqAVEnwyfWvI-lvNoOrdykNvyMFIE3Hq7danowq-tYf6IUMCycWHQPTL013XcUb4lQFl0YcNZkzqA\"",
+							"key": "password",
+							"value": "Knrj6u3sPiEjpImmIzfPPu79",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "rzp_live_KQgBHf2DBATAfF",
 							"type": "string"
 						}
 					]
@@ -373,7 +372,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"banashri.seofied1@gmail.com\",\r\n\t\t\"phone\": \"8763447921\",\r\n\t\t\"name\": \"Lima Mohanty\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"bus_operator_id\":1,\r\n\t\t\"bus_id\": 3,\r\n\t\t\"source_id\": \"1345\",\r\n\t\t\"destination_id\": \"1374\",\r\n\t\t\"journey_dt\": \"2021-09-27\",\r\n\t\t\"boarding_point\": \"Bus stand\",\r\n\t\t\"dropping_point\": \"Bus Stand\",\r\n\t\t\"boarding_time\": \"20:00\",\r\n\t\t\"dropping_time\": \"01:00\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n\t\t\"total_fare\": 446,\r\n\t\t\"owner_fare\": 400,\r\n\t\t\"odbus_service_Charges\": 32,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [{\r\n\t\t\t\"bus_seats_id\": \"49\",\r\n\t\t\t\"passenger_name\": \"lima\",\r\n\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\"passenger_age\": \"12\",\r\n\t\t\t\"created_by\": \"Customer\"\r\n\t\t}]\r\n\t}\r\n}",
+					"raw": "{ \r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"transaction_id\": \"20211220105201752217\",\r\n    \"amount\":\"685\",\r\n    \"seatIds\":[2755],\r\n    \"entry_date\":\"31-12-2021\"\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -381,83 +380,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/BookTicket",
+					"raw": "http://127.0.0.1:8000/api/MakePayment",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
-					"path": [
-						"api",
-						"BookTicket"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"banashri.seofied@gmail.com\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/Login",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"Login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Make Payment",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTI3MjUsImV4cCI6MTYzNDc5OTEyNSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.NtQQoSgaUdusMRBZoH824LTvVRYBLlJpCt1L--za1nWhR6Ufgs00W06NwxSoQOeEEPtp3J1ojlzfaUC46Otr1qO1H3hrw9wifHZoGduIcLylFBjJG65sTyO4qQ0MuDLTmAUNJwsm2UGXF35MheFb96ASydfym5Xtm0XhD_QiPvIvhYku_SUH-u5oTegJhLvqjGP7N1HYpzcIAU5OAOKGNEV5L3-2Tc9wNFJZhOzyBR4oLpF-POMEa6LGVv09URIlMlHeDhDZ8r4qDVqFIIAFwGUVm_ICnsLxtDf0J7cbuu4qxfpjGTMiFmVSyBc06A-6zzZ4FU3Aiffl_rFMuTzX7g",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\t\"busId\": 8,\r\n\t\"sourceId\": \"1345\",\r\n\t\"destinationId\": \"1374\",\r\n\t\"transaction_id\": \"20211027161830503375\",\r\n\t\"amount\": 228,\r\n\t\"seatIds\": [\"49\"],\r\n\t\"entry_date\": \"20-10-2021\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/MakePayment",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
+					"port": "8000",
 					"path": [
 						"api",
 						"MakePayment"
@@ -467,23 +398,16 @@
 			"response": []
 		},
 		{
-			"name": "PaymentStatus",
+			"name": "Get FilterOptions",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU4MzI0NjcsImV4cCI6MTYzNTkxODg2NywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.0IKNN92Py3zt62bYMr1hP27N6Kh3flXd5IYWfKYCayTJ-kE-Eg_Wq2bEWr-ogCeAkbPVwu621GwYZW0cbhW2bRuZ-z4PXSwWGvfmPCGx7cRCN7qFWaI_3Hr7oy8oacq2cKORhDKEnmVT0KTBV0UMbZqWoFCaoQf3Uc0Y5ajeih4otI4xONPcaEm68JpoyXAtRhZuunf4Ya586Sy5NHIaT_Hbi0irkV8qCpY9JVD3hjgI5xiPGWWtaLTNEnOcU-NZjugdK09kTYQIUkWcq0qOIFse1GneiTzljrfte8j-b9nysDO2odTMlGkpy2jAqjT3LPbnZ4FgIt5MTiDjV5ZiSw",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20211102112722583214\",\r\n\t\"razorpay_payment_id\": \"pay_IGcyXMFeqdRA23\",\r\n\t\"razorpay_order_id\": \"order_IGcyPNVZ9fkc2t\",\r\n\t\"razorpay_signature\": \"d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"7978817539\",\r\n\t\"email\": \"banashri.seofied@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"02-11-2021\",\r\n\t\"journeydate\": \"02-11-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"Bonth Chhawk\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"26\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 10,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"Bus 2\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"26\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Customer\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
+					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -491,13 +415,295 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/PaymentStatus",
+					"raw": "http://127.0.0.1:8000/api/FilterOptions",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
+					"path": [
+						"api",
+						"FilterOptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\"\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"user_type\":\"agent\"\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Register",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Gateway Information",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sender\": \"ODBUSS\",\r\n    \"channel_type\":0,\r\n    \"service_provider\":\"textLocal\",\r\n    \"contents\":\"Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS\",\r\n    \"created_by\":\"Admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/storeGWInfo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"storeGWInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User RegiSession-SMS-GW-TextLocal",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"P\",\r\n    \"email\":\"prince@gmail.com\",\r\n    \"phone\":\"8249113251\",\r\n    \"password\":\"passw\",\r\n    \"smsprovider\":\"textLocal\",\r\n    \"sender\":\"ODBUSS\",\r\n    \"message\":\"Dear <name>, Your OTP is <otp> to login ODBUS. Thanks - ODBUS\",\r\n    \"created_by\":\"Admin\"\r\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/RegisterSession",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"RegisterSession"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify OTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"22016\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/VerifyOtp",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"VerifyOtp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMS delivery status check",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"phone\":\"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/smsDeliveryStatus",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"smsDeliveryStatus"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userProfile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"userId\":\"1\",\r\n     \"token\":\"F26MbmBvBy\"\r\n}  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/UserProfile",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"UserProfile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user Logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MjA1ODc0LCJleHAiOjE2MjUyMDk0NzQsIm5iZiI6MTYyNTIwNTg3NCwianRpIjoiTXpudjEzYnZBVmR3Z0Q1ayIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.8YLGwCIYLn764XR3f7fcaV1dHnWiibcMoOAYdhKQR5c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RefreshToken for exsting token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL0xvZ2luIiwiaWF0IjoxNjI1MjA2NTY3LCJleHAiOjE2MjUyMTAxNjcsIm5iZiI6MTYyNTIwNjU2NywianRpIjoiT2d6Q2FsVnp2OUhXaGtCeSIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.uHxScSmI2qHSNdzDiZ0upjIaCYCXb0gHKvnyPVqz6BE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/RefreshToken",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"RefreshToken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment Status",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"transaction_id\": \"2021121122030548535\",\r\n\t\"razorpay_payment_id\": \"pay_IWEdc6zZHNMBYt\",\r\n\t\"razorpay_order_id\": \"order_IWEdVgiq4Ahig9\",\r\n\t\"razorpay_signature\": \"a9022f869de1a759d28fdf807e9a0f2614b3b4b27f992a203830304af61ecfd5\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"1111111111\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Rourkela\",\r\n\t\"bookingdate\": \"11-12-2021\",\r\n\t\"journeydate\": \"18-12-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"bus stand\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"26\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 1,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"ISPAT\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"26\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Customer\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/PaymentStatus",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
 					"path": [
 						"api",
 						"PaymentStatus"
@@ -507,12 +713,47 @@
 			"response": []
 		},
 		{
-			"name": "Popular routes",
+			"name": "email ticket",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"sssss\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"bookingdate\":\"02-05-2021\",\r\n    \"journeydate\":\"08-05-2021\",\r\n    \"boarding_point\":\"Bermunda\",\r\n    \"departureTime\":\"21:00\",\r\n    \"dropping_point\":\"Hirakud\",\r\n    \"arrivalTime\":\"06:30\",\r\n    \"seat_id\":[10,15],\r\n    \"busname\":\"Jagakalia\",\r\n    \"busNumber\":\"OD B 8657\",\r\n    \"bustype\":\"NON AC\",\r\n    \"busTypeName\":\"DELUX\",\r\n    \"sittingType\":\"2+2\",\r\n    \"conductorphone\":\"1212121212\",\r\n    \"passengerDetails\": [\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima1\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"22\"\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"lima2\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\"\r\n\r\n\t\t\t}\r\n\t   ],\r\n    \"totalfare\":\"850\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/PopularRoutes",
+					"raw": "{{url}}/SendEmailTicket",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"SendEmailTicket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VerifyOtp Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"18\",\r\n    \"otp\":\"43031\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.neoflix.in/api/VerifyOtpLogin",
 					"protocol": "https",
 					"host": [
 						"consumer",
@@ -521,30 +762,20 @@
 					],
 					"path": [
 						"api",
-						"PopularRoutes"
+						"VerifyOtpLogin"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "getjourneydetail",
+			"name": "SendSmsTicket",
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ\"",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"95087243\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"raw": "{\r\n    \"phone\":\"9916457575\",\r\n    \"email\":\"\",\r\n    \"PNR\":\"OD12345\",\r\n    \"busname\":\"Jagakalia\",\r\n    \"busNumber\":\"OD8657\",\r\n    \"DOJ\":\"08-05-2021\",\r\n    \"routedetails\":\"Bhubaneswar-Sambalpur\",\r\n    \"departureTime\":\"8:00PM\",\r\n    \"totalfare\":\"800\",\r\n    \"seat_id\":[10,15],\r\n    \"conmob\":\"991765743\",\r\n    \"passengerDetails\": [\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"Sandy\",\r\n\t\t\t\t\"passenger_gender\": \"M\"\r\n\t\t\t},\r\n\t\t\t{\r\n\t\t\t\t\"passenger_name\": \"swagatika\",\r\n\t\t\t\t\"passenger_gender\": \"F\"\r\n\t\t\t}\r\n\t   ]\r\n\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -552,275 +783,28 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/JourneyDetails",
-					"protocol": "https",
+					"raw": "{{url}}/SendSmsTicket",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"JourneyDetails"
+						"SendSmsTicket"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "getPassengerDetails",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"95087243\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/PassengerDetails",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"PassengerDetails"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getBookingDetails",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"95804162\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.odbus.co.in/api/BookingDetails",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
-					],
-					"path": [
-						"api",
-						"BookingDetails"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "BookTicket",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTI3MjUsImV4cCI6MTYzNDc5OTEyNSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.NtQQoSgaUdusMRBZoH824LTvVRYBLlJpCt1L--za1nWhR6Ufgs00W06NwxSoQOeEEPtp3J1ojlzfaUC46Otr1qO1H3hrw9wifHZoGduIcLylFBjJG65sTyO4qQ0MuDLTmAUNJwsm2UGXF35MheFb96ASydfym5Xtm0XhD_QiPvIvhYku_SUH-u5oTegJhLvqjGP7N1HYpzcIAU5OAOKGNEV5L3-2Tc9wNFJZhOzyBR4oLpF-POMEa6LGVv09URIlMlHeDhDZ8r4qDVqFIIAFwGUVm_ICnsLxtDf0J7cbuu4qxfpjGTMiFmVSyBc06A-6zzZ4FU3Aiffl_rFMuTzX7g",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"customerInfo\": {\r\n    \"email\": \"odgroup.in@gmail.com\",\r\n    \"phone\": \"7894310911\",\r\n    \"name\": \"Abhishek\"\r\n  },\r\n  \"bookingInfo\": {\r\n    \"bus_id\": 8,\r\n    \"source_id\": 1345,\r\n    \"destination_id\": 1374,\r\n    \"journey_dt\": \"2021-10-20\",\r\n    \"boarding_point\": \"Bus stand\",\r\n    \"dropping_point\": \"Bus stand\",\r\n    \"boarding_time\": \"20:00:00\",\r\n    \"dropping_time\": \"08:45:00\",\r\n    \"origin\": \"ODBUS\",\r\n    \"app_type\": \"Android\",\r\n    \"typ_id\": \"1\",\r\n    \"total_fare\": 1319,\r\n    \"owner_fare\": 1200,\r\n    \"odbus_service_Charges\": 84,\r\n    \"created_by\": \"Customer\",\r\n    \"bookingDetail\": [\r\n      {\r\n        \"bus_seats_id\": \"32\",\r\n        \"passenger_name\": \"test\",\r\n        \"passenger_gender\": \"Male\",\r\n        \"passenger_age\": \"28\",\r\n        \"created_by\": \"Customer\"\r\n      }\r\n    ]\r\n  }\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/BookTicket",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"BookTicket"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "sendEmailSms",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"OD50172493\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/EmailSms",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"EmailSms"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getCancelTicketInfo",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"03794812\",\r\n    \"mobile\" : \"8763447921\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.odbus.co.in/api/cancelTicketInfo",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
-					],
-					"path": [
-						"api",
-						"cancelTicketInfo"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "CancelTicket",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"95087243\",\r\n    \"phone\" : \"7978817539\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.odbus.co.in/api/CancelTicket",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
-					],
-					"path": [
-						"api",
-						"CancelTicket"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AddReview  (Contain bearer TOEKN)",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vY29uc3VtZXIubmVvZmxpeC5pbi9hcGkvUmVmcmVzaFRva2VuIiwiaWF0IjoxNjMyMTMwMTYxLCJleHAiOjE2MzI5MDQxMzQsIm5iZiI6MTYzMjkwMDUzNCwianRpIjoicDNONTdiNUVkWVI1elQyeCIsInN1YiI6MSwicHJ2IjoiZjY0ZDQ4YTZjZWM3YmRmYTdmYmY4OTk0NTRiNDg4YjNlNDYyNTIwYSJ9.-y_lNVwNZCrkNl7hXyspgFaC1wN3MSLibH8I9nITf6s",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\t\"pnr\": \"86295104\",\r\n\t\"bus_id\": 7,\r\n\t\"users_id\": 2,\r\n\t\"reference_key\": \"banashri.seofied1@gmail.com\",\r\n\t\"rating_overall\": 4,\r\n\t\"rating_comfort\": 4,\r\n\t\"rating_clean\": 5,\r\n\t\"rating_behavior\": 5,\r\n\t\"rating_timing\": 5,\r\n\t\"comments\": \"test\",\r\n    \"title\": \"test title\",\r\n\t\"created_by\": \"Lima Mohanty\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/AddReview",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"AddReview"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "UserReviews",
+			"name": "BusDetails",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ2Mzg0MTAsImV4cCI6MTYzNDcyNDgxMCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.mD7ZBMIWA3UbEHd7ExyEJ3NYzUjlgmJk6eVaURVJkAUNSGQNXY78p0WTnkTM7GtY45wKyCgmGFCEFuUEO8JW2Z-H4ZCt1Ou4dchZgdpQPRZpXcEM4SfTGZTL_xJBt1vNrVqBOfCRCDsEhhLvj2C3wl6Zgiu6O7ROrq5DdSceA5e8AITo5mHPXWzTfg9UkCg6_P8MlcORBZ4AphHmm4OpAzVlGqMyhLAmersuSEhcwTAD4KbqDyHVtoAS_OLhW_aKMzeefmMg9uTnq4QulK_TQhKCe8dJOtXFRp7yrsaMy1VCGrez5J7mVjvrz1gW_pzRU_kv8s1qMJdp3vCpQu5maA",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":2,\r\n    \"token\":\"VTnF5Iec0t\"\r\n}",
+					"raw": "{\r\n    \"bus_id\":\"8\",\r\n    \"source_id\":\"1345\",\r\n    \"destination_id\":\"1374\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -828,134 +812,19 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/UserReviews",
-					"protocol": "http",
+					"raw": "{{url}}/BusDetails",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"UserReviews"
+						"BusDetails"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "UpdateReview  (Contain bearer TOEKN)",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pnr\": \"1234567\",\r\n    \"bus_id\":\"1\",\r\n    \"users_id\": \"1\",\r\n    \"reference_key\": \"test222@gmail.com\",\r\n    \"rating_overall\": \"5\",\r\n    \"rating_comfort\": \"5\",\r\n    \"rating_clean\": \"5\",\r\n    \"rating_behavior\": \"4\",\r\n    \"rating_timing\": \"2\",\r\n    \"comments\": \"Test comments\",\r\n    \"created_by\": \"Lima\"\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/UpdateReview/1",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"UpdateReview",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DeleteReview  (Contain bearer TOEKN)",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/DeleteReview/1",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"DeleteReview",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "ReviewDetail  (Contain bearer TOEKN)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/ReviewDetail/1",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"ReviewDetail",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "SingleBusReviewList",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/SingleBusReviewList/1",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"SingleBusReviewList",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "datatable",
+			"name": "Popular routes",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -972,214 +841,34 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/coreTable?filter=&paginate=100",
+					"raw": "http://127.0.0.1:8000/api/PopularRoutes",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
-						"coreTable"
-					],
-					"query": [
-						{
-							"key": "filter",
-							"value": ""
-						},
-						{
-							"key": "paginate",
-							"value": "100"
-						}
+						"PopularRoutes"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "BookingHistory  (Contain bearer TOEKN)",
+			"name": "Top Operators",
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ2Mzg0MTAsImV4cCI6MTYzNDcyNDgxMCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.mD7ZBMIWA3UbEHd7ExyEJ3NYzUjlgmJk6eVaURVJkAUNSGQNXY78p0WTnkTM7GtY45wKyCgmGFCEFuUEO8JW2Z-H4ZCt1Ou4dchZgdpQPRZpXcEM4SfTGZTL_xJBt1vNrVqBOfCRCDsEhhLvj2C3wl6Zgiu6O7ROrq5DdSceA5e8AITo5mHPXWzTfg9UkCg6_P8MlcORBZ4AphHmm4OpAzVlGqMyhLAmersuSEhcwTAD4KbqDyHVtoAS_OLhW_aKMzeefmMg9uTnq4QulK_TQhKCe8dJOtXFRp7yrsaMy1VCGrez5J7mVjvrz1gW_pzRU_kv8s1qMJdp3vCpQu5maA",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"status\":\"\",\r\n    \"paginate\":5,\r\n    \"filter\":\"\",\r\n    \"userId\":2,\r\n    \"token\":\"VTnF5Iec0t\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/BookingHistory?page=",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"BookingHistory"
-					],
-					"query": [
-						{
-							"key": "page",
-							"value": ""
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "UserProfile  (Contain bearer TOEKN)",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ2Mzg0MTAsImV4cCI6MTYzNDcyNDgxMCwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.mD7ZBMIWA3UbEHd7ExyEJ3NYzUjlgmJk6eVaURVJkAUNSGQNXY78p0WTnkTM7GtY45wKyCgmGFCEFuUEO8JW2Z-H4ZCt1Ou4dchZgdpQPRZpXcEM4SfTGZTL_xJBt1vNrVqBOfCRCDsEhhLvj2C3wl6Zgiu6O7ROrq5DdSceA5e8AITo5mHPXWzTfg9UkCg6_P8MlcORBZ4AphHmm4OpAzVlGqMyhLAmersuSEhcwTAD4KbqDyHVtoAS_OLhW_aKMzeefmMg9uTnq4QulK_TQhKCe8dJOtXFRp7yrsaMy1VCGrez5J7mVjvrz1gW_pzRU_kv8s1qMJdp3vCpQu5maA",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "",
-						"value": "",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"userId\":2,\r\n    \"token\":\"VTnF5Iec0t\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/UserProfile",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"UserProfile"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "refreshToken  (Contain bearer TOEKN)",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL1ZlcmlmeU90cCIsImlhdCI6MTYzMjEzMDE2MSwiZXhwIjoxNjMyMTMzNzYxLCJuYmYiOjE2MzIxMzAxNjEsImp0aSI6IjZIamFDbEhIUmtrSWtycFkiLCJzdWIiOjEsInBydiI6ImY2NGQ0OGE2Y2VjN2JkZmE3ZmJmODk5NDU0YjQ4OGIzZTQ2MjUyMGEifQ.NcKpZL2BSkz9bnyu5KlnTv3Mt_0ir2249MO69twKDos",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/RefreshToken",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"RefreshToken"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AllOperators",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTEyMTMsImV4cCI6MTYzNDc5NzYxMywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.bOCFKHbaxSqS8E-2CGSZfq_FG-tmnrlNA9dxfTrn0ej5m8Cwx_Z13ezkEIHn8l-NLO3nZYjtUBO_RGPR4kuVg-Aj65wDskrV7mvHAUIgZHy79mSd46Kjf3FzODGU208xutc5G9PXGc6hXfgN-7PyDW3oacirUdhSg-9-9CHyaoacx6iz21DqT_1Ay4g1pHthzOmbcdxlnZlG8Na9_ggCS5ytAPEn0kNXseFy4dLYhBm8huwivHTJOSllSy4dRQU2HgbMXzV0zpsVtKIpa-wrnf0HS_f5NYcqagL4v8LdwJg8Y0afO7rqVLrIFX_UCkj30Q5IYYnKRlu1bu9ucLJkmA",
-							"type": "string"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/AllOperators",
-					"protocol": "http",
+					"raw": "{{url}}/TopOperators",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"AllOperators"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "TopOperators",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTEyMTMsImV4cCI6MTYzNDc5NzYxMywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.bOCFKHbaxSqS8E-2CGSZfq_FG-tmnrlNA9dxfTrn0ej5m8Cwx_Z13ezkEIHn8l-NLO3nZYjtUBO_RGPR4kuVg-Aj65wDskrV7mvHAUIgZHy79mSd46Kjf3FzODGU208xutc5G9PXGc6hXfgN-7PyDW3oacirUdhSg-9-9CHyaoacx6iz21DqT_1Ay4g1pHthzOmbcdxlnZlG8Na9_ggCS5ytAPEn0kNXseFy4dLYhBm8huwivHTJOSllSy4dRQU2HgbMXzV0zpsVtKIpa-wrnf0HS_f5NYcqagL4v8LdwJg8Y0afO7rqVLrIFX_UCkj30Q5IYYnKRlu1bu9ucLJkmA",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/TopOperators",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
 						"TopOperators"
 					]
 				}
@@ -1187,28 +876,87 @@
 			"response": []
 		},
 		{
-			"name": "OperatorDetails",
+			"name": "Cancel Ticket",
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU4NDU2NDUsImV4cCI6MTYzNTkzMjA0NSwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.JvS3roWN_YNbEabeCu-z91tQP4q53I8OoQG36piY6xFn99aIdhXuH2NYthGMUaYtb7iy3vyEuA4488Bqx0Dk_iNoO0j1wQJ53ZBb8Y7QRuSZOM5qclXcvT1_g2CKwEzJ3KeuJz_fRhepX8Uuu37hgAKdTWdFwud9UX4u-ybQmLSnWjYdOZKeQMy2L3dDHACv6mS8IUI28NJ_TbhTfSuQfGDLBBYGJmYbVBDluRxqvbLzWANBlKdWd5X8EFDzF5js7a6KFkeoHDk9qZFvvA9G8zqGJ5d7-oUj7bQflWwY2u0GyY3IaRWG9XjeSd5VIoFlxF0tZTDbmARlxi2Qgo_CAQ",
-							"type": "string"
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"14602975\",\r\n    \"phone\":\"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/CancelTicket",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"CancelTicket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Routes info",
+			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/OperatorDetails?operator_url=gpm-travels",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AllRoutes",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
+					"path": [
+						"api",
+						"AllRoutes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OperatotDetails",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/OperatorDetails?operator_url=gpm-travels",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
 					"path": [
 						"api",
 						"OperatorDetails"
@@ -1224,18 +972,25 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "AllOperators",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
-				}
+					"raw": "{{url}}/AllOperators",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"AllOperators"
+					]
+				},
+				"description": "AllOperators"
 			},
 			"response": []
 		},
 		{
-			"name": "allReviews",
+			"name": "user reviews",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -1245,7 +1000,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL1ZlcmlmeU90cCIsImlhdCI6MTYzMjczOTE5NywiZXhwIjoxNjMyNzQyNzk3LCJuYmYiOjE2MzI3MzkxOTcsImp0aSI6IkZvcmYyNGFXQ0xxYUtlOE8iLCJzdWIiOjEsInBydiI6ImY2NGQ0OGE2Y2VjN2JkZmE3ZmJmODk5NDU0YjQ4OGIzZTQ2MjUyMGEifQ.A5nxsM2p0qSpCUKAO4AvNgLB4pX4QXtlVO0xyL-qoPI",
 							"type": "string"
 						}
 					]
@@ -1254,7 +1009,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{ \r\n    \"userId\":\"1\",\r\n     \"token\":\"9LgTdlPLrZ\"\r\n}  ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1262,209 +1017,20 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/allReviews",
-					"protocol": "http",
+					"raw": "{{url}}/UserReviews",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"{{url}}"
 					],
 					"path": [
-						"api",
-						"allReviews"
+						"UserReviews"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "updateProfile (Contains Bearer Token)",
+			"name": "Offers",
 			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzQ3MTEyMTMsImV4cCI6MTYzNDc5NzYxMywiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.bOCFKHbaxSqS8E-2CGSZfq_FG-tmnrlNA9dxfTrn0ej5m8Cwx_Z13ezkEIHn8l-NLO3nZYjtUBO_RGPR4kuVg-Aj65wDskrV7mvHAUIgZHy79mSd46Kjf3FzODGU208xutc5G9PXGc6hXfgN-7PyDW3oacirUdhSg-9-9CHyaoacx6iz21DqT_1Ay4g1pHthzOmbcdxlnZlG8Na9_ggCS5ytAPEn0kNXseFy4dLYhBm8huwivHTJOSllSy4dRQU2HgbMXzV0zpsVtKIpa-wrnf0HS_f5NYcqagL4v8LdwJg8Y0afO7rqVLrIFX_UCkj30Q5IYYnKRlu1bu9ucLJkmA",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"name\": \"Lima Mohanty\",\r\n    \"email\": \"banashri.seofied@gmail.com\",\r\n    \"pincode\": \"756114\",\r\n    \"street\": \"Bhadrak\",\r\n    \"district\": \"Bhadrak\",\r\n    \"address\": \"Berhampur\",\r\n    \"profile_image\": \"\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/updateProfile/2/VTnF5Iec0t",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"updateProfile",
-						"2",
-						"VTnF5Iec0t"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "save contacts",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Lima Mohanty\",\r\n    \"email\":\"lima@gmail.com\",\r\n    \"phone\":\"8763447921\",\r\n    \"service\":\"Feedback\",\r\n    \"message\":\"Very Nice\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/TopOperators/saveContacts",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"TopOperators",
-						"saveContacts"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "NEOFLIX SERVER AUTH",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\t\"client_id\": \"mWLwsSDEvLDET5BmslDfwI0EMfrD9hQb\",\r\n\t\"client_secret\": \"RgnnRXVDRm3hniIuWvY6mQw68NiYC5gyr0BXcfnNQdlyS1mk273jTCFDru5te5Xq\",\r\n\t\"audience\": \"https://consumer.neoflix.in/api/\",\r\n\t\"grant_type\": \"client_credentials\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://dev-seofied.us.auth0.com/oauth/token",
-					"protocol": "https",
-					"host": [
-						"dev-seofied",
-						"us",
-						"auth0",
-						"com"
-					],
-					"path": [
-						"oauth",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "ODBUS SERVER AUTH",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\t\"client_id\": \"RsznkkMUqmJD0nUXjYv2LS8HPopT4xy1\",\r\n\t\"client_secret\": \"GZu_62xk_zFCSHAq3jdWdG9E6vXLD0moEksC4BGv46IFRuQp5rcdjWCxDIJTvNRs\",\r\n\t\"audience\": \"https://consumer.odbus.co.in/api\",\r\n\t\"grant_type\": \"client_credentials\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://dev-seofied.us.auth0.com/oauth/token",
-					"protocol": "https",
-					"host": [
-						"dev-seofied",
-						"us",
-						"auth0",
-						"com"
-					],
-					"path": [
-						"oauth",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Coupon",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \r\n    \"coupon_code\":\"OD50OFF\",\r\n    \"bus_id\":9,  \r\n    \"source_id\":\"1291\", \r\n    \"destination_id\":\"1374\",\r\n    \"journey_date\":\"2021-10-30\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211101125010611902\"\r\n}\r\n\r\n ",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://consumer.neoflix.in/api/Coupons",
-					"protocol": "http",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"Coupons"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all Offers",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJtV0x3c1NERXZMREVUNUJtc2xEZndJMEVNZnJEOWhRYkBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9jb25zdW1lci5uZW9mbGl4LmluL2FwaS8iLCJpYXQiOjE2MzU3NTExOTYsImV4cCI6MTYzNTgzNzU5NiwiYXpwIjoibVdMd3NTREV2TERFVDVCbXNsRGZ3STBFTWZyRDloUWIiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.xxg3oKIITIXsiebPY7UT7-gzzcN1NGDaEDo-pfxtYWaK6e5kM5h_PIrotgKsx5Fmk8GTUFpoq5o_aa9flwsvN3Z98yE8xE7j2ktIes48RGcG-EYI7Bi3N8wcp8OiOvKAhN87ChkoLcNBh3ysR3rn715AsGX0fp1WJI9pQT5I0Y2-y0H2lOtDoFeOVjv5UlLGRX4kkc6dHGAn678Qekj_RSUOE2mM-ObE5KY63kz7luFJdTnqzN368TdzCB5hOEnpe0HHKseWmhKBjgFt_2PFNkB8ac7XHjVMC26kd4fx7Nh_Yw5rrBVf3L9mdI0P_sMeXz1x0PqYb7Umhg61FFrgLQ",
-							"type": "string"
-						}
-					]
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -1477,13 +1043,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/Offers",
+					"raw": "http://127.0.0.1:8000/api/Offers",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Offers"
@@ -1493,16 +1061,13 @@
 			"response": []
 		},
 		{
-			"name": "Agen Login",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
+			"name": "coupons",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"chandra@odgroup.in\",\r\n    \"password\": \"Admin@2010\"\r\n} ",
+					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":9,  \r\n    \"source_id\":\"1291\", \r\n    \"destination_id\":\"1374\",\r\n    \"journey_date\":\"2021-11-22\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1510,25 +1075,31 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/AgentLogin",
+					"raw": "http://127.0.0.1:8000/api/Coupons",
+					"protocol": "http",
 					"host": [
-						"{{url}}"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
-						"AgentLogin"
+						"api",
+						"Coupons"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Agent Booking TICKETS",
+			"name": "Local SERVER AUTH",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n     \"agentInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"7008559705\",\r\n\t\t\"name\": \"CHANDRA\"\r\n\t},\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1212121212\",\r\n\t\t\"name\": \"ssssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"bus_operator_id\":1,\r\n\t\t\"bus_id\": \"3\",\r\n\t\t\"source_id\": \"1345\",\r\n\t\t\"destination_id\": \"1374\",\r\n\t\t\"journey_dt\": \"2021-10-09\",\r\n\t\t\"boarding_point\": \"Bus stand\",\r\n\t\t\"dropping_point\": \"bus stand\",\r\n\t\t\"boarding_time\": \"20:00\",\r\n\t\t\"dropping_time\": \"06:00\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1100,\r\n\t\t\"owner_fare\": 1000,\r\n        \"odbus_service_Charges\": 70,\r\n\t\t\"created_by\": \"Agent\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"37\",\r\n\t\t\t\t\"passenger_name\": \"sony\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"client_id\": \"2fgsFCk8mmFJhm5ExneFbXMsTYjAE5NZ\",\r\n\t\"client_secret\": \"uOGvi4XQxoLC99WK-KRs7PwL5fPnBrIawZD8m9vHczMUUZjCra4U0_9ydG36YQjJ\",\r\n\t\"audience\": \"http://127.0.0.1:8000/api/\",\r\n\t\"grant_type\": \"client_credentials\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1536,13 +1107,99 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/AgentBooking",
+					"raw": "https://dev-seofied.us.auth0.com/oauth/token",
 					"protocol": "https",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"dev-seofied",
+						"us",
+						"auth0",
+						"com"
 					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Journey details",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\" : \"95087243\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/JourneyDetails",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"JourneyDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update userReview ",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\": \"15432869\",\r\n    \"bus_id\": \"5\",\r\n    \"users_id\": \"2\",\r\n    \"reference_key\": \"lima@gmail.com\",\r\n    \"rating_overall\": \"5\",\r\n    \"rating_comfort\": \"5\",\r\n    \"rating_clean\": \"5\",\r\n    \"rating_behavior\": \"4\",\r\n    \"rating_timing\": \"2\",\r\n    \"comments\": \"Test comments\",\r\n    \"created_by\": \"Lima\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/UpdateReview/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"UpdateReview",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Agent Booking Tickets",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"agentInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"7008559705\",\r\n\t\t\"name\": \"CHANDRA\"\r\n\t},\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1212121212\",\r\n\t\t\"name\": \"ssssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"3\",\r\n\t\t\"source_id\": \"1345\",\r\n\t\t\"destination_id\": \"1374\",\r\n\t\t\"journey_dt\": \"2021-10-09\",\r\n\t\t\"boarding_point\": \"Bus stand\",\r\n\t\t\"dropping_point\": \"bus stand\",\r\n\t\t\"boarding_time\": \"20:00\",\r\n\t\t\"dropping_time\": \"06:00\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1100,\r\n\t\t\"owner_fare\": 1000,\r\n        \"odbus_service_Charges\": 70,\r\n\t\t\"created_by\": \"Agent\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"37\",\r\n\t\t\t\t\"passenger_name\": \"sony\",\r\n\t\t\t\t\"passenger_gender\": \"F\",\r\n\t\t\t\t\"passenger_age\": \"28\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/AgentBooking",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AgentBooking"
@@ -1552,13 +1209,13 @@
 			"response": []
 		},
 		{
-			"name": "Agent Wallet Paynent",
+			"name": "AgentWallet payment",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 10,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37],\r\n    \"entry_date\":\"13-11-2021\"\r\n\r\n}",
+					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 10,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37],\r\n    \"entry_date\":\"13-11-2021\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1566,13 +1223,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/AgentWalletPayment",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AgentWalletPayment",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AgentWalletPayment"
@@ -1588,7 +1247,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"Comission\":\"10\",\r\n    \"Total_Balance\":1000,\r\n\t\"transaction_id\": \"2021111319091856455\",\r\n\t\"name\": \"Cccccccc\",\r\n\t\"phone\": \"1212121212\",\r\n\t\"email\": \"abcd@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n\t\"bookingdate\": \"02-11-2021\",\r\n\t\"journeydate\": \"02-11-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"Bonth Chhawk\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"37\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 10,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"Bus 2\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"37\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Agent\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
+					"raw": "{\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"name\": \"ssssss\",\r\n    \"phone\": \"9916457575\",\r\n    \"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n    \"bookingdate\": \"02-11-2021\",\r\n    \"journeydate\": \"02-11-2021\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"departureTime\": \"05:00\",\r\n    \"dropping_point\": \"Bonth Chhawk\",\r\n    \"arrivalTime\": \"07:30\",\r\n    \"seat_id\": [\r\n        \"37\"\r\n    ],\r\n    \"seat_no\": [\r\n        \"SL6\"\r\n    ],\r\n    \"bus_id\": 10,\r\n    \"source\": \"Bhubaneswar\",\r\n    \"destination\": \"Bhadrak\",\r\n    \"busname\": \"Bus 2\",\r\n    \"busNumber\": \"OD 01 AW 1234\",\r\n    \"bustype\": \"NON AC\",\r\n    \"busTypeName\": \"DELUX\",\r\n    \"sittingType\": \"2+2\",\r\n    \"conductor_number\": \"7978817539\",\r\n    \"passengerDetails\": [\r\n        {\r\n            \"bus_seats_id\": \"37\",\r\n            \"passenger_name\": \"Lima\",\r\n            \"passenger_gender\": \"F\",\r\n            \"passenger_age\": \"22\",\r\n            \"created_by\": \"Agent\"\r\n        }\r\n    ],\r\n    \"totalfare\": 285,\r\n    \"discount\": 0,\r\n    \"payable_amount\": 285,\r\n    \"odbus_charges\": 25,\r\n    \"odbus_gst\": 10,\r\n    \"owner_fare\": 250\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1596,13 +1255,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/AgentPaymentStatus",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AgentPaymentStatus",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AgentPaymentStatus"
@@ -1612,18 +1273,20 @@
 			"response": []
 		},
 		{
-			"name": "Get All path urls",
+			"name": "get all Path urls",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://consumer.neoflix.in/api/AllPathUrls",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AllPathUrls",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AllPathUrls"
@@ -1633,7 +1296,71 @@
 			"response": []
 		},
 		{
-			"name": "Save recent search of a user",
+			"name": "testing email api",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"name\":\"swagatika\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/TestingEmail",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"TestingEmail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n     \"token\":\"F26MbmBvBy\",\r\n    \"name\": \"Lima Mohanty\",\r\n    \"email\": \"banashri.seofied@gmail.com\",\r\n    \"pincode\": \"756000\",\r\n    \"street\": \"Bhadrak\",\r\n    \"district\": \"Bhadrak\",\r\n    \"address\": \"Berhampur\",\r\n    \"profile_image\": \"sss1.png\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/updateProfile",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"updateProfile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Recent Search",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -1647,13 +1374,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/RecentSearch",
+					"raw": "http://127.0.0.1:8000/api/RecentSearch",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"RecentSearch"
@@ -1663,19 +1392,22 @@
 			"response": []
 		},
 		{
-			"name": "Get recent search",
+			"name": "Get Search Details",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://consumer.neoflix.in/RecentSearch/1",
+					"raw": "http://127.0.0.1:8000/api/RecentSearch/1",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
+						"api",
 						"RecentSearch",
 						"1"
 					]
@@ -1684,7 +1416,71 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "cancel ticket info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"83547216\",\r\n    \"mobile\":\"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/cancelTicketInfo",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"cancelTicketInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get page contents",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bus_operator_id\":\"152\",\r\n    \"page_url\":\"about-us\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/GetPageData",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"GetPageData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get seo lists",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -1693,7 +1489,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"name\":\"swagatika\"\r\n}",
+					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1701,16 +1497,82 @@
 					}
 				},
 				"url": {
-					"raw": "http://consumer.neoflix.in/api/TestingEmail",
+					"raw": "http://127.0.0.1:8000/api/seolist",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"neoflix",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
-						"TestingEmail"
+						"seolist"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Testimonials",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/GetTestimonial",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"GetTestimonial"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get social links",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/CommonService",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"CommonService"
 					]
 				}
 			},
