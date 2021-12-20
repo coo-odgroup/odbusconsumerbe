@@ -178,7 +178,9 @@ class ViewSeatsService
         $destinationId = $request['destinationId'];
         $Records =  $this->viewSeatsRepository->busStoppageTiming($busId);
 
-        Log::info($Records);
+        //Log::info($Records);
+        $boardingArray=[];
+        $droppingArray=[];
 
         $boardingDroppings = array(); 
         if($Records) {

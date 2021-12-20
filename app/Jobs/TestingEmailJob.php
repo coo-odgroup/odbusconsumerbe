@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 
 class TestingEmailJob implements ShouldQueue
@@ -41,7 +42,8 @@ class TestingEmailJob implements ShouldQueue
         $data = [
             'name' => $this->name,
         ];
-       Mail::send('test', $data, function ($messageNew) {
+        
+        Mail::send('test', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
