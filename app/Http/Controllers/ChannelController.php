@@ -41,9 +41,12 @@ class ChannelController extends Controller
             $to = $request['email'];
             $name = $request['name'];
     
-            TestingEmailJob::dispatch($to, $name);
+            $res= TestingEmailJob::dispatch($to, $name);
+
+            return $this->successResponse($res,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+
             
-            return "email sent successfully";    
+           // return "email sent successfully";    
           }
 
     public function storeGWInfo(Request $request)

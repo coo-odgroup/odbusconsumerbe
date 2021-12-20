@@ -162,8 +162,8 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
-        //Mailjet\LaravelMailjet\MailjetServiceProvider::class,
-        //Mailjet\LaravelMailjet\MailjetMailServiceProvider::class,
+        Mailjet\LaravelMailjet\MailjetServiceProvider::class,
+        Mailjet\LaravelMailjet\MailjetMailServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -235,7 +235,7 @@ return [
         'Curl' => Ixudra\Curl\Facades\Curl::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-        //'Mailjet' => Mailjet\LaravelMailjet\Facades\Mailjet::class,
+        'Mailjet' => Mailjet\LaravelMailjet\Facades\Mailjet::class,
         'SoapWrapper' => Artisaninweb\SoapWrapper\Facade\SoapWrapper::class, 
 
     ],

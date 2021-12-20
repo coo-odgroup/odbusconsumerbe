@@ -178,30 +178,34 @@ class ViewSeatsService
         $destinationId = $request['destinationId'];
         $Records =  $this->viewSeatsRepository->busStoppageTiming($busId);
 
+        Log::info($Records);
+
         $boardingDroppings = array(); 
         if($Records) {
         foreach($Records as $Record){  
-            $boardingPoints = $Record->boardingDroping->boarding_point;
-            $boardingDroppingTimes = $Record->stoppage_time;
-            $boardingDroppingTimes = date("H:i",strtotime($boardingDroppingTimes));
-            $locationId = $Record->boardingDroping->location_id;
-            $boardDropId = $Record->boardingDroping->id;
-            if($locationId==$sourceId)
-            {
-                $boardingArray[] = array(
-                    "id" =>  $boardDropId,
-                    "boardingPoints" => $boardingPoints,
-                    "boardingTimes" => $boardingDroppingTimes,
+            if($Record->boardingDroping != null){
+                $boardingPoints = $Record->boardingDroping->boarding_point;
+                $boardingDroppingTimes = $Record->stoppage_time;
+                $boardingDroppingTimes = date("H:i",strtotime($boardingDroppingTimes));
+                $locationId = $Record->boardingDroping->location_id;
+                $boardDropId = $Record->boardingDroping->id;
+                if($locationId==$sourceId)
+                {
+                    $boardingArray[] = array(
+                        "id" =>  $boardDropId,
+                        "boardingPoints" => $boardingPoints,
+                        "boardingTimes" => $boardingDroppingTimes,
+                    );
+                }
+                elseif($locationId==$destinationId)
+                {
+                    $droppingArray[] = array(
+                        "id" =>  $boardDropId,
+                        "droppingPoints" => $boardingPoints,
+                        "droppingTimes" => $boardingDroppingTimes,
                 );
-            }
-            elseif($locationId==$destinationId)
-            {
-                $droppingArray[] = array(
-                    "id" =>  $boardDropId,
-                    "droppingPoints" => $boardingPoints,
-                    "droppingTimes" => $boardingDroppingTimes,
-            );
-            }
+            }                
+        }
         }
         $boardingDroppings[] = array(   
             "boardingPoints" => $boardingArray,

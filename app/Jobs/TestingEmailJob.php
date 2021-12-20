@@ -41,7 +41,7 @@ class TestingEmailJob implements ShouldQueue
         $data = [
             'name' => $this->name,
         ];
-        Mail::send('test', $data, function ($messageNew) {
+       Mail::send('test', $data, function ($messageNew) {
             $messageNew->from(config('mail.contact.address'))
             ->to($this->to)
             ->subject($this->subject);
