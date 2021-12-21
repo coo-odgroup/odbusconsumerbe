@@ -205,9 +205,10 @@ class BookingManageService
         $mobile = $request['mobile'];
 
         $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
+
+       
       //return $booking_detail;
         if(isset($booking_detail[0])){ 
-                      
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
  
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
@@ -227,12 +228,16 @@ class BookingManageService
                   $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
                  $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-                foreach($cancelPolicies as $cancelPolicy){
+               
+                
+               
+                 foreach($cancelPolicies as $cancelPolicy){
                     $duration = $cancelPolicy->duration;
                     $deduction = $cancelPolicy->deduction;
                     $duration = explode("-", $duration, 2);
                     $max= $duration[1];
                     $min= $duration[0];
+
     
                     if( $interval > 240){
                         $deduction = 10;//minimum deduction
@@ -250,9 +255,11 @@ class BookingManageService
                         }else{
                             $emailData['cancel_status'] = true;
                         }
+
+                        
                         return $emailData;
     
-                    }elseif($min < $interval && $interval < $max){ 
+                    }elseif($min <= $interval && $interval <= $max){ 
 
                         $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
 
@@ -262,7 +269,8 @@ class BookingManageService
                         $emailData['refundAmount'] = $refundAmt;
                         $emailData['deductionPercentage'] = $deduction."%";
                         $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                        $emailData['totalfare'] = $paidAmt;
+                        $emailData['totalfare'] = $paidAmt;                        
+                        
 
                         if($booking_detail[0]->booking[0]->status==2){
                             $emailData['cancel_status'] = false;
@@ -276,7 +284,7 @@ class BookingManageService
                         $emailData['source'] = $sourceName;
                         $emailData['destination'] = $destinationName;
                         $emailData['bookingDetails'] = $booking_detail;
-                        
+
                         return $emailData;   
                     }
                 }                      
