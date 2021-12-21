@@ -241,7 +241,7 @@ class ListingService
                      }
                  }
              } 
-             $reviews=  $record->review;
+            
              $Totalrating=0;
              $Totalrating_comfort=0;
              $Totalrating_clean=0;
@@ -254,7 +254,12 @@ class ListingService
                    $Totalrating_comfort += $rv->rating_comfort;                  
                    $Totalrating_clean += $rv->rating_clean;                  
                    $Totalrating_behavior += $rv->rating_behavior;                  
-                   $Totalrating_timing += $rv->rating_timing;           
+                   $Totalrating_timing += $rv->rating_timing;   
+
+                   if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
+                       $rv->users->profile_image = $path->profile_url.$rv->users->profile_image; 
+                   }
+
                  } 
                  $Totalrating = number_format($Totalrating/count($record->review),1);
                  $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
@@ -262,6 +267,11 @@ class ListingService
                  $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
                  $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
              }
+
+
+             $reviews=  $record->review;
+
+             Log::info($reviews);
  
              $cancellationPolicyContent=$record->cancellation_policy_desc;
              $TravelPolicyContent=$record->travel_policy_desc;
