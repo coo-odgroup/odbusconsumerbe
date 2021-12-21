@@ -24,15 +24,13 @@ class CancelTicketService
     }
     public function cancelTicket($request)
     {
-        try {
-            //$cancelTicket = $this->cancelTicketRepository->cancelTicket($request);
-
+        try {          
             $pnr = $request['pnr'];
             $phone = $request['phone'];
             $booked = Config::get('constants.BOOKED_STATUS');
     
             $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
-            //return $booking_detail;
+           
             if(isset($booking_detail[0])){          
     
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
@@ -103,7 +101,7 @@ class CancelTicketService
                             return $refund;
     
                         }
-                        elseif($min < $interval && $interval < $max){ 
+                        elseif($min <= $interval && $interval <= $max){ 
                             $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
                             return $refund;    
