@@ -102,7 +102,7 @@ class UsersService
        $userDetails = $this->usersRepository->GetuserByToken($userId,$token);
        if(isset($userDetails[0])){
 
-        if($userDetails[0]->profile_image!=null){ 
+        if($userDetails[0]->profile_image!=null && $userDetails[0]->profile_image!=''){ 
             $userDetails[0]->profile_image = $path->profile_url.$userDetails[0]->profile_image;      
         }
         return $userDetails;
@@ -197,9 +197,20 @@ class UsersService
         $userId = $request['userId'];
         $token = $request['token']; 
 
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
         $userDetails=$this->usersRepository->GetuserByToken($userId,$token);
         if(isset($userDetails[0])){
-            return $this->usersRepository->updateProfile($request);
+
+            $uinfo= $this->usersRepository->updateProfile($request);
+
+            if($uinfo->profile_image!=null && $uinfo->profile_image!=''){ 
+                $uinfo->profile_image = $path->profile_url.$uinfo->profile_image;      
+            }
+            return $uinfo;
+
+            
          }else{
            return 'Invalid';
          }

@@ -182,11 +182,8 @@ class UsersRepository
               }              
             }     
       } 
-      $post->update();      
-      if($request->profile_image!=null){
-        $path= $this->commonRepository->getPathurls();
-        $post->profile_image = $path[0]->profile_url.$request->profile_image;  
-      }
+      $post->update();     
+      
       return $post;
     }
 
