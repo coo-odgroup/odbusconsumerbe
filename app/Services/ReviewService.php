@@ -102,15 +102,15 @@ class ReviewService
     public function createReview($data)
     {
       
-      Log::info($data);
-
         try { 
             $review = $this->reviewRepository->createReview($data);
+
+            return $review;
+
         } catch (Exception $e) { 
-            Log::info($e);
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        return $review;
+       
         
     }
 
