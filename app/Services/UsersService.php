@@ -52,6 +52,9 @@ class UsersService
         $userId = $request['userId'];
         $existingOtp = $this->usersRepository->getOtp($userId);
 
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
         if(isset($existingOtp[0])){
         $existingOtp = $existingOtp[0]['otp'];
 
@@ -62,8 +65,11 @@ class UsersService
             }
         elseif($existingOtp == $rcvOtp){
              $this->usersRepository->updateOTP($userId);
-             $usersDetails = $this->usersRepository->GetUserDataAfterUpdate($userId);
-             return $usersDetails; 
+             $uinfo = $this->usersRepository->GetUserDataAfterUpdate($userId);
+             if($uinfo[0]->profile_image!=null && $uinfo[0]->profile_image!=''){ 
+                $uinfo[0]->profile_image = $path->profile_url.$uinfo[0]->profile_image;      
+            }
+            return $uinfo;
         }
         else{
             return 'Inval OTP';
