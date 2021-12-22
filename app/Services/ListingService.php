@@ -65,19 +65,21 @@ class ListingService
             $seizedTime = $busDetail['seize_booking_minute'];
             $depTime = date("H:i:s", strtotime($busDetail['dep_time']));
             $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
-            $secs = strtotime($seizedTime) - strtotime("00:00:00");
-            $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
             
-            if($entry_date == $CurrentDate && $depTime > $FinalSeizedTime)
+            $secs = strtotime($seizedTime) - strtotime("00:00:00");
+            //$FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
+            $cutoffTime = date("H:i:s", strtotime($depTime) - $secs);
+            if($entry_date == $CurrentDate && $CurrentTime < $cutoffTime)
             {
-                if($jdays>1){
+
+                if($jdays>1){      
                     $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-                }else{
+                }else{  
                     $new_date = $entry_date;
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                          
-                 if($busEntryPresent==true){
+                     
+                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
                  } 
             }
@@ -88,15 +90,15 @@ class ListingService
                 }else{
                     $new_date = $entry_date;
                 }
-                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                          
-                 if($busEntryPresent==true){
+                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
+                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
-                 } 
+                 }
             }
          }
 
          $records = Arr::flatten($records);
+       
          //return $records;
          $busCouponCode = [];
          $opCouponCode = [];
@@ -270,9 +272,6 @@ class ListingService
 
 
              $reviews=  $record->review;
-
-             Log::info($reviews);
- 
              $cancellationPolicyContent=$record->cancellation_policy_desc;
              $TravelPolicyContent=$record->travel_policy_desc;
            
@@ -388,18 +387,19 @@ class ListingService
            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));
            $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
            $secs = strtotime($seizedTime) - strtotime("00:00:00");
-           $FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
-           
-           if($entry_date == $CurrentDate && $depTime > $FinalSeizedTime)
+           //$FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
+           $cutoffTime = date("H:i:s", strtotime($depTime) - $secs);
+           if($entry_date == $CurrentDate && $CurrentTime < $cutoffTime)
            {
                if($jdays>1){
                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
                }else{
+                   
                    $new_date = $entry_date;
                }
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
-                if($busEntryPresent==true){
+                if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
                    $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
                 } 
@@ -413,7 +413,7 @@ class ListingService
                }
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
-                if($busEntryPresent==true){
+                if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
                    $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
                 } 

@@ -127,7 +127,7 @@ class ListingRepository
                                  ->with(['busScheduleDate' => function ($bsd) use ($new_date){
                                      $bsd->where('entry_date',$new_date);
                                      $bsd->where('status','1');
-                                 }])->exists();
+                                 }])->get();
      }
 
      public function getBusScheduleID($busId)
