@@ -137,7 +137,6 @@ class ChannelRepository
 
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
-
             //Environment Variables
             //$apiKey = config('services.sms.textlocal.key');
             $apiKey = $this->credentials->first()->sms_textlocal_key;
@@ -176,25 +175,23 @@ class ChannelRepository
             //     return "cURL Error #:" . $err;
             // } 
 
-        }elseif($SmsGW=='IndiaHUB'){
-                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
+        }elseif($SmsGW=='indiaHub'){
+                $IndiaHubApiKey = config('services.sms.indiaHub.key');
                 $otp = $data['otp'];
-                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
-                // //$channel = 'transactional';
-                // //$route =  '4';
-                // //$dcs = '0';
-                // //$flashsms = '0';
-                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
-                // $receiver = urlencode($data['phone']);
-                // $sender_id = urlencode($data['sender']);
-                // $name = $data['name'];
-                // $message = $data['message'];
-                // $message = str_replace("<otp>",$otp,$message);
-                // $message = rawurlencode($message);
-    
-                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
-    
-                // $response = file_get_contents($api);
+                $channel = 'transactional';
+                //$route =  '4';
+                //$dcs = '0';
+                //$flashsms = '0';
+                $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
+                $receiver = $data['phone'];
+                $senderId = config('services.sms.indiaHub.senderid');
+                $name = $data['name'];
+                $message = config('services.sms.indiaHub.message');
+                $message = str_replace("<otp>",$otp,$message);
+                $message = str_replace("<name>",$name,$message);
+                $msg = urlencode($message);
+                $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$senderId."&msg=".$msg."&msisdn=".$receiver."&fl=0&gwid=2";
+                $response = file_get_contents($api);
                 //return $response;
 
         }

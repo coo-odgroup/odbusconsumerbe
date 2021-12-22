@@ -85,9 +85,16 @@ return [
             
         ],
         'indiaHub' => [
-            'key' => env('SMS_TEXTLOCAL_KEY'),
-            'url' => env('TEXT_LOCAL_SMS_URL'),
+            'key' => env('SMS_INDIA_HUB_KEY'),
+            'url_send' => env('TEXT_SMS_INDIA_HUB_URL'),
             'url_msg' => env('TEXT_LOCAL_MESSAGE_URL'),
+            'message' => env('SMS_TEMPLATE'),
+            'msgAgent' => env('SMS_TEMPLATE_AGENT'),
+            'msgTicket' => env('SMS_TKT_TEMPLATE'),
+            'msgTicketCMO' => env('SMS_TKT_TEMPLATE_CMO'),
+            'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
+            'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
+            'senderid' => env('SENDER_ID'),
         ]
     ],
     'razorpay' => [
