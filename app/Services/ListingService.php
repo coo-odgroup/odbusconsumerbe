@@ -79,7 +79,7 @@ class ListingService
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                      
-                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
                  } 
             }
@@ -91,7 +91,7 @@ class ListingService
                     $new_date = $entry_date;
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
-                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
                  }
             }
