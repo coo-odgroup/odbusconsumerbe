@@ -140,6 +140,15 @@ class ListingController extends Controller
  *              type="integer"
  *          )
  *      ),
+ *     @OA\Parameter(
+ *          name="user_id",
+ *          description="user id",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="List of Buses"),
  *  @OA\Response(response=401, description="Unauthorized"),
  *     security={
@@ -211,6 +220,15 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="bus_operator_id",
  *          description="bus operator id",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="user_id",
+ *          description="user id",
  *          required=false,
  *          in="query",
  *          @OA\Schema(

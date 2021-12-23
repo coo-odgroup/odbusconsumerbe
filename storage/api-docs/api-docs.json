@@ -1498,6 +1498,15 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "user id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
@@ -1564,6 +1573,15 @@
                         "name": "bus_operator_id",
                         "in": "query",
                         "description": "bus operator id",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "user id",
                         "required": false,
                         "schema": {
                             "type": "integer"

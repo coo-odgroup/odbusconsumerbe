@@ -29,6 +29,7 @@ class ListingService
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
         $busOperatorId = $request['bus_operator_id'];
+        $userId = $request['user_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
 
         $path= $this->commonRepository->getPathurls();
@@ -52,7 +53,7 @@ class ListingService
          }else{
             $routeCouponCode =[];
          }         
-         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date); 
+         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
          //return $busDetails;
          $CurrentTime = Carbon::now()->toTimeString();
          $CurrentDate = Carbon::now()->toDateString();
@@ -80,7 +81,7 @@ class ListingService
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                      
                  if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  } 
             }
             if($entry_date > $CurrentDate)
@@ -92,7 +93,7 @@ class ListingService
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
                  if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  }
             }
          }
@@ -349,6 +350,7 @@ class ListingService
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID'];
         $busOperatorId = $request['bus_operator_id']; 
+        $userId = $request['user_id'];
         $entry_date = $request['entry_date']; 
         $path= $this->commonRepository->getPathurls();
         $path= $path[0];  
@@ -373,7 +375,7 @@ class ListingService
                  $routeCouponCode =[];
              }  
 
-        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date);         
+        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);    
         
         $CurrentTime = Carbon::now()->toTimeString();
         $CurrentDate = Carbon::now()->toDateString();
@@ -393,15 +395,14 @@ class ListingService
            {
                if($jdays>1){
                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-               }else{
-                   
+               }else{    
                    $new_date = $entry_date;
                }
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
                 } 
            }
            if($entry_date > $CurrentDate)
@@ -415,7 +416,7 @@ class ListingService
                          
                 if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId);
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
                 } 
            }   
         }
