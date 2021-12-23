@@ -72,18 +72,14 @@ class ListingService
             $cutoffTime = date("H:i:s", strtotime($depTime) - $secs);
             if($entry_date == $CurrentDate && $CurrentTime < $cutoffTime)
             {
-
                 if($jdays>1){      
                     $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
                 }else{  
                     $new_date = $entry_date;
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                     
-                //  if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                //     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  } 
             }
             if($entry_date > $CurrentDate)
@@ -94,10 +90,8 @@ class ListingService
                     $new_date = $entry_date;
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
-                //  if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                //     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
                  }
             }
          }
@@ -404,7 +398,7 @@ class ListingService
                }
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
-                if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
                    $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
                 } 
@@ -418,7 +412,7 @@ class ListingService
                }
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                          
-                if($busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
                    $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
                 } 
