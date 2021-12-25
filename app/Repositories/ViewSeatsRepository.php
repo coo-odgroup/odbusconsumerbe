@@ -61,10 +61,30 @@ class ViewSeatsRepository
     }
 
     public function bookingIds($busId,$journeyDate,$booked,$seatHold){
-        return $this->booking->where('bus_id',$busId)
-        ->where('journey_dt',$journeyDate)
-        ->whereIn('status',[$booked,$seatHold])
-        ->pluck('id'); 
+
+        $maxJday =  $this->ticketPrice
+        ->where('bus_id', $busId)
+        ->where('status','1')
+        ->max('j_day'); 
+        $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate)));
+        $yday = date('Y-m-d', strtotime('-1 day', strtotime($journeyDate)));
+        switch($maxJday){
+            case(1):
+                return $this->booking->where('bus_id',$busId)
+                ->where('journey_dt',$journeyDate)
+                ->whereIn('status',[$booked,$seatHold])
+                ->pluck('id');
+                break;
+            case(2):
+                $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate)));
+                $yday = date('Y-m-d', strtotime('-1 day', strtotime($journeyDate)));
+                return $this->booking->where('bus_id',$busId)
+                ->whereIn('journey_dt',[$yday,$journeyDate,$nday ])
+                ->whereIn('status',[$booked,$seatHold])
+                ->pluck('id'); 
+                break;
+        }
+
     }
 
     public function bookingDetail($bookingId)
