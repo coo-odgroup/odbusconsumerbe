@@ -74,7 +74,7 @@ class ViewSeatsRepository
     }
 
     public function busSeats($bookedSeatId){
-        return $this->busSeats->where('id',$bookedSeatId)->where('status','1')->first()->seats_id;
+        return $this->busSeats->where('id',$bookedSeatId)->first()->seats_id;
     }
 
     public function bookingGenderDetail($bookingId,$bookedSeatId){
