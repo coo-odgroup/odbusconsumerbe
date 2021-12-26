@@ -73,7 +73,7 @@ class ViewSeatsService
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats);
-          
+
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
                
@@ -95,29 +95,46 @@ class ViewSeatsService
                $viewSeat['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
            }
 
+
+           
                 // Add Gender into Booked seat List
-                if (sizeof($bookingIds)){
-                    $i=0;
-                  if(isset($viewSeat['lower_berth'])){
-                    foreach($viewSeat['lower_berth'] as &$lb){
-                        if(in_array($lb['id'], $blockedSeats)){
-                            $key = array_search($lb['id'], $seatsIds);
-                            $viewSeat['lower_berth'][$i]['Gender'] = $gender[$key];
-                        } 
-                        $i++;
-                    } 
-                  }
+               
                     $i=0; 
                     if(isset($viewSeat['upper_berth'])){  
                       foreach($viewSeat['upper_berth'] as &$ub){
-                        if(in_array($ub['id'], $blockedSeats)){
-                            $key = array_search($ub['id'], $seatsIds);
-                            $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
-                        } 
+                        if(isset($ub->busSeats)){
+                            $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+                        }
+
+                        if (sizeof($bookingIds)){ 
+                            if(in_array($ub['id'], $blockedSeats)){
+                                $key = array_search($ub['id'], $seatsIds);
+                                $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
+                            } 
+                        }
                         $i++;
                        }     
-                    }   
-                }
+                    } 
+
+
+                    $i=0;
+                  if(isset($viewSeat['lower_berth'])){          
+                    foreach($viewSeat['lower_berth'] as &$lb){                      
+                        if(isset($lb->busSeats)){                           
+                            $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+                        }
+                        if (sizeof($bookingIds)){    
+
+                            if(in_array($lb['id'], $blockedSeats)){
+                                $key = array_search($lb['id'], $seatsIds);
+                                $viewSeat['lower_berth'][$i]['Gender'] = $gender[$key];
+                            } 
+                        }
+                        $i++;
+                    } 
+                  }
+             
+
             return $viewSeat;
     }
 
@@ -132,11 +149,57 @@ class ViewSeatsService
         $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
         
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
-       $seaterPrice = $busWithTicketPrice->base_seat_fare;
-        $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
+
+        $ticket_new_fare=array();
+
+        if($seaterIds){
+            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($seaterIds,$busId,$busWithTicketPrice->id);
+        }             
+
+        if($sleeperIds){
+            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);
+           
+        }
+
+        $ownerFare=0;
+        $PriceDetail=[];
+
+       // return $ticket_new_fare;
+
+        if(count($ticket_new_fare) > 0){
+            foreach($ticket_new_fare as $tktprc){
+
+                foreach($tktprc as $tkt){
+                        if($tkt->new_fare == 0 ){
+
+                            if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
+                                $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                            }
+
+                            else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
+                                $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                            }
+
+                            array_push($PriceDetail,$tkt);
+                             // Log::info($ownerFare);
+                        
+                        }
+
+                        $ownerFare +=$tkt->new_fare;
+                }
+              
+            }
+
+        }
         
-        $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
-                     count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
+
+       
+       // $seaterPrice = $busWithTicketPrice->base_seat_fare;
+       // $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
+       
+      
+        // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
+        //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
                     
         $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($busOperatorId);
 
@@ -160,14 +223,23 @@ class ViewSeatsService
                 $totalFare = round($ownerFare + $odbusServiceCharges + $transactionFee);
                 }     
             }  
-        $seatWithPriceRecords[] = array(
-            "seaterPrice" => $seaterPrice,
-            "sleeperPrice" => $sleeperPrice,
-            "ownerFare" => $ownerFare,
-            "odbusServiceCharges" => $odbusServiceCharges,
-            "transactionFee" => $transactionFee,
-            "totalFare" => $totalFare,
-            ); 
+        // $seatWithPriceRecords[] = array(
+        //     "seaterPrice" => $seaterPrice,
+        //     "sleeperPrice" => $sleeperPrice,
+        //     "ownerFare" => $ownerFare,
+        //     "odbusServiceCharges" => $odbusServiceCharges,
+        //     "transactionFee" => $transactionFee,
+        //     "totalFare" => $totalFare,
+        //     ); 
+
+            $seatWithPriceRecords[] = array(
+                "PriceDetail" => $PriceDetail,
+                "ownerFare" => $ownerFare,
+                "odbusServiceCharges" => $odbusServiceCharges,
+                "transactionFee" => $transactionFee,
+                "totalFare" => $totalFare,
+                ); 
+
         return $seatWithPriceRecords;
         
     }

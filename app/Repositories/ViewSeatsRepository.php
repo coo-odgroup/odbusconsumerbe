@@ -139,10 +139,11 @@ class ViewSeatsRepository
                            $q->where('bus_id',$busId)
                            ->where('status','1'); 
                    });
-
-                  $query->with('TicketPrice') ;
                }]) 
                 ->get();
+
+       
+
     }
 
     public function seatRowColumn($bus_seat_layout_id,$Berth){
@@ -151,16 +152,31 @@ class ViewSeatsRepository
         ->where('status','1') 
         ->where('berthType', $Berth);
     }
-    
+
+       
    
     public function busWithTicketPrice($sourceId,$destinationId,$busId){
         return  $this->ticketPrice
         ->where('source_id', $sourceId)
         ->where('destination_id', $destinationId)
         ->where('bus_id', $busId)
-        ->where('status','1')         
+        ->where('status','1') 
         ->first();
     }
+
+
+    public function newFare($seat_ids,$busId,$ticket_price_id){
+
+        return  $this->busSeats
+        ->whereIn('seats_id', $seat_ids)
+        ->where('bus_id', $busId)
+        ->where('ticket_price_id', $ticket_price_id)
+        ->where('status','1') 
+        ->select('id','seats_id','new_fare') 
+        ->get();
+
+    }
+
 
 
     public function ticketFareSlab($busOperatorId){
