@@ -73,7 +73,7 @@ class ViewSeatsService
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats);
-   
+          
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
                
@@ -132,7 +132,7 @@ class ViewSeatsService
         $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
         
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
-        $seaterPrice = $busWithTicketPrice->base_seat_fare;
+       $seaterPrice = $busWithTicketPrice->base_seat_fare;
         $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
         
         $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+

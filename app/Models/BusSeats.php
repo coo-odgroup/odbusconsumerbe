@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
 use App\Models\Seats;
+use App\Models\TicketPrice;
 
 
 class BusSeats extends Model
@@ -20,6 +21,11 @@ class BusSeats extends Model
     public function seats()
     {
     	return $this->belongsTo(Seats::class);
+    }
+
+    public function TicketPrice()
+    {
+    	return $this->belongsTo(TicketPrice::class);
     }
     
 }

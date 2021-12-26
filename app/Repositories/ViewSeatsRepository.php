@@ -139,6 +139,8 @@ class ViewSeatsRepository
                            $q->where('bus_id',$busId)
                            ->where('status','1'); 
                    });
+
+                  $query->with('TicketPrice') ;
                }]) 
                 ->get();
     }
@@ -156,9 +158,10 @@ class ViewSeatsRepository
         ->where('source_id', $sourceId)
         ->where('destination_id', $destinationId)
         ->where('bus_id', $busId)
-        ->where('status','1')           
+        ->where('status','1')         
         ->first();
     }
+
 
     public function ticketFareSlab($busOperatorId){
     $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 

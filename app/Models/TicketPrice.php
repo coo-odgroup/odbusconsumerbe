@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Bus;
+use App\Models\BusSeats;
 use App\Models\User;
 use App\Models\BusStoppageTiming;
 use App\Models\BusOperator;
@@ -32,4 +33,10 @@ class TicketPrice extends Model
     {        
         return $this->belongsTo(BusOperator::class);        
     }
+
+    public function BusSeats()
+    {
+        return $this->hasMany(BusSeats::class);
+    }
+
 }
