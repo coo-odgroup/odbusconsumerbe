@@ -210,7 +210,6 @@ class ListingRepository
         ->with('BusSitting')
         ->with(['busGallery' => function ($a){
             $a->where('status',1);
-            $a->select('id','bus_id','alt_tag','bus_image');
             }])
         ->with('cancellationslabs.cancellationSlabInfo')
         ->with(['review' => function ($query) {                    
@@ -257,7 +256,6 @@ class ListingRepository
          //->with('busGallery')
          ->with(['busGallery' => function ($a){
             $a->where('status',1);
-            $a->select('id','bus_id','alt_tag','bus_image');
             }])
          ->with('cancellationslabs.cancellationSlabInfo')
          ->with(['review' => function ($query) {                    

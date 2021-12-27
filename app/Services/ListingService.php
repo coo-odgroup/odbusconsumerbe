@@ -233,10 +233,41 @@ class ListingService
              if($record->busGallery)
              {
                  foreach($record->busGallery as  $bp){
-                     if($bp->bus_image != null)
+                     if($bp->bus_image_1 != null)
                      {
-                        if($bp->bus_image!=''){
-                            $bp->bus_image = $path->busphoto_url.$bp->bus_image; 
+                        if($bp->bus_image_1!=''){
+                            $bp->bus_image_1 = $path->busphoto_url.$bp->bus_image_1; 
+                        }
+                         $busPhotoDatas[] = $bp;
+                     }
+
+                     if($bp->bus_image_2 != null)
+                     {
+                        if($bp->bus_image_2!=''){
+                            $bp->bus_image_2 = $path->busphoto_url.$bp->bus_image_2; 
+                        }
+                         $busPhotoDatas[] = $bp;
+                     }
+
+                     if($bp->bus_image_3 != null)
+                     {
+                        if($bp->bus_image_3!=''){
+                            $bp->bus_image_3 = $path->busphoto_url.$bp->bus_image_3; 
+                        }
+                         $busPhotoDatas[] = $bp;
+                     }
+
+                     if($bp->bus_image_4 != null)
+                     {
+                        if($bp->bus_image_4!=''){
+                            $bp->bus_image_4 = $path->busphoto_url.$bp->bus_image_4; 
+                        }
+                         $busPhotoDatas[] = $bp;
+                     }
+                     if($bp->bus_image_5 != null)
+                     {
+                        if($bp->bus_image_5!=''){
+                            $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5; 
                         }
                          $busPhotoDatas[] = $bp;
                      }
@@ -556,15 +587,46 @@ class ListingService
              $busPhotoDatas = [];
              if($record->busGallery)
              {
-                 foreach($record->busGallery as  $bp){
-                     if($bp->bus_image != null)
-                     {
-                        if($bp->bus_image!=''){
-                            $bp->bus_image = $path->busphoto_url.$bp->bus_image; 
-                        }
-                         $busPhotoDatas[] = $bp;
-                     }
-                 }
+                foreach($record->busGallery as  $bp){
+                    if($bp->bus_image_1 != null)
+                    {
+                       if($bp->bus_image_1!=''){
+                           $bp->bus_image_1 = $path->busphoto_url.$bp->bus_image_1; 
+                       }
+                        $busPhotoDatas[] = $bp;
+                    }
+
+                    if($bp->bus_image_2 != null)
+                    {
+                       if($bp->bus_image_2!=''){
+                           $bp->bus_image_2 = $path->busphoto_url.$bp->bus_image_2; 
+                       }
+                        $busPhotoDatas[] = $bp;
+                    }
+
+                    if($bp->bus_image_3 != null)
+                    {
+                       if($bp->bus_image_3!=''){
+                           $bp->bus_image_3 = $path->busphoto_url.$bp->bus_image_3; 
+                       }
+                        $busPhotoDatas[] = $bp;
+                    }
+
+                    if($bp->bus_image_4 != null)
+                    {
+                       if($bp->bus_image_4!=''){
+                           $bp->bus_image_4 = $path->busphoto_url.$bp->bus_image_4; 
+                       }
+                        $busPhotoDatas[] = $bp;
+                    }
+                    if($bp->bus_image_5 != null)
+                    {
+                       if($bp->bus_image_5!=''){
+                           $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5; 
+                       }
+                        $busPhotoDatas[] = $bp;
+                    }
+                }
              }
                  
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
