@@ -79,7 +79,7 @@ class ListingService
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                  if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                  } 
             }
             if($entry_date > $CurrentDate)
@@ -91,7 +91,7 @@ class ListingService
                 }
                  $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
                  if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId);
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                  }
             }
          }
@@ -159,7 +159,7 @@ class ListingService
                      ->where('source_id', $sourceID)
                      ->where('destination_id', $destinationID)
                      ->first(); 
-               
+       
              $ticketPriceId = $ticketPriceRecords->id;
              $startingFromPrice = $ticketPriceRecords->base_seat_fare;
              $departureTime = $ticketPriceRecords->dep_time;
@@ -170,13 +170,22 @@ class ListingService
              $dep_time = new DateTime($departureTime);
              $totalTravelTime = $dep_time->diff($arr_time);
              $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
- 
-             //$seatOpenDatas = $record->seatOpen;
-             //$seatsOpenSeats = $seatOpenDatas->pluck('seatOpenSeats.id');
-             //return $seatsOpenSeats;
- 
-             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->count('id');
-             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where("status","1")->all();
+
+             /////seat close/////
+             $blockSeats = $record->busSeats
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->where('type',2)                              
+                                    ->pluck('seats_id');
+             ///////////////////
+             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                            ->where("status","1")
+                                            ->whereNotIn('seats_id',$blockSeats)
+                                            ->count('id');
+             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                           ->where("status","1")
+                                           ->whereNotIn('seats_id',$blockSeats)
+                                           ->all();
+             //return  $seatDatas;
              $amenityDatas = [];  
 
             if($record->busAmenities)
@@ -431,7 +440,7 @@ class ListingService
                          
                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                 } 
            }
            if($entry_date > $CurrentDate)
@@ -445,7 +454,7 @@ class ListingService
                          
                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId);
+                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                 } 
            }   
         }
@@ -519,9 +528,21 @@ class ListingService
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->count('id');
+                /////seat close/////
+                $blockSeats = $record->busSeats
+                                    ->where('ticket_price_id',$ticketPriceId)->where('type',2)->pluck('seats_id');
+                /////////////////////
+                $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                               ->where("status","1")
+                                               ->whereNotIn('seats_id',$blockSeats)
+                                               ->count('id');
+                $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                              ->where("status","1")
+                                              ->whereNotIn('seats_id',$blockSeats)
+                                              ->all();
+               // $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->count('id');
                                           
-             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->all();
+                 //$seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->all();
            
              $amenityDatas = [];  
 

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
+use App\Models\TicketPrice;
+use App\Models\BusSeats;
 
 
 class ViewSeatsService
@@ -72,8 +74,9 @@ class ViewSeatsService
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
            // Lower Berth seat Calculation
-           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats);
+           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
 
+            //return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
                
@@ -84,7 +87,7 @@ class ViewSeatsService
                $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
            } 
            // Upper Berth seat Calculation
-           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$flag,$busId,$blockedSeats);
+           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
    
            if(($viewSeat['upper_berth'])->isEmpty()){
                unset($viewSeat['upper_berth']); 
@@ -94,15 +97,13 @@ class ViewSeatsService
                $viewSeat['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
                $viewSeat['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
            }
-
-
-           
                 // Add Gender into Booked seat List
-               
+       
                     $i=0; 
                     if(isset($viewSeat['upper_berth'])){  
                       foreach($viewSeat['upper_berth'] as &$ub){
-                        if(isset($ub->busSeats)){
+                        if(collect($ub)->has(['bus_seats'])){
+                        // if(isset($ub->busSeats)){
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
                         }
 
@@ -115,12 +116,11 @@ class ViewSeatsService
                         $i++;
                        }     
                     } 
-
-
                     $i=0;
-                  if(isset($viewSeat['lower_berth'])){          
-                    foreach($viewSeat['lower_berth'] as &$lb){                      
-                        if(isset($lb->busSeats)){                           
+                    if(isset($viewSeat['lower_berth'])){          
+                    foreach($viewSeat['lower_berth'] as &$lb){    
+                        if(collect($lb)->has(['bus_seats'])){                  
+                        // if(isset($lb->busSeats)){                           
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
                         }
                         if (sizeof($bookingIds)){    

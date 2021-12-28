@@ -123,27 +123,48 @@ class ViewSeatsRepository
         return $this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
     }
 
-    public function getBerth($bus_seat_layout_id,$Berth,$flag,$busId,$seatsIds){
-        return $this->seats
+    public function getBerth($bus_seat_layout_id,$Berth,$flag,$busId,$seatsIds,$entry_date,$sourceId,$destinationId){
+
+        $ticketPriceId = TicketPrice::where('bus_id',$busId)
+           ->where('source_id',$sourceId)
+           ->where('destination_id',$destinationId)
+           ->where('status',1)
+           ->first()->id;
+       
+       $blockSeats = BusSeats::where('operation_date', $entry_date)
+            ->where('type',2)
+            ->where('bus_id',$busId)
+            ->where('ticket_price_id',$ticketPriceId)
+            ->pluck('seats_id');
+
+       $seats= $this->seats
                ->where('bus_seat_layout_id',$bus_seat_layout_id)
                ->where('berthType', $Berth)
                ->where('status','1')
-               ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds){
+               ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date,$blockSeats){
                    $query->when($flag == 'false', 
-                   function($q) use ($busId,$seatsIds){  //hide booked Seats
-                           $q->where('bus_id',$busId)
-                             ->where('status','1')
-                             ->whereNotIn('seats_id',$seatsIds);
+                   function($q) use ($busId,$seatsIds,$entry_date,$blockSeats){  //hide booked Seats
+                        $q->where(['operation_date', $entry_date])
+                            ->orwhereNull('operation_date')
+                            ->where('status',1)
+                            ->where('bus_id',$busId)
+                            ->whereNotIn('seats_id',$seatsIds);
                    },
-                   function($q) use ($busId,$seatsIds){  //Display unbooked Seats
-                           $q->where('bus_id',$busId)
-                           ->where('status','1'); 
+                   function($q) use ($busId,$seatsIds,$entry_date,$blockSeats){  //Display unbooked Seats
+                        $q->where([['operation_date', $entry_date]])                        
+                            ->orwhereNull('operation_date')
+                            ->where('status',1)
+                            ->where('bus_id',$busId);
                    });
                }]) 
                 ->get();
-
-       
-
+                //////seat block//////////
+                foreach($seats as $seat){ 
+                    if(collect($blockSeats)->contains($seat->id)){
+                        unset($seat['busSeats']);  
+                    }
+                }
+               return $seats;
     }
 
     public function seatRowColumn($bus_seat_layout_id,$Berth){

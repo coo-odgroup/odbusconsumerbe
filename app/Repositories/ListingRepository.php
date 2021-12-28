@@ -178,7 +178,7 @@ class ListingRepository
         
      }
 
-     public function getBusData($busOperatorId,$busId,$userId)
+     public function getBusData($busOperatorId,$busId,$userId,$entry_date)
      {
         return $this->bus
         // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
@@ -205,8 +205,20 @@ class ListingRepository
             }]);
         }]) 
         ->with('BusType.busClass')
-        ->with('busSeats.seats')
-        //->with('seatOpen.seatOpenSeats')
+        //->with('busSeats.seats')
+        /////////////////////////seat_open/////////////////////////////////
+        ->with(['busSeats' => function ($bs) use ($entry_date) {
+            $bs->where([['operation_date', $entry_date]] )
+                // $bs->where(function ($q) use ($entry_date){
+                //         $q->where([['operation_date', $entry_date],['type',1]]);
+                //     })
+                   ->orwhereNull('operation_date')
+                   ->where('status',1)
+                   ->with(['seats' => function ($s) {
+                        $s->where('status',1);
+                   }]);   
+            }])
+        //////////////////////////////////////////////////////
         ->with('BusSitting')
         ->with(['busGallery' => function ($a){
             $a->where('status',1);
@@ -225,7 +237,7 @@ class ListingRepository
      }
 
      public function getFilterBusList($busOperatorId,$busId,$busType,
-     $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId){
+     $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date){
          return  $this->bus
         //  ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
         //     $query->where('bus_operator_id',$busOperatorId);
@@ -251,7 +263,17 @@ class ListingRepository
             }]);
         }]) 
          ->with('BusType.busClass')
-         ->with('busSeats.seats')
+         //->with('busSeats.seats')
+         /////////////////////////seat_open/////////////////////////////////
+        ->with(['busSeats' => function ($bs) use ($entry_date) {
+            $bs->where([['operation_date', $entry_date]])
+               ->orwhereNull('operation_date')
+               ->where('status',1)
+               ->with(['seats' => function ($s) {
+                        $s->where('status',1);
+                   }]);   
+            }])
+        //////////////////////////////////////////////////////
          ->with('BusSitting')
          //->with('busGallery')
          ->with(['busGallery' => function ($a){
