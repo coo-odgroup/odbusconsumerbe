@@ -11,6 +11,7 @@ use App\Models\BusType;
 use App\Models\BusClass;
 use App\Models\SeatClass;
 use App\Models\Amenities;
+use App\Models\BusAmenities;
 use App\Models\BusSeats;
 use App\Models\Seats;
 use App\Models\CancellationSlab;
@@ -663,31 +664,44 @@ class ListingRepository
         return $this->seatClass->where('id',1)->orWhere('id',2)->get(['id','name']);
     }
 
-    public function getboardingPoints($sourceID)
+    public function getboardingPoints($sourceID,$busIds)
     {
-        return $this->boardingDroping->where('location_id', $sourceID)
+
+        $boardingIds = BusStoppageTiming::whereIn('bus_id',$busIds)->pluck('boarding_droping_id');
+        return $this->boardingDroping
+                                     ->whereIn('id', $boardingIds)
+                                     ->where('location_id', $sourceID)
                                      ->where('status', '1')
                                      ->get(['id','boarding_point']);
     }
 
-    public function getdropingPoints($destinationID)
+    public function getdropingPoints($destinationID,$busIds)
     {
-        return $this->boardingDroping->where('location_id', $destinationID)
+        $dropingIds = BusStoppageTiming::whereIn('bus_id',$busIds)->pluck('boarding_droping_id');
+        return $this->boardingDroping->whereIn('id', $dropingIds)
+                                     ->where('location_id', $destinationID)
                                      ->where('status', '1')
                                      ->get(['id','boarding_point']);       
     }
 
-    public function getbusOperator()
+    public function getbusOperator($busIds)
     {
-        return $this->busOperator->where('status', '1')->get(['id','operator_name','organisation_name']);
+        $busOperatorIds = Bus::whereIn('id',$busIds)->pluck('bus_operator_id');
+        return $this->busOperator
+                    ->whereIn('id', $busOperatorIds)
+                    ->where('status', '1')
+                    ->get(['id','operator_name','organisation_name']);
     }
 
-    public function getamenities()
+    public function getamenities($busIds)
     {
         $path= $this->commonRepository->getPathurls();
         $path= $path[0];
 
-        $amenityDatas = $this->amenities->where('status', '1')->get(['id','name','amenities_image','android_image']);
+        $amenityIds = BusAmenities::whereIn('bus_id',$busIds)->pluck('amenities_id');
+        $amenityDatas = $this->amenities
+                             ->whereIn('id', $amenityIds)
+                             ->where('status', '1')->get(['id','name','amenities_image','android_image']);
         foreach($amenityDatas as $a){
             if($a != null && isset($a->amenities_image) )
             {

@@ -747,13 +747,14 @@ class ListingService
 
         $sourceID = $request['sourceID'];
         $destinationID = $request['destinationID']; 
+        $busIds = $request['busIDs']; 
 
         $busTypes =  $this->listingRepository->getbusTypes();
         $seatTypes = $this->listingRepository->getseatTypes();
-        $boardingPoints = $this->listingRepository->getboardingPoints($sourceID);
-        $dropingPoints = $this->listingRepository->getdropingPoints($destinationID);
-        $busOperator = $this->listingRepository->getbusOperator();
-        $amenities = $this->listingRepository->getamenities();
+        $boardingPoints = $this->listingRepository->getboardingPoints($sourceID,$busIds);
+        $dropingPoints = $this->listingRepository->getdropingPoints($destinationID,$busIds);
+        $busOperator = $this->listingRepository->getbusOperator($busIds);
+        $amenities = $this->listingRepository->getamenities($busIds);
 
         $filterOptions[] = array(
            "busTypes" => $busTypes,

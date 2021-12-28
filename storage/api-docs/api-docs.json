@@ -1713,6 +1713,20 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "busIDs[]",
+                        "in": "query",
+                        "description": "bus Ids",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                            }
+                        }
                     }
                 ],
                 "responses": {

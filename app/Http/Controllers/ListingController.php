@@ -368,6 +368,20 @@ class ListingController extends Controller
  *              type="integer"
  *          )
  *      ),
+ *     @OA\Parameter(
+ *          name="busIDs[]",
+ *          description="bus Ids",
+ *          in="query",
+ *          required=true,
+ *          @OA\Schema(
+ *          type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64",
+ *              example=1,
+ *              )
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="get all Filter Options"),
  *  @OA\Response(response=401, description="Unauthorized"),
  *     security={
