@@ -208,8 +208,9 @@ class ViewSeatsRepository
             $a->where('status',1);
             }])  
         ->where('bus_id', $busId)
-        ->where('status','!=', '2')
+        ->where('status', '1')
         ->orderBy('stoppage_time', 'ASC')
+        ->groupBy('boarding_droping_id')
         ->get();
     }
 
