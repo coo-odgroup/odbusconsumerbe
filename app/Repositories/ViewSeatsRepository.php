@@ -134,37 +134,80 @@ class ViewSeatsRepository
        $blockSeats = BusSeats::where('operation_date', $entry_date)
             ->where('type',2)
             ->where('bus_id',$busId)
+            ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
 
-       $seats= $this->seats
+       $openSeats = BusSeats::where('operation_date','!=', $entry_date)
+            ->where('type',1)
+            ->where('bus_id',$busId)
+            ->where('status',1)
+            ->where('ticket_price_id',$ticketPriceId)
+            ->pluck('seats_id');
+
+        // $deletedSeats = BusSeats::where('operation_date', $entry_date)
+        //     ->where('bus_id',$busId)
+        //     ->where('status',2)
+        //     ->where('ticket_price_id',$ticketPriceId)
+        //     ->pluck('seats_id');
+    
+    $seats= $this->seats
                ->where('bus_seat_layout_id',$bus_seat_layout_id)
                ->where('berthType', $Berth)
                ->where('status','1')
-               ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date,$blockSeats){
+               ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date){
                    $query->when($flag == 'false', 
-                   function($q) use ($busId,$seatsIds,$entry_date,$blockSeats){  //hide booked Seats
-                        $q->where(['operation_date', $entry_date])
-                            ->orwhereNull('operation_date')
-                            ->where('status',1)
+                   function($q) use ($busId,$seatsIds,$entry_date){  //hide booked Seats
+                        $q->where('status',1)
                             ->where('bus_id',$busId)
                             ->whereNotIn('seats_id',$seatsIds);
                    },
-                   function($q) use ($busId,$seatsIds,$entry_date,$blockSeats){  //Display unbooked Seats
-                        $q->where([['operation_date', $entry_date]])                        
-                            ->orwhereNull('operation_date')
-                            ->where('status',1)
+                   function($q) use ($busId,$seatsIds,$entry_date){  //Display unbooked Seats
+                                            
+                            $q->where('status',1)
                             ->where('bus_id',$busId);
                    });
                }]) 
                 ->get();
-                //////seat block//////////
+                //////seat block/open//////////
                 foreach($seats as $seat){ 
                     if(collect($blockSeats)->contains($seat->id)){
                         unset($seat['busSeats']);  
                     }
+                    if(collect($openSeats)->contains($seat->id)){
+                        unset($seat['busSeats']);  
+                    }
                 }
                return $seats;
+
+    //    $seats= $this->seats
+    //            ->where('bus_seat_layout_id',$bus_seat_layout_id)
+    //            ->where('berthType', $Berth)
+    //            ->where('status','1')
+    //            ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date){
+    //                $query->when($flag == 'false', 
+    //                function($q) use ($busId,$seatsIds,$entry_date){  //hide booked Seats
+    //                     $q->where('operation_date', $entry_date)
+    //                         ->orwhereNull('operation_date')
+    //                         ->where('status',1)
+    //                         ->where('bus_id',$busId)
+    //                         ->whereNotIn('seats_id',$seatsIds);
+    //                },
+    //                function($q) use ($busId,$seatsIds,$entry_date){  //Display unbooked Seats
+    //                     $q->where([['operation_date', $entry_date]])                        
+    //                         ->orwhereNull('operation_date')
+    //                         ->where('status',1)
+    //                         ->where('bus_id',$busId);
+    //                });
+    //            }]) 
+    //             ->get();
+    //             //////seat block//////////
+    //             foreach($seats as $seat){ 
+    //                 if(collect($blockSeats)->contains($seat->id)){
+    //                     unset($seat['busSeats']);  
+    //                 }
+    //             }
+    //            return $seats;
     }
 
     public function seatRowColumn($bus_seat_layout_id,$Berth){

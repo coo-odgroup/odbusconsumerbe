@@ -76,7 +76,7 @@ class ViewSeatsService
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
 
-            //return $viewSeat;
+           //return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
                
@@ -88,7 +88,7 @@ class ViewSeatsService
            } 
            // Upper Berth seat Calculation
            $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
-   
+  
            if(($viewSeat['upper_berth'])->isEmpty()){
                unset($viewSeat['upper_berth']); 
            }else{
@@ -107,8 +107,9 @@ class ViewSeatsService
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
                         }
 
-                        if (sizeof($bookingIds)){ 
+                        if (sizeof($bookingIds)){
                             if(in_array($ub['id'], $blockedSeats)){
+                            //if(collect($blockedSeats)->has($ub['id'])){
                                 $key = array_search($ub['id'], $seatsIds);
                                 $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
                             } 
