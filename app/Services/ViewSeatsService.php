@@ -38,7 +38,6 @@ class ViewSeatsService
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
         //return $bookingIds;
-        $bookingIds = [23];
         if (sizeof($bookingIds)){
             $blockedSeats=array();
             foreach($bookingIds as $bookingId){
