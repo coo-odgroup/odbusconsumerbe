@@ -36,8 +36,9 @@ class ViewSeatsService
         $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
 
         $reqRange = Arr::sort($requestedSeq);
-        $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold);
-
+        $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
+        //return $bookingIds;
+        $bookingIds = [23];
         if (sizeof($bookingIds)){
             $blockedSeats=array();
             foreach($bookingIds as $bookingId){
@@ -58,18 +59,16 @@ class ViewSeatsService
                 if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
                     $flag = 'true';
                 }
-                else{   //seat not available on requested seq so "false"    
+                else{   //seat not available on requested seq so "false"   
                     $blockedSeats = array_merge($blockedSeats,$seatsIds);
                     $flag = 'false';
                 } 
             }
-            //return $gender;
-            //$viewSeat = $this->viewSeatsRepository->getSeatInfo($busId,$blockedSeats,$flag,$journeyDate);
            }else{//no booking on that specific date
                 $blockedSeats=array();
                 $flag = 'true';
-               // $viewSeat = $this->viewSeatsRepository->getSeatInfo($busId,$blockedSeats,$flag,$journeyDate);
            }
+
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
@@ -119,13 +118,12 @@ class ViewSeatsService
                     } 
                     $i=0;
                     if(isset($viewSeat['lower_berth'])){          
-                    foreach($viewSeat['lower_berth'] as &$lb){    
+                      foreach($viewSeat['lower_berth'] as &$lb){    
                         if(collect($lb)->has(['bus_seats'])){                  
                         // if(isset($lb->busSeats)){                           
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
                         }
                         if (sizeof($bookingIds)){    
-
                             if(in_array($lb['id'], $blockedSeats)){
                                 $key = array_search($lb['id'], $seatsIds);
                                 $viewSeat['lower_berth'][$i]['Gender'] = $gender[$key];

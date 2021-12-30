@@ -60,31 +60,51 @@ class ViewSeatsRepository
         ->pluck('sequence');
     }
 
-    public function bookingIds($busId,$journeyDate,$booked,$seatHold){
-
-        $maxJday =  $this->ticketPrice
-        ->where('bus_id', $busId)
-        ->where('status','1')
-        ->max('j_day'); 
-        $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate)));
-        $yday = date('Y-m-d', strtotime('-1 day', strtotime($journeyDate)));
-        switch($maxJday){
-            case(1):
-                return $this->booking->where('bus_id',$busId)
-                ->where('journey_dt',$journeyDate)
-                ->whereIn('status',[$booked,$seatHold])
-                ->pluck('id');
+    public function bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId){
+        // $maxJday =  $this->ticketPrice
+        //     ->where('bus_id', $busId)
+        //     ->where('status','1')
+        //     ->max('j_day'); 
+        $JdayDetails =  $this->ticketPrice
+            ->where('bus_id', $busId)
+            ->where('source_id',$sourceId)
+            ->where('destination_id',$destinationId)
+            ->where('status','1')
+            ->get(['start_j_days','j_day']);
+            $startJDay =  $JdayDetails[0]->start_j_days;
+            $JDay =  $JdayDetails[0]->j_day;
+        switch($startJDay){  
+            case(1):          //// Bus Starting on Day-1  
+                       
+                $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate))); 
+                If($JDay==2){
+                    return $this->booking->where('bus_id',$busId)
+                        ->whereIn('journey_dt',[$nday,$journeyDate])
+                        ->whereIn('status',[$booked,$seatHold])
+                        ->pluck('id');
+                }else{
+                    return $this->booking->where('bus_id',$busId)
+                        ->where('journey_dt',$journeyDate)
+                        ->whereIn('status',[$booked,$seatHold])
+                        ->pluck('id');
+                }
                 break;
-            case(2):
-                $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate)));
+            case(2):           //// Bus Starting on Day-2
                 $yday = date('Y-m-d', strtotime('-1 day', strtotime($journeyDate)));
                 return $this->booking->where('bus_id',$busId)
-                ->whereIn('journey_dt',[$yday,$journeyDate,$nday ])
-                ->whereIn('status',[$booked,$seatHold])
-                ->pluck('id'); 
+                    ->whereIn('journey_dt',[$yday,$journeyDate])
+                    ->whereIn('status',[$booked,$seatHold])
+                    ->pluck('id');
+                break;
+            case(3):        //// Bus Starting on Day-3
+                $yday = date('Y-m-d', strtotime('-1 day', strtotime($journeyDate)));
+                $db4yday = date('Y-m-d', strtotime('-1 day', strtotime($yday)));
+                return $this->booking->where('bus_id',$busId)
+                    ->whereIn('journey_dt',[$db4yday,$yday,$journeyDate])
+                    ->whereIn('status',[$booked,$seatHold])
+                    ->pluck('id');
                 break;
         }
-
     }
 
     public function bookingDetail($bookingId)
@@ -123,7 +143,7 @@ class ViewSeatsRepository
         return $this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
     }
 
-    public function getBerth($bus_seat_layout_id,$Berth,$flag,$busId,$seatsIds,$entry_date,$sourceId,$destinationId){
+    public function getBerth($bus_seat_layout_id,$Berth,$flag,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId){
 
         $ticketPriceId = TicketPrice::where('bus_id',$busId)
            ->where('source_id',$sourceId)
@@ -151,32 +171,43 @@ class ViewSeatsRepository
         //     ->where('ticket_price_id',$ticketPriceId)
         //     ->pluck('seats_id');
     
-    $seats= $this->seats
+        $seats= $this->seats
                ->where('bus_seat_layout_id',$bus_seat_layout_id)
                ->where('berthType', $Berth)
                ->where('status','1')
-               ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date){
+               ->with(["busSeats"=> function ($query) use ($flag,$busId,$bookedSeatIDs,$entry_date){
                    $query->when($flag == 'false', 
-                   function($q) use ($busId,$seatsIds,$entry_date){  //hide booked Seats
+                   function($q) use ($busId,$bookedSeatIDs,$entry_date){  //hide booked Seats
                         $q->where('status',1)
                             ->where('bus_id',$busId)
-                            ->whereNotIn('seats_id',$seatsIds);
+                            ->whereNotIn('seats_id',$bookedSeatIDs);
                    },
-                   function($q) use ($busId,$seatsIds,$entry_date){  //Display unbooked Seats
+                   function($q) use ($busId,$bookedSeatIDs,$entry_date){  //Display unbooked Seats
                                             
                             $q->where('status',1)
                             ->where('bus_id',$busId);
                    });
                }]) 
                 ->get();
+                
                 //////seat block/open//////////
+
+                $totalHideSeats = collect($blockSeats)->concat(collect($openSeats))->concat(collect($bookedSeatIDs));
+                //return $totalBlockedSeats;
+
                 foreach($seats as $seat){ 
-                    if(collect($blockSeats)->contains($seat->id)){
-                        unset($seat['busSeats']);  
+                    if($totalHideSeats->contains($seat->id)){
+                        unset($seat['busSeats']); 
                     }
-                    if(collect($openSeats)->contains($seat->id)){
-                        unset($seat['busSeats']);  
-                    }
+                    // if(collect($blockSeats)->contains($seat->id)){
+                    //     unset($seat['busSeats']);  
+                    // }
+                    // if(collect($openSeats)->contains($seat->id)){
+                    //     unset($seat['busSeats']);  
+                    // }
+                    // if(collect($bookedSeatIDs)->contains($seat->id)){
+                    //     unset($seat['busSeats']);  
+                    // }
                 }
                return $seats;
 
@@ -184,16 +215,16 @@ class ViewSeatsRepository
     //            ->where('bus_seat_layout_id',$bus_seat_layout_id)
     //            ->where('berthType', $Berth)
     //            ->where('status','1')
-    //            ->with(["busSeats"=> function ($query) use ($flag,$busId,$seatsIds,$entry_date){
+    //            ->with(["busSeats"=> function ($query) use ($flag,$busId,$bookedSeatIDs,$entry_date){
     //                $query->when($flag == 'false', 
-    //                function($q) use ($busId,$seatsIds,$entry_date){  //hide booked Seats
+    //                function($q) use ($busId,$bookedSeatIDs,$entry_date){  //hide booked Seats
     //                     $q->where('operation_date', $entry_date)
     //                         ->orwhereNull('operation_date')
     //                         ->where('status',1)
     //                         ->where('bus_id',$busId)
-    //                         ->whereNotIn('seats_id',$seatsIds);
+    //                         ->whereNotIn('seats_id',$bookedSeatIDs);
     //                },
-    //                function($q) use ($busId,$seatsIds,$entry_date){  //Display unbooked Seats
+    //                function($q) use ($busId,$bookedSeatIDs,$entry_date){  //Display unbooked Seats
     //                     $q->where([['operation_date', $entry_date]])                        
     //                         ->orwhereNull('operation_date')
     //                         ->where('status',1)
