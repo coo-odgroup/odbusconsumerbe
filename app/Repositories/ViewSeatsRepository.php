@@ -61,10 +61,7 @@ class ViewSeatsRepository
     }
 
     public function bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId){
-        // $maxJday =  $this->ticketPrice
-        //     ->where('bus_id', $busId)
-        //     ->where('status','1')
-        //     ->max('j_day'); 
+        
         $JdayDetails =  $this->ticketPrice
             ->where('bus_id', $busId)
             ->where('source_id',$sourceId)

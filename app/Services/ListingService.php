@@ -417,7 +417,7 @@ class ListingService
         
         $CurrentTime = Carbon::now()->toTimeString();
         $CurrentDate = Carbon::now()->toDateString();
-        
+   
         $records = array();
         $FilterRecords = array();
         foreach($busDetails as $busDetail){
@@ -459,6 +459,7 @@ class ListingService
            }   
         }
         $records = Arr::flatten($records); 
+
         $busCouponCode = [];
         $opCouponCode = [];
         //return $records;

@@ -319,7 +319,7 @@ class ListingRepository
          ->get();
      }
     
- 
+     
     public function getAll_old($request)
     { 
        
@@ -578,44 +578,50 @@ class ListingRepository
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
 
-        $bookingRecords = $this->booking->where('journey_dt',$entry_date)
-            ->where('bus_id',$busId)
-            ->whereIn('status',[$booked,$seatHold])
-            ->get();
-            $sl = 0;
-            $st = 0;
-            $tot = 0;
-        foreach($bookingRecords as $br)
-        {
-            $srcID = $br->source_id;
-            $destID = $br->destination_id;
-            $bookingID = $br->id;
-            $bookedSequence =  $this->busLocationSequence
-                ->whereIn('location_id',[$srcID,$destID])
-                ->where('bus_id',$busId)
-                ->where('status','!=', '2')
-                ->orderBy('id')
-                ->pluck('sequence');
-            $bookedRange = Arr::sort($bookedSequence);
-                  //seat available on requested seq 
-            if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                // $flag = 'true';
-                // $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag);
+        $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$entry_date,$booked,$seatHold,$sourceID,$destinationID);
+        
+        $sl = 0;
+        $st = 0;
+        $tot = 0;
+
+        if (sizeof($bookingIds)){
+            $blockedSeats=array();
+            foreach($bookingIds as $bookingId){
+                $seatsIds = array();
+                $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
+                foreach($bookedSeatIds as $bookedSeatId){
+                    $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
+                    $gender[] = $this->viewSeatsRepository->bookingGenderDetail($bookingId,$bookedSeatId);     
+                }   
+                 $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
+                 $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
+                 $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
+                 $bookedRange = Arr::sort($bookedSequence);
+
+                //seat available on requested seq so blocked seats are none.
+                if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
+                    //$blockedSeats=array();
+                    return [$sl,$st,$tot];
+                    
+                }
+                else{   //seat not available on requested seq so blocked seats are calculated   
+                    //$blockedSeats = array_merge($blockedSeats,$seatsIds);
+                    $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
+                } 
+                $sl = $sl + $a[0];
+                $st = $st + $a[1];
+                $tot = $tot + $a[2];
+            }
+        }else{          //no booking on that specific date, so all seats are available
+                //$blockedSeats=array();
                 return [$sl,$st,$tot];
-            }
-            else{   //seat not available on requested seq 
-                $flag = 'false';
-                $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag);
-            }
-            $sl = $sl + $a[0];
-            $st = $st + $a[1];
-            $tot = $tot + $a[2];
         }
         return [$sl,$st,$tot];
 
+
     }  
     
-    public function verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID,$flag)
+    public function verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID)
     { 
         
         $seaterRecords = 0;
