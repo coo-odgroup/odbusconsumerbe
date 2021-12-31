@@ -26,7 +26,9 @@ class ViewSeatsService
 
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
-        
+        $lowerBerth = Config::get('constants.LOWER_BERTH');
+        $upperBerth = Config::get('constants.UPPER_BERTH');
+
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
         $busId = $request['busId'];
@@ -37,56 +39,54 @@ class ViewSeatsService
 
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
-        //return $bookingIds;
+        
         if (sizeof($bookingIds)){
             $blockedSeats=array();
             foreach($bookingIds as $bookingId){
+                $seatsIds = array();
                 $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
-           
                 foreach($bookedSeatIds as $bookedSeatId){
                     $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
                     $gender[] = $this->viewSeatsRepository->bookingGenderDetail($bookingId,$bookedSeatId);     
                 }   
-               
                  $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
                  $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
-                 
                  $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
                  $bookedRange = Arr::sort($bookedSequence);
-    
-                 //seat available on requested seq so flag "true"
+
+                //seat available on requested seq so blocked seats are none.
                 if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                    $flag = 'true';
+                    $blockedSeats=array();
+                    
                 }
-                else{   //seat not available on requested seq so "false"   
+                else{   //seat not available on requested seq so blocked seats are calculated   
                     $blockedSeats = array_merge($blockedSeats,$seatsIds);
-                    $flag = 'false';
                 } 
             }
-           }else{//no booking on that specific date
+        }else{          //no booking on that specific date, so all seats are available
                 $blockedSeats=array();
-                $flag = 'true';
-           }
+        }
 
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
-           // Lower Berth seat Calculation
-           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
 
-           //return $viewSeat;
+
+           // Lower Berth seat Calculation
+           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
+
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
-               
            }else{
                $rowsColumns = $this->viewSeatsRepository->seatRowColumn($busRecord[0]->bus_seat_layout_id, $lowerBerth);
 
                $viewSeat['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
                $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
            } 
-           // Upper Berth seat Calculation
-           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$flag,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
-  
+
+          // Upper Berth seat Calculation
+           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
+        
            if(($viewSeat['upper_berth'])->isEmpty()){
                unset($viewSeat['upper_berth']); 
            }else{
