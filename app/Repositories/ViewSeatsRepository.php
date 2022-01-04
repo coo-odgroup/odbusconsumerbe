@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use DB;
+use Carbon\Carbon;
+use DateTime;
 
 class ViewSeatsRepository
 {
@@ -149,6 +151,34 @@ class ViewSeatsRepository
            ->where('status',1)
            ->first()->id;
 
+
+///////////////Extra seats///////////////
+
+        $depTime = TicketPrice::where('bus_id',$busId)
+           ->where('source_id',$sourceId)
+           ->where('destination_id',$destinationId)
+           ->where('status',1)
+           ->first()->dep_time;  
+        $extraSeats = BusSeats::where('bus_id',$busId)
+           ->where('status',1)
+           ->where('ticket_price_id',$ticketPriceId)
+           ->where('duration','>',0)
+           ->get(['seats_id','duration']);
+        
+        $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+
+        //$CurrentDate = '2022-01-05';
+        //$CurrentTime = "06:52:57";
+        //$CurrentDateTime = "2022-01-05 16:48:35";
+        $depTime = date("H:i:s", strtotime($depTime));
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
+        $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        $seizedTime = $extraSeats[0]->duration;
+
+        
+    
+///////////////////////////////////////////
        $blockSeats = BusSeats::where('operation_date', $entry_date)
             ->where('type',2)
             ->where('bus_id',$busId)
@@ -162,12 +192,6 @@ class ViewSeatsRepository
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
-
-        // $deletedSeats = BusSeats::where('operation_date', $entry_date)
-        //     ->where('bus_id',$busId)
-        //     ->where('status',2)
-        //     ->where('ticket_price_id',$ticketPriceId)
-        //     ->pluck('seats_id');
 
         $seats= $this->seats
                ->where('bus_seat_layout_id',$bus_seat_layout_id)
@@ -183,7 +207,13 @@ class ViewSeatsRepository
                 //////seat block/open//////////
 
                 $totalHideSeats = collect($blockSeats)->concat(collect($openSeats))->concat(collect($bookedSeatIDs));
-                //return $totalBlockedSeats;
+
+                /////////extra seat open/////////
+
+                if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
+                
+                        $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
+                }
 
                 foreach($seats as $seat){ 
                     if($totalHideSeats->contains($seat->id)){
@@ -260,8 +290,6 @@ class ViewSeatsRepository
         ->get();
 
     }
-
-
 
     public function ticketFareSlab($busOperatorId){
     $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 

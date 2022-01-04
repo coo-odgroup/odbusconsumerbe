@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\BusSeats;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use Exception;
@@ -171,12 +172,34 @@ class ListingService
              $totalTravelTime = $dep_time->diff($arr_time);
              $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-             /////seat close/////
+        ///////////////Extra seats///////////////
+
+        $extraSeats = BusSeats::where('bus_id',$busId)
+                                ->where('status',1)
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('duration','>',0)
+                                ->get(['seats_id','duration']);
+                              
+        $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+        //$CurrentDateTime = "2022-01-05 16:48:35";
+        $dep_Time = date("H:i:s", strtotime($departureTime));
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$dep_Time);
+        $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        $seizedTime = $extraSeats[0]->duration;
+
+        /////seat close/////
              $blockSeats = $record->busSeats
                                     ->where('ticket_price_id',$ticketPriceId)
                                     ->where('type',2)                              
                                     ->pluck('seats_id');
-             ///////////////////
+
+            ////////Extra Seats//////
+            if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
+                
+                $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
+            }
+
              $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                             ->where("status","1")
                                             ->whereNotIn('seats_id',$blockSeats)
@@ -529,10 +552,33 @@ class ListingService
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-                /////seat close/////
-                $blockSeats = $record->busSeats
+        ///////////////Extra seats///////////////
+
+        $extraSeats = BusSeats::where('bus_id',$busId)
+                                ->where('status',1)
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('duration','>',0)
+                                ->get(['seats_id','duration']);
+                              
+        $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+        //$CurrentDateTime = "2022-01-05 16:48:35";
+        $dep_Time = date("H:i:s", strtotime($departureTime));
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$dep_Time);
+        $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        $seizedTime = $extraSeats[0]->duration;
+
+
+        /////seat close/////
+            $blockSeats = $record->busSeats
                                     ->where('ticket_price_id',$ticketPriceId)->where('type',2)->pluck('seats_id');
-                /////////////////////
+              
+                                    ////////Extra Seats//////
+            if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
+                
+                $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
+            }
+
                 $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                                ->where("status","1")
                                                ->whereNotIn('seats_id',$blockSeats)
@@ -541,9 +587,6 @@ class ListingService
                                               ->where("status","1")
                                               ->whereNotIn('seats_id',$blockSeats)
                                               ->all();
-               // $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->count('id');
-                                          
-                 //$seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)->where('status',1)->all();
            
              $amenityDatas = [];  
 

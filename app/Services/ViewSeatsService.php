@@ -74,7 +74,7 @@ class ViewSeatsService
 
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
-
+//return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
            }else{
