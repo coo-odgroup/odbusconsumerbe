@@ -239,49 +239,39 @@ class ListingService
                 }
             }
              $busPhotoDatas = [];
-             if($record->busGallery)
+
+             if(count($record->busGallery)>0)
              {
-                 foreach($record->busGallery as  $bp){
-                     if($bp->bus_image_1 != null)
-                     {
-                        if($bp->bus_image_1!=''){
-                            $bp->bus_image_1 = $path->busphoto_url.$bp->bus_image_1; 
-                        }
-                         $busPhotoDatas[] = $bp;
+                 foreach($record->busGallery as  $k => $bp){
+                     if($bp->bus_image_1 != null && $bp->bus_image_1!='')
+                     {                        
+                        $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
                      }
 
-                     if($bp->bus_image_2 != null)
-                     {
-                        if($bp->bus_image_2!=''){
-                            $bp->bus_image_2 = $path->busphoto_url.$bp->bus_image_2; 
-                        }
-                         $busPhotoDatas[] = $bp;
+                     if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
+                     {                        
+                        $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
                      }
 
-                     if($bp->bus_image_3 != null)
-                     {
-                        if($bp->bus_image_3!=''){
-                            $bp->bus_image_3 = $path->busphoto_url.$bp->bus_image_3; 
-                        }
-                         $busPhotoDatas[] = $bp;
+                     if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
+                     {                        
+                        $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
                      }
 
-                     if($bp->bus_image_4 != null)
-                     {
-                        if($bp->bus_image_4!=''){
-                            $bp->bus_image_4 = $path->busphoto_url.$bp->bus_image_4; 
-                        }
-                         $busPhotoDatas[] = $bp;
+                     if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
+                     {                        
+                        $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
                      }
-                     if($bp->bus_image_5 != null)
-                     {
-                        if($bp->bus_image_5!=''){
-                            $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5; 
-                        }
-                         $busPhotoDatas[] = $bp;
+
+                     if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
+                     {                        
+                        $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
                      }
+                    
                  }
              } 
+
+           
             
              $Totalrating=0;
              $Totalrating_comfort=0;
@@ -620,50 +610,39 @@ class ListingService
                     }
                 }
             }
-             $busPhotoDatas = [];
-             if($record->busGallery)
-             {
-                foreach($record->busGallery as  $bp){
-                    if($bp->bus_image_1 != null)
-                    {
-                       if($bp->bus_image_1!=''){
-                           $bp->bus_image_1 = $path->busphoto_url.$bp->bus_image_1; 
-                       }
-                        $busPhotoDatas[] = $bp;
+             
+            $busPhotoDatas = [];
+
+            if(count($record->busGallery)>0)
+            {
+                foreach($record->busGallery as  $k => $bp){
+                    if($bp->bus_image_1 != null && $bp->bus_image_1!='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
                     }
 
-                    if($bp->bus_image_2 != null)
-                    {
-                       if($bp->bus_image_2!=''){
-                           $bp->bus_image_2 = $path->busphoto_url.$bp->bus_image_2; 
-                       }
-                        $busPhotoDatas[] = $bp;
+                    if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
                     }
 
-                    if($bp->bus_image_3 != null)
-                    {
-                       if($bp->bus_image_3!=''){
-                           $bp->bus_image_3 = $path->busphoto_url.$bp->bus_image_3; 
-                       }
-                        $busPhotoDatas[] = $bp;
+                    if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
                     }
 
-                    if($bp->bus_image_4 != null)
-                    {
-                       if($bp->bus_image_4!=''){
-                           $bp->bus_image_4 = $path->busphoto_url.$bp->bus_image_4; 
-                       }
-                        $busPhotoDatas[] = $bp;
+                    if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
                     }
-                    if($bp->bus_image_5 != null)
-                    {
-                       if($bp->bus_image_5!=''){
-                           $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5; 
-                       }
-                        $busPhotoDatas[] = $bp;
+
+                    if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
                     }
+                   
                 }
-             }
+            } 
                  
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
