@@ -143,6 +143,31 @@ class PopularService
             }
         
          $allreviews=  $this->popularRepository->GetOperatorReviews($busIds);
+
+         
+         $Review_list=[];
+ 
+         if(count($allreviews)>0){
+             foreach($allreviews as $k => $rv){
+                  $Review_list[$k]['users_id']=$rv->users_id;
+                  $Review_list[$k]['title']=$rv->title;
+                  $Review_list[$k]['rating_overall']=$rv->rating_overall;
+                  $Review_list[$k]['rating_comfort']=$rv->rating_comfort;
+                  $Review_list[$k]['rating_clean']=$rv->rating_clean;
+                  $Review_list[$k]['rating_behavior']=$rv->rating_behavior;
+                  $Review_list[$k]['rating_timing']=$rv->rating_timing;
+                  $Review_list[$k]['comments']=$rv->comments;
+                  $Review_list[$k]['name']=$rv->users->name;
+                  $Review_list[$k]['district']=$rv->users->district;
+                  $Review_list[$k]['profile_image']='';
+
+               if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
+                $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
+              }
+
+             }     
+         }
+
          $Totalrating=  $this->popularRepository->Totalrating($busIds);
 
        
@@ -191,8 +216,8 @@ class PopularService
         $opNameDetails['operator_info'] = $operatorDetails[0]->operator_info;
         $opNameDetails['buses'] = $buses;
         $opNameDetails['amenities'] = $allAmenity;
-        $opNameDetails['reviews'] = $allreviews;        
-        $opNameDetails['total_rating'] = $Totalrating;
+        $opNameDetails['reviews'] = $Review_list;        
+        $opNameDetails['total_rating'] = number_format($Totalrating,2);
         $opNameDetails['routes'] = $allRoutes;
         $opNameDetails['popularRoutes'] = $popularRoutes;
 
