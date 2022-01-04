@@ -47,6 +47,10 @@ class PopularRepository
         return $sourceName;
     }
 
+    public function getRoute($sourceId){ 
+        return $this->location->where('id',$sourceId)->get();
+    }
+
     public function getBusIds(){
         return  $this->booking
         ->select('bus_id',(DB::raw('count(*) as count')))
