@@ -151,7 +151,6 @@ class ViewSeatsRepository
            ->where('status',1)
            ->first()->id;
 
-
 ///////////////Extra seats///////////////
 
         $depTime = TicketPrice::where('bus_id',$busId)
@@ -159,25 +158,19 @@ class ViewSeatsRepository
            ->where('destination_id',$destinationId)
            ->where('status',1)
            ->first()->dep_time;  
+       
         $extraSeats = BusSeats::where('bus_id',$busId)
-           ->where('status',1)
-           ->where('ticket_price_id',$ticketPriceId)
-           ->where('duration','>',0)
-           ->get(['seats_id','duration']);
-        
-        $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+        ->where('status',1)
+        ->where('ticket_price_id',$ticketPriceId)
+        ->where('duration','>',0)
+        ->get(['seats_id','duration']);
 
-        //$CurrentDate = '2022-01-05';
-        //$CurrentTime = "06:52:57";
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $depTime = date("H:i:s", strtotime($depTime));
         $CurrentDateTime = Carbon::now()->toDateTimeString();
         $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
         $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-        $seizedTime = $extraSeats[0]->duration;
-
-        
-    
+   
 ///////////////////////////////////////////
        $blockSeats = BusSeats::where('operation_date', $entry_date)
             ->where('type',2)
@@ -210,9 +203,12 @@ class ViewSeatsRepository
 
                 /////////extra seat open/////////
 
-                if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
-                
+                if(!$extraSeats->isEmpty()){
+                    $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+                    $seizedTime = $extraSeats[0]->duration;
+                    if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
                         $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
+                    }
                 }
 
                 foreach($seats as $seat){ 
