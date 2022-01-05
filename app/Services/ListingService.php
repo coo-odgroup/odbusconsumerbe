@@ -172,8 +172,6 @@ class ListingService
              $totalTravelTime = $dep_time->diff($arr_time);
              $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-        ///////////////Extra seats///////////////
-
         $extraSeatsHide = $record->busSeats
                                 ->where('bus_id',$busId)
                                 ->where('status',1)
@@ -187,26 +185,37 @@ class ListingService
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->where('duration','>',0)
                                 ->pluck('duration');
-                                
+
+        $extraSeatsBlock = $record->busSeats->where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->where('duration','=',0)
+                                    ->where('operation_date',$entry_date)
+                                    ->where('type',null)
+                                    ->pluck('seats_id');
+                         
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $dep_Time = date("H:i:s", strtotime($departureTime));
         $CurrentDateTime = Carbon::now()->toDateTimeString();
         $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$dep_Time);
         $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-        //$seizedTime = $extraSeats[0]->duration;
              
         /////seat close/////
              $blockSeats = $record->busSeats
                                     ->where('ticket_price_id',$ticketPriceId)
                                     ->where('type',2)                              
                                     ->pluck('seats_id');
-            ////////Extra Seats//////
+        ////////Hide Extra Seats based on seize time//////
 
             if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
                 if($seizedTime[0] > $diff_in_minutes){
                     $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
                 }    
             }
+        /////////////Blocked Extra Seats on specific date///////////
+        if(!$extraSeatsBlock->isEmpty()){
+            $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+        }
 
              $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                             ->where("status","1")
@@ -579,25 +588,35 @@ class ListingService
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->where('duration','>',0)
                                 ->pluck('duration');
+        $extraSeatsBlock = $record->busSeats
+                                ->where('bus_id',$busId)
+                                ->where('status',1)
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('duration','=',0)
+                                ->where('operation_date',$entry_date)
+                                ->where('type',null)
+                                ->pluck('seats_id');
                               
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $dep_Time = date("H:i:s", strtotime($departureTime));
         $CurrentDateTime = Carbon::now()->toDateTimeString();
         $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$dep_Time);
         $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-        //$seizedTime = $extraSeats[0]->duration;
-
 
         /////seat close/////
             $blockSeats = $record->busSeats
                                     ->where('ticket_price_id',$ticketPriceId)->where('type',2)->pluck('seats_id');
               
-        ////////Extra Seats//////
+        ////////Hide Extra Seats based on seize time//////
             if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
                 if($seizedTime[0] > $diff_in_minutes){
                     $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
                 }    
             }
+        /////////////Blocked Extra Seats on specific date///////////
+        if(!$extraSeatsBlock->isEmpty()){
+            $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+        }    
 
                 $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                                ->where("status","1")

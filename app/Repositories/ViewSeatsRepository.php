@@ -146,24 +146,32 @@ class ViewSeatsRepository
 
     public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId){
         $ticketPriceId = TicketPrice::where('bus_id',$busId)
-           ->where('source_id',$sourceId)
-           ->where('destination_id',$destinationId)
-           ->where('status',1)
-           ->first()->id;
+                                    ->where('source_id',$sourceId)
+                                    ->where('destination_id',$destinationId)
+                                    ->where('status',1)
+                                    ->first()->id;
 
 ///////////////Extra seats///////////////
 
         $depTime = TicketPrice::where('bus_id',$busId)
-           ->where('source_id',$sourceId)
-           ->where('destination_id',$destinationId)
-           ->where('status',1)
-           ->first()->dep_time;  
+                                ->where('source_id',$sourceId)
+                                ->where('destination_id',$destinationId)
+                                ->where('status',1)
+                                ->first()->dep_time;  
        
         $extraSeats = BusSeats::where('bus_id',$busId)
-        ->where('status',1)
-        ->where('ticket_price_id',$ticketPriceId)
-        ->where('duration','>',0)
-        ->get(['seats_id','duration']);
+                                ->where('status',1)
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('duration','>',0)
+                                ->get(['seats_id','duration']);
+
+        $extraSeatsBlock = BusSeats::where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->where('duration','=',0)
+                                    ->where('operation_date',$entry_date)
+                                    ->where('type',null)
+                                    ->get('seats_id');
 
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $depTime = date("H:i:s", strtotime($depTime));
@@ -186,46 +194,52 @@ class ViewSeatsRepository
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
 
-        $seats= $this->seats
-               ->where('bus_seat_layout_id',$bus_seat_layout_id)
-               ->where('berthType', $Berth)
-               ->where('status','1')
-               ->with(["busSeats"=> function ($query) use ($busId,$bookedSeatIDs,$entry_date){
-                        $query->where('status',1)
-                                ->where('bus_id',$busId)
-                                ->whereNotIn('seats_id',$bookedSeatIDs);
-                }]) 
-                ->get();
+        $availableSeats = $this->seats
+            ->where('bus_seat_layout_id',$bus_seat_layout_id)
+            ->where('berthType', $Berth)
+            ->where('status','1')
+            ->with(["busSeats"=> function ($query) use ($busId,$bookedSeatIDs,$entry_date){
+                    $query->where('status',1)
+                            ->where('bus_id',$busId)
+                            ->whereNotIn('seats_id',$bookedSeatIDs);
+            }]) 
+            ->get();
                 
-                //////seat block/open//////////
+        //////seat block/open//////////
 
-                $totalHideSeats = collect($blockSeats)->concat(collect($openSeats))->concat(collect($bookedSeatIDs));
+        $totalHideSeats = collect($blockSeats)->concat(collect($openSeats))->concat(collect($bookedSeatIDs));
 
-                /////////extra seat open/////////
+        /////////Hide Extra Seats based on seize time/////////
 
-                if(!$extraSeats->isEmpty()){
-                    $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
-                    $seizedTime = $extraSeats[0]->duration;
-                    if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
-                        $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
-                    }
-                }
+        if(!$extraSeats->isEmpty()){
+            $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+            $seizedTime = $extraSeats[0]->duration;
+            if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
+                $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
+            }
+        }
 
-                foreach($seats as $seat){ 
-                    if($totalHideSeats->contains($seat->id)){
-                        unset($seat['busSeats']); 
-                    }
-                    // if(collect($blockSeats)->contains($seat->id)){
-                    //     unset($seat['busSeats']);  
-                    // }
-                    // if(collect($openSeats)->contains($seat->id)){
-                    //     unset($seat['busSeats']);  
-                    // }
-                    // if(collect($bookedSeatIDs)->contains($seat->id)){
-                    //     unset($seat['busSeats']);  
-                    // }
-                }
-               return $seats;
+        /////////////Blocked Extra Seats on specific date///////////
+        if(!$extraSeatsBlock->isEmpty()){
+            $eBlockSeats = collect($extraSeatsBlock)->pluck('seats_id');
+            $totalHideSeats = $totalHideSeats->concat(collect($eBlockSeats));
+        }
+
+        foreach($availableSeats as $seat){ 
+            if($totalHideSeats->contains($seat->id)){
+                unset($seat['busSeats']); 
+            }
+            // if(collect($blockSeats)->contains($seat->id)){
+            //     unset($seat['busSeats']);  
+            // }
+            // if(collect($openSeats)->contains($seat->id)){
+            //     unset($seat['busSeats']);  
+            // }
+            // if(collect($bookedSeatIDs)->contains($seat->id)){
+            //     unset($seat['busSeats']);  
+            // }
+        }
+        return $availableSeats;
 
     //    $seats= $this->seats
     //            ->where('bus_seat_layout_id',$bus_seat_layout_id)
