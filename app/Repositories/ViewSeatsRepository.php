@@ -15,6 +15,8 @@ use App\Models\Booking;
 use App\Models\TicketFareSlab;
 use App\Models\OdbusCharges;
 use App\Models\SeatOpenSeats;
+use App\Models\BusScheduleDate;
+use App\Models\BusSchedule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -36,6 +38,7 @@ class ViewSeatsRepository
     protected $booking;
     protected $ticketFareSlab;
     protected $odbusCharges;
+
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats, BusStoppageTiming $busStoppageTiming,BusLocationSequence $busLocationSequence,BookingSequence $bookingSequence,BookingDetail $bookingDetail,Booking $booking,TicketFareSlab $ticketFareSlab,OdbusCharges $odbusCharges)
     {
@@ -63,7 +66,15 @@ class ViewSeatsRepository
     }
 
     public function bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId){
-        
+        /////////////////////////////////////
+        $busEntryPresent =  BusSchedule::where('bus_id', $busId)->where('status',1)
+            ->with(['busScheduleDate' => function ($bsd) use ($journeyDate){
+                $bsd->where('entry_date',$journeyDate);
+                $bsd->where('status','1');
+            }])
+            ->get();
+
+        ////////////////////////////////////
         $JdayDetails =  $this->ticketPrice
             ->where('bus_id', $busId)
             ->where('source_id',$sourceId)
@@ -74,14 +85,21 @@ class ViewSeatsRepository
             $JDay =  $JdayDetails[0]->j_day;
             
         switch($startJDay){  
-            case(1):          //// Bus Starting on Day-1  
-                       
+            case(1):          //// Bus Starting on Day-1        
                 $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate))); 
                 If($JDay==2){
-                    $bookingIds = $this->booking->where('bus_id',$busId)
-                        ->whereIn('journey_dt',[$nday,$journeyDate])
-                        ->whereIn('status',[$booked,$seatHold])
-                        ->pluck('id');
+                    if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){  
+                        $bookingIds =  $this->booking->where('bus_id',$busId)
+                            ->where('journey_dt',$journeyDate)
+                            ->whereIn('status',[$booked,$seatHold])
+                            ->pluck('id');
+                    }else{
+               
+                        $bookingIds = $this->booking->where('bus_id',$busId)
+                            ->whereIn('journey_dt',[$nday,$journeyDate])
+                            ->whereIn('status',[$booked,$seatHold])
+                            ->pluck('id');
+                    }
                 }else{
                     $bookingIds =  $this->booking->where('bus_id',$busId)
                         ->where('journey_dt',$journeyDate)
