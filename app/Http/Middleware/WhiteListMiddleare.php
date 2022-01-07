@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class WhiteListMiddleare
 {
     
-    public $allowedIps = ['192.168.1.1', '127.0.0.1'];
+    public $allowedIps = ['159.65.159.90', '127.0.0.1'];
     /**
      * Handle an incoming request.
      *
