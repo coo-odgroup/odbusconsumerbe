@@ -107,7 +107,7 @@ Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 
 
 
-Route::middleware(['checkIp'])->group(function () {
+/*Route::middleware(['checkIp'])->group(function () {
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
     Route::get('/Listing', [ListingController::class, 'getAllListing']);
@@ -162,6 +162,6 @@ Route::middleware(['checkIp'])->group(function () {
     Route::get('/seolist', [SeoController::class, 'seolist']);
     Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
     Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
-});
+});*/
 
 
