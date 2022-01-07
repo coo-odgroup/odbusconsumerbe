@@ -32,7 +32,6 @@ use App\Models\BusLocationSequence;
 use App\Repositories\ViewSeatsRepository;
 use App\Models\BookingDetail;
 
-
 use DateTime;
 use Time;
 use Illuminate\Support\Facades\Log;
