@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
         'jwt' => \App\Http\Middleware\CheckJWT::class,
         'check.scope' => \App\Http\Middleware\CheckScope::class,
+        'checkIp' => \App\Http\Middleware\WhiteListMiddleare::class,
     ];
 }
