@@ -109,5 +109,8 @@ class Bus extends Model
     {        
         return $this->hasMany(CouponAssignedBus::class);        
     }
-    
+    public function bookingseized()
+    {
+        return $this->hasMany(BookingSeized::class);        
+    }   
 }

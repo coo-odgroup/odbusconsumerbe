@@ -122,7 +122,7 @@ class ListingRepository
         //     $query->where('bus_operator_id',$busOperatorId);
         //     })
         ->orderBy('dep_time', 'asc')
-        ->get(['bus_id','start_j_days','seize_booking_minute','dep_time']);  
+        ->get(['id','bus_id','start_j_days','seize_booking_minute','dep_time']);  
      }
 
      public function checkBusentry($busId,$new_date)
@@ -219,7 +219,6 @@ class ListingRepository
                         $s->where('status',1);
                    }]);   
             }])
-        //////////////////////////////////////////////////////
         ->with('BusSitting')
         ->with(['busGallery' => function ($a){
             $a->where('status',1);

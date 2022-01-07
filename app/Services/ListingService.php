@@ -4,6 +4,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\Models\BusSeats;
+use App\Models\BookingSeized;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use Exception;
@@ -55,50 +56,53 @@ class ListingService
             $routeCouponCode =[];
          }         
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
-         //return $busDetails;
-         $CurrentTime = Carbon::now()->toTimeString();
-         $CurrentDate = Carbon::now()->toDateString();
-         
+         //return $busDetails; 
          $records = array();
          $ListingRecords = array();
-         foreach($busDetails as $busDetail){
+
+        //$CurrentDateTime = "2022-01-11 14:48:35";
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        foreach($busDetails as $busDetail){
+            $ticketPriceId = $busDetail['id'];
             $busId = $busDetail['bus_id'];
             $jdays = $busDetail['start_j_days'];
-            $seizedTime = $busDetail['seize_booking_minute'];
-            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));
-            $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
-            
-            $secs = strtotime($seizedTime) - strtotime("00:00:00");
-            //$FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
-            $cutoffTime = date("H:i:s", strtotime($depTime) - $secs);
-            if($entry_date == $CurrentDate && $CurrentTime < $cutoffTime)
-            {
-                if($jdays>1){      
-                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-                }else{  
-                    $new_date = $entry_date;
-                }
-                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
-                 } 
-            }
-            if($entry_date > $CurrentDate)
-            {
-                if($jdays>1){
-                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-                }else{
-                    $new_date = $entry_date;
-                }
-                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);  
-                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
-                 }
-            }
-         }
 
+            $seizedTime = $busDetail['seize_booking_minute'];
+            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
+            $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
+            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+/////////////////////////day wise seize time change////////////////////////////////
+            $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$busDetails[0]->id)
+                                          ->where('seized_date', $entry_date)
+                                          ->get('seize_booking_minute');    
+            if(!$dayWiseSeizeTime->isEmpty()){
+                $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
+                if($dWiseSeizeTime < $diff_in_minutes){
+                    if($jdays>1){      
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    }else{  
+                        $new_date = $entry_date;
+                    }
+                     $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                        $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                     } 
+                }
+            }
+
+           elseif($seizedTime < $diff_in_minutes){
+                   if($jdays>1){      
+                       $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                   }else{  
+                       $new_date = $entry_date;
+                   }
+                    $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                    if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                       $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                    } 
+               }
+        }
          $records = Arr::flatten($records);
-       
          //return $records;
          $busCouponCode = [];
          $opCouponCode = [];
@@ -310,17 +314,13 @@ class ListingService
                     
                  }
              } 
-
-           
-            
+ 
              $Totalrating=0;
              $Totalrating_comfort=0;
              $Totalrating_clean=0;
              $Totalrating_behavior=0;
              $Totalrating_timing=0;
-
              $Review_list=[];
- 
              if(count($record->review)>0){
                  foreach($record->review as $k => $rv){
                    $Totalrating += $rv->rating_overall;                  
@@ -344,7 +344,6 @@ class ListingService
                    if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
                     $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
                   }
-
                  } 
                  $Totalrating = number_format($Totalrating/count($record->review),1);
                  $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
@@ -352,16 +351,12 @@ class ListingService
                  $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
                  $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
              }
-
-
              $reviews=  $Review_list; //$record->review;
              $cancellationPolicyContent=$record->cancellation_policy_desc;
              $TravelPolicyContent=$record->travel_policy_desc;
-           
              $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
              $cSlabDuration = $cSlabDatas->pluck('duration');
              $cSlabDeduction = $cSlabDatas->pluck('deduction');
-         
              $seatClassRecords = 0;
              $sleeperClassRecords = 0;
              foreach($seatDatas as $seatData) {  
@@ -414,7 +409,6 @@ class ListingService
              );             
          }
          return $ListingRecords;
-
        // return $this->listingRepository->getAll($request);
     }
 
@@ -464,46 +458,50 @@ class ListingService
    
         $records = array();
         $FilterRecords = array();
-        foreach($busDetails as $busDetail){
-           $busId = $busDetail['bus_id'];
-           $jdays = $busDetail['start_j_days'];
-           $seizedTime = $busDetail['seize_booking_minute'];
-           $depTime = date("H:i:s", strtotime($busDetail['dep_time']));
-           $seizedTime = intdiv($seizedTime, 60).':'. ($seizedTime % 60).':'.'00';
-           $secs = strtotime($seizedTime) - strtotime("00:00:00");
-           //$FinalSeizedTime = date("H:i:s", strtotime($CurrentTime) + $secs);
-           $cutoffTime = date("H:i:s", strtotime($depTime) - $secs);
-           if($entry_date == $CurrentDate && $CurrentTime < $cutoffTime)
-           {
-               if($jdays>1){
-                   $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-               }else{    
-                   $new_date = $entry_date;
-               }
-                $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                         
-                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                   $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
-                } 
-           }
-           if($entry_date > $CurrentDate)
-           {
-               if($jdays>1){
-                   $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-               }else{
-                   $new_date = $entry_date;
-               }
-                $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                         
-                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                   $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,
-                   $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
-                } 
-           }   
-        }
-        $records = Arr::flatten($records); 
 
+        //$CurrentDateTime = "2022-01-11 14:48:35";
+        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        foreach($busDetails as $busDetail){
+            $ticketPriceId = $busDetail['id'];
+            $busId = $busDetail['bus_id'];
+            $jdays = $busDetail['start_j_days'];
+
+            $seizedTime = $busDetail['seize_booking_minute'];
+            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
+            $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
+            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+            /////////////day wise seize time change////////////////////////////////
+            $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$busDetails[0]->id)
+                                          ->where('seized_date', $entry_date)
+                                          ->get('seize_booking_minute');    
+            if(!$dayWiseSeizeTime->isEmpty()){
+                $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
+                if($dWiseSeizeTime < $diff_in_minutes){
+                    if($jdays>1){      
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    }else{  
+                        $new_date = $entry_date;
+                    }
+                     $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                        $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                     } 
+                }
+            }
+           elseif($seizedTime < $diff_in_minutes){
+                   if($jdays>1){      
+                       $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                   }else{  
+                       $new_date = $entry_date;
+                   }
+                    $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                    if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                       $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                    } 
+               }
+        }
+
+        $records = Arr::flatten($records); 
         $busCouponCode = [];
         $opCouponCode = [];
         //return $records;
@@ -625,11 +623,8 @@ class ListingService
                 $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                               ->where("status","1")
                                               ->whereNotIn('seats_id',$blockSeats)
-                                              ->all();
-           
-             $amenityDatas = [];  
-
-
+                                              ->all();  
+            $amenityDatas = [];  
             if($record->busAmenities)
             {
                 $amenityDatas = [];  
@@ -642,25 +637,19 @@ class ListingService
 
                         if($am_dt->amenities->amenities_image !=''){
                             $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
-                  
                         }
-
                         if($am_dt->amenities->android_image !='')
                         {
                             $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
                         }
-
                         $am_arr['id']=$am_dt->amenities->id;
                         $am_arr['name']=$am_dt->amenities->name;
                         $am_arr['amenity_image']=$amenities_image ;
                         $am_arr['amenity_android_image']=$am_android_image;
-
                         $amenityDatas[] = $am_arr;
                     }
-
                 }
             }
-
              $safetyDatas = [];
              if($record->busSafety)
             {
@@ -678,19 +667,16 @@ class ListingService
                         {
                             $safety_android_image = $path->safety_url.$sd->safety->android_image;   
                         }
-
                         $sf_arr['id']=$sd->safety->id;
                         $sf_arr['name']=$sd->safety->name;
                         $sf_arr['safety_image']=$safety_image ;
                         $sf_arr['safety_android_image']=$safety_android_image;
-
                         $safetyDatas[] = $sf_arr;
                     }
                 }
             }
              
             $busPhotoDatas = [];
-
             if(count($record->busGallery)>0)
             {
                 foreach($record->busGallery as  $k => $bp){
@@ -698,42 +684,33 @@ class ListingService
                     {                        
                        $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
                     }
-
                     if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
                     }
-
                     if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
                     }
-
                     if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
                     }
-
                     if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
-                    }
-                   
+                    }   
                 }
-            } 
-                 
+            }   
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
-
                 $Totalrating=0;
                 $Totalrating_comfort=0;
                 $Totalrating_clean=0;
                 $Totalrating_behavior=0;
                 $Totalrating_timing=0;
-
                 $Review_list=[];
- 
                 if(count($record->review)>0){
                     foreach($record->review as $k => $rv){
                       $Totalrating += $rv->rating_overall;                  
@@ -757,7 +734,6 @@ class ListingService
                       if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
                        $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
                      }
-   
                     } 
                     $Totalrating = number_format($Totalrating/count($record->review),1);
                     $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
@@ -765,10 +741,7 @@ class ListingService
                     $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
                     $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
                 }
-   
-   
                 $reviews=  $Review_list; //$record->review;
-              
                 $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
                 $cSlabDuration = $cSlabDatas->pluck('duration');
                 $cSlabDeduction = $cSlabDatas->pluck('deduction');

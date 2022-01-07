@@ -38,5 +38,8 @@ class TicketPrice extends Model
     {
         return $this->hasMany(BusSeats::class);
     }
-
+    public function bookingseized()
+    {
+        return $this->hasMany(BookingSeized::class);        
+    }
 }
