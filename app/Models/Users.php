@@ -6,12 +6,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+//use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use App\Models\Booking;
 use App\Models\Review;
 
-class Users extends Authenticatable implements JWTSubject 
+class Users extends Authenticatable 
+//implements JWTSubject 
 {
     /**
      * The attributes that are mass assignable.
@@ -40,17 +41,17 @@ class Users extends Authenticatable implements JWTSubject
      *
      * @return mixed
      */
-    public function getJWTIdentifier() {
+   /* public function getJWTIdentifier() {
         return $this->getKey();
-    }
+    }*/
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    /*public function getJWTCustomClaims() {
         return [];
-    }    
+    }   */ 
     public function booking()
       {
             return $this->hasMany(Booking::class);   

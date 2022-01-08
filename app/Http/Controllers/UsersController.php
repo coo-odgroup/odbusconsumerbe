@@ -15,8 +15,8 @@ use App\AppValidator\LoginValidator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
 use App\Services\UsersService;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+//use JWTAuth;
+//use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UsersController extends Controller
 {

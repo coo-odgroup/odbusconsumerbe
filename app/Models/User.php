@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+//use Laravel\Passport\HasApiTokens;
 use App\Models\UserBankDetails;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\UserNotification;
@@ -14,7 +14,7 @@ use App\Models\UserNotification;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-    use HasApiTokens;
+    //use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.

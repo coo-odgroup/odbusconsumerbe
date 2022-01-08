@@ -30,7 +30,7 @@ use App\Http\Controllers\RecentSearchController;
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
 //Route::group(['middleware' => ['check.scope:read:messages']], function() { 
-    Route::get('/getLocation', [ListingController::class, 'getLocation']);
+    /*Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
     Route::get('/Listing', [ListingController::class, 'getAllListing']);
     Route::get('/Filter', [ListingController::class, 'filter']);    
@@ -98,7 +98,7 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::get('/AllPathUrls', [OfferController::class, 'getPathUrls']);
     Route::get('/seolist', [SeoController::class, 'seolist']);
     Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
-    Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
+    Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);*/
 //});
 
 
@@ -107,7 +107,7 @@ Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 
 
 
-/*Route::middleware(['checkIp'])->group(function () {
+Route::middleware(['checkIp'])->group(function () {
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
     Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
     Route::get('/Listing', [ListingController::class, 'getAllListing']);
@@ -162,6 +162,6 @@ Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
     Route::get('/seolist', [SeoController::class, 'seolist']);
     Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
     Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
-});*/
+});
 
 
