@@ -226,12 +226,17 @@ class UsersService
        $user= $this->userProfile($request); 
        if($user!='Invalid'){ 
          $user = $user[0];
-         $userReviews =  $this->usersRepository->userReviews($user->id,);
+         $userReviews =  $this->usersRepository->userReviews($user->id);
          $userReviews = collect($userReviews); 
+
          if($userReviews){
              foreach($userReviews as $key => $value){ 
-                 $value->bus->booking['src_name']=$this->usersRepository->getLocationName($value->bus->booking->source_id);
-                 $value->bus->booking['dest_name']=$this->usersRepository->getLocationName($value->bus->booking->destination_id);   
+                 if($value->bus->booking){
+                    $value->bus->booking['src_name']=$this->usersRepository->getLocationName($value->bus->booking->source_id);
+                    $value->bus->booking['dest_name']=$this->usersRepository->getLocationName($value->bus->booking->destination_id);   
+               }else{
+                   unset($userReviews[$key]);
+               }
             }
          }
          return $userReviews;

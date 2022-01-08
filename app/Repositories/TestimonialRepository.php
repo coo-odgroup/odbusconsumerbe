@@ -10,9 +10,9 @@ class TestimonialRepository
     {
        $this->testimonial = $testimonial ;
     }    
-    public function getAll($operator_id)
+    public function getAll($user_id)
     {
-      return $this->testimonial->where('bus_operator_id', $operator_id)
+      return $this->testimonial->where('user_id', $user_id)
                                 ->where('status','1')
                                 ->orderBy('id','DESC')->get();
     }

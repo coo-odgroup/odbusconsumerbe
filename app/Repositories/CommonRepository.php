@@ -30,27 +30,27 @@ class CommonRepository
         return $this->pathurls->get();
     }
     
-    public function getOperatorBanner($bus_operator_id,$today)
+    public function getBanners($user_id,$today)
     { 
-        return $this->banner->where('bus_operator_id','=',$bus_operator_id)
+        return $this->banner->where('user_id','=',$user_id)
                             ->where("status",1)
                             ->where("start_date","<=",$today)
                             ->where("end_date",">=",$today)
-                            ->select('id','bus_operator_id','heading','occassion','category','url',
+                            ->select('id','user_id','heading','occassion','category','url',
                              'banner_img','banner_image','alt_tag')
                             ->get();
         
     }
 
-    public function getOperatorSocialMedia($bus_operator_id)
+    public function getSocialMedia($user_id)
     { 
-        return $this->socialMedia->where('bus_operator_id','=',$bus_operator_id)->get();
+        return $this->socialMedia->where('user_id','=',$user_id)->get();
         
     }
 
-    public function getCommonSettings($bus_operator_id)
+    public function getCommonSettings($user_id)
     { 
-        return $this->odbusCharges->where('bus_operator_id','=',$bus_operator_id)->get();
+        return $this->odbusCharges->where('user_id','=',$user_id)->get();
         
     }
 

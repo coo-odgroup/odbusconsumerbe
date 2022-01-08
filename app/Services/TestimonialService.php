@@ -18,7 +18,10 @@ class TestimonialService
         $this->testimonialRepository = $testimonialRepository;
     }
     public function getAll($request)
-    {      
-        return $this->testimonialRepository->getAll($request['bus_operator_id']);
+    {    
+
+        $list= $this->testimonialRepository->getAll($request['user_id']);
+       
+        return  $list;
     }
 }

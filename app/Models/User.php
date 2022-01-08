@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\UserBankDetails;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\UserNotification;
+use App\Models\OdbusCharges;
 
 class User extends Authenticatable
 {
@@ -62,5 +63,10 @@ class User extends Authenticatable
     public function userNotification()
     {
     	 return $this->hasMany(UserNotification::class);        
-    }  
+    } 
+    
+    public function OdbusCharges()
+    {
+    	 return $this->hasOne(OdbusCharges::class);        
+    } 
 }

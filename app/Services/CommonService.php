@@ -27,9 +27,9 @@ class CommonService
         
         try {
             $today=date("Y-m-d");
-            $banner=$this->commonRepository->getOperatorBanner($request['bus_operator_id'],$today);
-            $socialMedia=$this->commonRepository->getOperatorSocialMedia($request['bus_operator_id']);
-            $common=$this->commonRepository->getCommonSettings($request['bus_operator_id']);
+            $banner=$this->commonRepository->getBanners($request['user_id'],$today);
+            $socialMedia=$this->commonRepository->getSocialMedia($request['user_id']);
+            $common=$this->commonRepository->getCommonSettings($request['user_id']);
 
             $banner_image='';
             $common_data=[];
@@ -56,6 +56,11 @@ class CommonService
                   if($common_data->footer_logo){
                     $common_data->footer_logo = $path->logo_url.$common_data->footer_logo;
                   }
+
+                  if($common_data->og_image){
+                    $common_data->og_image = $path->og_image_url.$common_data->og_image;
+                  }
+
             }
 
             if($socialMedia && isset($socialMedia[0])){

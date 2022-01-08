@@ -12,7 +12,6 @@ class BookTicketValidator
         $rules = [
             'customerInfo.phone' => 'required||digits:10',
             'customerInfo.name' => 'required|max:50',
-            //'bookingInfo.bus_operator_id' => 'required|numeric',
             'bookingInfo.bus_id' => 'required|numeric',
             'bookingInfo.source_id' => 'required|numeric',
             'bookingInfo.destination_id' => 'required|numeric',

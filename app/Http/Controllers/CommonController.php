@@ -9,6 +9,7 @@ use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use App\AppValidator\CommonValidator;
 use App\Services\CommonService;
 
 class CommonController extends Controller
@@ -18,15 +19,17 @@ class CommonController extends Controller
      * @var cancelTicketService
      */
     protected $commonService;
+    protected $commonValidator;
     /**
      * cancelTicketController Constructor
      *
      * @param commonService $commonService
      *
      */
-    public function __construct(CommonService $commonService)
+    public function __construct(CommonService $commonService, CommonValidator $commonValidator)
     {
         $this->commonService = $commonService;      
+        $this->commonValidator = $commonValidator;      
     }
     /**
      * @OA\Post(
@@ -52,8 +55,16 @@ class CommonController extends Controller
      * )
      * 
      */
-    public function getAll(Request $request) {
-        
+    public function getAll(Request $request) {        
+
+        $data = $request->all();
+        $commonValidation = $this->commonValidator->validate($data);
+
+        if ($commonValidation->fails()) {
+        $errors = $commonValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+
          try {
           $response =  $this->commonService->getAll($request);
            return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_PARTIAL_CONTENT);

@@ -13,9 +13,9 @@ class SeoRepository
        $this->seo = $seo ;
        $this->location = $location ;
     }    
-    public function getAll($operator_id)
+    public function getAll($user_id)
     {
-      return $this->seo->where('bus_operator_id', $operator_id)
+      return $this->seo->where('user_id', $user_id)
                        ->where('status','1')->get();
     }
 

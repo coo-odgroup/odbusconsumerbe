@@ -17,7 +17,7 @@ class Seo extends Model
 		'seo_type',
 		'source_id',
 		'destination_id',
-		'bus_operator_id',
+		'user_id',
 		'url_description',
 		'page_url',
 		'meta_title',
