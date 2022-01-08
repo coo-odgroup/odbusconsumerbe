@@ -314,8 +314,7 @@ class ViewSeatsRepository
         ->where('bus_id', $busId)
         ->where('ticket_price_id', $ticket_price_id)
         ->where('status','1') 
-        ->where('operation_date','=',null) 
-        ->select('id','seats_id','new_fare','ticket_price_id') 
+        ->select('id','seats_id','new_fare','ticket_price_id','type','duration','operation_date') 
         ->get();
 
     }

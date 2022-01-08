@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class WhiteListMiddlweare
+class WhiteListMiddleware
 {
     
     public $allowedIps = ['159.65.159.90', '127.0.0.1'];

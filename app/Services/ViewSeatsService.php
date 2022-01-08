@@ -162,12 +162,17 @@ class ViewSeatsService
         $ownerFare=0;
         $PriceDetail=[];
 
-       // return $ticket_new_fare;
+        //return $ticket_new_fare;
 
         if(count($ticket_new_fare) > 0){
             foreach($ticket_new_fare as $tktprc){
 
                 foreach($tktprc as $tkt){
+
+                    if( $tkt->type==2 ||    ($tkt->type==null && $tkt->operation_date != null )){
+                        // do nothing (this logic is to avoid extra seat block , seat block seats )
+                    }  else{
+
                         if($tkt->new_fare == 0 ){
 
                             if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
@@ -184,6 +189,11 @@ class ViewSeatsService
                         }
 
                         $ownerFare +=$tkt->new_fare;
+
+                                
+                    }
+
+                     
                 }
               
             }
