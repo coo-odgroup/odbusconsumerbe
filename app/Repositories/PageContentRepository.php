@@ -10,9 +10,9 @@ class PageContentRepository
    {
       $this->pagecontent = $pagecontent ;
    }    
-   public function getAll($bus_operator_id,$page_url)
+   public function getAll($user_id,$page_url)
    {      
-      return $this->pagecontent->where('bus_operator_id',$bus_operator_id)
+      return $this->pagecontent->where('user_id',$user_id)
                                ->where('page_url',$page_url)
                                ->where('status', 1)->get();
    }

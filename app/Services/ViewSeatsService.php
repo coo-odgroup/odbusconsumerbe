@@ -144,7 +144,7 @@ class ViewSeatsService
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
         //$busOperatorId = $request['busOperatorId'];
-        $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
+        $user_id = Bus::where('id', $busId)->first()->user_id;
         
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
 
@@ -199,7 +199,7 @@ class ViewSeatsService
         // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
         //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
                     
-        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($busOperatorId);
+        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
 
         $odbusServiceCharges=0;
         $transactionFee=0;
@@ -213,7 +213,7 @@ class ViewSeatsService
             if($startingFare <= $ownerFare && $uptoFare >= $ownerFare){
                 $percentage = $ticketFareSlab->odbus_commision;
                 $odbusServiceCharges = round($ownerFare * ($percentage/100));
-                $odbusCharges = $this->viewSeatsRepository->odbusCharges($busOperatorId);
+                $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
                 $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
                 $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
                 $gwCharges = (($ownerFare + $odbusServiceCharges + $smsEmailCharges) * $gwPercentage);

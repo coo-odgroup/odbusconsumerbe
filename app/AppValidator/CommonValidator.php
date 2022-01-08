@@ -4,17 +4,16 @@ namespace App\AppValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SeoValidator 
+class CommonValidator 
 {   
-
     public function validate($data) { 
         
         $rules = [
-            'user_id' => 'required',
+            'user_id' => 'required'
         ];      
       
-        $seoValidator = Validator::make($data, $rules);
-        return $seoValidator;
+        $commonValidator = Validator::make($data, $rules);
+        return $commonValidator;
     }
 
 }

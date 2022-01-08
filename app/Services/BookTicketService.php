@@ -43,6 +43,7 @@ class BookTicketService
                 return $booking; 
 
         } catch (Exception $e) {
+
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
     }   

@@ -320,25 +320,25 @@ class ViewSeatsRepository
 
     }
 
-    public function ticketFareSlab($busOperatorId){
-    $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 
+    public function ticketFareSlab($user_id){
+    $user_id = Config::get('constants.USER_ID'); 
         
-    $ticketFareRecord = $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+    $ticketFareRecord = $this->ticketFareSlab->where('user_id', $user_id)->get();
         if(isset($ticketFareRecord[0])){
-            return $this->ticketFareSlab->where('bus_operator_id', $busOperatorId)->get();
+            return $this->ticketFareSlab->where('user_id', $user_id)->get();
         }else{
-            return $this->ticketFareSlab->where('bus_operator_id', $defOperatorId)->get();
+            return $this->ticketFareSlab->where('user_id', $user_id)->get();
         }  
     }
 
-    public function odbusCharges($busOperatorId){
-        $defOperatorId = Config::get('constants.BUS_OPERATOR_ID');
+    public function odbusCharges($user_id){
+        $user_id = Config::get('constants.USER_ID');
 
-        $odbusChargesRec = $this->odbusCharges->where('bus_operator_id', $busOperatorId)->get();
+        $odbusChargesRec = $this->odbusCharges->where('user_id', $user_id)->get();
         if(isset($odbusChargesRec[0])){
-            return $this->odbusCharges->where('bus_operator_id', $busOperatorId)->get();
+            return $this->odbusCharges->where('user_id', $user_id)->get();
         }else{
-            return $this->odbusCharges->where('bus_operator_id', $defOperatorId)->get();
+            return $this->odbusCharges->where('user_id', $user_id)->get();
         }  
 
     }

@@ -60,7 +60,7 @@ class BookTicketRepository
     }
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill){
-        $defOperatorId = Config::get('constants.BUS_OPERATOR_ID'); 
+        $defUserId = Config::get('constants.USER_ID'); 
 
         
         
@@ -77,6 +77,7 @@ class BookTicketRepository
         $booking->bus_id = $bookingInfo['bus_id'];
         $busId = $bookingInfo['bus_id'];
 
+        $user_id = Bus::where('id', $busId)->first()->user_id;
         $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
 
         $booking->source_id = $bookingInfo['source_id'];
@@ -99,11 +100,11 @@ class BookTicketRepository
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
         
-        $odbusChargesRecord = OdbusCharges::where('bus_operator_id',$busOperatorId)->get();
+        $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
-            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$busOperatorId)->first()->odbus_gst_charges;
+            $odbusGstPercent = OdbusCharges::where('user_id',$user_id)->first()->odbus_gst_charges;
         }else{
-            $odbusGstPercent = OdbusCharges::where('bus_operator_id',$defOperatorId)->first()->odbus_gst_charges;
+            $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
         }
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;

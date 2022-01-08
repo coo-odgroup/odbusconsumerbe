@@ -28,17 +28,17 @@ class OfferRepository
     { 
         $busOffer = Config::get('constants.Bus_Offers');
         $festiveOffer = Config::get('constants.Festive_Offers');
-        $busOperatorId = $request['bus_operator_id'];
+        $user_id = $request['user_id'];
       
         $currentDate = date('Y-m-d');
         $currentTime = date('H:i:s');
        
-        $allOffers = $this->slider->where('bus_operator_id', $busOperatorId)
+        $allOffers = $this->slider->where('user_id', $user_id)
                                   ->where('start_date','<=',$currentDate)
                                   ->where('end_date','>=',$currentDate)
                                   ->where('status',1) 
                                   ->where('slider_photo','!=','')
-                                  ->get(['id','bus_operator_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time']);
+                                  ->get(['id','user_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time']);
 
        
         return $allOffers;    

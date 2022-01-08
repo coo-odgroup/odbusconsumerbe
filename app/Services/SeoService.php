@@ -19,7 +19,7 @@ class SeoService
     }
     public function getAll($request)
     {      
-        $seolist = $this->seoRepository->getAll($request['bus_operator_id']);
+        $seolist = $this->seoRepository->getAll($request['user_id']);
 
         $records = array();
         
@@ -32,7 +32,7 @@ class SeoService
                     "source" => $sourcedata, 
                     "destination" => $destdata,
                     "seo_type" => $item->seo_type,
-                    "bus_operator_id" =>  $item->bus_operator_id,
+                    "user_id" =>  $item->user_id,
                     "url_description" =>  $item->url_description,
                     "page_url" =>  $item->page_url,
                     "meta_title" =>  $item->meta_title,
