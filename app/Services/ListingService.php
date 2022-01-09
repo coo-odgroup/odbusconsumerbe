@@ -69,7 +69,26 @@ class ListingService
             $busId = $busDetail['bus_id'];
             $startJDay = $busDetail['start_j_days'];
             $JDay =  $busDetail->j_day;
-
+        ////////////////bus cancelled on specific date//////////////////////
+            switch($startJDay){
+                case(1):
+                    $new_date = $entry_date;
+                    break;
+                case(2):
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    break;
+                case(3):
+                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                    break;
+            }   
+            $cancelledBus = BusCancelled::where('bus_id', $busId)
+                ->where('status', '1')
+                ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                $bcd->where('cancelled_date',$new_date);
+                }])->get();  
+            if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
+                break;
+            }
         
         /////////////////Bus Seize//////////////////////////////////////////////
             $seizedTime = $busDetail['seize_booking_minute'];
@@ -480,11 +499,34 @@ class ListingService
             $ticketPriceId = $busDetail['id'];
             $busId = $busDetail['bus_id'];
             $startJDay = $busDetail['start_j_days'];
+            $JDay =  $busDetail->j_day;
+        ////////////////bus cancelled on specific date//////////////////////
+            switch($startJDay){
+                case(1):
+                    $new_date = $entry_date;
+                    break;
+                case(2):
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    break;
+                case(3):
+                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                    break;
+
+            }   
+            $cancelledBus = BusCancelled::where('bus_id', $busId)
+                ->where('status', '1')
+                ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                $bcd->where('cancelled_date',$new_date);
+                }])->get();  
+            if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
+                break;
+            }
+        
+        /////////////////Bus Seize//////////////////////////////////////////////
             $seizedTime = $busDetail['seize_booking_minute'];
             $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
             $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
             $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-           
             
             /////////////day wise seize time change////////////////////////////////
             $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$ticketPriceId)
