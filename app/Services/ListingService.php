@@ -65,7 +65,7 @@ class ListingService
          $hideBusRecords = [];
 
         //$CurrentDateTime = "2022-01-11 14:48:35";
-        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        $CurrentDateTime = Carbon::now();//->toDateTimeString();
         foreach($busDetails as $busDetail){
             $ticketPriceId = $busDetail['id'];
             $busId = $busDetail['bus_id'];
@@ -93,10 +93,14 @@ class ListingService
             }
         
         /////////////////Bus Seize//////////////////////////////////////////////
-            $seizedTime = $busDetail['seize_booking_minute'];
-            $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
-            $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
+        $seizedTime = $busDetail['seize_booking_minute'];
+        $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+        if($depDateTime>=$CurrentDateTime){
             $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        }else{
+            $diff_in_minutes = 0;
+        }
         /////////////////////////day wise seize time change///////////////////
             $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$ticketPriceId)
                                           ->where('bus_id', $busId)
@@ -122,7 +126,22 @@ class ListingService
                         $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                      } 
                 }else{
-                    $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                    switch($startJDay){
+                        case(1):
+                            $new_date = $entry_date;
+                            break;
+                        case(2):
+                            $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                            break;
+                        case(3):
+                            $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                            break;
+                    } 
+                     $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                        $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                     }
+  
                 }
             }
            elseif($seizedTime < $diff_in_minutes){
@@ -142,12 +161,27 @@ class ListingService
                        $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                     } 
                }else{
-                $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                switch($startJDay){
+                    case(1):
+                        $new_date = $entry_date;
+                        break;
+                    case(2):
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                        break;
+                    case(3):
+                        $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                        break;
+                } 
+                $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                    $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                }
+                // $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                }
         }
          $showBusRecords = Arr::flatten($records);
          $hideBusRecords = Arr::flatten($hideBusRecords);
-        
+         //return $showBusRecords;
         
          $showRecords = $this->processBusRecords($showBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,'show');
 
@@ -236,262 +270,242 @@ class ListingService
             $totalTravelTime = $dep_time->diff($arr_time);
             $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-           $extraSeatsHide = $record->busSeats
+       $extraSeatsHide = $record->busSeats
                                ->where('bus_id',$busId)
                                ->where('status',1)
                                ->where('ticket_price_id',$ticketPriceId)
                                ->where('duration','>',0)
                                ->pluck('seats_id'); 
                                
-           $seizedTime = $record->busSeats
+       $seizedTime = $record->busSeats
                                ->where('bus_id',$busId)
                                ->where('status',1)
                                ->where('ticket_price_id',$ticketPriceId)
                                ->where('duration','>',0)
                                ->pluck('duration');
 
-           $extraSeatsBlock = $record->busSeats->where('bus_id',$busId)
+       $extraSeatsBlock = $record->busSeats->where('bus_id',$busId)
                                    ->where('status',1)
                                    ->where('ticket_price_id',$ticketPriceId)
                                    ->where('duration','=',0)
                                    ->where('operation_date',$entry_date)
                                    ->where('type',null)
                                    ->pluck('seats_id');
-                           
-           //$CurrentDateTime = "2022-01-05 16:48:35";
-           $dep_Time = date("H:i:s", strtotime($departureTime));
-           $CurrentDateTime = Carbon::now()->toDateTimeString();
-           $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$dep_Time);
+                        
+       //$CurrentDateTime = "2022-01-05 16:48:35";
+       $dep_Time = date("H:i:s", strtotime($departureTime));
+       $CurrentDateTime = Carbon::now();//->toDateTimeString();
+       $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$dep_Time);
+       if($depDateTime>=$CurrentDateTime){
            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-               
-           /////seat close/////
-               $blockSeats = $record->busSeats
-                                       ->where('ticket_price_id',$ticketPriceId)
-                                       ->where('type',2)                              
-                                       ->pluck('seats_id');
-           ////////Hide Extra Seats based on seize time//////
+       }else{
+           $diff_in_minutes = 0;
+       }
+    
+       /////seat close/////
+            $blockSeats = $record->busSeats
+                                   ->where('ticket_price_id',$ticketPriceId)
+                                   ->where('type',2)                              
+                                   ->pluck('seats_id');
+       ////////Hide Extra Seats based on seize time//////
 
-               if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
-                   if($seizedTime[0] > $diff_in_minutes){
-                       $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
-                   }    
-               }
-           /////////////Blocked Extra Seats on specific date///////////
-           if(!$extraSeatsBlock->isEmpty()){
-               $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+           if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
+               if($seizedTime[0] > $diff_in_minutes){
+                   $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
+               }    
            }
+       /////////////Blocked Extra Seats on specific date///////////
+       if(!$extraSeatsBlock->isEmpty()){
+           $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+       }
 
-               $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
-                                               ->where("status","1")
-                                               ->whereNotIn('seats_id',$blockSeats)
-                                               ->count('id');
-               $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+            $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                            ->where("status","1")
                                            ->whereNotIn('seats_id',$blockSeats)
-                                           ->all();
-               //return  $seatDatas;
+                                           ->count('id');
+            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                          ->where("status","1")
+                                          ->whereNotIn('seats_id',$blockSeats)
+                                          ->all();
+            //return  $seatDatas;
+            $amenityDatas = [];  
+
+           if($record->busAmenities)
+           {
                $amenityDatas = [];  
+               foreach($record->busAmenities as $k =>  $a){
+                   $am_dt=$a;
+                   if($am_dt->amenities != NULL)
+                   {
+                       $amenities_image='';
+                       $am_android_image='';
 
-               if($record->busAmenities)
-               {
-                   $amenityDatas = [];  
-                   foreach($record->busAmenities as $k =>  $a){
-                       $am_dt=$a;
-                       if($am_dt->amenities != NULL)
+                       if($am_dt->amenities->amenities_image !=''){
+                           $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
+                 
+                       }
+
+                       if($am_dt->amenities->android_image !='')
                        {
-                           $amenities_image='';
-                           $am_android_image='';
+                           $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
+                       }
+                       $am_arr['id']=$am_dt->amenities->id;
+                       $am_arr['name']=$am_dt->amenities->name;
+                       $am_arr['amenity_image']=$amenities_image ;
+                       $am_arr['amenity_android_image']=$am_android_image;
+                       $amenityDatas[] = $am_arr;
+                   }
+               }
+           }
+            $safetyDatas = [];
+            if($record->busSafety)
+           {
+               foreach($record->busSafety as $sd){
+                   if($sd->safety != NULL)
+                   {
+                       $safety_image='';
+                       $safety_android_image='';
+                       if($sd->safety->safety_image !=''){
+                           $safety_image = $path->safety_url.$sd->safety->safety_image;
+                       }  
+                       if($sd->safety->android_image != '' )
+                       {
+                           $safety_android_image = $path->safety_url.$sd->safety->android_image;   
+                       }
+                       $sf_arr['id']=$sd->safety->id;
+                       $sf_arr['name']=$sd->safety->name;
+                       $sf_arr['safety_image']=$safety_image ;
+                       $sf_arr['safety_android_image']=$safety_android_image;
+                       $safetyDatas[] = $sf_arr;
+                   }
+               }
+           }
+            $busPhotoDatas = [];
 
-                           if($am_dt->amenities->amenities_image !=''){
-                               $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
+            if(count($record->busGallery)>0)
+            {
+                foreach($record->busGallery as  $k => $bp){
+                    if($bp->bus_image_1 != null && $bp->bus_image_1!='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
+                    }
+
+                    if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
+                    }
+
+                    if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
+                    }
+
+                    if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
+                    }
+
+                    if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
+                    }
                    
-                           }
+                }
+            } 
 
-                           if($am_dt->amenities->android_image !='')
-                           {
-                               $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
-                           }
-                           $am_arr['id']=$am_dt->amenities->id;
-                           $am_arr['name']=$am_dt->amenities->name;
-                           $am_arr['amenity_image']=$amenities_image ;
-                           $am_arr['amenity_android_image']=$am_android_image;
-                           $amenityDatas[] = $am_arr;
-                       }
-                   }
-               }
-               $safetyDatas = [];
-               if($record->busSafety)
-               {
-                   foreach($record->busSafety as $sd){
-                       if($sd->safety != NULL)
-                       {
-                           $safety_image='';
-                           $safety_android_image='';
-                           if($sd->safety->safety_image !=''){
-                               $safety_image = $path->safety_url.$sd->safety->safety_image;
-                           }  
-                           if($sd->safety->android_image != '' )
-                           {
-                               $safety_android_image = $path->safety_url.$sd->safety->android_image;   
-                           }
-                           $sf_arr['id']=$sd->safety->id;
-                           $sf_arr['name']=$sd->safety->name;
-                           $sf_arr['safety_image']=$safety_image ;
-                           $sf_arr['safety_android_image']=$safety_android_image;
-                           $safetyDatas[] = $sf_arr;
-                       }
-                   }
-               }
-               $busPhotoDatas = [];
+            $Totalrating=0;
+            $Totalrating_comfort=0;
+            $Totalrating_clean=0;
+            $Totalrating_behavior=0;
+            $Totalrating_timing=0;
+            $Review_list=[];
+            if(count($record->review)>0){
+                foreach($record->review as $k => $rv){
+                  $Totalrating += $rv->rating_overall;                  
+                  $Totalrating_comfort += $rv->rating_comfort;                  
+                  $Totalrating_clean += $rv->rating_clean;                  
+                  $Totalrating_behavior += $rv->rating_behavior;                  
+                  $Totalrating_timing += $rv->rating_timing; 
 
-               if(count($record->busGallery)>0)
-               {
-                   foreach($record->busGallery as  $k => $bp){
-                       if($bp->bus_image_1 != null && $bp->bus_image_1!='')
-                       {                        
-                           $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
-                       }
+                  $Review_list[$k]['bus_id']=$rv->bus_id;
+                     $Review_list[$k]['users_id']=$rv->users_id;
+                     $Review_list[$k]['title']=$rv->title;
+                     $Review_list[$k]['rating_overall']=$rv->rating_overall;
+                     $Review_list[$k]['rating_comfort']=$rv->rating_comfort;
+                     $Review_list[$k]['rating_clean']=$rv->rating_clean;
+                     $Review_list[$k]['rating_behavior']=$rv->rating_behavior;
+                     $Review_list[$k]['rating_timing']=$rv->rating_timing;
+                     $Review_list[$k]['comments']=$rv->comments;
+                     $Review_list[$k]['name']=$rv->users->name;
+                     $Review_list[$k]['profile_image']='';
 
-                       if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
-                       {                        
-                           $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
-                       }
-
-                       if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
-                       {                        
-                           $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
-                       }
-
-                       if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
-                       {                        
-                           $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
-                       }
-
-                       if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
-                       {                        
-                           $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
-                       }
-                       
-                   }
-               } 
-   
-               $Totalrating=0;
-               $Totalrating_comfort=0;
-               $Totalrating_clean=0;
-               $Totalrating_behavior=0;
-               $Totalrating_timing=0;
-               $Review_list=[];
-               if(count($record->review)>0){
-                   foreach($record->review as $k => $rv){
-                   $Totalrating += $rv->rating_overall;                  
-                   $Totalrating_comfort += $rv->rating_comfort;                  
-                   $Totalrating_clean += $rv->rating_clean;                  
-                   $Totalrating_behavior += $rv->rating_behavior;                  
-                   $Totalrating_timing += $rv->rating_timing; 
-
-                if($i<=2){
-                   $Totalrating += $rv->rating_overall;  
-
-                   if($rv->rating_overall==5){
-                    $Totalrating_5star ++;   
-                   } 
-
-                   if($rv->rating_overall==4){
-                    $Totalrating_4star ++;   
-                   } 
-
-                   if($rv->rating_overall==3){
-                    $Totalrating_3star ++;   
-                   } 
-
-                   if($rv->rating_overall==2){
-                    $Totalrating_2star ++;   
-                   } 
-
-                   if($rv->rating_overall==1){
-                    $Totalrating_1star ++;   
-                   } 
-                                 
-                  
-                   $Review_list[$k]['bus_id']=$rv->bus_id;
-                       $Review_list[$k]['users_id']=$rv->users_id;
-                       $Review_list[$k]['title']=$rv->title;
-                       $Review_list[$k]['rating_overall']=$rv->rating_overall;
-                       $Review_list[$k]['rating_comfort']=$rv->rating_comfort;
-                       $Review_list[$k]['rating_clean']=$rv->rating_clean;
-                       $Review_list[$k]['rating_behavior']=$rv->rating_behavior;
-                       $Review_list[$k]['rating_timing']=$rv->rating_timing;
-                       $Review_list[$k]['comments']=$rv->comments;
-                       $Review_list[$k]['name']=$rv->users->name;
-                       $Review_list[$k]['profile_image']='';
-
-                   if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
-                       $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
-                   }
-                   } 
-                   $Totalrating = number_format($Totalrating/count($record->review),1);
-                   $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
-                   $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
-                   $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
-                   $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
-               }
-               $reviews=  $Review_list; //$record->review;
-               $cancellationPolicyContent=$record->cancellation_policy_desc;
-               $TravelPolicyContent=$record->travel_policy_desc;
-               $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
-               $cSlabDuration = $cSlabDatas->pluck('duration');
-               $cSlabDeduction = $cSlabDatas->pluck('deduction');
-               $seatClassRecords = 0;
-               $sleeperClassRecords = 0;
-               foreach($seatDatas as $seatData) {  
-                   $seatclass = $seatData->seats->seat_class_id;
-                   if($seatclass==1){
-                       $seatClassRecords ++;
-                   }
-                   elseif($seatclass==2 || $seatclass==3){
-                       $sleeperClassRecords ++;
-                   }
-               }
-               $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
-               //return $bookedSeats;
-               $seatClassRecords = $seatClassRecords - $bookedSeats[1];
-               $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
-               $totalSeats = $totalSeats - $bookedSeats[2];
-               $ListingRecords[] = array(
-                   "display" => $flag,
-                   "busId" => $busId, 
-                   "busName" => $busName,
-                   "popularity" => $popularity,
-                   "busNumber" => $busNumber,
-                   "maxSeatBook" => $maxSeatBook,
-                   "conductor_number" => $conductor_number,
-                   "couponCode" =>$appliedCoupon->all(),
-                   "operatorId" => $operatorId,
-                   "operatorName" => $operatorName,
-                   "sittingType" => $sittingType,
-                   "busType" => $busType,
-                   "busTypeName" => $busTypeName,
-                   "totalSeats" => $totalSeats,
-                   "seaters" => $seatClassRecords,
-                   "sleepers" => $sleeperClassRecords,
-                   "startingFromPrice" => $startingFromPrice,
-                   "departureTime" =>$depTime,
-                   "arrivalTime" =>$arrTime,
-                   "totalJourneyTime" =>$totalJourneyTime, 
-                   "amenity" =>$amenityDatas,
-                   "safety" => $safetyDatas,
-                   "busPhotos" => $busPhotoDatas,
-                   "cancellationDuration" => $cSlabDuration,
-                   "cancellationDuduction" => $cSlabDeduction,
-                   "cancellationPolicyContent" => $cancellationPolicyContent,
-                   "TravelPolicyContent" => $TravelPolicyContent,
-                   "Totalrating" => $Totalrating,
-                   "Totalrating_comfort" => $Totalrating_comfort,
-                   "Totalrating_clean" => $Totalrating_clean,
-                   "Totalrating_behavior" => $Totalrating_behavior,
-                   "Totalrating_timing" => $Totalrating_timing,
-                   "reviews" => $reviews
-               );             
+                  if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
+                   $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
+                 }
+                } 
+                $Totalrating = number_format($Totalrating/count($record->review),1);
+                $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
+                $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
+                $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
+                $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
+            }
+            $reviews=  $Review_list; //$record->review;
+            $cancellationPolicyContent=$record->cancellation_policy_desc;
+            $TravelPolicyContent=$record->travel_policy_desc;
+            $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
+            $cSlabDuration = $cSlabDatas->pluck('duration');
+            $cSlabDeduction = $cSlabDatas->pluck('deduction');
+            $seatClassRecords = 0;
+            $sleeperClassRecords = 0;
+            foreach($seatDatas as $seatData) {  
+                 $seatclass = $seatData->seats->seat_class_id;
+                 if($seatclass==1){
+                     $seatClassRecords ++;
+                 }
+                 elseif($seatclass==2 || $seatclass==3){
+                     $sleeperClassRecords ++;
+                }
+            }
+           $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+           //return $bookedSeats;
+           $seatClassRecords = $seatClassRecords - $bookedSeats[1];
+           $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
+           $totalSeats = $totalSeats - $bookedSeats[2];
+           $ListingRecords[] = array(
+                "display" => $flag,
+                "busId" => $busId, 
+                "busName" => $busName,
+                "popularity" => $popularity,
+                "busNumber" => $busNumber,
+                "maxSeatBook" => $maxSeatBook,
+                "conductor_number" => $conductor_number,
+                "couponCode" =>$appliedCoupon->all(),
+                "operatorId" => $operatorId,
+                "operatorName" => $operatorName,
+                "sittingType" => $sittingType,
+                "busType" => $busType,
+                "busTypeName" => $busTypeName,
+                "totalSeats" => $totalSeats,
+                "seaters" => $seatClassRecords,
+                "sleepers" => $sleeperClassRecords,
+                "startingFromPrice" => $startingFromPrice,
+                "departureTime" =>$depTime,
+                "arrivalTime" =>$arrTime,
+                "totalJourneyTime" =>$totalJourneyTime, 
+                "amenity" =>$amenityDatas,
+                "safety" => $safetyDatas,
+                "busPhotos" => $busPhotoDatas,
+                "cancellationDuration" => $cSlabDuration,
+                "cancellationDuduction" => $cSlabDeduction,
+                "cancellationPolicyContent" => $cancellationPolicyContent,
+                "TravelPolicyContent" => $TravelPolicyContent,
+                "Totalrating" => $Totalrating,
+                "Totalrating_comfort" => $Totalrating_comfort,
+                "Totalrating_clean" => $Totalrating_clean,
+                "Totalrating_behavior" => $Totalrating_behavior,
+                "Totalrating_timing" => $Totalrating_timing,
+                "reviews" => $reviews
+            );             
         }
         return $ListingRecords;
     }
@@ -542,7 +556,7 @@ class ListingService
         $showBusRecords = [];
         $hideBusRecords = [];
         //$CurrentDateTime = "2022-01-11 14:48:35";
-        $CurrentDateTime = Carbon::now()->toDateTimeString();
+        $CurrentDateTime = Carbon::now();//->toDateTimeString();
         foreach($busDetails as $busDetail){
             $ticketPriceId = $busDetail['id'];
             $busId = $busDetail['bus_id'];
@@ -573,9 +587,14 @@ class ListingService
         /////////////////Bus Seize//////////////////////////////////////////////
             $seizedTime = $busDetail['seize_booking_minute'];
             $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
-            $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
-            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-            
+            $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+
+            if($depDateTime>=$CurrentDateTime){
+                $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+            }else{
+                $diff_in_minutes = 0;
+            }
+
             /////////////day wise seize time change////////////////////////////////
             $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$ticketPriceId)
                                           ->where('seized_date', $entry_date)
@@ -599,7 +618,22 @@ class ListingService
                         $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                      } 
                 }else{
-                    $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+
+                    switch($startJDay){
+                        case(1):
+                            $new_date = $entry_date;
+                            break;
+                        case(2):
+                            $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                            break;
+                        case(3):
+                            $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                            break;
+                    } 
+                     $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                        $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                     } 
                 }
             }
             elseif($seizedTime < $diff_in_minutes){
@@ -619,12 +653,26 @@ class ListingService
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                 } 
             }else{
-                $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                switch($startJDay){
+                    case(1):
+                        $new_date = $entry_date;
+                        break;
+                    case(2):
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                        break;
+                    case(3):
+                        $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                        break;
+                } 
+                    $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                    if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
+                        $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                    } 
             }
         }
         $showBusRecords = Arr::flatten($records);
         $hideBusRecords = Arr::flatten($hideBusRecords);
-        //return $hideBusRecords;
+     
 
         $showRecords = $this->processBusRecords($showBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,'show');
 

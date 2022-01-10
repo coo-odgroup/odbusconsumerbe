@@ -193,9 +193,14 @@ class ViewSeatsRepository
 
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $depTime = date("H:i:s", strtotime($depTime));
-        $CurrentDateTime = Carbon::now()->toDateTimeString();
-        $depDateTime = Carbon::createFromFormat('Y-m-d H:s:i', $entry_date.' '.$depTime);
-        $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        $CurrentDateTime = Carbon::now();//->toDateTimeString();
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+
+        if($depDateTime>=$CurrentDateTime){
+            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+        }else{
+            $diff_in_minutes = 0;
+        }
    
 ///////////////////////////////////////////
        $blockSeats = BusSeats::where('operation_date', $entry_date)
