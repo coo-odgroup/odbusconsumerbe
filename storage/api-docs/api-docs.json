@@ -12,7 +12,7 @@
                     "AgentBooking API"
                 ],
                 "summary": "Ticket Booking by an Agent with customer details",
-                "operationId": "App\\Http\\Controllers\\AgentBookingController::agentBooking",
+                "operationId": "98565d5cffc9586168e414d31bff372f",
                 "requestBody": {
                     "description": "Ticket Booking by an Agent",
                     "required": true,
@@ -239,7 +239,7 @@
                     "BookTicket API"
                 ],
                 "summary": "Ticket Booking with customer details",
-                "operationId": "App\\Http\\Controllers\\BookTicketController::bookTicket",
+                "operationId": "a857cb5a3a10f74f643b0d772841f84e",
                 "requestBody": {
                     "description": "Ticket Booking with customer details",
                     "required": true,
@@ -447,7 +447,7 @@
                 ],
                 "summary": "Journey Details",
                 "description": "Journey Details",
-                "operationId": "App\\Http\\Controllers\\BookingManageController::getJourneyDetails",
+                "operationId": "3d17c3033167f8042e49151b2756642a",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -490,7 +490,7 @@
                 ],
                 "summary": "Passenger Details",
                 "description": "Passenger Details",
-                "operationId": "App\\Http\\Controllers\\BookingManageController::getPassengerDetails",
+                "operationId": "23595563c399d5db365e5639cfc0e0ba",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -533,7 +533,7 @@
                 ],
                 "summary": "Booking Details",
                 "description": "Booking Details",
-                "operationId": "App\\Http\\Controllers\\BookingManageController::getBookingDetails",
+                "operationId": "df359a886d3c0ab31ddfe062aa632b5e",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -576,7 +576,7 @@
                 ],
                 "summary": "send email/sms",
                 "description": "send email/sms",
-                "operationId": "App\\Http\\Controllers\\BookingManageController::emailSms",
+                "operationId": "9f16c6a3c6e568a5c7b5987d89555311",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -619,7 +619,7 @@
                 ],
                 "summary": "Ticket Cancel Information",
                 "description": "Ticket Cancel Information",
-                "operationId": "App\\Http\\Controllers\\BookingManageController::cancelTicketInfo",
+                "operationId": "be66a3872e42dedf728eeae29f225439",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -662,7 +662,7 @@
                 ],
                 "summary": "refund initiated for ticket cancellation",
                 "description": "refund initiated for ticket cancellation",
-                "operationId": "App\\Http\\Controllers\\CancelTicketController::cancelTicket",
+                "operationId": "d8ce4f6649006c7c5f54868b139efd93",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -705,7 +705,7 @@
                 ],
                 "summary": "generating razorpay order Id",
                 "description": "generating razorpay order Id",
-                "operationId": "App\\Http\\Controllers\\ChannelController::makePayment",
+                "operationId": "eeb3546453591ee2e799ba090ad278db",
                 "parameters": [
                     {
                         "name": "busId",
@@ -803,7 +803,7 @@
                     "PaymentStatus API"
                 ],
                 "summary": "payment status success or failure",
-                "operationId": "App\\Http\\Controllers\\ChannelController::pay",
+                "operationId": "efe1a6fafae9fe0e9d7cd67cb158f293",
                 "requestBody": {
                     "description": "updating payment status and sending email/sms to customers with ticket booking details",
                     "required": true,
@@ -1009,7 +1009,7 @@
                 ],
                 "summary": "Agent Wallet Payment to book tickets for customer",
                 "description": "Agent Wallet Payment to book tickets for customer",
-                "operationId": "App\\Http\\Controllers\\ChannelController::walletPayment",
+                "operationId": "5b03215b4cd583ed50848b817b6eeccc",
                 "parameters": [
                     {
                         "name": "user_id",
@@ -1116,7 +1116,7 @@
                     "AgentPaymentStatus API"
                 ],
                 "summary": "payment status success or failure",
-                "operationId": "App\\Http\\Controllers\\ChannelController::agentPaymentStatus",
+                "operationId": "91a40e9a7a2692c48125d3a130e745bd",
                 "requestBody": {
                     "description": "updating payment status and sending email/sms to customers with ticket booking details",
                     "required": true,
@@ -1322,7 +1322,7 @@
                 ],
                 "summary": "Get all Social media links",
                 "description": "Get all Social media links",
-                "operationId": "App\\Http\\Controllers\\CommonController::getAll",
+                "operationId": "327080c555a0e68239a28ee284986b61",
                 "parameters": [
                     {
                         "name": "bus_operator_id",
@@ -1357,7 +1357,7 @@
                 ],
                 "summary": "Add Contacts",
                 "description": "Add Contacts",
-                "operationId": "App\\Http\\Controllers\\ContactController::save",
+                "operationId": "c75b678c0b4fc4085fde93a1f84b89d6",
                 "parameters": [
                     {
                         "name": "name",
@@ -1427,7 +1427,7 @@
                 ],
                 "summary": "Get List of Locations",
                 "description": "Locations with SearchValue params",
-                "operationId": "App\\Http\\Controllers\\ListingController::getLocation",
+                "operationId": "9bacc5e241c6b9ea8a72c039d956366b",
                 "parameters": [
                     {
                         "name": "locationName",
@@ -1461,7 +1461,7 @@
                 ],
                 "summary": "Get List of Buses",
                 "description": "Listing",
-                "operationId": "App\\Http\\Controllers\\ListingController::getAllListing",
+                "operationId": "14fe0b3b790010559aaa1f21cbd94a6b",
                 "parameters": [
                     {
                         "name": "source",
@@ -1531,7 +1531,7 @@
                 ],
                 "summary": "Get List of Buses with Filter Params",
                 "description": "Filter",
-                "operationId": "App\\Http\\Controllers\\ListingController::filter",
+                "operationId": "f097df7de11c7b717e6236d2354c2a2a",
                 "parameters": [
                     {
                         "name": "price",
@@ -1694,7 +1694,7 @@
                 ],
                 "summary": "Get all Filter options",
                 "description": "get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities",
-                "operationId": "App\\Http\\Controllers\\ListingController::getFilterOptions",
+                "operationId": "ec62577c446daf5059f3abcac35c557c",
                 "parameters": [
                     {
                         "name": "sourceID",
@@ -1751,7 +1751,7 @@
                 ],
                 "summary": "Get Details of a Bus",
                 "description": "BusDetails",
-                "operationId": "App\\Http\\Controllers\\ListingController::busDetails",
+                "operationId": "08c1505c7f8a66c3153c88d1d9c419bd",
                 "parameters": [
                     {
                         "name": "bus_id",
@@ -1803,7 +1803,7 @@
                 ],
                 "summary": "Get all Offers",
                 "description": "get all Offers",
-                "operationId": "App\\Http\\Controllers\\OfferController::offers",
+                "operationId": "f7bc4f42b69bd5078e0153255fd19d64",
                 "parameters": [
                     {
                         "name": "bus_operator_id",
@@ -1837,7 +1837,7 @@
                 ],
                 "summary": "Get all Valid Coupons",
                 "description": "get all Valid Coupons",
-                "operationId": "App\\Http\\Controllers\\OfferController::coupons",
+                "operationId": "9afa5f47904de6d42260a81b261496c4",
                 "parameters": [
                     {
                         "name": "coupon_code",
@@ -1934,7 +1934,7 @@
                 ],
                 "summary": "get all Path Urls",
                 "description": "get all Path Urls",
-                "operationId": "App\\Http\\Controllers\\OfferController::getPathUrls",
+                "operationId": "b128a7fa5a5d8d26171a64663d86e968",
                 "responses": {
                     "200": {
                         "description": "get all Path Urls"
@@ -1957,7 +1957,7 @@
                 ],
                 "summary": "Get Page contents",
                 "description": "Get Page contents",
-                "operationId": "App\\Http\\Controllers\\PageContentController::getAllpagecontent",
+                "operationId": "c85725e85a43f55f9545050ba31c8298",
                 "parameters": [
                     {
                         "name": "bus_operator_id",
@@ -2002,7 +2002,7 @@
                 ],
                 "summary": "get all Popular Routes",
                 "description": "get all Popular Routes",
-                "operationId": "App\\Http\\Controllers\\PopularController::getPopularRoutes",
+                "operationId": "4041a5107390129607bbbf69ced3b3c8",
                 "responses": {
                     "200": {
                         "description": "get all Popular Routes"
@@ -2025,7 +2025,7 @@
                 ],
                 "summary": "get all Top Operators",
                 "description": "get all Top Operators",
-                "operationId": "App\\Http\\Controllers\\PopularController::getTopOperators",
+                "operationId": "c24915a8a9ba6e55266fcef0a7ecf6af",
                 "responses": {
                     "200": {
                         "description": "get all Top Operators"
@@ -2048,7 +2048,7 @@
                 ],
                 "summary": "get all Routes of bus running",
                 "description": "get all Routes of bus running",
-                "operationId": "App\\Http\\Controllers\\PopularController::allRoutes",
+                "operationId": "a0c65574ff9212f60e88a8a1b0728d5f",
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
@@ -2071,7 +2071,7 @@
                 ],
                 "summary": "get all Operators names",
                 "description": "get all Operators names",
-                "operationId": "App\\Http\\Controllers\\PopularController::allOperators",
+                "operationId": "848ac8ede2ca51c9b55be05d5097520f",
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
@@ -2094,7 +2094,7 @@
                 ],
                 "summary": "Operator's Details",
                 "description": "Operator's Details",
-                "operationId": "App\\Http\\Controllers\\PopularController::operatorDetails",
+                "operationId": "f81d1f0dc2025ea4504b7d6e23c183c9",
                 "parameters": [
                     {
                         "name": "operator_url",
@@ -2128,7 +2128,7 @@
                 ],
                 "summary": "Save Recent Search of a user",
                 "description": "Save Recent Search of a user",
-                "operationId": "App\\Http\\Controllers\\RecentSearchController::createSearch",
+                "operationId": "d8c6272f89429024e9015d79e446e66c",
                 "parameters": [
                     {
                         "name": "users_id",
@@ -2188,7 +2188,7 @@
                     "Get Recent Search details of a User"
                 ],
                 "summary": "Get Recent Search details of a User",
-                "operationId": "App\\Http\\Controllers\\RecentSearchController::getSearchDetails",
+                "operationId": "4425ac89ce4044dbe53aaccae51a7b09",
                 "parameters": [
                     {
                         "name": "userId",
@@ -2225,7 +2225,7 @@
                 ],
                 "summary": "get all Reviews of a customer",
                 "description": "get all Reviews of a customer",
-                "operationId": "App\\Http\\Controllers\\ReviewController::getAllReview",
+                "operationId": "264ef0c3ab1ded9373510646f6b003d1",
                 "responses": {
                     "200": {
                         "description": "get all Reviews of a customer"
@@ -2248,7 +2248,7 @@
                 ],
                 "summary": "Add Review of a customer",
                 "description": "Add Review of a customer",
-                "operationId": "App\\Http\\Controllers\\ReviewController::createReview",
+                "operationId": "6fe632e412681aca0c60ee00597f524a",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -2380,7 +2380,7 @@
                     "Update existing Review"
                 ],
                 "summary": "Update Review",
-                "operationId": "App\\Http\\Controllers\\ReviewController::updateReview",
+                "operationId": "9e9808d2e7011e065c0910932ce91a85",
                 "parameters": [
                     {
                         "name": "id",
@@ -2524,7 +2524,7 @@
                     "Delete Review"
                 ],
                 "summary": "Delete Review",
-                "operationId": "App\\Http\\Controllers\\ReviewController::deleteReview",
+                "operationId": "84f79569f53c95ff707dde335aab617f",
                 "parameters": [
                     {
                         "name": "id",
@@ -2560,7 +2560,7 @@
                     "Review detail of a customer"
                 ],
                 "summary": "Review detail of a customer",
-                "operationId": "App\\Http\\Controllers\\ReviewController::getReview",
+                "operationId": "fa5c4e0e0c1b3062e33f0e8fac3f15e2",
                 "parameters": [
                     {
                         "name": "id",
@@ -2596,7 +2596,7 @@
                     "Reviews on Single Bus"
                 ],
                 "summary": "Reviews on Single Bus",
-                "operationId": "App\\Http\\Controllers\\ReviewController::getReviewByBid",
+                "operationId": "f51acf5abcbd702d26b1d61570c7144a",
                 "parameters": [
                     {
                         "name": "bid",
@@ -2633,7 +2633,7 @@
                 ],
                 "summary": "Get all SEO lists",
                 "description": "Get all SEO lists",
-                "operationId": "App\\Http\\Controllers\\SeoController::seolist",
+                "operationId": "d04b987587946886eb384e312afba3af",
                 "parameters": [
                     {
                         "name": "bus_operator_id",
@@ -2668,7 +2668,7 @@
                 ],
                 "summary": "Get all Testimonials",
                 "description": "Get all Testimonials",
-                "operationId": "App\\Http\\Controllers\\TestimonialController::getAlltestimonial",
+                "operationId": "e3debdc03515461236be89b465e881ac",
                 "parameters": [
                     {
                         "name": "bus_operator_id",
@@ -2703,7 +2703,7 @@
                 ],
                 "summary": "send OTP to user for registration",
                 "description": "user detatils saved and otp generated",
-                "operationId": "App\\Http\\Controllers\\UsersController::Register",
+                "operationId": "c5b797bcf029bf32893c2fbfa5ba43d3",
                 "parameters": [
                     {
                         "name": "name",
@@ -2767,7 +2767,7 @@
                 ],
                 "summary": "otp verification",
                 "description": "otp verification",
-                "operationId": "App\\Http\\Controllers\\UsersController::verifyOtp",
+                "operationId": "c1d15a602b74f91486447ee7b513f6cc",
                 "parameters": [
                     {
                         "name": "userId",
@@ -2816,7 +2816,7 @@
                 ],
                 "summary": "user login using phone or email",
                 "description": "user login using phone or email",
-                "operationId": "App\\Http\\Controllers\\UsersController::login",
+                "operationId": "4cc8efd8726a2d1ae178f987ca09cbd3",
                 "parameters": [
                     {
                         "name": "phone",
@@ -2861,7 +2861,7 @@
                     "User Profile"
                 ],
                 "summary": "Get user details",
-                "operationId": "App\\Http\\Controllers\\UsersController::userProfile",
+                "operationId": "82e9f7bb9d7d088c86d0661daf575808",
                 "responses": {
                     "200": {
                         "description": "Authorized User details"
@@ -2883,7 +2883,7 @@
                     "update User Profile"
                 ],
                 "summary": "Update User Profile",
-                "operationId": "App\\Http\\Controllers\\UsersController::updateProfile",
+                "operationId": "b79ac07702d5fa41858a222ae6aa3c9c",
                 "parameters": [
                     {
                         "name": "id",
@@ -2986,7 +2986,7 @@
                 ],
                 "summary": "Get Booking History of a Customer",
                 "description": "Get Booking History of a Customer",
-                "operationId": "App\\Http\\Controllers\\UsersController::BookingHistory",
+                "operationId": "58d103da6148d8efbd931bec3e93553f",
                 "parameters": [
                     {
                         "name": "status",
@@ -3099,7 +3099,7 @@
                 ],
                 "summary": "Get seat information for a Bus with seat layout",
                 "description": "get all seat Information  for a Bus",
-                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getAllViewSeats",
+                "operationId": "0c9995b0077c02a25a48623dc5b60a63",
                 "parameters": [
                     {
                         "name": "entry_date",
@@ -3160,7 +3160,7 @@
                 ],
                 "summary": "get total price on seat selection",
                 "description": "get total price on seat selection",
-                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getPriceOnSeatsSelection",
+                "operationId": "994f9f867d14cad854e9c46507cb07ef",
                 "parameters": [
                     {
                         "name": "busId",
@@ -3249,7 +3249,7 @@
                 ],
                 "summary": "get all Boarding Dropping Points",
                 "description": "get all Boarding Dropping Points for source and destination",
-                "operationId": "App\\Http\\Controllers\\ViewSeatsController::getBoardingDroppingPoints",
+                "operationId": "c161aa0a7ac1222a30670c76f006f7ea",
                 "parameters": [
                     {
                         "name": "busId",
