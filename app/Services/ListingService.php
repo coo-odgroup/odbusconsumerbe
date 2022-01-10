@@ -192,6 +192,7 @@ class ListingService
              
              $operatorId = $record->busOperator->id;
              $operatorName = $record->busOperator->operator_name;
+             $operatorUrl = $record->busOperator->operator_url;
              $sittingType = $record->BusSitting->name;   
              $busType = $record->BusType->busClass->class_name;
              $busTypeName = $record->BusType->name;
@@ -353,27 +354,44 @@ class ListingService
              } 
  
              $Totalrating=0;
-             $Totalrating_comfort=0;
-             $Totalrating_clean=0;
-             $Totalrating_behavior=0;
-             $Totalrating_timing=0;
+             $Totalrating_5star=0;
+             $Totalrating_4star=0;
+             $Totalrating_3star=0;
+             $Totalrating_2star=0;
+             $Totalrating_1star=0;
              $Review_list=[];
+             $i=1;
              if(count($record->review)>0){
                  foreach($record->review as $k => $rv){
-                   $Totalrating += $rv->rating_overall;                  
-                   $Totalrating_comfort += $rv->rating_comfort;                  
-                   $Totalrating_clean += $rv->rating_clean;                  
-                   $Totalrating_behavior += $rv->rating_behavior;                  
-                   $Totalrating_timing += $rv->rating_timing; 
 
+                if($i<=2){
+                   $Totalrating += $rv->rating_overall;  
+
+                   if($rv->rating_overall==5){
+                    $Totalrating_5star ++;   
+                   } 
+
+                   if($rv->rating_overall==4){
+                    $Totalrating_4star ++;   
+                   } 
+
+                   if($rv->rating_overall==3){
+                    $Totalrating_3star ++;   
+                   } 
+
+                   if($rv->rating_overall==2){
+                    $Totalrating_2star ++;   
+                   } 
+
+                   if($rv->rating_overall==1){
+                    $Totalrating_1star ++;   
+                   } 
+                                 
+                  
                    $Review_list[$k]['bus_id']=$rv->bus_id;
                       $Review_list[$k]['users_id']=$rv->users_id;
                       $Review_list[$k]['title']=$rv->title;
                       $Review_list[$k]['rating_overall']=$rv->rating_overall;
-                      $Review_list[$k]['rating_comfort']=$rv->rating_comfort;
-                      $Review_list[$k]['rating_clean']=$rv->rating_clean;
-                      $Review_list[$k]['rating_behavior']=$rv->rating_behavior;
-                      $Review_list[$k]['rating_timing']=$rv->rating_timing;
                       $Review_list[$k]['comments']=$rv->comments;
                       $Review_list[$k]['name']=$rv->users->name;
                       $Review_list[$k]['profile_image']='';
@@ -381,12 +399,11 @@ class ListingService
                    if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
                     $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
                   }
-                 } 
-                 $Totalrating = number_format($Totalrating/count($record->review),1);
-                 $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
-                 $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
-                 $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
-                 $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
+
+                $i++;
+                }
+            }
+                 $Totalrating = number_format($Totalrating/2,1);
              }
              $reviews=  $Review_list; //$record->review;
              $cancellationPolicyContent=$record->cancellation_policy_desc;
@@ -420,6 +437,7 @@ class ListingService
                  "couponCode" =>$appliedCoupon->all(),
                  "operatorId" => $operatorId,
                  "operatorName" => $operatorName,
+                 "operatorUrl" => $operatorUrl,
                  "sittingType" => $sittingType,
                  "busType" => $busType,
                  "busTypeName" => $busTypeName,
@@ -438,10 +456,11 @@ class ListingService
                  "cancellationPolicyContent" => $cancellationPolicyContent,
                  "TravelPolicyContent" => $TravelPolicyContent,
                  "Totalrating" => $Totalrating,
-                 "Totalrating_comfort" => $Totalrating_comfort,
-                 "Totalrating_clean" => $Totalrating_clean,
-                 "Totalrating_behavior" => $Totalrating_behavior,
-                 "Totalrating_timing" => $Totalrating_timing,
+                 "Totalrating_5star" => $Totalrating_5star,
+                 "Totalrating_4star" => $Totalrating_4star,
+                 "Totalrating_3star" => $Totalrating_3star,
+                 "Totalrating_2star" => $Totalrating_2star,
+                 "Totalrating_1star" => $Totalrating_1star,
                  "reviews" => $reviews
              );             
          }
@@ -622,6 +641,7 @@ class ListingService
                 }
                 $operatorId = $record->busOperator->id;
                 $operatorName = $record->busOperator->operator_name;
+                $operatorUrl = $record->busOperator->operator_url;
                 $sittingType = $record->BusSitting->name;
                 $busType = $record->BusType->busClass->class_name;
                 $busTypeName = $record->BusType->name;
@@ -775,19 +795,40 @@ class ListingService
                 $cancellationPolicyContent=$record->cancellation_policy_desc;
                 $TravelPolicyContent=$record->travel_policy_desc;
                 $reviews=  $record->review;
-                $Totalrating=0;
-                $Totalrating_comfort=0;
-                $Totalrating_clean=0;
-                $Totalrating_behavior=0;
-                $Totalrating_timing=0;
+                $Totalrating_5star=0;
+                $Totalrating_4star=0;
+                $Totalrating_3star=0;
+                $Totalrating_2star=0;
+                $Totalrating_1star=0;
                 $Review_list=[];
+                $i=1;
                 if(count($record->review)>0){
                     foreach($record->review as $k => $rv){
-                      $Totalrating += $rv->rating_overall;                  
-                      $Totalrating_comfort += $rv->rating_comfort;                  
-                      $Totalrating_clean += $rv->rating_clean;                  
-                      $Totalrating_behavior += $rv->rating_behavior;                  
-                      $Totalrating_timing += $rv->rating_timing; 
+
+                        if($i<=2){
+                            $Totalrating += $rv->rating_overall;  
+         
+                            if($rv->rating_overall==5){
+                             $Totalrating_5star ++;   
+                            } 
+         
+                            if($rv->rating_overall==4){
+                             $Totalrating_4star ++;   
+                            } 
+         
+                            if($rv->rating_overall==3){
+                             $Totalrating_3star ++;   
+                            } 
+         
+                            if($rv->rating_overall==2){
+                             $Totalrating_2star ++;   
+                            } 
+         
+                            if($rv->rating_overall==1){
+                             $Totalrating_1star ++;   
+                            } 
+                         
+                            
    
                       $Review_list[$k]['bus_id']=$rv->bus_id;
                       $Review_list[$k]['users_id']=$rv->users_id;
@@ -801,16 +842,16 @@ class ListingService
                       $Review_list[$k]['name']=$rv->users->name;
                       $Review_list[$k]['profile_image']='';
    
-                      if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
-                       $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
-                     }
-                    } 
-                    $Totalrating = number_format($Totalrating/count($record->review),1);
-                    $Totalrating_comfort = number_format($Totalrating_comfort/count($record->review),1);
-                    $Totalrating_clean = number_format($Totalrating_clean/count($record->review),1);
-                    $Totalrating_behavior = number_format($Totalrating_behavior/count($record->review),1);
-                    $Totalrating_timing = number_format($Totalrating_timing/count($record->review),1);    
+
+                     if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
+                        $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
+                      }
+    
+                    $i++;
+                    }
                 }
+                     $Totalrating = number_format($Totalrating/2,1);
+                 }
                 $reviews=  $Review_list; //$record->review;
                 $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
                 $cSlabDuration = $cSlabDatas->pluck('duration');
@@ -841,6 +882,7 @@ class ListingService
                     "couponCode" =>$appliedCoupon->all(),
                     "operatorId" => $operatorId,
                     "operatorName" => $operatorName,
+                    "operatorUrl" => $operatorUrl,
                     "sittingType" => $sittingType,
                     "busType" => $busType,
                     "busTypeName" => $busTypeName,
@@ -859,10 +901,11 @@ class ListingService
                     "cancellationPolicyContent" => $cancellationPolicyContent,
                     "TravelPolicyContent" => $TravelPolicyContent,
                     "Totalrating" => $Totalrating,
-                    "Totalrating_comfort" => $Totalrating_comfort,
-                    "Totalrating_clean" => $Totalrating_clean,
-                    "Totalrating_behavior" => $Totalrating_behavior,
-                    "Totalrating_timing" => $Totalrating_timing,
+                    "Totalrating_5star" => $Totalrating_5star,
+                    "Totalrating_4star" => $Totalrating_4star,
+                    "Totalrating_3star" => $Totalrating_3star,
+                    "Totalrating_2star" => $Totalrating_2star,
+                    "Totalrating_1star" => $Totalrating_1star,
                     "reviews" => $reviews     
                 );            
             }
