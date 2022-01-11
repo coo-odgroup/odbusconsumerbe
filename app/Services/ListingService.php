@@ -704,12 +704,9 @@ class ListingService
         }
         //return $FilterRecords;
         if($price == 0){
-            return $FilterRecords->sortBy([
-                ['departureTime', 'asc']
-            ]);
+            return $FilterRecords->sortBy(['departureTime', 'asc']);
         }elseif($price == 1){
-            $sortByPrice = $FilterRecords->sortBy('startingFromPrice')->all();
-            return $sortByPrice; 
+            return $FilterRecords->sortBy(['startingFromPrice', 'asc']);
        }  
        //$sorted = array_values($sorted);
       //return $sorted;
