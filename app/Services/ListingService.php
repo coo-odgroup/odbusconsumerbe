@@ -189,7 +189,7 @@ class ListingService
             $hideRecords =  $this->processBusRecords($hideBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,'hide');
             $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
          }else{
-            $ListingRecords = $showRecords;
+            $ListingRecords = collect($showRecords);
          } 
         return $ListingRecords->sortBy([
             ['departureTime', 'asc']
