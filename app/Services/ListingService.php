@@ -200,6 +200,8 @@ class ListingService
     public function processBusRecords($records,$routeCoupon,$routeCouponCode,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$flag){
         $busCouponCode = [];
         $opCouponCode = [];
+
+        $ListingRecords = array();
         foreach($records as $record){
             $busId = $record->id; 
             $busName = $record->name;
