@@ -120,7 +120,7 @@ class ListingRepository
         // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
         //     $query->where('bus_operator_id',$busOperatorId);
         //     })
-        ->orderBy('dep_time', 'asc')
+        //->orderBy('dep_time', 'asc')
         ->get(['id','bus_id','start_j_days','seize_booking_minute','dep_time']);  
      }
 
