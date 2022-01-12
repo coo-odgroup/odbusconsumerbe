@@ -88,7 +88,7 @@ class CancelTicketRepository
         }])->get();
     }
 
-    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$cancelBy){
+    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
@@ -128,7 +128,7 @@ class CancelTicketRepository
                 $paidAmount = $paidAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
   
-                $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'cancel_by' => $cancelBy ]);      
+                $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);      
                 
                 $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
 
