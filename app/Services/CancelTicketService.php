@@ -30,11 +30,11 @@ class CancelTicketService
             $booked = Config::get('constants.BOOKED_STATUS');
     
             $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
-           
             if(isset($booking_detail[0])){          
     
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-     
+
+                    $cancelBy = $booking_detail[0]->name;
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
                     $jDate = date("d-m-Y", strtotime($jDate));
                     $boardTime =$booking_detail[0]->booking[0]->boarding_time;
@@ -90,7 +90,7 @@ class CancelTicketService
         
                         if( $interval > 240){
                             $deduction = 10;//minimum deduction
-                            $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId);
+                            $refund =  $this->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$cancelBy);
                             $refundAmt =  $refund['refundAmount'];
                             $smsData['refundAmount'] = $refundAmt;
                             
@@ -102,7 +102,7 @@ class CancelTicketService
     
                         }
                         elseif($min <= $interval && $interval <= $max){ 
-                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
+                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$cancelBy)
                             ; 
                             return $refund;    
                         }

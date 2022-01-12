@@ -88,7 +88,7 @@ class CancelTicketRepository
         }])->get();
     }
 
-    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
+    public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$cancelBy){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
@@ -115,28 +115,28 @@ class CancelTicketRepository
                 //$refundId = $refund->id;
                 //$refundStatus = $refund->status;
                 //$refundAmount = $refund->amount;
-         
-                $this->booking->where('id', $bookingId)->update(array('status' => $bookingCancelled)); 
-                $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
-                //$booking->bookingDetail()->delete();
-                //$booking->delete();
-        
+
                 // $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded,'refund_id' => $refundId]);
-                $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
-        
+
                 $data = array(
                     //  'refundStatus' => $refundStatus,
                     //  'refund_id' => $refundId,
                      'refundAmount' => $refundAmount/100,
                      'paidAmount' => $paidAmount/100,
                 );
-                $refundAmt = $refundAmount/100;
+                $refundAmt = round(($refundAmount/100),2);
                 $paidAmount = $paidAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
-               
+  
+                $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'cancel_by' => $cancelBy ]);      
+                
+                $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
+
+                $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
+
                 $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
               
-                $emailData['refundAmount'] = round($refundAmt,2);
+                $emailData['refundAmount'] = $refundAmt;
                 $emailData['deductionPercentage'] = $percentage;
                 $emailData['totalfare'] = $paidAmount;
                 if($emailData['email'] != ''){
