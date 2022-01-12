@@ -1,12 +1,23 @@
 {
 	"info": {
-		"_postman_id": "d01115aa-1ecd-484f-9297-fc6b463eb63f",
-		"name": "ODBUSConsumerBELocal Copy",
+		"_postman_id": "062c0f5e-3833-4152-b584-ff20d00e0819",
+		"name": "ODBUSConsumerAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Listing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"url\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -33,15 +44,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=21-12-2021",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=15-01-2022",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"Listing"
@@ -57,7 +67,7 @@
 						},
 						{
 							"key": "entry_date",
-							"value": "21-12-2021"
+							"value": "15-01-2022"
 						}
 					]
 				}
@@ -74,7 +84,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"entry_date\":\"21-12-2021\",\r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -82,18 +92,35 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/viewSeats",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/viewSeats?entry_date=21-12-2021&busId=1&sourceId=82&destinationId=434",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"viewSeats"
+					],
+					"query": [
+						{
+							"key": "entry_date",
+							"value": "21-12-2021"
+						},
+						{
+							"key": "busId",
+							"value": "1"
+						},
+						{
+							"key": "sourceId",
+							"value": "82"
+						},
+						{
+							"key": "destinationId",
+							"value": "434"
+						}
 					]
 				}
 			},
@@ -109,7 +136,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "\r\n   \r\n     {\r\n          \"busId\": 1,\r\n          \"sourceId\":82,\r\n          \"destinationId\":434,\r\n          \"seater\": [1],\r\n          \"sleeper\": [5]\r\n     }\r\n   \r\n",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -117,18 +144,39 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/PriceOnSeatsSelection",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"PriceOnSeatsSelection"
+					],
+					"query": [
+						{
+							"key": "busId",
+							"value": "1"
+						},
+						{
+							"key": "sourceId",
+							"value": "82"
+						},
+						{
+							"key": "destinationId",
+							"value": "434"
+						},
+						{
+							"key": "seater[]",
+							"value": "2694"
+						},
+						{
+							"key": "sleeper[]",
+							"value": "2755"
+						}
 					]
 				}
 			},
@@ -149,15 +197,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/BookTicket",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/BookTicket",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"BookTicket"
@@ -194,15 +241,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/getLocation",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/getLocation",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"getLocation"
@@ -229,7 +275,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=434&entry_date=21-12-2021",
+					"raw": "https://consumer.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=434&entry_date=15-01-2022",
 					"protocol": "https",
 					"host": [
 						"consumer",
@@ -256,7 +302,7 @@
 						},
 						{
 							"key": "entry_date",
-							"value": "21-12-2021"
+							"value": "15-01-2022"
 						}
 					]
 				}
@@ -273,7 +319,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"busId\": 1,\r\n    \"sourceId\": \"82\",\r\n    \"destinationId\": \"434\"\r\n\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -281,18 +327,31 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/BoardingDroppingPoints",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/BoardingDroppingPoints?busId=1&sourceId=82&destinationId=434",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"BoardingDroppingPoints"
+					],
+					"query": [
+						{
+							"key": "busId",
+							"value": "1"
+						},
+						{
+							"key": "sourceId",
+							"value": "82"
+						},
+						{
+							"key": "destinationId",
+							"value": "434"
+						}
 					]
 				}
 			},
@@ -372,7 +431,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"transaction_id\": \"20211220105201752217\",\r\n    \"amount\":\"685\",\r\n    \"seatIds\":[2755],\r\n    \"entry_date\":\"31-12-2021\"\r\n\r\n}",
+					"raw": "{ \r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"transaction_id\": \"20211220105201752217\",\r\n    \"amount\":\"685\",\r\n    \"seatIds\":[2755],\r\n    \"entry_date\":\"31-12-2021\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -380,15 +439,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/MakePayment",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/MakePayment",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"MakePayment"
@@ -407,7 +465,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\"\r\n}",
+					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"busIds\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -415,18 +473,39 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/FilterOptions",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/FilterOptions?sourceID=82&destinationID=434&busIDs[]=254&busIDs[]=251&busIDs[]=258",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"FilterOptions"
+					],
+					"query": [
+						{
+							"key": "sourceID",
+							"value": "82"
+						},
+						{
+							"key": "destinationID",
+							"value": "434"
+						},
+						{
+							"key": "busIDs[]",
+							"value": "254"
+						},
+						{
+							"key": "busIDs[]",
+							"value": "251"
+						},
+						{
+							"key": "busIDs[]",
+							"value": "258"
+						}
 					]
 				}
 			},
@@ -447,11 +526,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/Login",
+					"raw": "https://consumer.odbus.co.in/api/Login",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Login"
 					]
 				}
@@ -465,7 +549,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"user_type\":\"agent\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"created_by\":\"Swagatika\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -473,11 +557,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/Register",
+					"raw": "https://consumer.odbus.co.in/api/Register",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Register"
 					]
 				}
@@ -551,11 +640,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/VerifyOtp",
+					"raw": "https://consumer.odbus.co.in/api/VerifyOtp",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"VerifyOtp"
 					]
 				}
@@ -609,15 +703,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/UserProfile",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/UserProfile",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"UserProfile"
@@ -812,12 +905,31 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/BusDetails",
+					"raw": "https://consumer.odbus.co.in/api/BusDetails?bus_id=1&source_id=82&destination_id=434",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"BusDetails"
+					],
+					"query": [
+						{
+							"key": "bus_id",
+							"value": "1"
+						},
+						{
+							"key": "source_id",
+							"value": "82"
+						},
+						{
+							"key": "destination_id",
+							"value": "434"
+						}
 					]
 				}
 			},
@@ -841,15 +953,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/PopularRoutes",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/PopularRoutes",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"PopularRoutes"
@@ -864,11 +975,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/TopOperators",
+					"raw": "https://consumer.odbus.co.in/api/TopOperators",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"TopOperators"
 					]
 				}
@@ -890,15 +1006,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/CancelTicket",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/CancelTicket",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"CancelTicket"
@@ -913,15 +1028,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/AllRoutes",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/AllRoutes",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"AllRoutes"
@@ -948,15 +1062,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/OperatorDetails?operator_url=gpm-travels",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/OperatorDetails?operator_url=iconic-travels",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"OperatorDetails"
@@ -964,7 +1077,7 @@
 					"query": [
 						{
 							"key": "operator_url",
-							"value": "gpm-travels"
+							"value": "iconic-travels"
 						}
 					]
 				}
@@ -977,11 +1090,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/AllOperators",
+					"raw": "https://consumer.odbus.co.in/api/AllOperators",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AllOperators"
 					]
 				},
@@ -1009,7 +1127,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"userId\":\"1\",\r\n     \"token\":\"9LgTdlPLrZ\"\r\n}  ",
+					"raw": "{ \r\n    \"userId\":\"1\",\r\n    \"token\":\"9LgTdlPLrZ\"\r\n}  ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1017,11 +1135,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/UserReviews",
+					"raw": "https://consumer.odbus.co.in/api/UserReviews",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"UserReviews"
 					]
 				}
@@ -1043,15 +1166,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Offers",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/Offers",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"Offers"
@@ -1067,7 +1189,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":9,  \r\n    \"source_id\":\"1291\", \r\n    \"destination_id\":\"1374\",\r\n    \"journey_date\":\"2021-11-22\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
+					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":1,  \r\n    \"source_id\":\"82\", \r\n    \"destination_id\":\"434\",\r\n    \"journey_date\":\"2022-01-16\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1075,15 +1197,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Coupons",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/Coupons",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"Coupons"
@@ -1138,11 +1259,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/JourneyDetails",
+					"raw": "https://consumer.odbus.co.in/api/JourneyDetails",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"JourneyDetails"
 					]
 				}
@@ -1164,11 +1290,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{url}}/UpdateReview/1",
+					"raw": "https://consumer.odbus.co.in/api/UpdateReview/1",
+					"protocol": "https",
 					"host": [
-						"{{url}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"UpdateReview",
 						"1"
 					]
@@ -1191,15 +1322,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/AgentBooking",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/AgentBooking",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"AgentBooking"
@@ -1215,7 +1345,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 10,\r\n    \"sourceId\":1345, \r\n    \"destinationId\":1374,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37],\r\n    \"entry_date\":\"13-11-2021\"\r\n}",
+					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37],\r\n    \"entry_date\":\"13-11-2021\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1223,15 +1353,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/AgentWalletPayment",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/AgentWalletPayment",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"AgentWalletPayment"
@@ -1255,15 +1384,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/AgentPaymentStatus",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/AgentPaymentStatus",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"AgentPaymentStatus"
@@ -1342,15 +1470,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/updateProfile",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/updateProfile",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"updateProfile"
@@ -1374,15 +1501,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/RecentSearch",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"RecentSearch"
@@ -1397,15 +1523,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/RecentSearch/1",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch/1",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"RecentSearch",
@@ -1430,15 +1555,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/cancelTicketInfo",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/cancelTicketInfo",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"cancelTicketInfo"
@@ -1454,7 +1578,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\":\"152\",\r\n    \"page_url\":\"about-us\"\r\n}",
+					"raw": "{\r\n    \"user_id\":\"1\",\r\n    \"page_url\":\"about-us\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1462,15 +1586,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/GetPageData",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/GetPageData",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"GetPageData"
@@ -1489,7 +1612,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1497,18 +1620,23 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/seolist",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/seolist?user_id=1",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"seolist"
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "1"
+						}
 					]
 				}
 			},
@@ -1521,7 +1649,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
+					"raw": "{\r\n    \"user_id\":\"1\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1529,15 +1657,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/GetTestimonial",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/GetTestimonial",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"GetTestimonial"
@@ -1553,7 +1680,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\":\"152\"\r\n}",
+					"raw": "{\r\n    \"user_id\":\"1\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1561,15 +1688,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/CommonService",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/CommonService",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"CommonService"
