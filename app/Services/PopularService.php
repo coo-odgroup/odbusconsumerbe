@@ -107,7 +107,7 @@ class PopularService
 
         $operatorDetails = $this->popularRepository->GetOperatorDetail($operator_url);
       
-      if($operatorDetails){
+      if($operatorDetails && isset($operatorDetails[0])){
       
           $buses = $operatorDetails[0]->bus;
           $busIds =$buses->pluck('id');

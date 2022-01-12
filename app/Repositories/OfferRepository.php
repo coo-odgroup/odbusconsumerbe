@@ -74,6 +74,7 @@ class OfferRepository
 
         $busCouponCode = [];
         $opCouponCode = [];
+        $appliedCoupon = collect([]);
         foreach($records as $record){        
                     if(isset($record->couponAssignedBus[0]->coupon)){                //Bus wise coupon
                         $busCouponCode = $record->couponAssignedBus[0]->coupon->coupon_code;     
@@ -88,7 +89,7 @@ class OfferRepository
                     $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
                     
                     ///Coupon applicable for specific date range
-                    $appliedCoupon = collect([]);
+                   
                     $date = Carbon::now();
                     $bookingDate = $date->toDateString();
                     foreach($CouponRecords as $key => $coupon){
