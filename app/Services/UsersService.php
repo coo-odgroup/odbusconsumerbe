@@ -138,7 +138,7 @@ class UsersService
          }
          
          else if($status=='Completed'){  
-             $list = $this->usersRepository->CancelledBookings($user->id,$today); 
+             $list = $this->usersRepository->CompletedBookings($user->id,$today); 
          }
  
          else if($status=='Upcoming'){ 
