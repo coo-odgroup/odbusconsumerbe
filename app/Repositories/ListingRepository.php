@@ -180,6 +180,7 @@ class ListingRepository
 
      public function getBusData($busOperatorId,$busId,$userId,$entry_date)
      {
+        
         return $this->bus
         // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
         //     $query->where('bus_operator_id',$busOperatorId);
@@ -212,11 +213,13 @@ class ListingRepository
                 // $bs->where(function ($q) use ($entry_date){
                 //         $q->where([['operation_date', $entry_date],['type',1]]);
                 //     })
-                   ->orwhereNull('operation_date')
+                   ->whereNull('operation_date')
                    ->where('status',1)
                    ->with(['seats' => function ($s) {
                         $s->where('status',1);
-                   }]);   
+                   }
+                ])
+                ;   
             }])
         ->with('BusSitting')
         ->with(['busGallery' => function ($a){

@@ -52,13 +52,16 @@ class ListingService
 
          $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
 
-         if(isset($routeCoupon[0]->coupon)){                           
+         if(isset($routeCoupon[0]->coupon))
+         {                           
             $routeCouponCode = $routeCoupon[0]->coupon->coupon_code;//route wise coupon
-         }else{
+         }else
+         {
             $routeCouponCode =[];
          }         
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
-         //return $busDetails; 
+         $busDetailss[] = $busDetails[0]; 
+         //return $busDetails;
          $records = array();
          $ListingRecords = array();
          $showBusRecords = [];
@@ -66,7 +69,8 @@ class ListingService
 
         //$CurrentDateTime = "2022-01-11 14:48:35";
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
-        foreach($busDetails as $busDetail){
+        foreach($busDetails as $busDetail)
+        {
             $ticketPriceId = $busDetail['id'];
             $busId = $busDetail['bus_id'];
             $startJDay = $busDetail['start_j_days'];
@@ -106,8 +110,11 @@ class ListingService
                                           ->where('bus_id', $busId)
                                           ->where('seized_date', $entry_date)
                                           ->get('seize_booking_minute');  
-                                          
-            if(!$dayWiseSeizeTime->isEmpty()){
+            
+                              
+            if(!$dayWiseSeizeTime->isEmpty())
+            {
+                
                 $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
                 if($dWiseSeizeTime < $diff_in_minutes){
                     switch($startJDay){
@@ -125,7 +132,9 @@ class ListingService
                      if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                         $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                      } 
-                }else{
+                }
+                else
+                {
                     switch($startJDay){
                         case(1):
                             $new_date = $entry_date;
@@ -144,24 +153,31 @@ class ListingService
   
                 }
             }
-           elseif($seizedTime < $diff_in_minutes){
-                    switch($startJDay){
-                        case(1):
-                            $new_date = $entry_date;
-                            break;
-                        case(2):
-                            $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-                            break;
-                        case(3):
-                            $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
-                            break;
-                    } 
-                    $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
-                    if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                       $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
-                    } 
-               }else{
-                switch($startJDay){
+           elseif($seizedTime < $diff_in_minutes)
+           {
+                 Log:: info("  dayWiseSeizeTime is Empty");
+                switch($startJDay)
+                {
+                    case(1):
+                        $new_date = $entry_date;
+                        break;
+                    case(2):
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                        break;
+                    case(3):
+                        $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                        break;
+                } 
+                $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
+                if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty())
+                {
+                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                } 
+            }
+               else
+               {
+                switch($startJDay)
+                {
                     case(1):
                         $new_date = $entry_date;
                         break;
@@ -178,9 +194,11 @@ class ListingService
                 }
                 // $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                }
-        }
+        }        
+        
          $showBusRecords = Arr::flatten($records);
          $hideBusRecords = Arr::flatten($hideBusRecords);
+        
          //return $showBusRecords;
         
          $showRecords = $this->processBusRecords($showBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,'show');
