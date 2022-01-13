@@ -328,16 +328,24 @@ class ListingService
                                    ->where('ticket_price_id',$ticketPriceId)
                                    ->where('type',2)                              
                                    ->pluck('seats_id');
+            $unavailbleSeats = $record->busSeats
+                                   ->where('operation_date','!=',$entry_date)
+                                   ->where('ticket_price_id',$ticketPriceId)
+                                   ->where('type',1)                              
+                                   ->pluck('seats_id');
+
        ////////Hide Extra Seats based on seize time//////
 
            if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
                if($seizedTime[0] > $diff_in_minutes){
-                   $blockSeats = $blockSeats->concat(collect($extraSeatsHide));
+                   //$blockSeats = $blockSeats->concat(collect($extraSeatsHide));
+                   $blockSeats = $blockSeats->concat(collect($extraSeatsHide))->concat(collect($unavailbleSeats));
                }    
            }
        /////////////Blocked Extra Seats on specific date///////////
        if(!$extraSeatsBlock->isEmpty()){
-           $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+           //$blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+           $blockSeats = $blockSeats->concat(collect($extraSeatsBlock))->concat(collect($unavailbleSeats));
        }
 
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
@@ -653,7 +661,7 @@ class ListingService
                     } 
                      $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                      if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                        $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                        $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,$seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                      } 
                 }else{
 
@@ -670,7 +678,7 @@ class ListingService
                     } 
                      $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                      if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                        $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                        $hideBusRecords[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,$seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                      } 
                 }
             }
@@ -688,7 +696,7 @@ class ListingService
             } 
                 $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                    $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                    $records[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,$seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                 } 
             }else{
                 switch($startJDay){
@@ -704,7 +712,7 @@ class ListingService
                 } 
                     $busEntryPresent =$this->listingRepository->checkBusentry($busId,$new_date);
                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
-                        $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                        $hideBusRecords[] = $this->listingRepository->getFilterBusList($busOperatorId,$busId,$busType,$seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date);
                     } 
             }
         }

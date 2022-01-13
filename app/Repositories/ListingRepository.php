@@ -270,9 +270,9 @@ class ListingRepository
          //->with('busSeats.seats')
          /////////////////////////seat_open/////////////////////////////////
         ->with(['busSeats' => function ($bs) use ($entry_date) {
-            $bs->where([['operation_date', $entry_date]])
-               ->orwhereNull('operation_date')
-            ->where('status',1)
+            // $bs->where([['operation_date', $entry_date]])
+            //    ->orwhereNull('operation_date')
+            $bs->where('status',1)
                ->with(['seats' => function ($s) {
                         $s->where('status',1);
                    }]);   
