@@ -19,7 +19,7 @@ class WhiteListMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        Log:: info($request->ip());
+        //Log:: info($request->ip());
         //return $next($request);
 
 
