@@ -164,4 +164,4 @@ Route::middleware(['checkIp'])->group(function () {
     Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
 });
 
-
+Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
