@@ -208,13 +208,15 @@ class ListingRepository
         ->with('BusType.busClass')
         //->with('busSeats.seats')
         /////////////////////////seat_open/////////////////////////////////
+
         ->with(['busSeats' => function ($bs) use ($entry_date) {
-            $bs->where([['operation_date', $entry_date]] )
-                // $bs->where(function ($q) use ($entry_date){
-                //         $q->where([['operation_date', $entry_date],['type',1]]);
-                //     })
-                   ->whereNull('operation_date')
-                   ->where('status',1)
+            // $bs->where([['operation_date', $entry_date]] )
+            //     // $bs->where(function ($q) use ($entry_date){
+            //     //         $q->where([['operation_date', $entry_date],['type',1]]);
+            //     //     })
+            //     ->orwhereNull('operation_date')
+            //        //->whereNull('operation_date')
+                $bs->where('status',1)
                    ->with(['seats' => function ($s) {
                         $s->where('status',1);
                    }
@@ -270,7 +272,7 @@ class ListingRepository
         ->with(['busSeats' => function ($bs) use ($entry_date) {
             $bs->where([['operation_date', $entry_date]])
                ->orwhereNull('operation_date')
-               ->where('status',1)
+            ->where('status',1)
                ->with(['seats' => function ($s) {
                         $s->where('status',1);
                    }]);   
