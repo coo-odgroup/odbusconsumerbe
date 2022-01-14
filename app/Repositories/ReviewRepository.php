@@ -105,6 +105,8 @@ class ReviewRepository
      */
     public function updateReview($data, $id)
     {
+
+       
         
         $rev_data = $this->review->where('id',$id)->get();
 

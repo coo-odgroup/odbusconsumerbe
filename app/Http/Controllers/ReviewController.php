@@ -336,6 +336,7 @@ class ReviewController extends Controller
         }
        
     } catch (Exception $e) {
+
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
     }
     }

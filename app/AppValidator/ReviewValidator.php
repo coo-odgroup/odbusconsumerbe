@@ -13,6 +13,7 @@ class ReviewValidator
             'pnr' => 'required',
             'bus_id' => 'required',
             'users_id' => 'required',
+            'user_id' => 'required',
             'reference_key' => 'required',
             'rating_overall' => 'required',
             'rating_comfort' => 'required',

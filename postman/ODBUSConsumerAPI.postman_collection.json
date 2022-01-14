@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "56aaa6c4-6352-4ef5-a64c-3f92b10337c0",
+		"_postman_id": "062c0f5e-3833-4152-b584-ff20d00e0819",
 		"name": "ODBUSConsumerAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -44,11 +44,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}i/Listing?source=Bhubaneswar&destination=rourkela&entry_date=15-01-2022",
+					"raw": "https://consumer.odbus.co.in/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=15-01-2022",
+					"protocol": "https",
 					"host": [
-						"{{URL}}i"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Listing"
 					],
 					"query": [
@@ -87,11 +92,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/viewSeats?entry_date=21-12-2021&busId=1&sourceId=82&destinationId=434",
+					"raw": "https://consumer.odbus.co.in/api/viewSeats?entry_date=21-12-2021&busId=1&sourceId=82&destinationId=434",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"viewSeats"
 					],
 					"query": [
@@ -134,11 +144,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755&entry_date=15-01-2022",
+					"raw": "https://consumer.odbus.co.in/api/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755&entry_date=15-01-2022",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"PriceOnSeatsSelection"
 					],
 					"query": [
@@ -178,7 +193,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n        \"specialFare\": -20,\r\n        \"addOwnerFare\": -30,\r\n        \"festiveFare\":-40,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -186,11 +201,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/BookTicket",
+					"raw": "https://consumer.odbus.co.in/api/BookTicket",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"BookTicket"
 					]
 				}
@@ -225,11 +245,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/getLocation",
+					"raw": "https://consumer.odbus.co.in/api/getLocation",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"getLocation"
 					]
 				}
@@ -254,11 +279,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/Filter?price=0&sourceID=82&destinationID=434&entry_date=15-01-2022",
+					"raw": "https://consumer.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=434&entry_date=15-01-2022",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Filter"
 					],
 					"query": [
@@ -301,11 +331,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/BoardingDroppingPoints?busId=1&sourceId=82&destinationId=434",
+					"raw": "https://consumer.odbus.co.in/api/BoardingDroppingPoints?busId=1&sourceId=82&destinationId=434",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"BoardingDroppingPoints"
 					],
 					"query": [
@@ -341,9 +376,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/SendSms",
+					"raw": "{{url}}/SendSms",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"SendSms"
@@ -367,9 +402,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/SendEmail",
+					"raw": "{{url}}/SendEmail",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"SendEmail"
@@ -408,11 +443,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/MakePayment",
+					"raw": "https://consumer.odbus.co.in/api/MakePayment",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"MakePayment"
 					]
 				}
@@ -437,11 +477,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/FilterOptions?sourceID=82&destinationID=434&busIDs[]=254&busIDs[]=251&busIDs[]=258",
+					"raw": "https://consumer.odbus.co.in/api/FilterOptions?sourceID=82&destinationID=434&busIDs[]=254&busIDs[]=251&busIDs[]=258",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"FilterOptions"
 					],
 					"query": [
@@ -485,11 +530,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/Login",
+					"raw": "https://consumer.odbus.co.in/api/Login",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Login"
 					]
 				}
@@ -511,11 +561,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/Register",
+					"raw": "https://consumer.odbus.co.in/api/Register",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Register"
 					]
 				}
@@ -537,9 +592,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/storeGWInfo",
+					"raw": "{{url}}/storeGWInfo",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"storeGWInfo"
@@ -563,9 +618,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/RegisterSession",
+					"raw": "{{url}}/RegisterSession",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"RegisterSession"
@@ -589,11 +644,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/VerifyOtp",
+					"raw": "https://consumer.odbus.co.in/api/VerifyOtp",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"VerifyOtp"
 					]
 				}
@@ -615,9 +675,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/smsDeliveryStatus",
+					"raw": "{{url}}/smsDeliveryStatus",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"smsDeliveryStatus"
@@ -647,11 +707,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/UserProfile",
+					"raw": "https://consumer.odbus.co.in/api/UserProfile",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"UserProfile"
 					]
 				}
@@ -674,9 +739,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/Logout",
+					"raw": "{{url}}/Logout",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"Logout"
@@ -701,9 +766,9 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/RefreshToken",
+					"raw": "{{url}}/RefreshToken",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"RefreshToken"
@@ -727,11 +792,17 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/PaymentStatus",
+					"raw": "http://127.0.0.1:8000/api/PaymentStatus",
+					"protocol": "http",
 					"host": [
-						"{{URL}}"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
+						"api",
 						"PaymentStatus"
 					]
 				}
@@ -753,9 +824,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/SendEmailTicket",
+					"raw": "{{url}}/SendEmailTicket",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"SendEmailTicket"
@@ -779,11 +850,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/VerifyOtpLogin",
+					"raw": "https://consumer.neoflix.in/api/VerifyOtpLogin",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"neoflix",
+						"in"
 					],
 					"path": [
+						"api",
 						"VerifyOtpLogin"
 					]
 				}
@@ -805,9 +880,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/SendSmsTicket",
+					"raw": "{{url}}/SendSmsTicket",
 					"host": [
-						"{{URL}}"
+						"{{url}}"
 					],
 					"path": [
 						"SendSmsTicket"
@@ -834,11 +909,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/BusDetails?bus_id=1&source_id=82&destination_id=434",
+					"raw": "https://consumer.odbus.co.in/api/BusDetails?bus_id=1&source_id=82&destination_id=434",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"BusDetails"
 					],
 					"query": [
@@ -877,11 +957,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/PopularRoutes",
+					"raw": "https://consumer.odbus.co.in/api/PopularRoutes",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"PopularRoutes"
 					]
 				}
@@ -894,11 +979,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/TopOperators",
+					"raw": "https://consumer.odbus.co.in/api/TopOperators",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"TopOperators"
 					]
 				}
@@ -920,11 +1010,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/CancelTicket",
+					"raw": "https://consumer.odbus.co.in/api/CancelTicket",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"CancelTicket"
 					]
 				}
@@ -937,11 +1032,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/AllRoutes",
+					"raw": "https://consumer.odbus.co.in/api/AllRoutes",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AllRoutes"
 					]
 				}
@@ -966,11 +1066,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/OperatorDetails?operator_url=iconic-travels",
+					"raw": "https://consumer.odbus.co.in/api/OperatorDetails?operator_url=iconic-travels",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"OperatorDetails"
 					],
 					"query": [
@@ -989,11 +1094,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/AllOperators",
+					"raw": "https://consumer.odbus.co.in/api/AllOperators",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AllOperators"
 					]
 				},
@@ -1029,11 +1139,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/UserReviews",
+					"raw": "https://consumer.odbus.co.in/api/UserReviews",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"UserReviews"
 					]
 				}
@@ -1047,7 +1162,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"bus_operator_id\":1\r\n}",
+					"raw": "{\r\n    \"user_id\":1\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1055,9 +1170,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/api/Offers",
+					"raw": "https://consumer.odbus.co.in/api/Offers",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
 						"api",
@@ -1082,11 +1201,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/Coupons",
+					"raw": "https://consumer.odbus.co.in/api/Coupons",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"Coupons"
 					]
 				}
@@ -1139,11 +1263,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/JourneyDetails",
+					"raw": "https://consumer.odbus.co.in/api/JourneyDetails",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"JourneyDetails"
 					]
 				}
@@ -1165,11 +1294,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/UpdateReview/1",
+					"raw": "https://consumer.odbus.co.in/api/UpdateReview/1",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"UpdateReview",
 						"1"
 					]
@@ -1192,11 +1326,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/AgentBooking",
+					"raw": "https://consumer.odbus.co.in/api/AgentBooking",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AgentBooking"
 					]
 				}
@@ -1218,11 +1357,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/AgentWalletPayment",
+					"raw": "https://consumer.odbus.co.in/api/AgentWalletPayment",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AgentWalletPayment"
 					]
 				}
@@ -1244,11 +1388,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/AgentPaymentStatus",
+					"raw": "https://consumer.odbus.co.in/api/AgentPaymentStatus",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"AgentPaymentStatus"
 					]
 				}
@@ -1261,11 +1410,17 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/AllPathUrls",
+					"raw": "http://127.0.0.1:8000/api/AllPathUrls",
+					"protocol": "http",
 					"host": [
-						"{{URL}}"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
+						"api",
 						"AllPathUrls"
 					]
 				}
@@ -1287,11 +1442,17 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/TestingEmail",
+					"raw": "http://127.0.0.1:8000/api/TestingEmail",
+					"protocol": "http",
 					"host": [
-						"{{URL}}"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
+						"api",
 						"TestingEmail"
 					]
 				}
@@ -1313,11 +1474,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/updateProfile",
+					"raw": "https://consumer.odbus.co.in/api/updateProfile",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"updateProfile"
 					]
 				}
@@ -1339,11 +1505,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/RecentSearch",
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"RecentSearch"
 					]
 				}
@@ -1356,11 +1527,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{URL}}/RecentSearch/1",
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch/1",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"RecentSearch",
 						"1"
 					]
@@ -1383,11 +1559,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/cancelTicketInfo",
+					"raw": "https://consumer.odbus.co.in/api/cancelTicketInfo",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"cancelTicketInfo"
 					]
 				}
@@ -1409,11 +1590,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/GetPageData",
+					"raw": "https://consumer.odbus.co.in/api/GetPageData",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"GetPageData"
 					]
 				}
@@ -1438,11 +1624,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/seolist?user_id=1",
+					"raw": "https://consumer.odbus.co.in/api/seolist?user_id=1",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"seolist"
 					],
 					"query": [
@@ -1470,11 +1661,16 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/GetTestimonial",
+					"raw": "https://consumer.odbus.co.in/api/GetTestimonial",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"GetTestimonial"
 					]
 				}
@@ -1482,7 +1678,7 @@
 			"response": []
 		},
 		{
-			"name": "Get social links",
+			"name": "Common Service",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -1496,12 +1692,135 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/CommonService",
+					"raw": "https://consumer.odbus.co.in/api/CommonService",
+					"protocol": "https",
 					"host": [
-						"{{URL}}"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
 					"path": [
+						"api",
 						"CommonService"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Contact save",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"Lima Mohanty\",\r\n    \"email\":\"lima@gmail.com\",\r\n    \"phone\":\"8763447921\",\r\n    \"service\":\"Feedback\",\r\n    \"message\":\"Very Nice\",\r\n    \"user_id\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/saveContacts",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"saveContacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add review",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"pnr\": \"86295104\",\r\n\t\"bus_id\": 7,\r\n\t\"users_id\": 2,\r\n\t\"reference_key\": \"banashri.seofied1@gmail.com\",\r\n\t\"rating_overall\": 4,\r\n\t\"rating_comfort\": 4,\r\n\t\"rating_clean\": 5,\r\n\t\"rating_behavior\": 5,\r\n\t\"rating_timing\": 5,\r\n\t\"comments\": \"test\",\r\n    \"title\": \"test title\",\r\n\t\"created_by\": \"Lima Mohanty\",\r\n    \"user_id\":1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/AddReview",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"AddReview"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateReview",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\": \"86295104\",\r\n    \"bus_id\":7,\r\n    \"users_id\": 2,\r\n    \"reference_key\": \"test222@gmail.com\",\r\n    \"rating_overall\": \"5\",\r\n    \"rating_comfort\": \"5\",\r\n    \"rating_clean\": \"5\",\r\n    \"rating_behavior\": \"4\",\r\n    \"rating_timing\": \"2\",\r\n    \"comments\": \"Test comments\",\r\n    \"title\": \"Test comments\",\r\n    \"created_by\": \"Lima\",\r\n    \"user_id\":1\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/UpdateReview/16",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"UpdateReview",
+						"16"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteReview",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/DeleteReview/1/67",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"DeleteReview",
+						"1",
+						"67"
 					]
 				}
 			},

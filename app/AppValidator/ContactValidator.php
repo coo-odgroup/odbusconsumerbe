@@ -14,7 +14,8 @@ class ContactValidator
             'email' => 'required|email',
             'phone' => 'required|digits:10',
             'service' => 'required',
-            'message' => 'required'
+            'message' => 'required',
+            'user_id' => 'required'
         ];      
       
         $ContactValidation = Validator::make($data, $rules);
