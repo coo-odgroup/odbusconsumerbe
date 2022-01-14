@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\MyComment;
 use App\Models\Bus;
+use App\Models\BusSeats;
+use App\Models\Dummy;
 use App\Models\BusCancelled;
 use App\Models\BusOperator;
 //use App\Models\BusStoppage;
@@ -401,22 +403,74 @@ class ArticleController extends Controller
     {
         $entry_date = $request['entry_date'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
-        $busSeats = Bus::with(['busSeats' => function ($bs) use ($entry_date) {
-            $bs->where([['operation_date', $entry_date]] )
-                // $bs->where(function ($q) use ($entry_date){
-                //         $q->where([['operation_date', $entry_date],['type',1]]);
-                //     })
-                //->orwhereNull('operation_date')
-                   ->whereNull('operation_date')
-                   ->where('status',1)
-                   ->with(['seats' => function ($s) {
+        $busSeats = Bus::with(['busSeats'=> function ($bs) use ($entry_date) {
+            $bs->where('operation_date', $entry_date)
+               ->orwhereNull('operation_date')
+               //->whereNull('operation_date');
+               ->where('status',1)
+               ->with(['seats' => function ($s){
                         $s->where('status',1);
-                   }
-                ])
-                ;   
-            }]);
+                    }]);
+        }])
+            ->get();
+            return $busSeats;
 
-       return $busSeats;
+
+            
+//////////////////////////////////////////////////////////////////////////////
+
+
+        DB::connection()->enableQueryLog();
+        $entry_date = $request['entry_date'];
+        $entry_date = date("Y-m-d", strtotime($entry_date));
+        //$busSeats = Bus::all();
+        //$busSeats = BusSeats::all();
+        $busSeats = Dummy::get();
+        //$busSeats = Bus::with('busSeats')->get();
+        return $busSeats;
+
+
+
+
+        $busSeats = Bus::with(['busSeats'=> function ($bs) use ($entry_date) {
+            $bs->where('operation_date', $entry_date)
+               ->orwhereNull('operation_date');
+               //->whereNull('operation_date');
+        }])
+            ->get();
+         //return $busSeats;
+
+         
+         
+         //$result = User:where(['status' => 1])->get();
+         
+         $log = DB::getQueryLog();
+         
+         dd($log);
+
+
+        
+
+
+
+
+
+        // $busSeats = Bus::with(['busSeats' => function ($bs) use ($entry_date) {
+        //     $bs->where(['operation_date', $entry_date] )
+        //         // $bs->where(function ($q) use ($entry_date){
+        //         //         $q->where([['operation_date', $entry_date],['type',1]]);
+        //         //     })
+        //         //->orwhereNull('operation_date')
+        //            ->whereNull('operation_date')
+        //            ->where('status',1);
+        //         //    ->with(['seats' => function ($s) {
+        //         //         $s->where('status',1);
+                   
+        //         //     }]); 
+                  
+        //     }])->get();
+
+      
     }
 
 

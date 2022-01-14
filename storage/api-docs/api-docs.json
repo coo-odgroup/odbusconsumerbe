@@ -1333,16 +1333,16 @@
         "/api/CommonService": {
             "post": {
                 "tags": [
-                    "Get all Social media links"
+                    "Common Service"
                 ],
-                "summary": "Get all Social media links",
-                "description": "Get all Social media links",
+                "summary": "Get all SEO related things",
+                "description": "Get all SEO related things",
                 "operationId": "327080c555a0e68239a28ee284986b61",
                 "parameters": [
                     {
-                        "name": "bus_operator_id",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "bus operator Id",
+                        "description": "user Id",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -1414,6 +1414,15 @@
                         "name": "message",
                         "in": "query",
                         "description": "message",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User Id",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1821,9 +1830,9 @@
                 "operationId": "f7bc4f42b69bd5078e0153255fd19d64",
                 "parameters": [
                     {
-                        "name": "bus_operator_id",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "bus operator Id",
+                        "description": "user Id",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1975,9 +1984,9 @@
                 "operationId": "c85725e85a43f55f9545050ba31c8298",
                 "parameters": [
                     {
-                        "name": "bus_operator_id",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "bus operator Id",
+                        "description": "user Id",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -2651,9 +2660,9 @@
                 "operationId": "d04b987587946886eb384e312afba3af",
                 "parameters": [
                     {
-                        "name": "bus_operator_id",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "bus operator Id",
+                        "description": "User Id",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -2686,9 +2695,9 @@
                 "operationId": "e3debdc03515461236be89b465e881ac",
                 "parameters": [
                     {
-                        "name": "bus_operator_id",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "bus operator Id",
+                        "description": "User Id",
                         "required": true,
                         "schema": {
                             "type": "integer",

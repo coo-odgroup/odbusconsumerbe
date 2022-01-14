@@ -34,12 +34,12 @@ class CommonController extends Controller
     /**
      * @OA\Post(
      *     path="/api/CommonService",
-     *     tags={"Get all Social media links"},
-     *     description="Get all Social media links",
-     *     summary="Get all Social media links",
+     *     tags={"Common Service"},
+     *     description="Get all SEO related things",
+     *     summary="Get all SEO related things",
      *     @OA\Parameter(
-     *          name="bus_operator_id",
-     *          description="bus operator Id",
+     *          name="user_id",
+     *          description="user Id",
      *          required=true,
      *          in="query",
      *          @OA\Schema(

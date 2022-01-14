@@ -32,8 +32,8 @@ class OfferController extends Controller
      *     description="get all Offers",
      *     summary="Get all Offers",
      *     @OA\Parameter(
-     *          name="bus_operator_id",
-     *          description="bus operator Id",
+     *          name="user_id",
+     *          description="user Id",
      *          required=true,
      *          in="query",
      *          @OA\Schema(

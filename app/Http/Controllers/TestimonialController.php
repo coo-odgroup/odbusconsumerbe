@@ -26,8 +26,8 @@ class TestimonialController extends Controller
      *     description="Get all Testimonials",
      *     summary="Get all Testimonials",
      *     @OA\Parameter(
-     *          name="bus_operator_id",
-     *          description="bus operator Id",
+     *          name="user_id",
+     *          description="User Id",
      *          required=true,
      *          in="query",
      *          @OA\Schema(

@@ -163,6 +163,15 @@ class ReviewController extends Controller
          *              type="string"
          *          )
          *      ),
+         *     @OA\Parameter(
+         *          name="user_id",
+         *          description="User Id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="number"
+         *          )
+         *      ),
          *  @OA\Response(response="200", description="Add reviews by a customer"),
          *  @OA\Response(response=401, description="Unauthorized"),
          *     security={
@@ -311,6 +320,15 @@ class ReviewController extends Controller
    *              type="string"
    *          )
    *      ),
+    *     @OA\Parameter(
+   *          name="user_id",
+   *          description="User Id",
+   *          required=true,
+   *          in="query",
+   *          @OA\Schema(
+   *              type="number"
+   *          )
+   *      ),
    *  @OA\Response(response="201", description="Updated reviews by a customer"),
    *  @OA\Response(response="404", description="Record not Found"),
    *  @OA\Response(response=401, description="Unauthorized"),
@@ -342,7 +360,7 @@ class ReviewController extends Controller
     }
   /**
    * @OA\Delete(
-   *     path="/api/DeleteReview/{id}",
+   *     path="/api/DeleteReview/{id}{userId}",
    *     tags={"Delete Review"},
    *     summary="Delete Review",
    *     @OA\Parameter(

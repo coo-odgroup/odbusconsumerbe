@@ -30,8 +30,8 @@ class SeoController extends Controller
      *     description="Get all SEO lists",
      *     summary="Get all SEO lists",
      *     @OA\Parameter(
-     *          name="bus_operator_id",
-     *          description="bus operator Id",
+     *          name="user_id",
+     *          description="User Id",
      *          required=true,
      *          in="query",
      *          @OA\Schema(

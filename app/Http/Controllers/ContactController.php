@@ -77,6 +77,15 @@ class ContactController extends Controller
          *              type="string"
          *          )
          *      ),
+         *     @OA\Parameter(
+         *          name="user_id",
+         *          description="User Id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string"
+         *          )
+         *      ),
          *  @OA\Response(response="200", description="Add Contacts of a acustomer"),
          *  @OA\Response(response=401, description="Unauthorized"),
          *     security={
