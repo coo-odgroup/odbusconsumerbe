@@ -60,7 +60,6 @@ class ListingService
             $routeCouponCode =[];
          }         
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
-         $busDetailss[] = $busDetails[0]; 
          //return $busDetails;
          $records = array();
          $ListingRecords = array();
