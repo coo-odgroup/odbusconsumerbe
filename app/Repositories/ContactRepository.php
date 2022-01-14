@@ -21,7 +21,7 @@ class ContactRepository
     public function save($data)
     { 
         $post = new $this->contacts;
-        $post->bus_operator_id  = $data['bus_operator_id'];
+        $post->user_id  = $data['user_id'];
         $post->name  = $data['name'];
         $post->email = $data['email'];
         $post->phone = $data['phone'];

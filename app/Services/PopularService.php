@@ -79,10 +79,20 @@ class PopularService
            $count = $route->count;
            $src = $this->popularRepository->getRoute($srcId);
            $dest= $this->popularRepository->getRoute($destId);
+
+           if($src && isset($src[0]) && $dest && isset($dest[0])){
+
             $allRoutes[] = array(
-                "source" => $src, 
-                "destination" => $dest
+                "source_id" => $src[0]->id, 
+                "source_name" =>$src[0]->name, 
+                "source_url" =>$src[0]->url, 
+                "destination_id" => $dest[0]->id, 
+                "destination_name" =>$dest[0]->name, 
+                "destination_url" =>$dest[0]->url
             );
+
+           }
+           
         } 
         return $allRoutes;
 
