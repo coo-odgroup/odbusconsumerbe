@@ -12,6 +12,10 @@ use InvalidArgumentException;
 use Illuminate\Support\Arr;
 use App\Models\TicketPrice;
 use App\Models\BusSeats;
+use App\Models\SpecialFare;
+use App\Models\BusSpecialFare;
+use App\Models\OwnerFare;
+use App\Models\BusOwnerFare;
 
 
 class ViewSeatsService
@@ -83,7 +87,6 @@ class ViewSeatsService
                $viewSeat['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
                $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
            } 
-
           // Upper Berth seat Calculation
            $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
         
@@ -96,7 +99,6 @@ class ViewSeatsService
                $viewSeat['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
            }
                 // Add Gender into Booked seat List
-       
                     $i=0; 
                     if(isset($viewSeat['upper_berth'])){  
                       foreach($viewSeat['upper_berth'] as &$ub){
@@ -104,7 +106,6 @@ class ViewSeatsService
                         // if(isset($ub->busSeats)){
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
                         }
-
                         if (sizeof($bookingIds)){
                             if(in_array($ub['id'], $blockedSeats)){
                             //if(collect($blockedSeats)->has($ub['id'])){
@@ -131,8 +132,6 @@ class ViewSeatsService
                         $i++;
                     } 
                   }
-             
-
             return $viewSeat;
     }
 
@@ -143,79 +142,92 @@ class ViewSeatsService
         $busId = $request['busId'];
         $sourceId = $request['sourceId'];
         $destinationId = $request['destinationId'];
+        $entry_date = $request['entry_date'];
+        $entry_date = date("Y-m-d", strtotime($entry_date));
         //$busOperatorId = $request['busOperatorId'];
         $user_id = Bus::where('id', $busId)->first()->user_id;
+
+        //////////////////////special Fare calculations/////////////////////
+        $bus = Bus::find($busId);	
+        $specialFares = $bus->specialFare()->where('date', $entry_date)->get();
         
+        $splSeaterFare=0;
+        $splSleeperFare =0;
+        if(count( $specialFares) > 0){
+            $splSeaterFare = (int)$specialFares[0]->seater_price;
+            $splSleeperFare = (int)$specialFares[0]->sleeper_price;
+        }    
+        ///////////////////////owner Fare calculations///////////////////////
+        $ownerFares = $bus->ownerfare()->where('date', $entry_date)->get();
+        $ownSeaterFare=0;
+        $ownSleeperFare =0;
+        if(count( $ownerFares) > 0){
+            $ownSeaterFare = (int)$ownerFares[0]->seater_price;
+            $ownSleeperFare = (int)$ownerFares[0]->sleeper_price;
+        }  
+        ///////////////////////Festive Fare calculations///////////////////////
+        $festiveFares = $bus->festiveFare()->where('date', $entry_date)->get();
+        $festiveSeaterFare=0;
+        $festiveSleeperFare =0;
+        if(count( $festiveFares) > 0){
+            $festiveSeaterFare = (int)$festiveFares[0]->seater_price;
+            $festiveSleeperFare = (int)$festiveFares[0]->sleeper_price;
+        }   
+                  
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
-
         $ticket_new_fare=array();
-
         if($seaterIds){
             $ticket_new_fare[] = $this->viewSeatsRepository->newFare($seaterIds,$busId,$busWithTicketPrice->id);
         }             
-
         if($sleeperIds){
-            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);
-           
+            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
         }
 
         $ownerFare=0;
+        $totalSplFare =0;
+        $totalOwnFare =0;
+        $totalFestiveFare =0;
         $PriceDetail=[];
-
-        //return $ticket_new_fare;
-
         if(count($ticket_new_fare) > 0){
             foreach($ticket_new_fare as $tktprc){
-
                 foreach($tktprc as $tkt){
-
-                    if( $tkt->type==2 ||    ($tkt->type==null && $tkt->operation_date != null )){
+                    if( $tkt->type==2 || ($tkt->type==null && $tkt->operation_date != null )){
                         // do nothing (this logic is to avoid extra seat block , seat block seats )
                     }  else{
-
                         if($tkt->new_fare == 0 ){
-
                             if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
                                 $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
                             }
-
                             else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
                                 $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
                             }
-
                             array_push($PriceDetail,$tkt);
-                             // Log::info($ownerFare);
-                        
                         }
-
-                        $ownerFare +=$tkt->new_fare;
-
-                                
-                    }
-
-                     
-                }
-              
+                        if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
+                            $totalSplFare +=$splSeaterFare;
+                            $totalOwnFare +=$ownSeaterFare;
+                            $totalFestiveFare +=$festiveSeaterFare;
+                            $tkt->new_fare +=$splSeaterFare+=$ownSeaterFare+=$festiveSeaterFare;
+                        }
+                        else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
+                            $totalSplFare +=$splSleeperFare;
+                            $totalOwnFare +=$ownSleeperFare;
+                            $totalFestiveFare +=$festiveSleeperFare;
+                            $tkt->new_fare +=$splSleeperFare+=$ownSleeperFare+=$festiveSleeperFare;
+                        }
+                        $ownerFare +=$tkt->new_fare;            
+                    }       
+                }  
             }
-
         }
-        
-
-       
        // $seaterPrice = $busWithTicketPrice->base_seat_fare;
        // $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
-       
-      
-        // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
-        //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;
-                    
+       // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
+       //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;             
         $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
-
-        $odbusServiceCharges=0;
-        $transactionFee=0;
-
-        $totalFare= $ownerFare;
-        
+        $odbusServiceCharges = 0;
+        $transactionFee = 0;
+        $totalFare = $ownerFare; 
         foreach($ticketFareSlabs as $ticketFareSlab){
 
             $startingFare = $ticketFareSlab->starting_fare;
@@ -243,6 +255,9 @@ class ViewSeatsService
             $seatWithPriceRecords[] = array(
                 "PriceDetail" => $PriceDetail,
                 "ownerFare" => $ownerFare,
+                "specialFare" => $totalSplFare,
+                "addOwnerFare" => $totalOwnFare,
+                "festiveFare" => $totalFestiveFare,
                 "odbusServiceCharges" => $odbusServiceCharges,
                 "transactionFee" => $transactionFee,
                 "totalFare" => $totalFare,

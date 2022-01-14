@@ -65,6 +65,10 @@ class Bus extends Model
     {
     	return $this->belongsToMany(SpecialFare::class);       
     }
+    public function festiveFare()
+    {
+    	return $this->belongsToMany(FestivalFare::class);       
+    }
     public function BusSitting()
     {
     	return $this->belongsTo(BusSitting::class);

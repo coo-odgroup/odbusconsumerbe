@@ -61,9 +61,7 @@ class BookTicketRepository
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill){
         $defUserId = Config::get('constants.USER_ID'); 
-
-        
-        
+   
         $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -98,6 +96,11 @@ class BookTicketRepository
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
+        //////
+        $booking->additional_special_fare = $bookingInfo['specialFare'];
+        $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
+        $booking->additional_festival_fare = $bookingInfo['festiveFare'];
+        //////
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
         
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
@@ -135,7 +138,7 @@ class BookTicketRepository
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $bookingInfo['bookingDetail'];
-        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
+        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  //in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
                 ->where('bus_id',$busId)
