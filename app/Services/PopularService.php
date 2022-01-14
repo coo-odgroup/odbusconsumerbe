@@ -90,7 +90,6 @@ class PopularService
                 "destination_name" =>$dest[0]->name, 
                 "destination_url" =>$dest[0]->url
             );
-
            }
            
         } 
