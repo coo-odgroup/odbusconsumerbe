@@ -334,6 +334,21 @@
                                                 "default": "1000",
                                                 "example": "1000"
                                             },
+                                            "specialFare": {
+                                                "type": "double",
+                                                "default": "10",
+                                                "example": "10"
+                                            },
+                                            "addOwnerFare": {
+                                                "type": "double",
+                                                "default": "10",
+                                                "example": "10"
+                                            },
+                                            "festiveFare": {
+                                                "type": "double",
+                                                "default": "10",
+                                                "example": "10"
+                                            },
                                             "owner_fare": {
                                                 "type": "double",
                                                 "default": "900",
@@ -3190,12 +3205,12 @@
                         }
                     },
                     {
-                        "name": "busOperatorId",
+                        "name": "entry_date",
                         "in": "query",
-                        "description": "busOperator Id",
+                        "description": "entry_date",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     {

@@ -143,12 +143,12 @@ class ViewSeatsController extends Controller
  *          )
  *      ),
  *      @OA\Parameter(
- *          name="busOperatorId",
- *          description="busOperator Id",
+ *          name="entry_date",
+ *          description="entry_date",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="string"
  *          )
  *      ),
  *     @OA\Parameter(
