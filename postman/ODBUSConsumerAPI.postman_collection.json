@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a8773020-26dd-4a1c-b46e-937199821555",
+		"_postman_id": "56aaa6c4-6352-4ef5-a64c-3f92b10337c0",
 		"name": "ODBUSConsumerAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -134,7 +134,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{URL}}/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755",
+					"raw": "{{URL}}/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755&entry_date=15-01-2022",
 					"host": [
 						"{{URL}}"
 					],
@@ -161,6 +161,10 @@
 						{
 							"key": "sleeper[]",
 							"value": "2755"
+						},
+						{
+							"key": "entry_date",
+							"value": "15-01-2022"
 						}
 					]
 				}
@@ -174,7 +178,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n        \"specialFare\": -20,\r\n        \"addOwnerFare\": -30,\r\n        \"festiveFare\":-40,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
