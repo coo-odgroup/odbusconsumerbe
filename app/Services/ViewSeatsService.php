@@ -207,13 +207,13 @@ class ViewSeatsService
                             $totalSplFare +=$splSeaterFare;
                             $totalOwnFare +=$ownSeaterFare;
                             $totalFestiveFare +=$festiveSeaterFare;
-                            $tkt->new_fare +=$splSeaterFare+=$ownSeaterFare+=$festiveSeaterFare;
+                            $tkt->new_fare +=$splSeaterFare+$ownSeaterFare+$festiveSeaterFare;
                         }
                         else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
                             $totalSplFare +=$splSleeperFare;
                             $totalOwnFare +=$ownSleeperFare;
                             $totalFestiveFare +=$festiveSleeperFare;
-                            $tkt->new_fare +=$splSleeperFare+=$ownSleeperFare+=$festiveSleeperFare;
+                            $tkt->new_fare +=$splSleeperFare+$ownSleeperFare+$festiveSleeperFare;
                         }
                         $ownerFare +=$tkt->new_fare;            
                     }       
