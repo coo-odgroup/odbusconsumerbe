@@ -272,6 +272,7 @@ class UsersRepository
     public function userReviews($user_id){
             
       return Review::where('users_id', $user_id)
+               ->where('status','!=',2)
           ->with('bus', function ($q) {
               $q->with('busGallery');
               $q->with('booking', function ($b){
