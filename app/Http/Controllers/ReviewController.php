@@ -325,8 +325,16 @@ class ReviewController extends Controller
       $reviewValidator = $this->reviewValidator->validate($data);
       try {
         $response = $this->reviewService->updateReview($data, $id);
-        return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
-
+        if($response =='NOT-MATCH'){
+          return $this->errorResponse('User does not match to the review',Response::HTTP_PARTIAL_CONTENT);
+        }
+        elseif($response =='NOT-EXIST'){
+          return $this->errorResponse('Review does not exist',Response::HTTP_PARTIAL_CONTENT);
+          
+        }else{
+          return $this->successResponse($response, Config::get('constants.RECORD_UPDATED'), Response::HTTP_CREATED);
+        }
+       
     } catch (Exception $e) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
     }
@@ -354,11 +362,20 @@ class ReviewController extends Controller
    *     )
    * )
    */  
-    public function deleteReview($id) {
+    public function deleteReview($id,$users_id) {
 
       try{
-        $response = $this->reviewService->deleteReview($id);
+        $response = $this->reviewService->deleteReview($id,$users_id);
+
+        if($response =='NOT-MATCH'){
+          return $this->errorResponse('User does not match to the review',Response::HTTP_PARTIAL_CONTENT);
+        }
+        elseif($response =='NOT-EXIST'){
+          return $this->errorResponse('Review does not exist',Response::HTTP_PARTIAL_CONTENT);
+          
+        }else{
         return $this->successResponse($response, Config::get('constants.RECORD_REMOVED'), Response::HTTP_ACCEPTED);
+        }
       }
       catch (Exception $e){
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

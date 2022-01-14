@@ -34,11 +34,11 @@ class ReviewService
      * @param $id
      * @return String
      */
-    public function deleteReview($id)
+    public function deleteReview($id,$users_id)
     {
 
         try {
-            $review = $this->reviewRepository->deleteReview($id);
+            $review = $this->reviewRepository->deleteReview($id,$users_id);
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.RECORD_NOT_FOUND'));

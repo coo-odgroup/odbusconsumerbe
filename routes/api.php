@@ -141,7 +141,7 @@ Route::middleware(['checkIp'])->group(function () {
     Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
     Route::post('/AddReview', [ReviewController::class, 'createReview']);
     Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
-    Route::delete('/DeleteReview/{id}', [ReviewController::class, 'deleteReview']);
+    Route::delete('/DeleteReview/{id}/{userId}', [ReviewController::class, 'deleteReview']);
     Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
     Route::post('/Register', [UsersController::class, 'Register']);
     Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
