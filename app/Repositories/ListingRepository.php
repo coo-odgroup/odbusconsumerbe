@@ -233,7 +233,8 @@ class ListingRepository
             $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
             $query->with(['users' => function ($u){
                 $u->select('id','name','profile_image');
-            }]);                      
+            }]); 
+            $query->orderBy('id','DESC');                     
             }])
         ->where('status','1')
         ->where('id',$busId)
