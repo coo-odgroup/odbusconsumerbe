@@ -109,11 +109,9 @@ class ListingService
                                           ->where('bus_id', $busId)
                                           ->where('seized_date', $entry_date)
                                           ->get('seize_booking_minute');  
-            
                               
             if(!$dayWiseSeizeTime->isEmpty())
-            {
-                
+            { 
                 $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
                 if($dWiseSeizeTime < $diff_in_minutes){
                     switch($startJDay){
@@ -154,7 +152,6 @@ class ListingService
             }
            elseif($seizedTime < $diff_in_minutes)
            {
-                 Log:: info("  dayWiseSeizeTime is Empty");
                 switch($startJDay)
                 {
                     case(1):
@@ -217,9 +214,9 @@ class ListingService
     public function processBusRecords($records,$routeCoupon,$routeCouponCode,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$flag){
         $busCouponCode = [];
         $opCouponCode = [];
-
         $ListingRecords = array();
         foreach($records as $record){
+            $unavailbleSeats = 0;
             $busId = $record->id; 
             $busName = $record->name;
             $popularity = $record->popularity;
@@ -290,13 +287,12 @@ class ListingService
             $totalTravelTime = $dep_time->diff($arr_time);
             $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-       $extraSeatsHide = $record->busSeats
+       $extraSeatsOpen = $record->busSeats 
                                ->where('bus_id',$busId)
                                ->where('status',1)
                                ->where('ticket_price_id',$ticketPriceId)
                                ->where('duration','>',0)
                                ->pluck('seats_id'); 
-                               
        $seizedTime = $record->busSeats
                                ->where('bus_id',$busId)
                                ->where('status',1)
@@ -311,7 +307,9 @@ class ListingService
                                    ->where('operation_date',$entry_date)
                                    ->where('type',null)
                                    ->pluck('seats_id');
-                        
+        $ActualExtraSeatsOpen = ($extraSeatsOpen->diff($extraSeatsBlock))->values();
+
+
        //$CurrentDateTime = "2022-01-05 16:48:35";
        $dep_Time = date("H:i:s", strtotime($departureTime));
        $CurrentDateTime = Carbon::now();//->toDateTimeString();
@@ -325,35 +323,38 @@ class ListingService
        /////seat close/////
             $blockSeats = $record->busSeats
                                    ->where('ticket_price_id',$ticketPriceId)
+                                   ->where('operation_date',$entry_date)
+                                   ->where('bus_id',$busId)
                                    ->where('type',2)                              
                                    ->pluck('seats_id');
             $unavailbleSeats = $record->busSeats
-                                   ->where('operation_date','!=',$entry_date)
-                                   ->where('ticket_price_id',$ticketPriceId)
-                                   ->where('type',1)                              
-                                   ->pluck('seats_id');
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('bus_id',$busId)
+                                ->where('type',1)
+                                ->where('operation_date','!=',$entry_date)                              
+                                ->pluck('seats_id');
+            $blockSeats = $blockSeats->concat(collect($unavailbleSeats));
 
-       ////////Hide Extra Seats based on seize time//////
-
-           if(!$extraSeatsHide->isEmpty() && !$seizedTime->isEmpty()){
+       ////////Hide Extra Seats based on seize time///////////////
+           if(!$ActualExtraSeatsOpen->isEmpty() && !$seizedTime->isEmpty()){
                if($seizedTime[0] > $diff_in_minutes){
-                   //$blockSeats = $blockSeats->concat(collect($extraSeatsHide));
-                   $blockSeats = $blockSeats->concat(collect($extraSeatsHide))->concat(collect($unavailbleSeats));
+                   $blockSeats = $blockSeats->concat(collect($ActualExtraSeatsOpen));
                }    
            }
-       /////////////Blocked Extra Seats on specific date///////////
-       if(!$extraSeatsBlock->isEmpty()){
-           //$blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
-           $blockSeats = $blockSeats->concat(collect($extraSeatsBlock))->concat(collect($unavailbleSeats));
-       }
 
+       /////////////Blocked Extra Seats on specific date///////////
+            if(!$extraSeatsBlock->isEmpty()){
+                $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+            }
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                            ->where("status","1")
                                            ->whereNotIn('seats_id',$blockSeats)
-                                           ->count('id');
+                                           ->unique('seats_id')
+                                           ->count('id');                                      
             $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                           ->where("status","1")
                                           ->whereNotIn('seats_id',$blockSeats)
+                                          ->unique('seats_id')
                                           ->all();
             //return  $seatDatas;
             $amenityDatas = [];  
@@ -370,7 +371,6 @@ class ListingService
 
                        if($am_dt->amenities->amenities_image !=''){
                            $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
-                 
                        }
 
                        if($am_dt->amenities->android_image !='')
@@ -510,7 +510,6 @@ class ListingService
                 }
             }
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
-           //return $bookedSeats;
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
@@ -524,8 +523,8 @@ class ListingService
                 "conductor_number" => $conductor_number,
                 "couponCode" =>$appliedCoupon->all(),
                 "operatorId" => $operatorId,
-                 "operatorUrl" => $operatorUrl,
-                 "operatorName" => $operatorName,
+                "operatorUrl" => $operatorUrl,
+                "operatorName" => $operatorName,
                 "sittingType" => $sittingType,
                 "busType" => $busType,
                 "busTypeName" => $busTypeName,
@@ -544,11 +543,11 @@ class ListingService
                 "cancellationPolicyContent" => $cancellationPolicyContent,
                 "TravelPolicyContent" => $TravelPolicyContent,
                 "Totalrating" => $Totalrating,
-                 "Totalrating_5star" => $Totalrating_5star,
-                 "Totalrating_4star" => $Totalrating_4star,
-                 "Totalrating_3star" => $Totalrating_3star,
-                 "Totalrating_2star" => $Totalrating_2star,
-                 "Totalrating_1star" => $Totalrating_1star,
+                "Totalrating_5star" => $Totalrating_5star,
+                "Totalrating_4star" => $Totalrating_4star,
+                "Totalrating_3star" => $Totalrating_3star,
+                "Totalrating_2star" => $Totalrating_2star,
+                "Totalrating_1star" => $Totalrating_1star,
                 "reviews" => $reviews
             );             
         }

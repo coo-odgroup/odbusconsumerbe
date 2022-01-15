@@ -18,6 +18,7 @@ class PriceOnSeatSelectionValidator
             //'sleeper' => 'required',
             'seater' => 'required_without:sleeper',
             'sleeper' => 'required_without:seater',
+            'entry_date' => 'required|date_format:d-m-Y',
         ];      
       
         $priceValidation = Validator::make($data, $rules);

@@ -39,6 +39,8 @@ class ViewSeatsService
         $journeyDate = $request['entry_date'];
         $journeyDate = date("Y-m-d", strtotime($journeyDate));
 
+        $miscfares = $this->viewSeatsRepository->miscFares($busId,$journeyDate);
+
         $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
 
         $reqRange = Arr::sort($requestedSeq);
@@ -78,7 +80,7 @@ class ViewSeatsService
 
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
-//return $viewSeat;
+            //return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
            }else{
@@ -105,6 +107,11 @@ class ViewSeatsService
                         if(collect($ub)->has(['bus_seats'])){
                         // if(isset($ub->busSeats)){
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+
+                            $ub->busSeats->ticket_price->base_sleeper_fare+=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
+                            if($ub->busSeats->new_fare > 0){
+                                $ub->busSeats->new_fare +=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
+                            }   
                         }
                         if (sizeof($bookingIds)){
                             if(in_array($ub['id'], $blockedSeats)){
@@ -122,6 +129,10 @@ class ViewSeatsService
                         if(collect($lb)->has(['bus_seats'])){                  
                         // if(isset($lb->busSeats)){                           
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+                            $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+                            if($lb->busSeats->new_fare > 0){
+                                $lb->busSeats->new_fare +=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+                            }   
                         }
                         if (sizeof($bookingIds)){    
                             if(in_array($lb['id'], $blockedSeats)){
@@ -147,33 +158,8 @@ class ViewSeatsService
         //$busOperatorId = $request['busOperatorId'];
         $user_id = Bus::where('id', $busId)->first()->user_id;
 
-        //////////////////////special Fare calculations/////////////////////
-        $bus = Bus::find($busId);	
-        $specialFares = $bus->specialFare()->where('date', $entry_date)->get();
-        
-        $splSeaterFare=0;
-        $splSleeperFare =0;
-        if(count( $specialFares) > 0){
-            $splSeaterFare = (int)$specialFares[0]->seater_price;
-            $splSleeperFare = (int)$specialFares[0]->sleeper_price;
-        }    
-        ///////////////////////owner Fare calculations///////////////////////
-        $ownerFares = $bus->ownerfare()->where('date', $entry_date)->get();
-        $ownSeaterFare=0;
-        $ownSleeperFare =0;
-        if(count( $ownerFares) > 0){
-            $ownSeaterFare = (int)$ownerFares[0]->seater_price;
-            $ownSleeperFare = (int)$ownerFares[0]->sleeper_price;
-        }  
-        ///////////////////////Festive Fare calculations///////////////////////
-        $festiveFares = $bus->festiveFare()->where('date', $entry_date)->get();
-        $festiveSeaterFare=0;
-        $festiveSleeperFare =0;
-        if(count( $festiveFares) > 0){
-            $festiveSeaterFare = (int)$festiveFares[0]->seater_price;
-            $festiveSleeperFare = (int)$festiveFares[0]->sleeper_price;
-        }   
-                  
+        $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
+
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
         $ticket_new_fare=array();
         if($seaterIds){
@@ -204,16 +190,16 @@ class ViewSeatsService
                             array_push($PriceDetail,$tkt);
                         }
                         if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
-                            $totalSplFare +=$splSeaterFare;
-                            $totalOwnFare +=$ownSeaterFare;
-                            $totalFestiveFare +=$festiveSeaterFare;
-                            $tkt->new_fare +=$splSeaterFare+$ownSeaterFare+$festiveSeaterFare;
+                            $totalSplFare +=$miscfares[0];
+                            $totalOwnFare +=$miscfares[2];
+                            $totalFestiveFare +=$miscfares[4];
+                            $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                         }
                         else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
-                            $totalSplFare +=$splSleeperFare;
-                            $totalOwnFare +=$ownSleeperFare;
-                            $totalFestiveFare +=$festiveSleeperFare;
-                            $tkt->new_fare +=$splSleeperFare+$ownSleeperFare+$festiveSleeperFare;
+                            $totalSplFare +=$miscfares[1];
+                            $totalOwnFare +=$miscfares[3];
+                            $totalFestiveFare +=$miscfares[5];
+                            $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                         }
                         $ownerFare +=$tkt->new_fare;            
                     }       
@@ -266,6 +252,7 @@ class ViewSeatsService
         return $seatWithPriceRecords;
         
     }
+    
     public function getBoardingDroppingPoints(Request $request)
     {
         $busId = $request['busId'];

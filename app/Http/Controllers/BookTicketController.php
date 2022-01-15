@@ -69,12 +69,6 @@ class BookTicketController extends Controller
  *                property="bookingInfo",
  *                type="object",
  *                @OA\Property(
- *                  property="bus_operator_id",
- *                  type="number",
- *                  default=1,
- *                  example=1
- *                  ),
- *                @OA\Property(
  *                  property="bus_id",
  *                  type="number",
  *                  default=3,
@@ -175,30 +169,6 @@ class BookTicketController extends Controller
  *                  type="double",
  *                  default="70",
  *                  example="70" ,
- *                  ),
- *                @OA\Property(
- *                  property="odbus_gst_charges",
- *                  type="number",
- *                  default="5",
- *                  example="5" ,
- *                  ),
- *                @OA\Property(
- *                  property="odbus_gst_amount",
- *                  type="double",
- *                  default="50",
- *                  example="50" ,
- *                  ),
- *                @OA\Property(
- *                  property="owner_gst_charges",
- *                  type="number",
- *                  default="5",
- *                  example="5" ,
- *                  ),
- *                @OA\Property(
- *                  property="owner_gst_amount",
- *                  type="double",
- *                  default="50",
- *                  example="50" ,
  *                  ),
  *                @OA\Property(
  *                  property="created_by",

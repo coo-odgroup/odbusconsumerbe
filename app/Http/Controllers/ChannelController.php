@@ -289,6 +289,11 @@ class ChannelController extends Controller
  *                example="07:30"
  *                ),
  *            @OA\Property(
+ *                property="bus_id",
+ *                type="integer",
+ *                example="1"
+ *                ),
+ *            @OA\Property(
  *                property="busname",
  *                type="string",
  *                example="Bus 2"
@@ -376,19 +381,21 @@ class ChannelController extends Controller
  *                property="passengerDetails",
  *                type="array",
  *                example={{
- *                  "seat_no" : "ST1",
+ *                  "bus_seats_id" : "14",
  *                  "passenger_name": "Bob",
  *                  "passenger_gender": "M",
- *                  "passenger_age": "25"
+ *                  "passenger_age": "25",
+ *                  "created_by": "customer"
  *                }, {
- *                  "seat_no" : "ST2",
+ *                  "bus_seats_id" : "15",
  *                  "passenger_name": "Mom",
  *                  "passenger_gender": "F",
- *                  "passenger_age": "45"
+ *                  "passenger_age": "45",
+  *                  "created_by": "customer"
  *                }},
  *                @OA\Items(
  *                      @OA\Property(
- *                         property="seat_no",
+ *                         property="bus_seats_id",
  *                         type="string",
  *                         example=""
  *                      ),
@@ -404,6 +411,11 @@ class ChannelController extends Controller
  *                      ),
  *                      @OA\Property(
  *                         property="passenger_age",
+ *                         type="string",
+ *                         example=""
+ *                      ),
+ *                      @OA\Property(
+ *                         property="created_by",
  *                         type="string",
  *                         example=""
  *                      ),

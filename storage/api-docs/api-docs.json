@@ -269,11 +269,6 @@
                                     },
                                     "bookingInfo": {
                                         "properties": {
-                                            "bus_operator_id": {
-                                                "type": "number",
-                                                "default": 1,
-                                                "example": 1
-                                            },
                                             "bus_id": {
                                                 "type": "number",
                                                 "default": 3,
@@ -358,26 +353,6 @@
                                                 "type": "double",
                                                 "default": "70",
                                                 "example": "70"
-                                            },
-                                            "odbus_gst_charges": {
-                                                "type": "number",
-                                                "default": "5",
-                                                "example": "5"
-                                            },
-                                            "odbus_gst_amount": {
-                                                "type": "double",
-                                                "default": "50",
-                                                "example": "50"
-                                            },
-                                            "owner_gst_charges": {
-                                                "type": "number",
-                                                "default": "5",
-                                                "example": "5"
-                                            },
-                                            "owner_gst_amount": {
-                                                "type": "double",
-                                                "default": "50",
-                                                "example": "50"
                                             },
                                             "created_by": {
                                                 "type": "string",
@@ -882,6 +857,10 @@
                                         "type": "string",
                                         "example": "07:30"
                                     },
+                                    "bus_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
                                     "busname": {
                                         "type": "string",
                                         "example": "Bus 2"
@@ -956,7 +935,7 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
-                                                "seat_no": {
+                                                "bus_seats_id": {
                                                     "type": "string",
                                                     "example": ""
                                                 },
@@ -971,22 +950,28 @@
                                                 "passenger_age": {
                                                     "type": "string",
                                                     "example": ""
+                                                },
+                                                "created_by": {
+                                                    "type": "string",
+                                                    "example": ""
                                                 }
                                             },
                                             "type": "object"
                                         },
                                         "example": [
                                             {
-                                                "seat_no": "ST1",
+                                                "bus_seats_id": "14",
                                                 "passenger_name": "Bob",
                                                 "passenger_gender": "M",
-                                                "passenger_age": "25"
+                                                "passenger_age": "25",
+                                                "created_by": "customer"
                                             },
                                             {
-                                                "seat_no": "ST2",
+                                                "bus_seats_id": "15",
                                                 "passenger_name": "Mom",
                                                 "passenger_gender": "F",
-                                                "passenger_age": "45"
+                                                "passenger_age": "45",
+                                                "created_by": "customer"
                                             }
                                         ]
                                     }
@@ -2381,6 +2366,15 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User Id",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
                     }
                 ],
                 "responses": {
@@ -2522,6 +2516,15 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "User Id",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
                     }
                 ],
                 "responses": {
@@ -2542,13 +2545,13 @@
                 ]
             }
         },
-        "/api/DeleteReview/{id}": {
+        "/api/DeleteReview/{id}{userId}": {
             "delete": {
                 "tags": [
                     "Delete Review"
                 ],
                 "summary": "Delete Review",
-                "operationId": "84f79569f53c95ff707dde335aab617f",
+                "operationId": "4f6120ac0e0f8cc45ac459ebfa71c9fb",
                 "parameters": [
                     {
                         "name": "id",
