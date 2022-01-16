@@ -31,6 +31,7 @@ use App\Repositories\CommonRepository;
 use App\Models\BusLocationSequence;
 use App\Repositories\ViewSeatsRepository;
 use App\Models\BookingDetail;
+use Illuminate\Support\Str;
 
 use DateTime;
 use Time;
@@ -1032,6 +1033,14 @@ class ListingRepository
                                 ->with(['busGallery' => function ($a){
                                     $a->where('status',1);
                                     }])
+                               // ->with('review')
+                                ->with(['review' => function ($query) {                    
+                                        $query->where('status',1);
+                                        $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
+                                        $query->with(['users' =>  function ($u){
+                                            $u->select('id','name','profile_image');
+                                    }]);                      
+                                    }])
                                 ->where('status','1')
                                 ->get();  
                            
@@ -1065,26 +1074,36 @@ class ListingRepository
         if(count($record[0]->busGallery)>0){
             foreach($record[0]->busGallery as  $k => $bp){
                 if($bp->bus_image_1 != null && $bp->bus_image_1!=''){                        
-                    $bp->bus_image_1[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
+                    $bp->bus_image_1 = $path->busphoto_url.$bp->bus_image_1;                         
                 }
 
                 if($bp->bus_image_2 != null && $bp->bus_image_2 !=''){                        
-                    $bp->bus_image_2[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
+                    $bp->bus_image_2 = $path->busphoto_url.$bp->bus_image_2;                        
                 }
 
                 if($bp->bus_image_3 != null && $bp->bus_image_3 !=''){                        
-                    $bp->bus_image_3[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
+                    $bp->bus_image_3 = $path->busphoto_url.$bp->bus_image_3;                        
                 }
 
                 if($bp->bus_image_4 != null && $bp->bus_image_4 !=''){                        
-                    $bp->bus_image_4[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
+                    $bp->bus_image_4 = $path->busphoto_url.$bp->bus_image_4;                        
                 }
 
                 if($bp->bus_image_5 != null && $bp->bus_image_5 !=''){                        
-                    $bp->bus_image_5[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
+                    $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5;                        
                 }
             }
         } 
+        if($record[0]->review){
+            foreach($record[0]->review as $rv){
+                if($rv->users->profile_image != NULL && $rv->users->profile_image != ''){
+                    $contains = Str::contains($rv->users->profile_image, 'https');
+                    if(!$contains){
+                        $rv->users->profile_image = $path->profile_url.$rv->users->profile_image;
+                    }  
+                }
+            }
+        }
         $result['boarding_point'] = $this->busStoppageTiming
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $sourceID)
@@ -1095,7 +1114,6 @@ class ListingRepository
                                               ->where('location_id', $destinationID)
                                               ->where('status','1')
                                               ->get();                                     
-
         return $result;
     }
 
