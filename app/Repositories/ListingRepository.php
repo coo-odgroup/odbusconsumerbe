@@ -1009,13 +1009,82 @@ class ListingRepository
         $sourceID = $request['source_id'];      
         $destinationID = $request['destination_id']; 
 
-        $result['busDetails'] = $this->bus->where('id',$busId)->where('id',$busId)
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
+        $result['busDetails'] =  $this->bus->where('id',$busId)->where('id',$busId)
                                 ->with('cancellationslabs.cancellationSlabInfo')
-                                ->with('busAmenities.amenities')
-                                ->with('busSafety.safety')
-                                ->with('busGallery')
+                                //->with('busAmenities.amenities')
+                                ->with(['busAmenities'  => function ($query) {
+                                    $query->with(['amenities' =>function ($a){
+                                        $a->where('status',1);
+                                        $a->select('id','name','android_image');
+                                    }]);
+                                }]) 
+                                //->with('busSafety.safety')
+                                ->with(['busSafety'  => function ($query) {
+                                    $query->with(['safety' =>function ($a){
+                                        $a->where('status',1);
+                                        $a->select('id','name','android_image');
+                                    }]);
+                                }]) 
+                                //->with('busGallery')
+                                ->with(['busGallery' => function ($a){
+                                    $a->where('status',1);
+                                    }])
                                 ->where('status','1')
-                                ->get();        
+                                ->get();  
+                           
+        $record = $result['busDetails']; 
+            
+        if($record[0]->busAmenities){
+            $amenityDatas = [];  
+            foreach($record[0]->busAmenities as $am_dt){
+                if($am_dt->amenities != NULL)
+                {
+                    $am_android_image='';
+                    if($am_dt->amenities->android_image !='')
+                    {
+                    $am_dt->amenities->android_image = $path->amenity_url.$am_dt->amenities->android_image;   
+                    }
+                }
+            }
+        }
+        if($record[0]->busSafety){
+            foreach($record[0]->busSafety as $sd){
+                if($sd->safety != NULL)
+                {
+                    $safety_android_image='';
+                    if($sd->safety->android_image != '' )
+                    {
+                    $sd->safety->android_image = $path->safety_url.$sd->safety->android_image;   
+                    }
+                }
+            }
+        }
+        if(count($record[0]->busGallery)>0){
+            foreach($record[0]->busGallery as  $k => $bp){
+                if($bp->bus_image_1 != null && $bp->bus_image_1!=''){                        
+                    $bp->bus_image_1[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
+                }
+
+                if($bp->bus_image_2 != null && $bp->bus_image_2 !=''){                        
+                    $bp->bus_image_2[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
+                }
+
+                if($bp->bus_image_3 != null && $bp->bus_image_3 !=''){                        
+                    $bp->bus_image_3[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
+                }
+
+                if($bp->bus_image_4 != null && $bp->bus_image_4 !=''){                        
+                    $bp->bus_image_4[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
+                }
+
+                if($bp->bus_image_5 != null && $bp->bus_image_5 !=''){                        
+                    $bp->bus_image_5[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
+                }
+            }
+        } 
         $result['boarding_point'] = $this->busStoppageTiming
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $sourceID)
