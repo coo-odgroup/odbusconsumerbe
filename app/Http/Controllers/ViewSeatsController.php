@@ -194,7 +194,8 @@ class ViewSeatsController extends Controller
             'busOperatorId',
             'destinationId',
             'seater',
-            'sleeper'
+            'sleeper',
+            'entry_date'
         ]);
         $priveValidation = $this->priceOnSeatSelectionValidator->validate($data);
         
