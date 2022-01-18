@@ -152,7 +152,7 @@ class ViewSeatsController extends Controller
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="seater[string]",
+ *          name="seater[]",
  *          description="seater Ids",
  *          in="query",
  *          required=false,
@@ -191,7 +191,6 @@ class ViewSeatsController extends Controller
         $data = $request->only([
             'busId',
             'sourceId',
-            'busOperatorId',
             'destinationId',
             'seater',
             'sleeper',

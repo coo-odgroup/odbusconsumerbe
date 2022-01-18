@@ -3,6 +3,7 @@
 namespace App\Services;
 use App\Models\CustomerNotification;
 use App\Repositories\ChannelRepository;
+use App\Models\CustomerPayment;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -108,42 +109,51 @@ class ChannelService
                 }
                 if(isset($lb) && isset($ub)){
                     $collection= $lb->merge($ub);
-                }
-                
+                } 
                 $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
-                $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
+                $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
                     return $value == null;
                 });
-                if(sizeof($filtered->all())==0){
-
                 $records = $this->channelRepository->getBookingRecord($transationId);
-
-                $bookingId = $records[0]->id;    
-                $name = $records[0]->users->name;
-                $amount = $request['amount'];
-                $receiptId = 'rcpt_'.$transationId;
-                //$key = config('services.razorpay.key');
-                //$secretKey = config('services.razorpay.secret');
-
-                $key= $this->channelRepository->getRazorpayKey();
                 
-                $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
-                 
-                //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
-                $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+                if(sizeof($filtered->all())==0){
+                    //$records = $this->channelRepository->getBookingRecord($transationId);
+                    $bookingId = $records[0]->id;   
+                    $name = $records[0]->users->name;
+                    $amount = $request['amount'];
+                    $receiptId = 'rcpt_'.$transationId;
+                    //$key = config('services.razorpay.key');
+                    //$secretKey = config('services.razorpay.secret');
 
-                $data = array(
-                    'name' => $name,
-                    'amount' => $amount,
-                    'key' => $key,
-                    'razorpay_order_id' => $GetOrderId   
-                );
-                    return $data;
-                    //return "SEAT AVAIL";
-                }else{
+                    $key= $this->channelRepository->getRazorpayKey();
+                    
+                    $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    
+                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
+                    $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+
+                    $data = array(
+                        'name' => $name,
+                        'amount' => $amount,
+                        'key' => $key,
+                        'razorpay_order_id' => $GetOrderId   
+                    );
+                        return $data;
+                        //return "SEAT AVAIL";
+                }elseif($records && $records[0]->status == $seatHold){
+                    $key= $this->channelRepository->getRazorpayKey();
+                    $orderId = CustomerPayment::where('booking_id',$records[0]->id)->first()->order_id;
+                    $data = array(
+                        'name' => $records[0]->users->name,
+                        'amount' => $request['amount'],
+                        'key' => $key,
+                        'razorpay_order_id' => $orderId   
+                    );
+                        return $data;
+                }
+                else{
                     return "SEAT UN-AVAIL";
                 }
-
 
         } catch (Exception $e) {
             Log::info($e);

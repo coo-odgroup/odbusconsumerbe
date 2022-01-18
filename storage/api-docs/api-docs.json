@@ -3226,7 +3226,7 @@
                         }
                     },
                     {
-                        "name": "seater[string]",
+                        "name": "seater[]",
                         "in": "query",
                         "description": "seater Ids",
                         "required": false,
