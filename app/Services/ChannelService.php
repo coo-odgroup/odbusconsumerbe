@@ -160,7 +160,48 @@ class ChannelService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        
-    }  
+    } 
+    
+    
+    public function checkSeatStatus($request) // this method is for Admin API usage (adjust ticket)
+    {
+        try {
+
+            //$payment = $this->channelRepository->makePayment($data);
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+                $busId = $request['busId'];  
+                $seatIds = $request['seatIds'];
+
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+                if(isset($seatStatus['lower_berth'])){
+                    $lb = collect($seatStatus['lower_berth']);
+                    $collection= $lb;
+                }
+                if(isset($seatStatus['upper_berth'])){
+                    $ub = collect($seatStatus['upper_berth']);
+                    $collection= $ub;
+                }
+                if(isset($lb) && isset($ub)){
+                    $collection= $lb->merge($ub);
+                } 
+                $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+                $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
+                    return $value == null;
+                });
+               
+                if(sizeof($filtered->all())==0){
+                return "SEAT AVAIL";
+                }
+                else{
+                    return "SEAT UN-AVAIL";
+                }
+
+        } catch (Exception $e) {
+            Log::info($e);
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+       
+    } 
     
     public function pay($request)
     {

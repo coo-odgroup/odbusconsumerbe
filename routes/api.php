@@ -120,6 +120,7 @@ Route::middleware(['checkIp'])->group(function () {
     Route::post('/SendSms', [ChannelController::class, 'sendSms']);   
     Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
     Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
+    Route::post('/CheckSeatStatus', [ChannelController::class, 'checkSeatStatus']);
     Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
     Route::post('/TestingEmail', [ChannelController::class, 'testingEmail']);   
     Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);

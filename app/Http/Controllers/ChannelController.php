@@ -208,6 +208,25 @@ class ChannelController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
            }  
     }
+
+    public function checkSeatStatus(Request $request)
+    {   
+        try {
+            $response = $this->channelService->checkSeatStatus($request); 
+            if($response == 'SEAT UN-AVAIL'){
+                return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+            }
+            else{
+                return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
+            }
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }  
+    }
+
+
+    
 /**
  * @OA\POST(
  *     path="/api/PaymentStatus",
