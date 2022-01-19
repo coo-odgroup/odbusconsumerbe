@@ -102,6 +102,15 @@ class BookTicketRepository
         $booking->additional_festival_fare = $bookingInfo['festiveFare'];
         //////
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+
+
+        if(isset($bookingInfo['adj_note'])){
+            $booking->booking_adj_note = $bookingInfo['adj_note'];            
+        }
+
+        if(isset($bookingInfo['status'])){
+            $booking->status = $bookingInfo['status'];
+        }       
         
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
