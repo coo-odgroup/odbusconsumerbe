@@ -26,6 +26,7 @@ use App\Http\Controllers\SeoController;
 use App\Http\Controllers\FilePathUrlsController;
 use App\Http\Controllers\BotManController;
 use App\Http\Controllers\RecentSearchController;
+use App\Http\Controllers\AuthClientsController;
 
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
@@ -101,11 +102,12 @@ Route::post('/countries', [SoapController::class, 'getCountries']);
     Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);*/
 //});
 
-
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 
-
+Route::group(['middleware' => ['checkIp', 'log.route']], function() {
+    Route::get('/getLocation', [ListingController::class, 'getLocation']);
+});
 
 Route::middleware(['checkIp'])->group(function () {
     Route::get('/getLocation', [ListingController::class, 'getLocation']);
@@ -166,3 +168,4 @@ Route::middleware(['checkIp'])->group(function () {
 });
 
 Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
+
