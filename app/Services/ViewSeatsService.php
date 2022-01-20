@@ -49,7 +49,7 @@ class ViewSeatsService
         if (sizeof($bookingIds)){
             $blockedSeats=array();
             foreach($bookingIds as $bookingId){
-                $seatsIds = array();
+                //$seatsIds = array();
                 $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
                 foreach($bookedSeatIds as $bookedSeatId){
                     $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
