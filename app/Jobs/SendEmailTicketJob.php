@@ -42,6 +42,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $odbus_gst;
     protected $odbus_charges;
     protected $owner_fare;
+    protected $customer_comission;
     protected $conductor_number;
     protected $passengerDetails;
 
@@ -78,6 +79,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->owner_fare = $request['owner_fare'];
         $this->conductor_number = $request['conductor_number'];
         $this->passengerDetails = $request['passengerDetails'];
+        $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
         $this->email_pnr= $email_pnr;
 
@@ -114,10 +116,11 @@ class SendEmailTicketJob implements ShouldQueue
             'passengerDetails' => $this->passengerDetails ,
             'totalfare'=> $this->totalfare,
             'discount' =>  $this->discount,
-            'payable_amount' => $this->payable_amount,
+            'payable_amount' => $this->payable_amount ,
             'odbus_gst'=> $this->odbus_gst,
             'odbus_charges'=> $this->odbus_charges,
             'owner_fare'=> $this->owner_fare,
+            'customer_comission'=> $this->customer_comission
             
         ];
              

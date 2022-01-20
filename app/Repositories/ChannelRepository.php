@@ -278,6 +278,14 @@ class ChannelRepository
         $genderList = substr($genderList,1);
         $busDetails = $data['busname'].'-'.$data['busNumber'];
         $SmsGW = config('services.sms.otpservice');
+
+        $payable_amount= $data['payable_amount'];
+
+        if(isset($data['customer_comission'])){
+          $payable_amount= $data['payable_amount'] + $data['customer_comission'];
+        }
+
+       
         if($SmsGW =='textLocal'){
 
             //Environment Variables
@@ -297,7 +305,7 @@ class ChannelRepository
             $message = str_replace("<name>",$nameList,$message);
             $message = str_replace("<gender>",$genderList,$message);
             $message = str_replace("<seat>",$seatList,$message);
-            $message = str_replace("<fare>",$data['payable_amount'],$message);
+            $message = str_replace("<fare>",$payable_amount,$message);
             $message = str_replace("<conmob>",$data['conductor_number'],$message);
             //return $message;
             $message = rawurlencode($message);
