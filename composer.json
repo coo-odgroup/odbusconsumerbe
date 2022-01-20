@@ -25,7 +25,8 @@
         "mailjet/laravel-mailjet": "^3.0",
         "razorpay/razorpay": "2.*",
         "sendgrid/sendgrid": "^7.9",        
-        "zircote/swagger-php": "^3.2"
+        "zircote/swagger-php": "^3.2",
+        "tymon/jwt-auth": "^1.0"
 
        
     },
