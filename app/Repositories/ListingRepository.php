@@ -95,18 +95,31 @@ class ListingRepository
 
      public function getrouteCoupon($sourceID,$destinationID)
      {
-         return CouponRoute::where('source_id', $sourceID)
-         ->where('destination_id', $destinationID)
-         ->where('status','1')
-         ->with('coupon')
-         ->get();
+         return Coupon::where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID)
+                        ->where('type', 2)
+                        ->where('status','1')
+                        ->get();
+     }
+     public function getOperatorCoupon($busOperatorId)
+     {
+         return Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
+                        ->where('type', 1)
+                        ->get();
+     }
+     public function getOpRouteCoupon($busOperatorId,$sourceID,$destinationID)
+     {
+         return Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
+                        ->where('type', 3)
+                        ->where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID)
+                        ->get();
      }
 
      public function getAllCoupon()
      {
          return Coupon::where('status','1')->get();
      }
-
 
      public function getticketPrice($sourceID,$destinationID,$busOperatorId,$journey_date, $userId)
      {
@@ -139,49 +152,8 @@ class ListingRepository
        return $this->busSchedule->whereIn('bus_id', (array)$busId)->where('status','1')->pluck('id'); 
      }
 
-     public function getBusList($source,$destination,$busOperatorId,$entry_date)
-     {
-            return $this->bus
-                        //->where('bus_operator_id', $busOperatorId) 
-                        ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
-                            $query->where('bus_operator_id',$busOperatorId);
-                            })
-                        ->with(['ticketPrice' => function ($tp) use($source,$destination,$busOperatorId) {
-                                 $tp->where('source_id', $source);
-                                 $tp->where('destination_id', $destination);
-                                 $tp->where('bus_operator_id', $busOperatorId);
-                              }])
-                        ->with(['busSchedule' => function ($bs) use($entry_date) {
-                        $bs->with(['busScheduleDate' => function ($bsd) use($entry_date){
-                        $bsd->where('entry_date',$entry_date);
-                        }]);
-                        }])
-                        ->with('couponAssignedBus.coupon')
-                        ->with('busOperator.coupon')
-                        ->with('busContacts')       
-                        ->with('busAmenities.amenities')     
-                        ->with('busSafety.safety')
-                        ->with('BusType.busClass')
-                        ->with('busSeats.seats')
-                        //->with('seatOpen.seatOpenSeats')
-                        ->with('BusSitting')
-                        ->with('busGallery')
-                        ->with('cancellationslabs.cancellationSlabInfo')
-                        ->with(['review' => function ($query) {                    
-                        $query->where('status',1);
-                        $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
-                        $query->with(['users' =>  function ($u){
-                            $u->select('id','name','profile_image');
-                        }]);                      
-                        }])
-                        ->where('status','1')
-                        ->get();
-        
-     }
-
      public function getBusData($busOperatorId,$busId,$userId,$entry_date)
-     {
-        
+     {  
         return $this->bus
         // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
         //     $query->where('bus_operator_id',$busOperatorId);
@@ -189,8 +161,8 @@ class ListingRepository
         ->when($userId != null || isset($userId), function ($query) use ($userId){
             $query->where('user_id',$userId);
             })
-        ->with('couponAssignedBus.coupon')
-        ->with('busOperator.coupon')
+        //->with('couponAssignedBus.coupon')
+        //->with('busOperator.coupon')
         ->with('busContacts')       
         //->with('busAmenities.amenities')
         ->with(['busAmenities'  => function ($query) {
@@ -208,8 +180,6 @@ class ListingRepository
         }]) 
         ->with('BusType.busClass')
         //->with('busSeats.seats')
-        /////////////////////////seat_open/////////////////////////////////
-
         ->with(['busSeats' => function ($bs) use ($entry_date) {
             // $bs->where([['operation_date', $entry_date]] )
             //     // $bs->where(function ($q) use ($entry_date){
@@ -220,9 +190,7 @@ class ListingRepository
                 $bs->where('status',1)
                    ->with(['seats' => function ($s) {
                         $s->where('status',1);
-                   }
-                ])
-                ;   
+                }]);       
             }])
         ->with('BusSitting')
         ->with(['busGallery' => function ($a){
@@ -251,8 +219,8 @@ class ListingRepository
         ->when($userId != null || isset($userId), function ($query) use ($userId){
             $query->where('user_id',$userId);
             })
-         ->with('couponAssignedBus.coupon')
-         ->with('busOperator.coupon')
+         //->with('couponAssignedBus.coupon')
+         //->with('busOperator.coupon')
          //->with('busOperator')
          //->with('busAmenities.amenities')
          //->with('busSafety.safety')
@@ -270,7 +238,6 @@ class ListingRepository
         }]) 
          ->with('BusType.busClass')
          //->with('busSeats.seats')
-         /////////////////////////seat_open/////////////////////////////////
         ->with(['busSeats' => function ($bs) use ($entry_date) {
             // $bs->where([['operation_date', $entry_date]])
             //    ->orwhereNull('operation_date')
@@ -279,7 +246,6 @@ class ListingRepository
                         $s->where('status',1);
                    }]);   
             }])
-        //////////////////////////////////////////////////////
          ->with('BusSitting')
          //->with('busGallery')
          ->with(['busGallery' => function ($a){
@@ -649,18 +615,6 @@ class ListingRepository
                 $i++;
             }
            
-        // foreach($collection as $cid){
-        //     foreach($cid->bookingDetail as $cbd){
-        //         $class = $cbd->busSeats->seats->seat_class_id;
-        //         if($class==1){
-        //             $seaterRecords ++;
-        //         }
-        //             elseif($class==2 || $class==3){
-        //             $sleeperRecords ++;
-        //         }
-        //     }
-        //     $i++;
-        // } 
         $totalBookedCount= $sleeperRecords+$seaterRecords;
         return [$sleeperRecords,$seaterRecords,$totalBookedCount];
     }
