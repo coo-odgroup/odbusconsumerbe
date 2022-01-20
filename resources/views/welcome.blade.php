@@ -123,31 +123,10 @@
                     </div>
 
                     <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
-                        Build v{{ Illuminate\Foundation\Application::VERSION }}
+                        Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
                     </div>
                 </div>
             </div>
         </div>
     </body>
-    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/assets/css/chat.min.css"> -->
-<script>
-  var botmanWidget = {
-  aboutText: 'Write Something',
-  introMessage: "✋ Hi! I'm from ODBUS"
-  };
-</script>
-
-<script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
-
-   
-    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/assets/css/chat.min.css">
-    <script>
-        var botmanWidget = {
-            aboutText: 'Write Something',
-            introMessage: "<img draggable="false" role="img" class="emoji" alt="✋" src="https://s.w.org/images/core/emoji/13.1.0/svg/270b.svg"> Hi! I'm From ODBUS"
-        };
-    </script>
-   
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script> -->
-       
 </html>

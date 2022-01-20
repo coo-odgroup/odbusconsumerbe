@@ -6,33 +6,22 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-//use Laravel\Passport\HasApiTokens;
-use App\Models\UserBankDetails;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\UserNotification;
-use App\Models\OdbusCharges;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
-    //use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $table = 'user';
-    // public $timestamps = false;
     protected $fillable = [
-        'user_pin', 'first_name', 'middle_name','last_name','thumbnail','email','location','org_name','address','phone','alternate_phone','alternate_email','password', 
-        'user_role','rand_key','created_by',
+        'name',
+        'email',
+        'password',
     ];
-    public function userBankDetails()
-    {
-        return $this->hasMany(UserBankDetails::class);
-        
-    } 
 
     /**
      * The attributes that should be hidden for arrays.
@@ -41,7 +30,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-         'remember_token'
+        'remember_token',
     ];
 
     /**
@@ -49,24 +38,15 @@ class User extends Authenticatable
      *
      * @var array
      */
-     protected $casts = [
+    protected $casts = [
         'email_verified_at' => 'datetime',
-     ];
-     public function buses()
-    {
-        return $this->hasMany(Bus::class);    
-    } 
-    public function booking()
-      {
-            return $this->hasMany(Booking::class);   
-      } 
-    public function userNotification()
-    {
-    	 return $this->hasMany(UserNotification::class);        
-    } 
-    
-    public function OdbusCharges()
-    {
-    	 return $this->hasOne(OdbusCharges::class);        
-    } 
+    ];
+
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims() {
+        return [];
+    }    
 }

@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Kolkata',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -138,8 +138,8 @@ return [
 
         /*
          * Laravel Framework Service Providers...
-        */
-        //Illuminate\Auth\AuthServiceProvider::class,
+         */
+        Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
@@ -161,9 +161,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        Ixudra\Curl\CurlServiceProvider::class,
-        Mailjet\LaravelMailjet\MailjetServiceProvider::class,
-        Mailjet\LaravelMailjet\MailjetMailServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -173,14 +170,11 @@ return [
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
-        //App\Providers\AuthServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        //Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-        Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
-        Artisaninweb\SoapWrapper\ServiceProvider::class,
-
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
     ],
 
     /*
@@ -232,12 +226,11 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Curl' => Ixudra\Curl\Facades\Curl::class,
-        //'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
-        //'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Curl' => Ixudra\Curl\Facades\Curl::class,        
         'Mailjet' => Mailjet\LaravelMailjet\Facades\Mailjet::class,
-        'SoapWrapper' => Artisaninweb\SoapWrapper\Facade\SoapWrapper::class, 
-
+        'SoapWrapper' => Artisaninweb\SoapWrapper\Facade\SoapWrapper::class
     ],
 
 ];
