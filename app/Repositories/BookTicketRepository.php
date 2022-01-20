@@ -110,7 +110,11 @@ class BookTicketRepository
 
         if(isset($bookingInfo['status'])){
             $booking->status = $bookingInfo['status'];
-        }       
+        } 
+
+        if(isset($bookingInfo['booking_type'])){
+            $booking->booking_type = $bookingInfo['booking_type'];
+        }
         
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
