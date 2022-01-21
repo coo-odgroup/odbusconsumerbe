@@ -652,7 +652,7 @@ class ChannelRepository
         }
       }
 
-      public function CreateAgentPayment($agentId,$amount ,$name, $transactionId){
+      public function CreateAgentPayment($agentId,$agentName,$amount ,$name, $transactionId){
         $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
@@ -660,7 +660,8 @@ class ChannelRepository
         $agetWallet->transaction_type = 'd';
         $agetWallet->balance = $walletBalance - $amount;
         $agetWallet->user_id = $agentId;
-        $agetWallet->created_by = 'Agent';
+        $agetWallet->created_by = $agentName;
+        $agetWallet->status = 1;
         $agetWallet->save();
 
         $newBalance = $walletBalance - $amount;
@@ -677,7 +678,7 @@ class ChannelRepository
 
       }
 
-      public function FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$seatHold,$appliedComission){
+      public function FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$seatHold,$appliedComission){
         $seatRecords =  Booking::with('bookingDetail')->where('user_id',$agentId)
                                                       ->where('status', '1')->get();
         $collection = collect($seatRecords);
@@ -715,7 +716,7 @@ class ChannelRepository
         $agetWallet->transaction_type = 'c';
         $agetWallet->balance = $walletBalance + $afterTdsComission;
         $agetWallet->user_id = $agentId;
-        $agetWallet->created_by = 'Agent';
+        $agetWallet->created_by = $agentName;
         $agetWallet->save();
         //return $agetWallet;
 

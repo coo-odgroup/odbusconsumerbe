@@ -246,6 +246,7 @@ class ChannelService
                 $transactionId = $request['transaction_id']; 
                 $seatIds = $request['seatIds'];
                 $agentId = $request['user_id'];
+                $agentName = $request['user_name'];
                 $appliedComission = $request['applied_comission'];
                 $booked = Config::get('constants.BOOKED_STATUS');
 
@@ -272,12 +273,12 @@ class ChannelService
                     $records = $this->channelRepository->getBookingRecord($transactionId);
                     $bookingId = $records[0]->id;  
                     
-                    $name = $records[0]->user->name;
+                    $name = $records[0]->users->name;
                     $amount = $request['amount'];
 
-                    $details=$this->channelRepository->CreateAgentPayment($agentId,$amount ,$name, $bookingId,$transactionId,$appliedComission);   
+                    $details=$this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId,$appliedComission);   
 
-                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$seatIds,$bookingId,$booked,$appliedComission);
+                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission);
                     //return $totalSeatsBookedByAgent;
                     $data = array(
                         //'Comission' => $totalSeatsBookedByAgent->amount,
