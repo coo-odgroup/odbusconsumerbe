@@ -717,6 +717,7 @@ class ChannelRepository
         $agetWallet->balance = $walletBalance + $afterTdsComission;
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = $agentName;
+        $agetWallet->status = 1;
         $agetWallet->save();
         //return $agetWallet;
 
