@@ -507,6 +507,15 @@ class ChannelController extends Controller
  *          )
  *      ), 
  *     @OA\Parameter(
+ *          name="user_name",
+ *          description="user name",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ), 
+ *     @OA\Parameter(
  *          name="busId",
  *          description="BusId",
  *          required=true,

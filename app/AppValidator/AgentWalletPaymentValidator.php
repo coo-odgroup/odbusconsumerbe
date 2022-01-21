@@ -11,6 +11,7 @@ class AgentWalletPaymentValidator
         
         $rules = [
             'user_id' => 'required',
+            'user_name' => 'required',
             'busId' => 'required',
             'sourceId' => 'required',
             'destinationId' => 'required',

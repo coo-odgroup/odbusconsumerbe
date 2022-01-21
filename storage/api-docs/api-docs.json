@@ -1021,6 +1021,15 @@
                         }
                     },
                     {
+                        "name": "user_name",
+                        "in": "query",
+                        "description": "user name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "busId",
                         "in": "query",
                         "description": "BusId",
