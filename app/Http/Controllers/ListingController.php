@@ -17,6 +17,7 @@ use App\AppValidator\FilterValidator;
 use App\AppValidator\FilterOptionsValidator;
 use App\AppValidator\BusDetailsValidator;
 use App\AppValidator\LocationValidator;
+use Debugbar;
 
 class ListingController extends Controller
 {
@@ -170,8 +171,11 @@ class ListingController extends Controller
             $errors = $listingValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
           }
-          
+          Debugbar::info("Geting all Listing");
+          Debugbar::startMeasure('Start Geting Listing Data');
         $listingData = $this->listingService->getAll($request);
+        Debugbar::stopMeasure('Stop Measuring Listing Data');  
+        Debugbar::info($listingData);      
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
