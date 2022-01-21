@@ -97,20 +97,20 @@ class ListingRepository
      {
          return Coupon::where('source_id', $sourceID)
                         ->where('destination_id', $destinationID)
-                        ->where('type', 2)
+                        ->where('coupon_type', 2)
                         ->where('status','1')
                         ->get();
      }
      public function getOperatorCoupon($busOperatorId)
      {
          return Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
-                        ->where('type', 1)
+                        ->where('coupon_type', 1)
                         ->get();
      }
      public function getOpRouteCoupon($busOperatorId,$sourceID,$destinationID)
      {
          return Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
-                        ->where('type', 3)
+                        ->where('coupon_type', 3)
                         ->where('source_id', $sourceID)
                         ->where('destination_id', $destinationID)
                         ->get();
@@ -135,7 +135,7 @@ class ListingRepository
         //     $query->where('bus_operator_id',$busOperatorId);
         //     })
         //->orderBy('dep_time', 'asc')
-        ->get(['id','bus_id','start_j_days','seize_booking_minute','dep_time']);  
+        ->get(['id','bus_id','bus_operator_id','start_j_days','seize_booking_minute','dep_time']);  
      }
 
      public function checkBusentry($busId,$new_date)

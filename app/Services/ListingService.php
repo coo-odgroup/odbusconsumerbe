@@ -21,7 +21,8 @@ use DateTime;
 class ListingService
 {
     
-    protected $listingRepository;    
+    protected $listingRepository; 
+    protected $commonRepository;   
     public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository)
     {
         $this->listingRepository = $listingRepository;
@@ -49,17 +50,6 @@ class ListingService
          $destinationID =  $destResult[0]->id;    
 
          $selCouponRecords = $this->listingRepository->getAllCoupon();
-
-         $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
-
-         if(isset($routeCoupon[0]))
-         {                           
-            $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
-         }else
-         {
-            $routeCouponCode =[];
-         }  
-        
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
          //return $busDetails;
          $records = array();
@@ -195,10 +185,10 @@ class ListingService
          $showBusRecords = Arr::flatten($records);
          $hideBusRecords = Arr::flatten($hideBusRecords);
          //return $showBusRecords;
-         $showRecords = $this->processBusRecords($showBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'show');
+         $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'show');
 
          if(count($hideBusRecords) > 0){
-            $hideRecords =  $this->processBusRecords($hideBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
+            $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
             $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
          }else{
             $ListingRecords = collect($showRecords);
@@ -209,27 +199,15 @@ class ListingService
 
        // return $this->listingRepository->getAll($request);
     }
-    public function processBusRecords($records,$routeCoupon,$routeCouponCode,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$flag){
-
-        $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId);
-
-        if(isset($operatorCoupon[0]))
+    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$flag){
+        $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
+        if(isset($routeCoupon[0]))
         {                           
-           $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
+           $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
         }else
         {
-           $opCouponCode =[];
-        } 
-        $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID);
-
-        if(isset($opRouteCoupon[0]))
-        {                           
-           $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
-        }else
-        {
-           $opRouteCouponCode =[];
-        } 
-
+           $routeCouponCode =[];
+        }  
         $ListingRecords = array();
         foreach($records as $record){
             $unavailbleSeats = 0;
@@ -238,9 +216,26 @@ class ListingService
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
             $via = $record->via;
-              
-            $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
+            $busOperatorId = $record->bus_operator_id;
             
+            $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId);
+            if(isset($operatorCoupon[0]))
+            {                           
+                $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
+            }else
+            {
+                $opCouponCode =[];
+            } 
+            $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID);
+
+            if(isset($opRouteCoupon[0]))
+            {                           
+                $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
+            }else
+            {
+                $opRouteCouponCode =[];
+            } 
+            $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
             $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
             ///Coupon applicable for specific date range
@@ -267,7 +262,6 @@ class ListingService
                     $appliedCoupon->push($coupon);
                  }
             }
-
             $maxSeatBook = $record->max_seat_book;
             $conductor_number ='';
 
@@ -484,9 +478,7 @@ class ListingService
 
                   if($rv->rating_overall==1){
                    $Totalrating_1star ++;   
-                  } 
-                                
-                 
+                  }  
                   $Review_list[$k]['bus_id']=$rv->bus_id;
                      $Review_list[$k]['users_id']=$rv->users_id;
                      $Review_list[$k]['title']=$rv->title;
@@ -595,15 +587,6 @@ class ListingService
         $amenityId = $request['amenityId'];
         
         $selCouponRecords = $this->listingRepository->getAllCoupon();
-
-        $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
-
-             if(isset($routeCoupon[0])){                           
-                $routeCouponCode = $routeCoupon[0]->coupon_code;  //route wise coupon
-             }else{
-                 $routeCouponCode =[];
-             }  
-
         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);    
    
         $records = array();
@@ -727,10 +710,10 @@ class ListingService
         $showBusRecords = Arr::flatten($records);
         $hideBusRecords = Arr::flatten($hideBusRecords);
      
-        $showRecords = $this->processBusRecords($showBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'show');
+        $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'show');
 
         if(count($hideBusRecords) > 0){
-           $hideRecords =  $this->processBusRecords($hideBusRecords,$routeCoupon,$routeCouponCode,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
+           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
            $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
         }else{
             $FilterRecords = $showRecords;
