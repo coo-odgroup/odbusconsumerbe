@@ -14,6 +14,7 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
+use App\AppValidator\MakePaymentValidator;
 use App\AppValidator\AgentWalletPaymentValidator;
 use App\AppValidator\AgentPaymentStatusValidator;
 use App\Jobs\TestingEmailJob;
@@ -24,16 +25,18 @@ class ChannelController extends Controller
     protected $channelService;
     protected $channelRepository;  
     protected $customerPayment;
+    protected $makePaymentValidator;
     protected $agentWalletPaymentValidator;
     protected $agentPaymentStatusValidator;
   
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator)
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator,MakePaymentValidator $makePaymentValidator)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
             $this->customerPayment = $agentWalletPaymentValidator;
             $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
             $this->agentPaymentStatusValidator = $agentPaymentStatusValidator;
+            $this->makePaymentValidator = $makePaymentValidator;
         }
 
     public function testingEmail(Request $request) {
@@ -195,6 +198,13 @@ class ChannelController extends Controller
 
       public function makePayment(Request $request)
     {   
+        $data = $request->all();
+        $makePaymentValidation = $this->makePaymentValidator->validate($data);
+  
+        if ($makePaymentValidation->fails()) {
+        $errors = $makePaymentValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }  
         try {
             $response = $this->channelService->makePayment($request); 
             if($response == 'SEAT UN-AVAIL'){
