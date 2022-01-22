@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
 use App\AppValidator\MakePaymentValidator;
+use App\AppValidator\PaymentStatusValidator;
 use App\AppValidator\AgentWalletPaymentValidator;
 use App\AppValidator\AgentPaymentStatusValidator;
 use App\Jobs\TestingEmailJob;
@@ -26,10 +27,11 @@ class ChannelController extends Controller
     protected $channelRepository;  
     protected $customerPayment;
     protected $makePaymentValidator;
+    protected $paymentStatusValidator;
     protected $agentWalletPaymentValidator;
     protected $agentPaymentStatusValidator;
   
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator,MakePaymentValidator $makePaymentValidator)
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator,MakePaymentValidator $makePaymentValidator,PaymentStatusValidator $paymentStatusValidator)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
@@ -37,6 +39,7 @@ class ChannelController extends Controller
             $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
             $this->agentPaymentStatusValidator = $agentPaymentStatusValidator;
             $this->makePaymentValidator = $makePaymentValidator;
+            $this->paymentStatusValidator = $paymentStatusValidator;
         }
 
     public function testingEmail(Request $request) {
@@ -460,6 +463,15 @@ class ChannelController extends Controller
  * )
  */
     public function pay(Request $request){
+
+    $data = $request->all();
+    $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
+
+    if ($paymentStatusValidation->fails()) {
+     
+    $errors = $paymentStatusValidation->errors();
+    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }  
         try{
             $response = $this->channelService->pay($request); 
             If($response == 'Payment Done'){
@@ -782,20 +794,20 @@ class ChannelController extends Controller
  *                property="passengerDetails",
  *                type="array",
  *                example={{
- *                  "seat_no" : "ST1",
+ *                  "bus_seats_id" : "37",
  *                  "passenger_name": "Bob",
  *                  "passenger_gender": "M",
  *                  "passenger_age": "25"
  *                }, {
- *                  "seat_no" : "ST2",
+ *                  "bus_seats_id" : "38",
  *                  "passenger_name": "Mom",
  *                  "passenger_gender": "F",
  *                  "passenger_age": "45"
  *                }},
  *                @OA\Items(
  *                      @OA\Property(
- *                         property="seat_no",
- *                         type="string",
+ *                         property="bus_seats_id",
+ *                         type="integer",
  *                         example=""
  *                      ),
  *                      @OA\Property(

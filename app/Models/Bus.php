@@ -91,7 +91,7 @@ class Bus extends Model
     }
     public function busSeats()
     {        
-        return $this->hasMany(BusSeats::class)->where('status','!=',2);        
+        return $this->hasMany(BusSeats::class)->where('status','!=',2);  ////need to remove      
     }
     public function busGallery()
     {        

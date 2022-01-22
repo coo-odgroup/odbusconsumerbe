@@ -4,7 +4,7 @@ namespace App\AppValidator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AgentPaymentStatusValidator 
+class PaymentStatusValidator 
 {   
 
     public function validate($data) { 
@@ -38,13 +38,13 @@ class AgentPaymentStatusValidator
             'odbus_gst'=> 'required',
             'owner_fare'=> 'required',
             'source'=> 'required',
-            'destination'> 'required',    
+            'destination'=> 'required',    
             'conductor_number' => 'required',    
             'passengerDetails' => 'required'
         ];      
       
-        $agentPayemntStatusValidator = Validator::make($data, $rules);
-        return $agentPayemntStatusValidator;
+        $payemntStatusValidator = Validator::make($data, $rules);
+        return $payemntStatusValidator;
     }
 }
 

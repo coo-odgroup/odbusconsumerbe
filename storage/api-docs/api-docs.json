@@ -1263,8 +1263,8 @@
                                         "type": "array",
                                         "items": {
                                             "properties": {
-                                                "seat_no": {
-                                                    "type": "string",
+                                                "bus_seats_id": {
+                                                    "type": "integer",
                                                     "example": ""
                                                 },
                                                 "passenger_name": {
@@ -1284,13 +1284,13 @@
                                         },
                                         "example": [
                                             {
-                                                "seat_no": "ST1",
+                                                "bus_seats_id": "37",
                                                 "passenger_name": "Bob",
                                                 "passenger_gender": "M",
                                                 "passenger_age": "25"
                                             },
                                             {
-                                                "seat_no": "ST2",
+                                                "bus_seats_id": "38",
                                                 "passenger_name": "Mom",
                                                 "passenger_gender": "F",
                                                 "passenger_age": "45"
