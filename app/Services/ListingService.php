@@ -349,20 +349,36 @@ class ListingService
            }
 
        /////////////Blocked Extra Seats on specific date///////////
+            $seatClassRecords = 0;
+            $sleeperClassRecords = 0;
+            $totalSeats = 0;
+
             if(!$extraSeatsBlock->isEmpty()){
                 $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
             }
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                            ->where('bus_id',$busId)
                                            ->where("status","1")
                                            ->whereNotIn('seats_id',$blockSeats)
+                                           ->whereNotNull('seats')
                                            ->unique('seats_id')
                                            ->count('id');                                      
-            $seatDatas = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+
+            $seatClassRecords = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                          ->where('bus_id',$busId)
                                           ->where("status","1")
                                           ->whereNotIn('seats_id',$blockSeats)
+                                          ->where('seats.seat_class_id','==','1')
                                           ->unique('seats_id')
-                                          ->all();
-            //return  $seatDatas;
+                                          ->count();
+            $sleeperClassRecords = $record->busSeats->where('ticket_price_id',$ticketPriceId)
+                                          ->where('bus_id',$busId)
+                                          ->where("status","1")
+                                          ->whereNotIn('seats_id',$blockSeats)
+                                          ->whereIn('seats.seat_class_id',[2,3])
+                                          ->unique('seats_id')
+                                          ->count();   
+                                          
             $amenityDatas = [];  
 
            if($record->busAmenities)
@@ -502,17 +518,7 @@ class ListingService
             $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
             $cSlabDuration = $cSlabDatas->pluck('duration');
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
-            $seatClassRecords = 0;
-            $sleeperClassRecords = 0;
-            foreach($seatDatas as $seatData) {  
-                 $seatclass = $seatData->seats->seat_class_id;
-                 if($seatclass==1){
-                     $seatClassRecords ++;
-                 }
-                 elseif($seatclass==2 || $seatclass==3){
-                     $sleeperClassRecords ++;
-                }
-            }
+
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
