@@ -10,6 +10,8 @@ class WhiteListMiddleware
 {
     
     public $allowedIps = ['159.65.159.90','127.0.0.1'];
+
+    //,'157.41.151.8'
     /**
      * Handle an incoming request.
      *
@@ -19,13 +21,15 @@ class WhiteListMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        Log:: info($request->ip());
-        return $next($request);
+        //Log:: info($request->ip());
+       // return $next($request);
 
 
+       $server_ip= request()->server('SERVER_ADDR');
 
-        if (!in_array($request->ip(), $this->allowedIps)) {
-    
+       //$request->ip()
+
+        if (!in_array($server_ip, $this->allowedIps)) {    
             /*
                  You can redirect to any error page. 
             */
