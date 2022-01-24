@@ -11,9 +11,6 @@ class AgentPaymentStatusValidator
         
         $rules = [
             'transaction_id' => 'required',
-            'razorpay_payment_id' => 'required',
-            'razorpay_order_id' => 'required',
-            'razorpay_signature' => 'required',
             'name' => 'required',
             'phone' => 'required',
             'routedetails' => 'required',    

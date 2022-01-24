@@ -6,22 +6,33 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+//use Laravel\Passport\HasApiTokens;
+use App\Models\UserBankDetails;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\UserNotification;
+use App\Models\OdbusCharges;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+    //use HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
+    protected $table = 'user';
+    // public $timestamps = false;
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'user_pin', 'first_name', 'middle_name','last_name','thumbnail','email','location','org_name','address','phone','alternate_phone','alternate_email','password', 
+        'user_role','rand_key','created_by',
     ];
+    public function userBankDetails()
+    {
+        return $this->hasMany(UserBankDetails::class);
+        
+    } 
 
     /**
      * The attributes that should be hidden for arrays.
@@ -30,7 +41,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password',
-        'remember_token',
+         'remember_token'
     ];
 
     /**
@@ -38,15 +49,24 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array
      */
-    protected $casts = [
+     protected $casts = [
         'email_verified_at' => 'datetime',
-    ];
-
-    public function getJWTIdentifier() {
-        return $this->getKey();
-    }
-
-    public function getJWTCustomClaims() {
-        return [];
-    }    
+     ];
+     public function buses()
+    {
+        return $this->hasMany(Bus::class);    
+    } 
+    public function booking()
+      {
+            return $this->hasMany(Booking::class);   
+      } 
+    public function userNotification()
+    {
+    	 return $this->hasMany(UserNotification::class);        
+    } 
+    
+    public function OdbusCharges()
+    {
+    	 return $this->hasOne(OdbusCharges::class);        
+    } 
 }
