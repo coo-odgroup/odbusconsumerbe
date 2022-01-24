@@ -23,8 +23,8 @@ class AgentPaymentStatusValidator
             'departureTime' => 'required', 
             'dropping_point' => 'required',
             'arrivalTime' => 'required',
-            'seat_id' => 'required|array',
-            'seat_no' => 'required|array',
+            'seat_id' => 'required|array|min:1',
+            'seat_no' => 'required|array|min:1',
             'bus_id' => 'required',    
             'source' => 'required',    
             'destination' => 'required',    
@@ -38,7 +38,7 @@ class AgentPaymentStatusValidator
             'odbus_gst'=> 'required',
             'owner_fare'=> 'required',
             'source'=> 'required',
-            'destination'> 'required',    
+            'destination' => 'required',    
             'conductor_number' => 'required',    
             'passengerDetails' => 'required'
         ];      
