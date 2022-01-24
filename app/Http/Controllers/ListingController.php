@@ -17,7 +17,8 @@ use App\AppValidator\FilterValidator;
 use App\AppValidator\FilterOptionsValidator;
 use App\AppValidator\BusDetailsValidator;
 use App\AppValidator\LocationValidator;
-use Debugbar;
+//use Debugbar;
+use Barryvdh\Debugbar\Facades\Debugbar;
 
 class ListingController extends Controller
 {
