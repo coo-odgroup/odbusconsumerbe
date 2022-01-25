@@ -189,13 +189,23 @@ class ListingService
 
          if(count($hideBusRecords) > 0){
             $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
-            $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
+            // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
+            $showRecords = collect($showRecords)->sortBy([
+                ['departureTime', 'asc']]);
+
+            $hideRecords = collect($hideRecords)->sortBy([
+                ['departureTime', 'asc']]);
+            $ListingRecords = $showRecords->concat($hideRecords);
          }else{
-            $ListingRecords = collect($showRecords);
+            $ListingRecords = collect($showRecords)->sortBy([
+                    ['departureTime', 'asc']
+                ]);
          } 
-        return $ListingRecords->sortBy([
-            ['departureTime', 'asc']
-        ]);
+
+         return $ListingRecords;
+        // return $ListingRecords->sortBy([
+        //     ['departureTime', 'asc']
+        // ]);
 
        // return $this->listingRepository->getAll($request);
     }
@@ -390,11 +400,9 @@ class ListingService
                    {
                        $amenities_image='';
                        $am_android_image='';
-
                        if($am_dt->amenities->amenities_image !=''){
                            $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
                        }
-
                        if($am_dt->amenities->android_image !='')
                        {
                            $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
@@ -439,27 +447,22 @@ class ListingService
                     {                        
                        $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
                     }
-
                     if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
                     }
-
                     if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
                     }
-
                     if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
                     }
-
                     if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
                     {                        
                        $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
-                    }
-                   
+                    }    
                 }
             } 
             $Totalrating=0;
@@ -472,26 +475,20 @@ class ListingService
             $i=1;
             if(count($record->review)>0){
                 foreach($record->review as $k => $rv){
-
                if($i<=2){
                   $Totalrating += $rv->rating_overall;  
-
                   if($rv->rating_overall==5){
                    $Totalrating_5star ++;   
                   } 
-
                   if($rv->rating_overall==4){
                    $Totalrating_4star ++;   
                   } 
-
                   if($rv->rating_overall==3){
                    $Totalrating_3star ++;   
                   } 
-
                   if($rv->rating_overall==2){
                    $Totalrating_2star ++;   
                   } 
-
                   if($rv->rating_overall==1){
                    $Totalrating_1star ++;   
                   }  
@@ -502,11 +499,9 @@ class ListingService
                      $Review_list[$k]['comments']=$rv->comments;
                      $Review_list[$k]['name']=$rv->users->name;
                      $Review_list[$k]['profile_image']='';
-
                   if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
                    $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
                  }
-
                $i++;
                }
            }
@@ -571,7 +566,6 @@ class ListingService
 
     public function filter(Request $request)
     {
-        //return $this->listingRepository->filter($request);
         $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
         $sourceID = $request['sourceID'];      
@@ -599,6 +593,7 @@ class ListingService
         $FilterRecords = array();
         $showBusRecords = [];
         $hideBusRecords = [];
+        $hideRecords = [];
         //$CurrentDateTime = "2022-01-11 14:48:35";
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
         foreach($busDetails as $busDetail){
@@ -720,23 +715,32 @@ class ListingService
 
         if(count($hideBusRecords) > 0){
            $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,'hide');
-           $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
-        }else{
-            $FilterRecords = $showRecords;
-        }
+          // $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
+        } 
+        // else{
+        //     $FilterRecords = $showRecords;
+        // } 
         //return $FilterRecords;
         if($price == 0){
-            return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
+            $showRecords = collect($showRecords)->sortBy(['departureTime', 'asc']);
+            $hideRecords = collect($hideRecords)->sortBy(['departureTime', 'asc']);
+            return $showRecords->concat($hideRecords);
+            //return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
         }elseif($price == 1){
-            return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
-       }  
-       //$sorted = array_values($sorted);
-      //return $sorted;
+            $showRecords = collect($showRecords)->sortBy(['startingFromPrice', 'asc']);
+            $hideRecords = collect($hideRecords)->sortBy(['startingFromPrice', 'asc']);
+            return $showRecords->concat($hideRecords);
+            //return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
+       }
+    //     if($price == 0){
+    //         return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
+    //     }elseif($price == 1){
+    //         return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
+    //    }  
     }
 
     public function getFilterOptions(Request $request)
     {
-
         $sourceID = $request['sourceID'];
         $destinationID = $request['destinationID']; 
         $busIds = $request['busIDs']; 
@@ -757,8 +761,6 @@ class ListingService
            "amenities"=>$amenities   
         );
         return  $filterOptions;
-
-        //return $this->listingRepository->getFilterOptions($request);
     }
     public function busDetails(Request $request)
     {
