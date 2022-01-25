@@ -11,16 +11,21 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\PopularService;
+use App\AppValidator\DownloadAppValidator;
+
+
 
 class PopularController extends Controller
 {
     use ApiResponser;
     
     protected $popularService;
+    protected $downloadAppValidator;
   
-    public function __construct(PopularService $popularService)
+    public function __construct(PopularService $popularService, DownloadAppValidator $downloadAppValidator)
     {
         $this->popularService = $popularService;       
+        $this->downloadAppValidator = $downloadAppValidator;       
     }
 /**
  * @OA\Get(
@@ -85,6 +90,31 @@ class PopularController extends Controller
     public function allOperators(Request $request) {
         $allRoutes = $this->popularService->allOperators($request);
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function downloadApp(Request $request){
+
+        $data = $request->all();
+        $downloadAppValidator = $this->downloadAppValidator->validate($data);
+
+        if ($downloadAppValidator->fails()) {
+        $errors = $downloadAppValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+
+        try {
+
+            $downloadApp = $this->popularService->downloadApp($request);
+            return $this->successResponse($downloadApp,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      
+       
+        }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           } 
+
+     
+
     }
 /**
  * @OA\Get(

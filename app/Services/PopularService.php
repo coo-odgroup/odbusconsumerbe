@@ -17,6 +17,10 @@ class PopularService
         $this->popularRepository = $popularRepository;
         $this->commonRepository = $commonRepository;
     }
+
+    public function downloadApp(Request $request){
+      return $this->popularRepository->downloadApp($request['phone']);
+    }
     public function getPopularRoutes(Request $request)
     {
         $popularRoutes = array();
@@ -247,5 +251,6 @@ class PopularService
     return 'operator-not-found';
     }
 
+  
 }
 }

@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Models\Review;
 use DB;
 use Carbon\Carbon;
+use App\Models\Credentials;
+
 
 class PopularRepository
 {
@@ -22,14 +24,16 @@ class PopularRepository
     protected $ticketPrice;
     protected $location;
    protected $review;
+   protected $credentials;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location,Review $review)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location,Review $review,Credentials $credentials)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
         $this->booking = $booking;
         $this->location = $location;
         $this->review = $review;
+        $this->credentials = $credentials;
     } 
     
     public function getRoutes(){
@@ -76,6 +80,53 @@ class PopularRepository
         ->get();
        
     }
+
+    public function downloadApp($phone){  
+
+        $SmsGW = config('services.sms.otpservice');
+
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.appDownload');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($phone);
+          
+            $message = str_replace("<LINK>",'https://bit.ly/3nYcl9L',$message);
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+             
+            return $response;
+            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            session(['msgId'=> $msgId]);
+
+         
+
+        }elseif($SmsGW=='IndiaHUB'){
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');              
+
+        }
+
+    }
+    
 
     public function allOperators($filter){  
 
