@@ -72,7 +72,7 @@ Route::middleware(['checkIp'])->group(function () {
     Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
     Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
     Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
-    Route::get('/AllOperators', [PopularController::class, 'allOperators']);
+    Route::post('/AllOperators', [PopularController::class, 'allOperators']);
     Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
     Route::post('/saveContacts', [ContactController::class, 'save']);
     Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);

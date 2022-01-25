@@ -77,9 +77,18 @@ class PopularRepository
        
     }
 
-    public function allOperators($request){  
+    public function allOperators($filter){  
 
-        $operators = BusOperator::get(['id','operator_name','organisation_name','operator_url','operator_info']);
+        if($filter!=''){
+            $operators = BusOperator::where('organisation_name','LIKE', $filter.'%')
+            ->select(['id','operator_name','organisation_name','operator_url','operator_info']);
+
+        }else{
+            $operators = BusOperator::select(['id','operator_name','organisation_name','operator_url','operator_info']);
+
+        }
+
+       
         return $operators;
 
     }

@@ -22,7 +22,7 @@ class WhiteListMiddleware
     public function handle(Request $request, Closure $next)
     {
         //Log:: info($request->ip());
-       // return $next($request);
+        return $next($request);
 
 
        $server_ip= request()->server('SERVER_ADDR');

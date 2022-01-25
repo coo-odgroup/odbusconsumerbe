@@ -98,7 +98,21 @@ class PopularService
     }
     public function allOperators(Request $request)
     {
-        return $this->popularRepository->allOperators($request);
+
+        $paginate = $request['paginate'];
+         $filter = $request['filter']; 
+
+         $list= $this->popularRepository->allOperators($filter);
+
+         $list =  $list->paginate($paginate);
+
+         $response = array(
+            "count" => $list->count(), 
+            "total" => $list->total(),
+            "data" => $list
+           ); 
+          
+           return $response;
     }
     public function operatorDetails(Request $request)
     {
