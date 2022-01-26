@@ -557,6 +557,21 @@ border: 0;
     font-weight:600;
    }
 
+   .od-body ol{
+    margin:0px;
+    padding-left:0px;
+   }
+
+   .od-body ol li {
+    margin-bottom: 8px;
+    font-size: 15px;
+   }
+
+   .odbox2 {
+    border: 1px solid #000000;
+    padding: 15px 15px;
+   }
+
 </style>
 
 </head>
@@ -618,7 +633,7 @@ border: 0;
 
             <div class="col-md-3">
               <div class="od-qrcode">
-              <img src="{{url('public/template/qr-code.png')}}" class="od-qrcode"/>
+              <img src="{{url('public/template/qr-code.png')}}"/>
               </div>
             </div>
         </div>
