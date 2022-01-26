@@ -77,15 +77,17 @@ class AgentBookingRepository
         $aId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first()->id;
-         $walletDetail = AgentWallet::where('user_id',$aId)->get();
+         $walletDetail = AgentWallet::where('user_id',$aId)->orderBy('id','DESC')->limit(1)->get();
+         $walletBalance=0;
+
         if(isset($walletDetail[0])){
-            $walletBalance = $walletDetail[0]->latest()->first()->balance;
+            $walletBalance = $walletDetail[0]->balance;
         }else{
             $arr['note']="Your do not have any wallet balance. Kindly recharge your wallet to book tickets";
             $arr['message']="less_balance";
             return $arr;
         } 
-        if($walletBalance >= $bookingInfo['total_fare']){
+    if($walletBalance >= $bookingInfo['total_fare']){
         //Save Booking 
                $booking = new $this->booking;
         do {
