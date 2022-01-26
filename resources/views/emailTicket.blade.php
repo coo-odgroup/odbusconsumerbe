@@ -178,7 +178,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Age</th>
                         <th scope="col">Sex</th>
-                        <th scope="col">Booking Status</th>
+                        <th scope="col">Seat</th>
                       </tr>
                     </thead>
                     <tbody>
