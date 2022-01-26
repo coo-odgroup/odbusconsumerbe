@@ -181,7 +181,14 @@ class UsersService
                      $l['cancel']= true;
                  }elseif($l->status!=2 && $today == $l->journey_dt){
                      $l['booking_status']= "Ongoing";
+                     $l['cancel']= true;
                  }
+
+                 if($l->user_id != null && $l->user_id != '' ){
+                    $l['cancel']= false;
+                 }
+
+
              }
          }
  
