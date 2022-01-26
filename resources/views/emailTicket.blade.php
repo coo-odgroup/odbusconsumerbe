@@ -153,7 +153,7 @@
                         <td>Droping At: {{$destination}} ({{$dropping_point}})</td>
                       </tr>
                       <tr>
-                        <td>Passenger Mobile No: {{customer_number}}</td>
+                        <td>Passenger Mobile No: {{$customer_number}}</td>
                         <td>Conductor Mobile No: {{$conductor_number}}</td>
                       </tr>
                       <tr>
