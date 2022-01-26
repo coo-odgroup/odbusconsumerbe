@@ -200,11 +200,11 @@ class BookingManageService
     public function cancelTicketInfo($request)
     {
         try {
-         
+
         $pnr = $request['pnr'];
         $mobile = $request['mobile'];
 
-        $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
+         $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
 
        
       //return $booking_detail;
@@ -225,69 +225,78 @@ class BookingManageService
                  if($interval < 12) {
                     return 'CANCEL_NOT_ALLOWED';                    
                 }
-                  $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
-                 $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
+                $srcId = $booking_detail[0]->booking[0]->source_id;
+                $desId = $booking_detail[0]->booking[0]->destination_id;
+                $sourceName = Location::where('id',$srcId)->first()->name;
+                $destinationName = Location::where('id',$desId)->first()->name;
+                $emailData['source'] = $sourceName;
+                $emailData['destination'] = $destinationName;
+                $emailData['bookingDetails'] = $booking_detail;
+
+                if($booking_detail[0]->booking[0]->status==2){
+                    $emailData['cancel_status'] = false;
+                }else{
+                    $emailData['cancel_status'] = true;
+                }
+
+                if($booking_detail[0]->booking[0]->customerPayment != null){
+
+                    $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
+
+                    $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                
                 
                
-                 foreach($cancelPolicies as $cancelPolicy){
-                    $duration = $cancelPolicy->duration;
-                    $deduction = $cancelPolicy->deduction;
-                    $duration = explode("-", $duration, 2);
-                    $max= $duration[1];
-                    $min= $duration[0];
+                    foreach($cancelPolicies as $cancelPolicy){
+                       $duration = $cancelPolicy->duration;
+                       $deduction = $cancelPolicy->deduction;
+                       $duration = explode("-", $duration, 2);
+                       $max= $duration[1];
+                       $min= $duration[0];
+   
+       
+                       if( $interval > 240){
+                           $deduction = 10;//minimum deduction
+                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
+                           $refundAmt =  ($refund['refundAmount']/100);
+                           $paidAmt =  ($refund['paidAmount']/100);
+   
+                           $emailData['refundAmount'] = $refundAmt;
+                           $emailData['deductionPercentage'] = $deduction."%";
+                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                           $emailData['totalfare'] = $paidAmt;
+                              
+                           return $emailData;
+       
+                       }elseif($min <= $interval && $interval <= $max){ 
+   
+                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
+   
+                           $refundAmt =  round(($refund['refundAmount']/100));
+                           $paidAmt =  ($refund['paidAmount']/100);
+   
+                           $emailData['refundAmount'] = $refundAmt;
+                           $emailData['deductionPercentage'] = $deduction."%";
+                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                           $emailData['totalfare'] = $paidAmt;                        
+                          
+                           return $emailData;   
+                       }
+                   } 
 
-    
-                    if( $interval > 240){
-                        $deduction = 10;//minimum deduction
-                        $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-                        $refundAmt =  ($refund['refundAmount']/100);
-                        $paidAmt =  ($refund['paidAmount']/100);
 
-                        $emailData['refundAmount'] = $refundAmt;
-                        $emailData['deductionPercentage'] = $deduction."%";
-                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                        $emailData['totalfare'] = $paidAmt;
+                }else{
+                    $emailData['refundAmount'] = 0;
+                    $emailData['deductionPercentage'] = "100%";
+                    $emailData['deductAmount'] =$booking_detail[0]->booking[0]->total_fare;
+                    $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
+                    return $emailData;
+                }
+                
 
-                        if($booking_detail[0]->booking[0]->status==2){
-                            $emailData['cancel_status'] = false;
-                        }else{
-                            $emailData['cancel_status'] = true;
-                        }
-
-                        
-                        return $emailData;
-    
-                    }elseif($min <= $interval && $interval <= $max){ 
-
-                        $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-
-                        $refundAmt =  round(($refund['refundAmount']/100));
-                        $paidAmt =  ($refund['paidAmount']/100);
-
-                        $emailData['refundAmount'] = $refundAmt;
-                        $emailData['deductionPercentage'] = $deduction."%";
-                        $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                        $emailData['totalfare'] = $paidAmt;                        
-                        
-
-                        if($booking_detail[0]->booking[0]->status==2){
-                            $emailData['cancel_status'] = false;
-                        }else{
-                            $emailData['cancel_status'] = true;
-                        }
-                        $srcId = $booking_detail[0]->booking[0]->source_id;
-                        $desId = $booking_detail[0]->booking[0]->destination_id;
-                        $sourceName = Location::where('id',$srcId)->first()->name;
-                        $destinationName = Location::where('id',$desId)->first()->name;
-                        $emailData['source'] = $sourceName;
-                        $emailData['destination'] = $destinationName;
-                        $emailData['bookingDetails'] = $booking_detail;
-
-                        return $emailData;   
-                    }
-                }                      
+                                     
             }
             
             else{                

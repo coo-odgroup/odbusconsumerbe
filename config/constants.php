@@ -31,7 +31,7 @@ return [
     'USER_LOGGEDOUT' => ' User successfully signed out',
     'SMS_DELIVERED' => 'SMS delivered successfully',
     'ORDERID_CREATED' => 'Order Id generated Successfully',
-    'REFUND_INITIATED' => 'Refund Initiated',
+    'REFUND_INITIATED' => 'Ticket has been cancelled',
     'REFUNDED_COMPLETED' => 'Already refunded',
     'NO_PAYMENT' => 'Not a successful payment',
     'BOOKED' => 'Seats already booked',

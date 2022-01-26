@@ -67,6 +67,8 @@ class CancelTicketRepository
     public function GetBooking($bookingId){
         return $this->booking->find($bookingId);
     }
+
+   
     
     public function cancelTicket($phone,$pnr,$booked)
     { 
@@ -86,6 +88,45 @@ class CancelTicketRepository
                   }]);
             }]);    
         }])->get();
+    }
+
+
+    public function cancel($bookingId,$booking,$smsData,$emailData,$busId){
+
+        $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
+
+        $emailData['refundAmount'] = 0;
+        $emailData['deductionPercentage'] = 100;
+        $emailData['totalfare'] = $booking->total_fare;
+ 
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => 0, 'deduction_percent' => 100]);      
+                
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));   
+        
+        $smsData['refundAmount'] = 0;
+
+        $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
+              
+        if($emailData['email'] != ''){
+            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+        } 
+        ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+        $busContactDetails = BusContacts::where('bus_id',$busId)
+                                        ->where('status','1')
+                                        ->where('cancel_sms_send','1')
+                                        ->get('phone');
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+            //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+        }
+
+        $data = array(
+             'refundAmount' => 0,
+             'paidAmount' => $booking->total_fare,
+        );
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        return $data;
     }
 
     public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){

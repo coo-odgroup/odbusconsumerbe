@@ -51,7 +51,9 @@ class CancelTicketService
                        $userMailId =$booking_detail[0]->email;
                      $bookingId =$booking_detail[0]->booking[0]->id;
                       $booking = $this->cancelTicketRepository->GetBooking($bookingId);
-                     $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;
+                    
+                    
+                
     
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                     $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -79,6 +81,10 @@ class CancelTicketService
                      if($interval < 12) {
                         return 'Cancellation is not allowed';                    
                     }
+
+                 if($booking_detail[0]->booking[0]->customerPayment != null){
+
+                    $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;   
                 $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                     foreach($cancelPolicies as $cancelPolicy){
                         $duration = $cancelPolicy->duration;
@@ -101,12 +107,22 @@ class CancelTicketService
     
                         }
                         elseif($min <= $interval && $interval <= $max){ 
-                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$cancelBy)
+                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
                             return $refund;    
                         }
-                    }                     
-                } 
+                    } 
+                 } else{
+
+                 
+
+                    $refund = $this->cancelTicketRepository->cancel($bookingId,$booking,$smsData,$emailData,$busId)
+                            ; 
+                    return $refund;  
+
+                 }  
+
+             } 
                 else{                
                      return "PNR_NOT_MATCH";                
                 }
