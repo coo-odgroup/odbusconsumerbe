@@ -46,6 +46,10 @@ class SendEmailTicketJob implements ShouldQueue
     protected $conductor_number;
     protected $customer_number;    
     protected $passengerDetails;
+    protected $total_seats;
+    protected $seat_names;
+    
+    
 
 
 
@@ -125,6 +129,8 @@ class SendEmailTicketJob implements ShouldQueue
             'odbus_gst'=> $this->odbus_gst,
             'odbus_charges'=> $this->odbus_charges,
             'owner_fare'=> $this->owner_fare,
+            'total_seats'=>  $this->total_seats ,
+            'seat_names'=>  $this->seat_names ,
             'customer_comission'=> $this->customer_comission
             
         ];

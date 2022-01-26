@@ -117,7 +117,7 @@
     <div class="container">
         <div class="od-body mb25">
            <div class="row mb40">
-               <div class="col-md-3"><img src="{{url('template/logo.png')}}" class="od-logo"/></div>
+               <div class="col-md-3"><img src="{{url('public/template/logo.png')}}" class="od-logo"/></div>
                <div class="col-md-6 odtext32"><span>ODBUS</span> e-Ticketing Service<br/> Electronic Reservation Slip</div>
                <div class="col-md-3">
                    <div class="od-bktext">Booking Date</div>
@@ -165,7 +165,7 @@
                   </table>
                 
             </div>
-            <div class="col-md-3"><img src="{{url('template/qr-code.png')}}" class="od-qrcode"/></div>
+            <div class="col-md-3"><img src="{{url('public/template/qr-code.png')}}" class="od-qrcode"/></div>
         </div>
 
         <div class="row mt30 mb25">
@@ -201,7 +201,7 @@
         </div>
 
         <div class="row mt30 mb25">
-            <div class="col-md-12"><img src="{{url('template/banner-01.png')}}" class="od-banner"/></div>
+            <div class="col-md-12"><img src="{{url('public/template/banner-01.png')}}" class="od-banner"/></div>
         </div>
 
         <div class="row mt30">
