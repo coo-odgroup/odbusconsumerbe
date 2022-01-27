@@ -43,6 +43,35 @@ class UserController extends Controller
         $this->clientValidator = $clientValidator;     
     }
 //////////////////client Login////////////////////////////////////////////////////
+/**
+ * @OA\Post(
+ *     path="/api/ClientLogin",
+ *     tags={"ClientLogin API"},
+ *     description="client login to generate client access token",
+ *     summary="client login to generate client access token",
+ *     @OA\Parameter(
+ *          name="client_id",
+ *          description="client_id of user",
+ *          required=false,  
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="password",
+ *          description="password of user",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="client access token generated"),
+ *     @OA\Response(response="206", description="not a valid credential"),
+ * )
+ * 
+ */
 public function clientLogin(Request $request){  
 
   $data = $request->all();
@@ -76,7 +105,16 @@ protected function createNewToken($token){
    ]; 
    return  $loginClient;
   }
-
+/**
+ * @OA\Get(
+ *  path="/api/ClientDetails",
+ *  summary="Get client details",
+ *  tags={"Authorized Client Details"},
+ *  @OA\Response(response=200, description="Authorized Client details"),
+ *  @OA\Response(response=401, description="Unauthorized Client"),
+ *  security={{ "apiAuth": {} }}
+ * )
+ */
 public function clienDetails() {
     $client = auth()->user();
     if(!is_null($client)) {

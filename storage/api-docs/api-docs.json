@@ -2732,6 +2732,66 @@
                 ]
             }
         },
+        "/api/ClientLogin": {
+            "post": {
+                "tags": [
+                    "ClientLogin API"
+                ],
+                "summary": "client login to generate client access token",
+                "description": "client login to generate client access token",
+                "operationId": "024a0939836cfb3d874173adc93235ef",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "description": "client_id of user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "password of user",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "client access token generated"
+                    },
+                    "206": {
+                        "description": "not a valid credential"
+                    }
+                }
+            }
+        },
+        "/api/ClientDetails": {
+            "get": {
+                "tags": [
+                    "Authorized Client Details"
+                ],
+                "summary": "Get client details",
+                "operationId": "19c88a40f884ebc2a377f80446d86815",
+                "responses": {
+                    "200": {
+                        "description": "Authorized Client details"
+                    },
+                    "401": {
+                        "description": "Unauthorized Client"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/Register": {
             "post": {
                 "tags": [
