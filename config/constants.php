@@ -69,4 +69,7 @@ return [
     'WALLET_PAYMENT_SUCESS' =>  'Wallet Payment Successful',
     'AGENT_INVALID' => 'The agent information is not valid',
     'USER_ID' => 1,
+    'CLIENT_TOKEN' => 'Client token generated',
+    'CLIENT_DETAILS' => 'Authorized Client details',
+    'CLIENT_UNAUTHORIZED' => 'Unauthorized Client',
 ];

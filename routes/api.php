@@ -110,6 +110,8 @@ Route::middleware(['checkIp'])->group(function () {
     Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
 
     Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
+    Route::post('/ClientLogin', [UserController::class, 'clientLogin']); 
+    Route::get('/ClientDetails', [UserController::class, 'clienDetails']);
 });
 
 Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);

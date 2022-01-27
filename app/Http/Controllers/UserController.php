@@ -12,9 +12,14 @@ use InvalidArgumentException;
 use App\AppValidator\UserValidator;
 use App\AppValidator\AgentDetailsValidator;
 use App\AppValidator\AgentLoginValidator;
+use App\AppValidator\ClientValidator;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -26,16 +31,62 @@ class UserController extends Controller
     protected $userValidator;
     protected $agentDetailsValidator;
     protected $agentLoginValidator;
+    protected $clientValidator;
 
-    public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,AgentLoginValidator $agentLoginValidator,AgentDetailsValidator $agentDetailsValidator)
+    public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,AgentLoginValidator $agentLoginValidator,AgentDetailsValidator $agentDetailsValidator,ClientValidator $clientValidator)
     {
         $this->usersService = $usersService;
         $this->userService = $userService;
         $this->userValidator = $userValidator;    
         $this->agentLoginValidator = $agentLoginValidator; 
-        $this->agentDetailsValidator = $agentDetailsValidator;       
+        $this->agentDetailsValidator = $agentDetailsValidator;  
+        $this->clientValidator = $clientValidator;     
     }
+//////////////////client Login////////////////////////////////////////////////////
+public function clientLogin(Request $request){  
 
+  $data = $request->all();
+                                                 
+  $clientValidation = $this->clientValidator->validate($data);
+
+  if ($clientValidation->fails()) {
+    $errors = $clientValidation->errors();
+    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+  }
+  try {
+
+    if (! $token = auth()->attempt($data)) {
+      return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
+  }
+  $loginClient =  $this->createNewToken($token);
+  User::where('id', $loginClient['user']->id)->update(['client_access_token' => $token ]);
+  // User::where('client_id', $request['client_id'])->update(['client_access_token' => $token ]);
+  return $this->successResponse($loginClient,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
+}
+  catch (Exception $e) {
+   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+} 
+}
+protected function createNewToken($token){
+    $loginClient = [  
+         'access_token' => $token,
+         'token_type' => 'bearer',
+         'expires_in' => Auth()->factory()->getTTL() * 60,
+         'user' => Auth()->user()   
+   ]; 
+   return  $loginClient;
+  }
+
+public function clienDetails() {
+    $client = auth()->user();
+    if(!is_null($client)) {
+      return $this->successResponse($client,Config::get('constants.CLIENT_DETAILS'),Response::HTTP_OK);
+    }
+    else {
+      return $this->errorResponse(Config::get('constants.CLIENT_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+    }
+  }
+  
 /////////////////////////Agent Registration//////////////////////////////////////////////////////////
     public function Register(Request $request) {  
       $data = $request->only('phone'); 
