@@ -25,6 +25,8 @@ class PopularRepository
     protected $location;
    protected $review;
    protected $credentials;
+   protected  $booking;
+  
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location,Review $review,Credentials $credentials)
     {

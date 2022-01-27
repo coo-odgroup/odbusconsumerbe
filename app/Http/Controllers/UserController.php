@@ -24,8 +24,8 @@ class UserController extends Controller
     protected $usersService;
     protected $userService;
     protected $userValidator;
-    protected $loginValidator;
     protected $agentDetailsValidator;
+    protected $agentLoginValidator;
 
     public function __construct(UsersService $usersService,UserService $userService,UserValidator $userValidator,AgentLoginValidator $agentLoginValidator,AgentDetailsValidator $agentDetailsValidator)
     {

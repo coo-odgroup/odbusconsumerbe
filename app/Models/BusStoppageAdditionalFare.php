@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\BusStoppage;
+use App\Models\TicketPrice;
+
 use App\Models\BusSeats;
 
 class BusStoppageAdditionalFare extends Model
@@ -15,7 +16,7 @@ class BusStoppageAdditionalFare extends Model
 
     public function BusStoppage()
     {
-    	return $this->belongsTo(BusStoppage::class);
+    	return $this->belongsTo(TicketPrice::class);
     }
     public function BusSeats()
     {

@@ -35,6 +35,7 @@ class CancelTicketRepository
     protected $customerPayment;
     protected $cancellationSlab;
     protected $cancellationSlabInfo;
+    protected $channelRepository; 
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository,Credentials $credentials,CustomerPayment $customerPayment,CancellationSlab $cancellationSlab,CancellationSlabInfo $cancellationSlabInfo)
     {

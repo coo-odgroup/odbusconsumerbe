@@ -48,6 +48,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $passengerDetails;
     protected $total_seats;
     protected $seat_names;
+    protected $subject;
     
     
 
@@ -90,6 +91,8 @@ class SendEmailTicketJob implements ShouldQueue
         $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
         $this->email_pnr= $email_pnr;
+
+        $this->subject ='';
 
     }
 

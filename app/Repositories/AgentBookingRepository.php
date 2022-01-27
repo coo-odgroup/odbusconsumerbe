@@ -31,7 +31,8 @@ class AgentBookingRepository
     protected $booking;
     protected $busSeats;
     protected $busLocationSequence;
-    protected $viewSeatsService;  
+    protected $viewSeatsService; 
+    protected $channelRepository; 
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService)
     {

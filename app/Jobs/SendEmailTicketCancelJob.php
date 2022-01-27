@@ -29,6 +29,8 @@ class SendEmailTicketCancelJob implements ShouldQueue
     protected $seat_no;
     protected $cancellationDateTime;
     protected $totalfare;
+    protected $subject;
+
 
     public function __construct(array &$request)
 
@@ -43,6 +45,8 @@ class SendEmailTicketCancelJob implements ShouldQueue
         $this->seat_no = $request['seat_no'];
         $this->totalfare = $request['totalfare'];
         $this->cancellationDateTime = $request['cancellationDateTime'];
+        $this->subject ='';
+
         
 
     }

@@ -21,6 +21,7 @@ class BookingManageController extends Controller
      */
     protected $bookTicketService;
     protected $bookTicketValidator;
+    protected $bookingManageService;
     /**
      * BookingManageController Constructor
      *

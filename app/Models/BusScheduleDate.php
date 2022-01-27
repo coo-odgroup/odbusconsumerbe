@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\busSchedule;
+use App\Models\BusSchedule;
 
 class BusScheduleDate extends Model
 {
@@ -14,6 +14,6 @@ class BusScheduleDate extends Model
     protected $fillable = ['bus_schedule_id','entry_date'];
     public function busSchedule()
     {
-    	return $this->belongsTo(busSchedule::class);
+    	return $this->belongsTo(BusSchedule::class);
     }
 }

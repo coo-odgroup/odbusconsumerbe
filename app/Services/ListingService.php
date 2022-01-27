@@ -22,7 +22,8 @@ class ListingService
 {
     
     protected $listingRepository; 
-    protected $commonRepository;   
+    protected $commonRepository;  
+    
     public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository)
     {
         $this->listingRepository = $listingRepository;

@@ -16,6 +16,7 @@ class UsersService
 {
    
     protected $usersRepository;
+    protected $commonRepository;
 
     
     public function __construct(UsersRepository $usersRepository,CommonRepository $commonRepository)

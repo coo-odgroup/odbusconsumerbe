@@ -55,7 +55,10 @@ class ListingRepository
     protected $busScheduledate;
     protected $busSchedule;
     protected $booking;
-    
+    protected $commonRepository;
+    protected $viewSeatsRepository;
+    protected $busLocationSequence;
+
     public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence)
     {
         $this->bus = $bus;

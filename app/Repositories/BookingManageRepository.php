@@ -112,7 +112,7 @@ class BookingManageRepository
       
      
       
-        $b= $this->getBookingDetails($request);
+        $b= $this->getBookingDetails($request['mobile'],$request['pnr']);
       
         if($b && isset($b[0])){
 

@@ -27,6 +27,7 @@ class BookTicketRepository
     protected $booking;
     protected $busSeats;
     protected $busLocationSequence;
+    protected $channelRepository; 
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository)
     {

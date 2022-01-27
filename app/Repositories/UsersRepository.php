@@ -43,6 +43,7 @@ class UsersRepository
     protected $busClass;
     protected $customerPayment;
     protected $review;
+    protected $commonRepository;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass

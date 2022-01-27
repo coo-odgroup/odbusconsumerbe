@@ -11,7 +11,8 @@ use InvalidArgumentException;
 
 class PopularService
 {
-    protected $popularRepository;    
+    protected $popularRepository; 
+    protected $commonRepository;   
     public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository)
     {
         $this->popularRepository = $popularRepository;

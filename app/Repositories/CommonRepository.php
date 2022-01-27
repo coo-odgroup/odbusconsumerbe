@@ -16,6 +16,7 @@ class CommonRepository
     protected $banner;
     protected $socialMedia;
     protected $odbusCharges;
+    protected $pathurls;
 
     public function __construct(Banner $banner, SocialMedia $socialMedia,
      OdbusCharges $odbusCharges,Pathurls $pathurls)

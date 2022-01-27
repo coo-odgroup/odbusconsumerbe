@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\BusScheduleDate;
+use App\Models\TicketPrice;
+
 
 class BusSchedule extends Model
 {
@@ -18,7 +20,7 @@ class BusSchedule extends Model
     }
     public function busStoppage()
     {
-    	return $this->belongsTo(BusStoppage::class);
+    	return $this->belongsTo(TicketPrice::class);
     }
     public function busScheduleDate()
     {        

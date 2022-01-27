@@ -38,7 +38,7 @@ class ViewSeatsRepository
     protected $booking;
     protected $ticketFareSlab;
     protected $odbusCharges;
-
+    protected $seats;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,BoardingDroping $boardingDroping,Location $location,BusSeats $busSeats, Seats $seats, BusStoppageTiming $busStoppageTiming,BusLocationSequence $busLocationSequence,BookingSequence $bookingSequence,BookingDetail $bookingDetail,Booking $booking,TicketFareSlab $ticketFareSlab,OdbusCharges $odbusCharges)
     {
