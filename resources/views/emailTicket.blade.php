@@ -572,6 +572,58 @@ border: 0;
     padding: 15px 15px;
    }
 
+   @media screen and (min-device-width: 320px) and (max-device-width:520px) {
+.od-body {
+   background: #ffffff;
+}
+.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9{
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.container {
+    max-width: 100% !important;
+    margin: 0 auto;
+}
+
+.odtext32 {
+  font-size: 21px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 25px;
+}
+
+.odtext24{
+  overflow-x: scroll;
+}
+
+.mid-10{
+  text-align: center;
+}
+
+.od-logo{
+  height: 50px;
+}
+.od-body thead {
+    font-size: 12px;
+}
+
+.od-body tbody {
+    font-size: 12px;
+}
+
+}
+
 </style>
 
 </head>
@@ -582,7 +634,7 @@ border: 0;
     <div class="container">
         <div class="od-body mb25">
            <div class="row mb40">
-               <div class="col-md-3"><img src="{{url('public/template/logo.png')}}" class="od-logo"/></div>
+               <div class="col-md-3 mid-10"><img src="{{url('public/template/logo.png')}}" class="od-logo"/></div>
                <div class="col-md-6 odtext32"><span>ODBUS</span> e-Ticketing Service<br/> Electronic Reservation Slip</div>
                <div class="col-md-3">
                    <div class="od-bktext">Booking Date</div>
