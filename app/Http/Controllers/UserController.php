@@ -114,7 +114,7 @@ class UserController extends Controller
       $agentDetailsValidation = $this->agentDetailsValidator->validate($data);
      
       if ($agentDetailsValidation->fails()) {
-        $errors = $userValidation->errors();
+        $errors = $agentDetailsValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }
       try {
