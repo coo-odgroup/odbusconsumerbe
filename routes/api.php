@@ -87,6 +87,8 @@ Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerD
 Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
 Route::post('/EmailSms', [BookingManageController::class, 'emailSms']);
 Route::post('/cancelTicketInfo', [BookingManageController::class, 'cancelTicketInfo']);
+Route::post('/AgentcancelTicketInfo', [BookingManageController::class, 'agentcancelTicketInfo']);
+
 Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
 Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
 Route::post('/AddReview', [ReviewController::class, 'createReview']);

@@ -307,5 +307,37 @@ class BookingManageController extends Controller
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
-    }     
+    } 
+
+    public function agentcancelTicketInfo(Request $request) {
+      $data = $request->all();
+        $bookingManageValidator = $this->bookingManageValidator->validate($data);
+
+     if ($bookingManageValidator->fails()) {
+     $errors = $bookingManageValidator->errors();
+     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+     } 
+       try {
+        $response =  $this->bookingManageService->agentcancelTicketInfo($request);  
+
+        if($response == 'PNR_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+         }elseif($response == 'MOBILE_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+         }
+         elseif($response == 'CANCEL_NOT_ALLOWED'){
+          return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+         }         
+         else{
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+         }
+
+         
+     }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+
+    
 }
