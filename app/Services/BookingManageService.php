@@ -4,6 +4,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\Models\Location;
+use App\Models\Users;
 use App\Repositories\BookingManageRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -280,37 +281,26 @@ class BookingManageService
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
                            $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                           $emailData['totalfare'] = $paidAmt;                        
-                          
+                           $emailData['totalfare'] = $paidAmt;                          
                            return $emailData;   
                        }
                    } 
-
-
                 }else{
                     $emailData['refundAmount'] = 0;
                     $emailData['deductionPercentage'] = "100%";
                     $emailData['deductAmount'] =$booking_detail[0]->booking[0]->total_fare;
                     $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
                     return $emailData;
-                }
-                
-
-                                     
-            }
-            
+                }                          
+            }    
             else{                
                 return "PNR_NOT_MATCH";                
            }
-       }
-       
+       }  
        else{            
            return "MOBILE_NOT_MATCH";            
        }
-
         return $booking_detail;
-
-
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
@@ -318,56 +308,85 @@ class BookingManageService
         //return $cancelTicketInfo;
     } 
     
-
-    public function agentcancelTicketInfo($request)
+    public function agentcancelTicketOTP($request)
     {
         try {
-
         $pnr = $request['pnr'];
         $mobile = $request['mobile'];
+        $booked = Config::get('constants.BOOKED_STATUS');
 
-         $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
+        $booking_detail  = $this->bookingManageRepository->agentCancelTicket($mobile,$pnr,$booked); 
+        
+      //Booking exists for the PNR
+        if(isset($booking_detail[0])){ 
+             if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+                $customerId = $booking_detail[0]->booking[0]->users_id;
+                $customerNo = Users::where('id',$customerId)->first()->phone;
+                $bookingId = $booking_detail[0]->booking[0]->id;
 
-       
+                $otp = rand(10000, 99999);
+                $sendOTP = $this->bookingManageRepository->OTP($customerNo,$pnr,$otp,$bookingId);      
+            } 
+            else{                
+                return "PNR_NOT_MATCH";                
+           }
+       } 
+       else{            
+           return "MOBILE_NOT_MATCH";            
+       }
+        return $booking_detail;
+        } catch (Exception $e) {
+            //Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }   
+    } 
+
+    public function agentcancelTicket($request)
+    {
+        try {
+        $pnr = $request['pnr'];
+        $mobile = $request['mobile'];
+        $recvOTP = $request['otp'];
+        $booked = Config::get('constants.BOOKED_STATUS');
+
+        $booking_detail  = $this->bookingManageRepository->agentCancelTicket($mobile,$pnr,$booked);  
       //return $booking_detail;
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
- 
-                $jDate =$booking_detail[0]->booking[0]->journey_dt;
-                $jDate = date("d-m-Y", strtotime($jDate));
-                $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+                $dbOTP = $booking_detail[0]->booking[0]->cancel_otp;
+                if($dbOTP == $recvOTP){
+                    $jDate =$booking_detail[0]->booking[0]->journey_dt;
+                    $jDate = date("d-m-Y", strtotime($jDate));
+                    $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
 
-                $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
-                $current_date_time = Carbon::now()->toDateTimeString(); 
-                $bookingDate = new DateTime($combinedDT);
-                $cancelDate = new DateTime($current_date_time);
-                $interval = $bookingDate->diff($cancelDate);
-                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                    $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                    $current_date_time = Carbon::now()->toDateTimeString(); 
+                    $bookingDate = new DateTime($combinedDT);
+                    $cancelDate = new DateTime($current_date_time);
+                    $interval = $bookingDate->diff($cancelDate);
+                    $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
 
-                 if($interval < 12) {
-                    return 'CANCEL_NOT_ALLOWED';                    
-                }
+                    if($interval < 12) {
+                        return 'CANCEL_NOT_ALLOWED';                    
+                    }
+                    $userId = $booking_detail[0]->id;
+                    $bookingId = $booking_detail[0]->booking[0]->id;
+                    $srcId = $booking_detail[0]->booking[0]->source_id;
+                    $desId = $booking_detail[0]->booking[0]->destination_id;
+                    $paidAmount = $booking_detail[0]->booking[0]->total_fare;
+                    $sourceName = Location::where('id',$srcId)->first()->name;
+                    $destinationName = Location::where('id',$desId)->first()->name;
+                    $emailData['source'] = $sourceName;
+                    $emailData['destination'] = $destinationName;
+                    $emailData['bookingDetails'] = $booking_detail;
 
-
-                $srcId = $booking_detail[0]->booking[0]->source_id;
-                $desId = $booking_detail[0]->booking[0]->destination_id;
-                $sourceName = Location::where('id',$srcId)->first()->name;
-                $destinationName = Location::where('id',$desId)->first()->name;
-                $emailData['source'] = $sourceName;
-                $emailData['destination'] = $destinationName;
-                $emailData['bookingDetails'] = $booking_detail;
-
-                if($booking_detail[0]->booking[0]->status==2){
-                    $emailData['cancel_status'] = false;
-                }else{
-                    $emailData['cancel_status'] = true;
-                }
-
-                    $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
+                    if($booking_detail[0]->booking[0]->status==2){
+                        $emailData['cancel_status'] = false;
+                    }else{
+                        $emailData['cancel_status'] = true;
+                    }
 
                     $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-               
-                
                
                     foreach($cancelPolicies as $cancelPolicy){
                        $duration = $cancelPolicy->duration;
@@ -376,57 +395,44 @@ class BookingManageService
                        $max= $duration[1];
                        $min= $duration[0];
    
-       
                        if( $interval > 240){
                            $deduction = 10;//minimum deduction
-                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-                           $refundAmt =  ($refund['refundAmount']/100);
-                           $paidAmt =  ($refund['paidAmount']/100);
-   
+                           $refundAmt = round($paidAmount * ((100-$deduction) / 100));
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                           $emailData['totalfare'] = $paidAmt;
-                              
+                           $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                           $emailData['totalfare'] = $paidAmount;
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt);    
                            return $emailData;
        
                        }elseif($min <= $interval && $interval <= $max){ 
-   
-                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-   
-                           $refundAmt =  round(($refund['refundAmount']/100));
-                           $paidAmt =  ($refund['paidAmount']/100);
-   
+                           $refundAmt = round($paidAmount * ((100-$deduction) / 100));
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
-                           $emailData['totalfare'] = $paidAmt;                        
+                           $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                           $emailData['totalfare'] = $paidAmount;                        
+                          
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt); 
                           
                            return $emailData;   
                        }
                    } 
-
-                                     
-            }
-            
+                }else{                
+                    return "INVALID_OTP";                
+                }                         
+            } 
             else{                
                 return "PNR_NOT_MATCH";                
            }
-       }
-       
+       } 
        else{            
            return "MOBILE_NOT_MATCH";            
        }
-
         return $booking_detail;
-
 
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-        //return $cancelTicketInfo;
-    } 
-    
-    
+    }         
 }

@@ -72,4 +72,5 @@ return [
     'CLIENT_TOKEN' => 'Client token generated',
     'CLIENT_DETAILS' => 'Authorized Client details',
     'CLIENT_UNAUTHORIZED' => 'Unauthorized Client',
+    'OTP_SENT_CUSTOMER' => 'OTP Sent to customer',
 ];

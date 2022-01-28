@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Location;
 use App\Models\Users;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use App\Models\Booking;
 use App\Models\BookingDetail;
@@ -16,6 +17,9 @@ use App\Models\Seats;
 use App\Models\TicketPrice;
 use App\Jobs\SendEmailTicketJob;
 use App\Models\Credentials;
+use App\Models\AgentWallet;
+use App\Models\Notification;
+use App\Models\UserNotification;
 use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
@@ -57,15 +61,13 @@ class BookingManageRepository
     
     public function getJourneyDetails($mobile,$pnr)
     { 
-
        return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
             $u->where('booking.pnr', '=', $pnr);
             $u->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');
             }]); 
-        }])->get();
-       
+        }])->get();   
     }
 
     public function GetLocationName($location_id){
@@ -74,7 +76,6 @@ class BookingManageRepository
 
     public function getPassengerDetails($mobile,$pnr)
     { 
-
        return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
                                                 $u->where('booking.pnr', '=', $pnr);
                                                 $u->with(["bookingDetail" => function($b){
@@ -88,44 +89,33 @@ class BookingManageRepository
 
     public function getBookingDetails($mobile,$pnr)
     { 
-
       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
         $u->where('booking.pnr', '=', $pnr);            
         $u->with(["bus" => function($bs){
             $bs->with('BusType.busClass');
             $bs->with('BusSitting');                
             $bs->with('busContacts');
-          } ] );           
-        
+          } ] );             
         $u->with(["bookingDetail" => function($b){
             $b->with(["busSeats" => function($s){
                 $s->with("seats");
-              } ]);
-        }]);
-        
-       }])->get();
-
+              }]);
+            }]); 
+          }])->get();
     }
 
     public function emailSms($request)
     { 
-      
-     
-      
         $b= $this->getBookingDetails($request['mobile'],$request['pnr']);
       
         if($b && isset($b[0])){
 
             $b=$b[0];
-
             $seat_arr=[];
             $seat_no='';
-          
             foreach($b->booking[0]->bookingDetail as $bd){
-                array_push($seat_arr,$bd->busSeats->seats->seatText);              
-              
+                array_push($seat_arr,$bd->busSeats->seats->seatText);                 
             }            
-
             $body = [
                 'name' => $b->name,
                 'phone' => $b->phone,
@@ -153,32 +143,21 @@ class BookingManageRepository
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
-                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name
-                
+                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name    
             ];
           
-          
-           
-          
-            if($b->email != ''){
-              
+            if($b->email != ''){  
                  $sendEmailTicket = $this->sendEmailTicket($body,$b->booking[0]->pnr); 
             }
-
             if($b->phone != ''){
                  $sendEmailTicket = $this->sendSmsTicket($body,$b->booking[0]->pnr); 
             }
-
             return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
 
         }else{
-
             return "Invalid request";   
-
         }
-
     }
-
 
     public function cancelTicketInfo($mobile,$pnr){
 
@@ -187,17 +166,105 @@ class BookingManageRepository
         $u->with("customerPayment");           
         $u->with(["bus" => function($bs){
             $bs->with('cancellationslabs.cancellationSlabInfo');
-          } ] );          
-        
+          }]);          
         $u->with(["bookingDetail" => function($b){
             $b->with(["busSeats" => function($s){
                 $s->with("seats");
-              } ]);
-        } ]);
-       }])->get();
+              }]);
+         }]);
+       }])->get();    
+    }
+    //////////////////////////////////////////////////
+    public function agentCancelTicket($phone,$pnr,$booked)
+    { 
+        return User::where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
+            $u->where([
+                ['booking.pnr', '=', $pnr],
+                ['status', '=', $booked],
+            ]);
+            //$u->with("customerPayment");           
+            $u->with(["bus" => function($bs){
+                $bs->with('cancellationslabs.cancellationSlabInfo');
+              }]);          
+            $u->with(["bookingDetail" => function($b){
+                $b->with(["busSeats" => function($s){
+                    $s->with("seats");
+                  }]);
+            }]);    
+        }])->get();
+    }
+    public function OTP($customerNo,$pnr,$otp,$bookingId)
+    {
+        $SmsGW = config('services.sms.otpservice');
+
+        if($SmsGW =='textLocal'){
+
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.cancelTicketOTP');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($customerNo);
+          
+            $message = str_replace("<otp>",$otp,$message);
+            $message = str_replace("<pnr>",$pnr,$message);
+
+            //return $message;
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+            
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);  
+            //return $response;
+            $this->booking->where('id', $bookingId)->update(['cancel_otp' => $otp]);  
         
+        }elseif($SmsGW=='IndiaHUB'){
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');              
+        }
     }
 
+    public function updateCancelTicket($bookingId,$userId,$refundAmt){
+        $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
+        $agentDetails =  AgentWallet::where('user_id', $userId)->latest()->first();
+   
+        $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        $agetWallet = new AgentWallet();
+        $agetWallet->transaction_id = $transactionId;
+        $agetWallet->amount = $refundAmt;
+        $agetWallet->transaction_type = 'c';
+        $agetWallet->balance = $agentDetails->balance + $refundAmt;
+        $agetWallet->user_id = $userId;
+        $agetWallet->created_by = $agentDetails->created_by;
+        $agetWallet->status = 1;
+        $agetWallet->save();
+
+        $newBalance = $agentDetails->balance + $refundAmt;
+        $notification = new Notification;
+        $notification->notification_heading = "New Balance is Rs.$newBalance after cancellation for Rs.$refundAmt";
+        $notification->notification_details = "New Balance is Rs.$newBalance after cancellation for Rs.$refundAmt";
+        $notification->created_by = 'Agent';
+        $notification->save();
+       
+        $userNotification = new UserNotification();
+        $userNotification->user_id = $userId;
+        $userNotification->created_by= "Agent"; 
+        $notification->userNotification()->save($userNotification);
+       
+         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled]);             
+        
+        //return $agetWallet;
+    }
 
     public function refundPolicy($percentage,$razorpay_payment_id){
 
@@ -207,28 +274,20 @@ class BookingManageRepository
         $api = new Api($key, $secretKey);
         
         $payment = $api->payment->fetch($razorpay_payment_id);
-
-         $paidAmount = $payment->amount;
-
-         $refundAmount = $paidAmount * ((100-$percentage) / 100);
-
-         $data = array(
-             'refundAmount' => $refundAmount,
+        $paidAmount = $payment->amount;
+        $refundAmount = $paidAmount * ((100-$percentage) / 100);
+        $data = array(
+            'refundAmount' => $refundAmount,
             'paidAmount' => $paidAmount,
         );
         return $data;
-       
-
     }
-
 
     public function sendEmailTicket($request, $pnr) {
        return SendEmailTicketJob::dispatch($request, $pnr);
       }
 
-      public function sendSmsTicket($data, $pnr) {
-
-       
+    public function sendSmsTicket($data, $pnr) {
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
@@ -268,7 +327,6 @@ class BookingManageRepository
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
             
-
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
             //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
@@ -314,8 +372,4 @@ class BookingManageRepository
 
         }
       }
-
-
-    
-
 }
