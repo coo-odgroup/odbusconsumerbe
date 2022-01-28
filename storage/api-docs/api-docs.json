@@ -3101,29 +3101,12 @@
                         }
                     },
                     {
-                        "name": "filter",
-                        "in": "query",
-                        "description": "filter",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
                         "name": "userId",
                         "in": "query",
                         "description": "user Id",
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "rating_overall",
-                        "in": "query",
-                        "description": "rating overall",
-                        "required": true,
-                        "schema": {
-                            "type": "number"
                         }
                     },
                     {

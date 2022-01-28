@@ -116,11 +116,12 @@ Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
 Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
 Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
-Route::get('/ClientDetails', [UserController::class, 'clienDetails']);
+
 
 //});
 
 
-Route::post('/ClientLogin', [UserController::class, 'clientLogin']); 
+Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
+Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 

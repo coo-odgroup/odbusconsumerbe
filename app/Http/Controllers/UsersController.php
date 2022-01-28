@@ -378,29 +378,12 @@ public function refreshToken() {
          *          )
          *      ),
          *     @OA\Parameter(
-         *          name="filter",
-         *          description="filter",
-         *          in="query",
-         *          @OA\Schema(
-         *              type="integer"
-         *          )
-         *      ),
-         *     @OA\Parameter(
          *          name="userId",
          *          description="user Id",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
          *              type="integer"
-         *          )
-         *      ),
-         *     @OA\Parameter(
-         *          name="rating_overall",
-         *          description="rating overall",
-         *          required=true,
-         *          in="query",
-         *          @OA\Schema(
-         *              type="number"
          *          )
          *      ),
          *     @OA\Parameter(
