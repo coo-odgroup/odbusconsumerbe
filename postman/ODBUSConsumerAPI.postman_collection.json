@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "ccc00e6e-a2f4-4388-8425-791c4b1c28e7",
-		"name": "ODBUSConsumerAPI",
+		"_postman_id": "a3d87a09-b94a-411d-9cb8-68a45e5cce62",
+		"name": "ODBUSConsumerAPI Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -1830,25 +1830,31 @@
 			"name": "New Request",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:8000/api/ClientLogin?client_id=odbusSas&password=1234",
+			"name": "ClientLogin",
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/ClientLogin?client_id=odbusSas&password=Admin@2010",
+					"raw": "http://consumer.odbus.co.in/api/ClientLogin?client_id=odbusSas&password=Admin@2010",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"ClientLogin"
@@ -1873,7 +1879,7 @@
 			"response": []
 		},
 		{
-			"name": "http://127.0.0.1:8000/api/ClientDetails",
+			"name": "ClientDetails",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -1900,6 +1906,43 @@
 					"path": [
 						"api",
 						"ClientDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking Histroy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"status\":\"Completed\",\r\n    \"paginate\":5,\r\n    \"userId\":1,\r\n    \"token\":\"r34azDRURM\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/BookingHistory?page=",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"BookingHistory"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": ""
+						}
 					]
 				}
 			},
