@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a3d87a09-b94a-411d-9cb8-68a45e5cce62",
-		"name": "ODBUSConsumerAPI Copy",
+		"_postman_id": "01c4f90a-1ac8-488f-9ccf-230adca9d01d",
+		"name": "ODBUSConsumerAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -1943,6 +1943,70 @@
 							"key": "page",
 							"value": ""
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AgentcancelTicketOTP",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"94125673\",\r\n    \"mobile\":\"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/AgentcancelTicketOTP",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"AgentcancelTicketOTP"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AgentcancelTicket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"94125673\",\r\n    \"mobile\":\"9916457575\",\r\n    \"otp\":\"61877\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/AgentcancelTicket",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"AgentcancelTicket"
 					]
 				}
 			},
