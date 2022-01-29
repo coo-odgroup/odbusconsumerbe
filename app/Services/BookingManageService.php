@@ -320,7 +320,7 @@ class BookingManageService
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                 $otp = rand(10000, 99999);
-                $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$bookingId);      
+                $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id);      
             } 
             else{                
                 return "PNR_NOT_MATCH";                
@@ -331,7 +331,7 @@ class BookingManageService
        }
         return $booking_detail;
         } catch (Exception $e) {
-            //Log::info($e->getMessage());
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }   
     } 
