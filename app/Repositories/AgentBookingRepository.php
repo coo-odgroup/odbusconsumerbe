@@ -84,7 +84,7 @@ class AgentBookingRepository
         if(isset($walletDetail[0])){
             $walletBalance = $walletDetail[0]->balance;
         }else{
-            $arr['note']="Your do not have any wallet balance. Kindly recharge your wallet to book tickets";
+            $arr['note']="You do not have any wallet balance. Kindly recharge your wallet to book tickets";
             $arr['message']="less_balance";
             return $arr;
         } 
