@@ -253,6 +253,7 @@ class ListingService
             $appliedCoupon = collect([]);
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
+            if(!$CouponRecords) {   
             foreach($CouponRecords as $key => $coupon){
                 $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
                 switch($type){
@@ -273,6 +274,7 @@ class ListingService
                     $appliedCoupon->push($coupon);
                  }
             }
+        }
             $maxSeatBook = $record->max_seat_book;
             $conductor_number ='';
 
