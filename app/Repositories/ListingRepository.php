@@ -108,6 +108,7 @@ class ListingRepository
      {
          return Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
                         ->where('coupon_type', 1)
+                        ->where('status', 1)
                         ->get();
      }
      public function getOpRouteCoupon($busOperatorId,$sourceID,$destinationID)
@@ -116,6 +117,7 @@ class ListingRepository
                         ->where('coupon_type', 3)
                         ->where('source_id', $sourceID)
                         ->where('destination_id', $destinationID)
+                        ->where('status', 1)
                         ->get();
      }
 
