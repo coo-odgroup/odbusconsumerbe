@@ -450,7 +450,7 @@ class BookingManageService
                            $emailData['deductionPercentage'] = $deduction."%";
                            $emailData['deductAmount'] =$paidAmount-$refundAmt;
                            $emailData['totalfare'] = $paidAmount;
-                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt);    
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction);    
                            return $emailData;
        
                        }elseif($min <= $interval && $interval <= $max){ 
@@ -460,7 +460,7 @@ class BookingManageService
                            $emailData['deductAmount'] =$paidAmount-$refundAmt;
                            $emailData['totalfare'] = $paidAmount;                        
                           
-                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt); 
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt,$deduction); 
                           
                            return $emailData;   
                        }
