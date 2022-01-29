@@ -262,7 +262,7 @@ class BookingManageRepository
         $userNotification->created_by= "Agent"; 
         $notification->userNotification()->save($userNotification);
        
-         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled]);             
+         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt]);             
         
         //return $agetWallet;
     }
