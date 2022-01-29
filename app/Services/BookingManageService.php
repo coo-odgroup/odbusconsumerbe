@@ -319,8 +319,61 @@ class BookingManageService
       //Booking exists for the PNR
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+
+                $jDate =$booking_detail[0]->booking[0]->journey_dt;
+                $jDate = date("d-m-Y", strtotime($jDate));
+                $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+
+                $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                $current_date_time = Carbon::now()->toDateTimeString(); 
+                $bookingDate = new DateTime($combinedDT);
+                $cancelDate = new DateTime($current_date_time);
+                $interval = $bookingDate->diff($cancelDate);
+                $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+
+                if($interval < 12) {
+                    return 'CANCEL_NOT_ALLOWED';                    
+                }
+
+
+                $paidAmount = $booking_detail[0]->booking[0]->total_fare; 
+                $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
+                
+
+
                 $otp = rand(10000, 99999);
                 $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id);      
+         
+                $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo; 
+               
+                foreach($cancelPolicies as $cancelPolicy){
+                   $duration = $cancelPolicy->duration;
+                   $deduction = $cancelPolicy->deduction;
+                   $duration = explode("-", $duration, 2);
+                   $max= $duration[1];
+                   $min= $duration[0];
+
+   
+                   if( $interval > 240){
+                       $deduction = 10;//minimum deduction
+                       $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                       $emailData['refundAmount'] = $refundAmt;
+                       $emailData['deductionPercentage'] = $deduction."%";
+                       $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                       $emailData['totalfare'] = $paidAmount + $customer_comission ;
+                          
+                       return $emailData;
+   
+                   }elseif($min <= $interval && $interval <= $max){ 
+                        $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                       $emailData['refundAmount'] = $refundAmt;
+                       $emailData['deductionPercentage'] = $deduction."%";
+                       $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                       $emailData['totalfare'] = $paidAmount + $customer_comission  ;                          
+                       return $emailData;   
+                   }
+               } 
+         
             } 
             else{                
                 return "PNR_NOT_MATCH";                
@@ -329,7 +382,7 @@ class BookingManageService
        else{            
            return "MOBILE_NOT_MATCH";            
        }
-        return $booking_detail;
+       
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
