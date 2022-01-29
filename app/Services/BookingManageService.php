@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use App\Models\Location;
 use App\Models\Users;
 use App\Repositories\BookingManageRepository;
+use App\Repositories\CancelTicketRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -13,14 +14,16 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Arr;
 
 class BookingManageService
 {
     
     protected $bookingManageRepository;    
-    public function __construct(BookingManageRepository $bookingManageRepository)
+    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository)
     {
         $this->bookingManageRepository = $bookingManageRepository;
+        $this->cancelTicketRepository = $cancelTicketRepository;
     }
     public function getJourneyDetails($request)
     {
@@ -124,23 +127,15 @@ class BookingManageService
            
              $b= $this->bookingManageRepository->getBookingDetails($mobile,$pnr);
 
-             
-      
             if($b && isset($b[0])){
-
                 $b=$b[0];
-
                 $seat_arr=[];
                 $seat_no='';
-            
                 foreach($b->booking[0]->bookingDetail as $bd){
                     array_push($seat_arr,$bd->busSeats->seats->seatText);              
-                
                 }  
-
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
-
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -168,29 +163,18 @@ class BookingManageService
                     'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                     'odbus_charges'=> $b->booking[0]->odbus_charges,
                     'owner_fare'=> $b->booking[0]->owner_fare,
-                    'routedetails' => $source_data[0]->name."-".$dest_data[0]->name
-                    
-                 
+                    'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
                 ];
-            
                 if($b->email != ''){
-                
                     $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($body,$b->booking[0]->pnr); 
                 }
-
                 if($b->phone != ''){
                     $sendEmailTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
                 }
-
                 return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
-
             }else{
-
                 return "Invalid request";   
-
             }
-
-
         } catch (Exception $e) {
             //Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
@@ -334,13 +318,9 @@ class BookingManageService
                 if($interval < 12) {
                     return 'CANCEL_NOT_ALLOWED';                    
                 }
-
-
                 $paidAmount = $booking_detail[0]->booking[0]->total_fare; 
                 $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
                 
-
-
                 $otp = rand(10000, 99999);
                 $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id);      
          
@@ -353,7 +333,6 @@ class BookingManageService
                    $max= $duration[1];
                    $min= $duration[0];
 
-   
                    if( $interval > 240){
                        $deduction = 10;//minimum deduction
                        $refundAmt = round($paidAmount * ((100-$deduction) / 100));
@@ -373,7 +352,6 @@ class BookingManageService
                        return $emailData;   
                    }
                } 
-         
             } 
             else{                
                 return "PNR_NOT_MATCH";                
@@ -406,6 +384,17 @@ class BookingManageService
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
                     $jDate = date("d-m-Y", strtotime($jDate));
                     $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+                    $seat_arr=[];
+                    foreach($booking_detail[0]->booking[0]->bookingDetail as $bd){
+                        
+                       $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
+                    }
+                    $busName = $booking_detail[0]->booking[0]->bus->name;
+                    $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
+                    $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
+                    $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
+                    $route = $sourceName .'-'. $destinationName;
+                    $userMailId =$booking_detail[0]->email;
 
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                     $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -414,6 +403,23 @@ class BookingManageService
                     $interval = $bookingDate->diff($cancelDate);
                     $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
 
+                    $smsData = array(
+                        'phone' => $phone,
+                        'PNR' => $pnr,
+                        'busdetails' => $busName.'-'.$busNumber,
+                        'doj' => $jDate, 
+                        'route' => $route,
+                        'seat' => $seat_arr
+                    );
+                    $emailData = array(
+                        'email' => $userMailId,
+                        'contactNo' => $phone,
+                        'pnr' => $pnr,
+                        'journeydate' => $jDate, 
+                        'route' => $route,
+                        'seat_no' => $seat_arr,
+                        'cancellationDateTime' => $current_date_time
+                    );
                     if($interval < 12) {
                         return 'CANCEL_NOT_ALLOWED';                    
                     }
@@ -424,14 +430,14 @@ class BookingManageService
                     $paidAmount = $booking_detail[0]->booking[0]->total_fare;
                     $sourceName = Location::where('id',$srcId)->first()->name;
                     $destinationName = Location::where('id',$desId)->first()->name;
-                    $emailData['source'] = $sourceName;
-                    $emailData['destination'] = $destinationName;
-                    $emailData['bookingDetails'] = $booking_detail;
+                    $data['source'] = $sourceName;
+                    $data['destination'] = $destinationName;
+                    $data['bookingDetails'] = $booking_detail;
 
                     if($booking_detail[0]->booking[0]->status==2){
-                        $emailData['cancel_status'] = false;
+                        $data['cancel_status'] = false;
                     }else{
-                        $emailData['cancel_status'] = true;
+                        $data['cancel_status'] = true;
                     }
 
                     $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
@@ -444,25 +450,46 @@ class BookingManageService
                        $min= $duration[0];
    
                        if( $interval > 240){
+                           
                            $deduction = 10;//minimum deduction
                            $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                           $data['refundAmount'] = $refundAmt;
+                           $data['deductionPercentage'] = $deduction."%";
+                           $data['deductAmount'] =$paidAmount-$refundAmt;
+                           $data['totalfare'] = $paidAmount;
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction); 
+
+                           $smsData['refundAmount'] = $refundAmt;     
+                           $emailData['deductionPercentage'] = $deduction;
                            $emailData['refundAmount'] = $refundAmt;
-                           $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmount-$refundAmt;
                            $emailData['totalfare'] = $paidAmount;
-                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction);    
-                           return $emailData;
+                 
+                           $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                            if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            }   
+                           return $data;
        
                        }elseif($min <= $interval && $interval <= $max){ 
+                       
                            $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                           $data['refundAmount'] = $refundAmt;
+                           $data['deductionPercentage'] = $deduction."%";
+                           $data['deductAmount'] =$paidAmount-$refundAmt;
+                           $data['totalfare'] = $paidAmount;                        
+                          
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt,$deduction);
+                           
+                           $smsData['refundAmount'] = $refundAmt; 
+                           $emailData['deductionPercentage'] = $deduction;
                            $emailData['refundAmount'] = $refundAmt;
-                           $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmount-$refundAmt;
-                           $emailData['totalfare'] = $paidAmount;                        
-                          
-                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt,$deduction); 
-                          
-                           return $emailData;   
+                           $emailData['totalfare'] = $paidAmount;
+                       
+                           $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                            if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            }    
+                           return $data;   
                        }
                    } 
                 }else{                

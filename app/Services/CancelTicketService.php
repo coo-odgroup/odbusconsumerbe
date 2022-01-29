@@ -109,6 +109,12 @@ class CancelTicketService
                         elseif($min <= $interval && $interval <= $max){ 
                             $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
+                            $refundAmt =  $refund['refundAmount'];
+                            $smsData['refundAmount'] = $refundAmt;
+                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                            if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            } 
                             return $refund;    
                         }
                     } 

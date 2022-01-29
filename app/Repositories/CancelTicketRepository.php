@@ -61,7 +61,7 @@ class CancelTicketRepository
         return $this->channelRepository->sendSmsTicketCancel($smsData);
     }
 
-    public function sendEmailTicketCancel($smsData){
+    public function sendEmailTicketCancel($emailData){
        return $this->channelRepository->sendEmailTicketCancel($emailData);
     }
 
