@@ -312,20 +312,15 @@ class BookingManageService
     {
         try {
         $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
+        $phone = $request['mobile'];
         $booked = Config::get('constants.BOOKED_STATUS');
 
-        $booking_detail  = $this->bookingManageRepository->agentCancelTicket($mobile,$pnr,$booked); 
-        
+        $booking_detail = $this->bookingManageRepository->agentCancelTicket($phone,$pnr,$booked); 
       //Booking exists for the PNR
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-                $customerId = $booking_detail[0]->booking[0]->users_id;
-                $customerNo = Users::where('id',$customerId)->first()->phone;
-                $bookingId = $booking_detail[0]->booking[0]->id;
-
                 $otp = rand(10000, 99999);
-                $sendOTP = $this->bookingManageRepository->OTP($customerNo,$pnr,$otp,$bookingId);      
+                $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$bookingId);      
             } 
             else{                
                 return "PNR_NOT_MATCH";                
@@ -345,11 +340,11 @@ class BookingManageService
     {
         try {
         $pnr = $request['pnr'];
-        $mobile = $request['mobile'];
+        $phone = $request['mobile'];
         $recvOTP = $request['otp'];
         $booked = Config::get('constants.BOOKED_STATUS');
 
-        $booking_detail  = $this->bookingManageRepository->agentCancelTicket($mobile,$pnr,$booked);  
+        $booking_detail  = $this->bookingManageRepository->agentCancelTicket($phone,$pnr,$booked);  
       //return $booking_detail;
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
@@ -369,7 +364,7 @@ class BookingManageService
                     if($interval < 12) {
                         return 'CANCEL_NOT_ALLOWED';                    
                     }
-                    $userId = $booking_detail[0]->id;
+                    $userId = $booking_detail[0]->booking[0]->user_id;
                     $bookingId = $booking_detail[0]->booking[0]->id;
                     $srcId = $booking_detail[0]->booking[0]->source_id;
                     $desId = $booking_detail[0]->booking[0]->destination_id;

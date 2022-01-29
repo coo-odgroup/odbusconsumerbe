@@ -174,10 +174,10 @@ class BookingManageRepository
          }]);
        }])->get();    
     }
-    //////////////////////////////////////////////////
+    //////////////////////////Agent Booking details////////////////////////
     public function agentCancelTicket($phone,$pnr,$booked)
     { 
-        return User::where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
+        return Users::where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
             $u->where([
                 ['booking.pnr', '=', $pnr],
                 ['status', '=', $booked],
@@ -193,7 +193,7 @@ class BookingManageRepository
             }]);    
         }])->get();
     }
-    public function OTP($customerNo,$pnr,$otp,$bookingId)
+    public function OTP($phone,$pnr,$otp,$bookingId)
     {
         $SmsGW = config('services.sms.otpservice');
 
@@ -206,7 +206,7 @@ class BookingManageRepository
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.cancelTicketOTP');
             $apiKey = urlencode( $apiKey);
-            $receiver = urlencode($customerNo);
+            $receiver = urlencode($phone);
           
             $message = str_replace("<otp>",$otp,$message);
             $message = str_replace("<pnr>",$pnr,$message);
