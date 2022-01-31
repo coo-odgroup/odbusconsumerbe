@@ -236,7 +236,7 @@ class BookingManageRepository
 
     public function updateCancelTicket($bookingId,$userId,$refundAmt,$percentage){
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
-        $agentDetails =  AgentWallet::where('user_id',$userId)->orderBy('id','DESC')->limit(1)->get(); //AgentWallet::where('user_id', $userId)->latest()->first();
+        $agentDetails =  AgentWallet::where('user_id',$userId)->orderBy('id','DESC')->where("status",1)->limit(1)->get(); //AgentWallet::where('user_id', $userId)->latest()->first();
         $agentDetails = $agentDetails[0];
    
         $transactionId = date('YmdHis') . gettimeofday()['usec'];

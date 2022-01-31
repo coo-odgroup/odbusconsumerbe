@@ -78,7 +78,7 @@ class AgentBookingRepository
         $aId = $this->user->where('phone',$agentInfo['phone'])
                                   ->where('status','1')
                                   ->first()->id;
-         $walletDetail = AgentWallet::where('user_id',$aId)->orderBy('id','DESC')->limit(1)->get();
+         $walletDetail = AgentWallet::where('user_id',$aId)->orderBy('id','DESC')->where("status",1)->limit(1)->get();
          $walletBalance=0;
 
         if(isset($walletDetail[0])){
