@@ -185,7 +185,7 @@ class UsersService
                      $l['cancel']= true;
                  }
 
-                 if($l->user_id != null && $l->user_id != '' ){
+                 if($l->user_id != 0 ){
                     $l['cancel']= false;
                  }
 
