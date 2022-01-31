@@ -73,7 +73,7 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="locationName",
  *          description="name or synonym of Location",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="string"

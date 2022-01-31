@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\BookingManageService;
 use App\AppValidator\BookingManageValidator;
+use App\AppValidator\AgentCancelTicketValidator;
 
 class BookingManageController extends Controller
 {
@@ -22,16 +23,18 @@ class BookingManageController extends Controller
     protected $bookTicketService;
     protected $bookTicketValidator;
     protected $bookingManageService;
+    protected $agentCancelTicketValidator;
     /**
      * BookingManageController Constructor
      *
      * @param BookingManageService $bookingManageService
      *
      */
-    public function __construct(BookingManageService $bookingManageService,BookingManageValidator $bookingManageValidator)
+    public function __construct(BookingManageService $bookingManageService,BookingManageValidator $bookingManageValidator,AgentCancelTicketValidator $agentCancelTicketValidator)
     {
         $this->bookingManageService = $bookingManageService;  
-        $this->bookingManageValidator = $bookingManageValidator;      
+        $this->bookingManageValidator = $bookingManageValidator; 
+        $this->agentCancelTicketValidator = $agentCancelTicketValidator;      
     }
     /**
      * @OA\Post(
@@ -335,7 +338,7 @@ class BookingManageController extends Controller
     } 
     public function agentcancelTicket(Request $request) {
       $data = $request->all();
-        $bookingManageValidator = $this->bookingManageValidator->validate($data);
+        $bookingManageValidator = $this->agentCancelTicketValidator->validate($data);
 
      if ($bookingManageValidator->fails()) {
      $errors = $bookingManageValidator->errors();

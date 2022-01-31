@@ -1451,7 +1451,7 @@
                         "name": "locationName",
                         "in": "query",
                         "description": "name or synonym of Location",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
