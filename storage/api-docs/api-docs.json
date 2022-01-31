@@ -645,6 +645,101 @@
                 ]
             }
         },
+        "/api/AgentcancelTicketOTP": {
+            "post": {
+                "tags": [
+                    "Agent Ticket Cancel confirmation otp send to costumer"
+                ],
+                "summary": "Agent Ticket Cancel send otp to costumer for conformation",
+                "description": "Agent Ticket Cancel send otp to costumer for confirmation",
+                "operationId": "7e54338ff1ebd484eeb7ca9da53ef38b",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent ticket cancel confirmation otp sent to       costumer "
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/AgentcancelTicket": {
+            "post": {
+                "tags": [
+                    "Agent Ticket Cancellation"
+                ],
+                "summary": "Agent Ticket Cancellation",
+                "description": "Agent Ticket Cancellation",
+                "operationId": "95689c80e4027e7d063c0fee78fc4d98",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "otp",
+                        "in": "query",
+                        "description": "otp",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agent ticket cancellation successful "
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/CancelTicket": {
             "post": {
                 "tags": [

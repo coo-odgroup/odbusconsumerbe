@@ -303,15 +303,42 @@ class BookingManageController extends Controller
          }         
          else{
           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-         }
-
-         
+         }    
      }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
-    
+    /**
+     * @OA\Post(
+     *     path="/api/AgentcancelTicketOTP",
+     *     tags={"Agent Ticket Cancel confirmation otp send to costumer"},
+     *     description="Agent Ticket Cancel send otp to costumer for confirmation",
+     *     summary="Agent Ticket Cancel send otp to costumer for conformation",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="Agent ticket cancel confirmation otp sent to       costumer "),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function agentcancelTicketOTP(Request $request) {
       $data = $request->all();
         $bookingManageValidator = $this->bookingManageValidator->validate($data);
@@ -336,6 +363,45 @@ class BookingManageController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
+    /**
+     * @OA\Post(
+     *     path="/api/AgentcancelTicket",
+     *     tags={"Agent Ticket Cancellation"},
+     *     description="Agent Ticket Cancellation",
+     *     summary="Agent Ticket Cancellation",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="otp",
+     *          description="otp",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(response="200", description="Agent ticket cancellation successful "),
+     *     @OA\Response(response=401, description="Unauthorized user"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function agentcancelTicket(Request $request) {
       $data = $request->all();
         $bookingManageValidator = $this->agentCancelTicketValidator->validate($data);
