@@ -503,10 +503,9 @@ class BookingManageService
        else{            
            return "MOBILE_NOT_MATCH";            
        }
-        return $booking_detail;
-
+      
         } catch (Exception $e) {
-            //Log::info($e->getMessage());
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
     }         
