@@ -56,6 +56,11 @@ use App\Http\Controllers\AuthClientsController;
 
 //Route::group(['middleware' => ['jwt.verify']], function() {
 
+    
+// Route::group(['middleware' => ['checkIp', 'log.route']], function() {
+//         Route::get('/getLocation', [ListingController::class, 'getLocation']);
+// });    
+
 Route::post('/countries', [SoapController::class, 'getCountries']);
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -121,7 +126,7 @@ Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 
 //});
 
-
+Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
 Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
