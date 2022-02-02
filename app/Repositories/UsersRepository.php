@@ -192,6 +192,7 @@ class UsersRepository
 
       return Booking::where('users_id',$user_id)
       ->where('status','=',2)
+      ->with('users')
       ->with(["bus" => function($bs){
           $bs->with('BusType.busClass');
           $bs->with('BusSitting');                
@@ -212,6 +213,7 @@ class UsersRepository
               ->where('status','!=',0)
               ->where('status','!=',4)
             ->where('journey_dt','<',$today)
+            ->with('users')
             ->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');                
@@ -230,6 +232,7 @@ class UsersRepository
               ->where('status','!=',0)
               ->where('status','!=',4)
             ->where('journey_dt','>',$today)
+            ->with('users')
             ->with(["bus" => function($bs){
                 $bs->with('BusType.busClass');
                 $bs->with('BusSitting');                
@@ -246,6 +249,7 @@ class UsersRepository
       return  Booking::where('users_id',$user_id)
       ->where('status','!=',0)
       ->where('status','!=',4)
+      ->with('users')
      ->with(["bus" => function($bs){
          $bs->with('BusType.busClass');
          $bs->with('BusSitting');                
