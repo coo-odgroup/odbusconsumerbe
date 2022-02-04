@@ -44,6 +44,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $owner_fare;
     protected $customer_comission;
     protected $conductor_number;
+    protected $agent_number;
     protected $customer_number;    
     protected $passengerDetails;
     protected $total_seats;
@@ -84,6 +85,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->odbus_charges = $request['odbus_charges'];
         $this->owner_fare = $request['owner_fare'];
         $this->conductor_number = $request['conductor_number'];
+        $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';        
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
         $this->total_seats = count($request['passengerDetails']);       
@@ -125,6 +127,7 @@ class SendEmailTicketJob implements ShouldQueue
             'sittingType' => $this->sittingType, 
             'conductor_number'=> $this->conductor_number,
             'customer_number'=> $this->customer_number,
+            'agent_number'=> $this->agent_number,
             'passengerDetails' => $this->passengerDetails ,
             'totalfare'=> $this->totalfare,
             'discount' =>  $this->discount,

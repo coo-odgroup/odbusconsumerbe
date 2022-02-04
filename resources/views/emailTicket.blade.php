@@ -657,10 +657,7 @@ border: 0;
                         <td>Journey Date: {{$journeydate}}</td>
                         <td>Bus Route: {{$source}}-{{$destination}}</td>
                       </tr>
-                      <tr>
-                        <td>Diparature Timing:  {{$departureTime}} </td>
-                        <td>Arrival Timing: {{$arrivalTime}}</td>
-                      </tr>
+                     
                       <tr>
                         <td>From: {{$source}}</td>
                         <td>To: {{$destination}}</td>
@@ -669,10 +666,28 @@ border: 0;
                         <td>Boarding At :{{$source}} ({{$boarding_point}})</td>
                         <td>Droping At: {{$destination}} ({{$dropping_point}})</td>
                       </tr>
+
+                      <tr>
+                        <td>Diparature Time:  {{$departureTime}} </td>
+                        <td>Arrival Time: {{$arrivalTime}}</td>
+                      </tr>
+
                       <tr>
                         <td>Passenger Mobile No: {{$customer_number}}</td>
                         <td>Conductor Mobile No: {{$conductor_number}}</td>
                       </tr>
+
+                      @if($agent_number != '') 
+
+                      <tr>
+                        <td>Agent Mobile No: {{$agent_number}}</td>
+                        <td></td>
+                      </tr>
+
+                      @else
+                                
+                      @endif
+
                       <tr>
                         <td>Total Fare: Rs.{{$payable_amount + $customer_comission }}/-</td>
                         <td>Seat({{$total_seats}})- {{$seat_names}}</td>
