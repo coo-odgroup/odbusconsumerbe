@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "01c4f90a-1ac8-488f-9ccf-230adca9d01d",
+		"_postman_id": "a99fa012-859d-4703-917c-808663ffa0e5",
 		"name": "ODBUSConsumerAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2007,6 +2007,37 @@
 					"path": [
 						"api",
 						"AgentcancelTicket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BookingDetails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\" : \"32987654\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/BookingDetails",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"BookingDetails"
 					]
 				}
 			},
