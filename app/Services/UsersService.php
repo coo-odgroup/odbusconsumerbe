@@ -156,6 +156,9 @@ class UsersService
  
          if($list){
              foreach($list as $k => $l){
+
+
+                $l['users']->phone= (int) $l['users']->phone;
  
                  $l['source']=$this->usersRepository->getLocation($l->source_id);
                  $l['destination']=$this->usersRepository->getLocation($l->destination_id);
