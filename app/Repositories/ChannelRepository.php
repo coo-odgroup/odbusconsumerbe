@@ -652,12 +652,13 @@ class ChannelRepository
         }
       }
 
-      public function CreateAgentPayment($agentId,$agentName,$amount ,$name, $transactionId){
+      public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId){
         $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
         $agetWallet->amount = $amount;
         $agetWallet->transaction_type = 'd';
+        $agetWallet->booking_id = $bookingId;
         $agetWallet->balance = $walletBalance - $amount;
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = $agentName;
@@ -713,6 +714,8 @@ class ChannelRepository
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
         $agetWallet->amount = $afterTdsComission;
+        $agetWallet->type = 'Commission';
+        $agetWallet->booking_id = $bookingId;
         $agetWallet->transaction_type = 'c';
         $agetWallet->balance = $walletBalance + $afterTdsComission;
         $agetWallet->user_id = $agentId;

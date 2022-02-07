@@ -243,6 +243,8 @@ class BookingManageRepository
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
         $agetWallet->amount = $refundAmt;
+        $agetWallet->type = 'Refund';
+        $agetWallet->booking_id = $bookingId;
         $agetWallet->transaction_type = 'c';
         $agetWallet->balance = $agentDetails->balance + $refundAmt;
         $agetWallet->user_id = $userId;
