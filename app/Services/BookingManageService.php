@@ -94,37 +94,39 @@ class BookingManageService
             $mobile = $request['mobile'];
     
             $booking_detail = $this->bookingManageRepository->getBookingDetails($mobile,$pnr); 
-           
-            $ticketPriceRecords = TicketPrice::where('bus_id', $booking_detail[0]->booking[0]->bus_id)
-                                ->where('source_id', $booking_detail[0]->booking[0]->source_id)
-                                ->where('destination_id', $booking_detail[0]->booking[0]->destination_id)
-                                ->get(); 
-                
-                $departureTime = $ticketPriceRecords[0]->dep_time;
-                $arrivalTime = $ticketPriceRecords[0]->arr_time;
-                $depTime = date("H:i",strtotime($departureTime));
-                $arrTime = date("H:i",strtotime($arrivalTime)); 
-                $jdays = $ticketPriceRecords[0]->j_day;
-                $arr_time = new DateTime($arrivalTime);
-                $dep_time = new DateTime($departureTime);
-                $totalTravelTime = $dep_time->diff($arr_time);
-                $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
-                switch($jdays)
-                {
-                    case(1):
-                        $j_endDate = $booking_detail[0]->booking[0]->journey_dt;
-                        break;
-                    case(2):
-                        $j_endDate = date('Y-m-d', strtotime('+1 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
-                        break;
-                    case(3):
-                        $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
-                        break;
-                } 
-         
             if(isset($booking_detail[0])){ 
-                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){                  
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 
+                    
+                    $ticketPriceRecords = TicketPrice::where('bus_id', $booking_detail[0]->booking[0]->bus_id)
+                    ->where('source_id', $booking_detail[0]->booking[0]->source_id)
+                    ->where('destination_id', $booking_detail[0]->booking[0]->destination_id)
+                    ->get(); 
+    
+                    $departureTime = $ticketPriceRecords[0]->dep_time;
+                    $arrivalTime = $ticketPriceRecords[0]->arr_time;
+                    $depTime = date("H:i",strtotime($departureTime));
+                    $arrTime = date("H:i",strtotime($arrivalTime)); 
+                    $jdays = $ticketPriceRecords[0]->j_day;
+                    $arr_time = new DateTime($arrivalTime);
+                    $dep_time = new DateTime($departureTime);
+                    $totalTravelTime = $dep_time->diff($arr_time);
+                    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+                    switch($jdays)
+                    {
+                        case(1):
+                            $j_endDate = $booking_detail[0]->booking[0]->journey_dt;
+                            break;
+                        case(2):
+                            $j_endDate = date('Y-m-d', strtotime('+1 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                            break;
+                        case(3):
+                            $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                            break;
+                    }
+
+
                      $booking_detail[0]->booking[0]['source']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
                      $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);  
                      $booking_detail[0]->booking[0]['journeyDuration'] =  $totalJourneyTime;
@@ -139,10 +141,9 @@ class BookingManageService
             else{            
                 return "MOBILE_NOT_MATCH";            
             }
-
-
+            
         } catch (Exception $e) {
-            //Log::info($e->getMessage());
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        

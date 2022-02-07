@@ -229,9 +229,9 @@ class ChannelRepository
             curl_close($ch);
             $response = json_decode($response);
              
-            // return $response;
-            $msgId = $response->messages[0]->id;  // Store msg id in DB
-            session(['msgId'=> $msgId]);
+             return $response;
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            //session(['msgId'=> $msgId]);
 
             // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
@@ -451,8 +451,8 @@ class ChannelRepository
         $response = curl_exec($ch);
         curl_close($ch);
         $response = json_decode($response);
-        //return $response;
-        $msgId = $response->messages[0]->id;  // Store msg id in DB
+        return $response;
+        //$msgId = $response->messages[0]->id;  // Store msg id in DB
         session(['msgId'=> $msgId]);
 
   }
@@ -489,8 +489,8 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-            //return $response;
-            $msgId = $response->messages[0]->id;  // Store msg id in DB
+            return $response;
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
 
       }

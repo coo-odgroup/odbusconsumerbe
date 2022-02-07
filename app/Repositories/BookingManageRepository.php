@@ -264,7 +264,7 @@ class BookingManageRepository
         $userNotification->created_by= "Agent"; 
         $notification->userNotification()->save($userNotification);
        
-         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);             
+         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'cancel_otp' => null]);             
         
         //return $agetWallet;
     }
@@ -342,8 +342,8 @@ class BookingManageRepository
             $response = json_decode($response);
              
             return $response;
-            $msgId = $response->messages[0]->id;  // Store msg id in DB
-            session(['msgId'=> $msgId]);
+           // $msgId = $response->messages[0]->id;  // Store msg id in DB
+            //session(['msgId'=> $msgId]);
 
             // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
