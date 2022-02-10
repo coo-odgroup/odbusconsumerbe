@@ -57,7 +57,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Journey details"),
@@ -111,7 +111,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Passenger details"),
@@ -165,7 +165,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Booking details of a customer"),
@@ -221,7 +221,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="send email/sms"),
@@ -272,7 +272,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="Ticket Cancel Information"),
@@ -330,7 +330,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Response(response="200", description="Agent ticket cancel confirmation otp sent to       costumer "),
@@ -384,7 +384,7 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="string"
      *          )
      *      ),
      *     @OA\Parameter(
