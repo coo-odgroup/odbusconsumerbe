@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+
 
 class SendEmailTicketCancelJob implements ShouldQueue
 {
@@ -32,9 +34,11 @@ class SendEmailTicketCancelJob implements ShouldQueue
     protected $subject;
 
 
-    public function __construct(array &$request)
+    public function __construct($request)
 
     {
+
+
         $this->to = $request['email'];
         $this->pnr = $request['pnr'];
         $this->journeydate = $request['journeydate'];

@@ -54,7 +54,7 @@ class CancelTicketController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="String"
  *          )
  *      ),
  *     @OA\Response(response="201", description=" refund initiated"),
