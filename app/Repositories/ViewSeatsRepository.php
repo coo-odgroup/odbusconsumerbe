@@ -168,7 +168,7 @@ class ViewSeatsRepository
                                     ->where('destination_id',$destinationId)
                                     ->where('status',1)
                                     ->first()->id;
-
+                                 
 ///////////////Extra seats///////////////
 
         $depTime = TicketPrice::where('bus_id',$busId)
@@ -216,14 +216,15 @@ class ViewSeatsRepository
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
-
+        
         $availableSeats = $this->seats
             ->where('bus_seat_layout_id',$bus_seat_layout_id)
             ->where('berthType', $Berth)
             ->where('status','1')
-            ->with(["busSeats"=> function ($query) use ($busId,$bookedSeatIDs,$entry_date){
+            ->with(["busSeats"=> function ($query) use ($busId,$bookedSeatIDs,$entry_date,              $ticketPriceId){
                     $query->where('status',1)
                             ->where('bus_id',$busId)
+                            ->where('ticket_price_id',$ticketPriceId)
                             ->whereNotIn('seats_id',$bookedSeatIDs);
             }]) 
             ->get();
