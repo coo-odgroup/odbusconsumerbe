@@ -202,7 +202,6 @@ class ViewSeatsRepository
             $diff_in_minutes = 0;
         }
    
-///////////////////////////////////////////
        $blockSeats = BusSeats::where('operation_date', $entry_date)
             ->where('type',2)
             ->where('bus_id',$busId)
@@ -210,13 +209,28 @@ class ViewSeatsRepository
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
 
-       $openSeats = BusSeats::where('operation_date','!=', $entry_date)
+       $openSeatsHide = BusSeats::where('operation_date','!=', $entry_date)
             ->where('type',1)
             ->where('bus_id',$busId)
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
-        
+        //return $openSeatsHide;
+
+        $moreAddedSeats = BusSeats::whereNull('operation_date')
+            ->whereNull('type')
+            ->where('bus_id',$busId)
+            ->whereIn('seats_id',$openSeatsHide)
+            ->where('status',1)
+            ->where('ticket_price_id',$ticketPriceId)
+            ->pluck('seats_id');
+            $seatsHide = [];
+            if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
+                $seatsHide = collect($openSeatsHide)->diff(collect($moreAddedSeats));
+            }else{
+                $seatsHide = $openSeatsHide;
+            }
+
         $availableSeats = $this->seats
             ->where('bus_seat_layout_id',$bus_seat_layout_id)
             ->where('berthType', $Berth)
@@ -225,13 +239,13 @@ class ViewSeatsRepository
                     $query->where('status',1)
                             ->where('bus_id',$busId)
                             ->where('ticket_price_id',$ticketPriceId)
+                            //->where('type','<>',2)
+                            //->where('type', 'null')
                             ->whereNotIn('seats_id',$bookedSeatIDs);
             }]) 
             ->get();
-                
-        //////seat block/open//////////
 
-        $totalHideSeats = collect($blockSeats)->concat(collect($openSeats))->concat(collect($bookedSeatIDs));
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs));
 
         /////////Hide Extra Seats based on seize time/////////
 

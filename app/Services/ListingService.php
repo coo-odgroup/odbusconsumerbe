@@ -350,9 +350,23 @@ class ListingService
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->where('bus_id',$busId)
                                 ->where('type',1)
-                                ->where('operation_date','!=',$entry_date)                              
+                                ->where('operation_date','!=',$entry_date) 
+                                ->where('ticket_price_id',$ticketPriceId)                             
                                 ->pluck('seats_id');
-            $blockSeats = $blockSeats->concat(collect($unavailbleSeats));
+
+            $moreAddedSeats = $record->busSeats->whereNull('operation_date')
+                                                ->whereNull('type')
+                                                ->where('bus_id',$busId)
+                                                ->whereIn('seats_id',$unavailbleSeats)
+                                                ->where('status',1)
+                                                ->where('ticket_price_id',$ticketPriceId)
+                                                ->pluck('seats_id');
+
+            if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
+                $blockSeats = $blockSeats->concat(collect($unavailbleSeats)->diff(collect($moreAddedSeats)));
+            }else{
+                $blockSeats = $blockSeats->concat(collect($unavailbleSeats));
+            }                    
 
        ////////Hide Extra Seats based on seize time///////////////
            if(!$ActualExtraSeatsOpen->isEmpty() && !$seizedTime->isEmpty()){
@@ -370,7 +384,7 @@ class ListingService
                 $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
             }
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
-                                            ->where('bus_id',$busId)
+                                           ->where('bus_id',$busId)
                                            ->where("status","1")
                                            ->whereNotIn('seats_id',$blockSeats)
                                            ->whereNotNull('seats')
