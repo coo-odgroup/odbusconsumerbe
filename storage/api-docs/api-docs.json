@@ -454,7 +454,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -497,7 +497,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -540,7 +540,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -583,7 +583,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -626,7 +626,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -669,7 +669,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -712,7 +712,7 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     {
@@ -764,7 +764,7 @@
                         "description": "user phone",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "String"
                         }
                     }
                 ],
@@ -2178,13 +2178,13 @@
             }
         },
         "/api/AllOperators": {
-            "get": {
+            "post": {
                 "tags": [
                     "All Operators API"
                 ],
                 "summary": "get all Operators names",
                 "description": "get all Operators names",
-                "operationId": "848ac8ede2ca51c9b55be05d5097520f",
+                "operationId": "d5f2d154f4e53b8d6088f3ff21ad4cf0",
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"

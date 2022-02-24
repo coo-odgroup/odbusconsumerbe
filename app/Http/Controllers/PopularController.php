@@ -76,7 +76,7 @@ class PopularController extends Controller
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/AllOperators",
  *     tags={"All Operators API"},
  *     description="get all Operators names",
