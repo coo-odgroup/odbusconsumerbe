@@ -66,9 +66,10 @@ class PopularService
                        );
                } 
            }
-
-           $temp = array_unique(array_column($topOperators, 'operatorName'));
-           return $unique_arr = array_intersect_key($topOperators, $temp);
+           return collect($topOperators)->unique('operatorName')->values();
+            
+          // $temp = array_unique(array_column($topOperators, 'operatorName'));
+           //return $unique_arr = array_intersect_key($topOperators, $temp);
 
 
     }
@@ -88,13 +89,19 @@ class PopularService
            if($src && isset($src[0]) && $dest && isset($dest[0])){
 
             $allRoutes[] = array(
-                "source_id" => $src[0]->id, 
-                "source_name" =>$src[0]->name, 
-                "source_url" =>$src[0]->url, 
-                "destination_id" => $dest[0]->id, 
-                "destination_name" =>$dest[0]->name, 
-                "destination_url" =>$dest[0]->url
+                "source" => $src,
+                "destination" => $dest,
+                "count" => $count
             );
+
+            // $allRoutes[] = array(
+            //     "source_id" => $src[0]->id, 
+            //     "source_name" =>$src[0]->name, 
+            //     "source_url" =>$src[0]->url, 
+            //     "destination_id" => $dest[0]->id, 
+            //     "destination_name" =>$dest[0]->name, 
+            //     "destination_url" =>$dest[0]->url
+            // );
            }
            
         } 
