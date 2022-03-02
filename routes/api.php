@@ -54,7 +54,7 @@ use App\Http\Controllers\AuthClientsController;
 
 //Route::middleware(['checkIp'])->group(function () {});
 
-//Route::group(['middleware' => ['jwt.verify']], function() {
+Route::group(['middleware' => ['jwt.verify']], function() {
 
     
 // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
@@ -124,7 +124,7 @@ Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 
 
-//});
+});
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
