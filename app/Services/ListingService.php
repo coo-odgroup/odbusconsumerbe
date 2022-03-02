@@ -492,7 +492,7 @@ class ListingService
             $i=1;
             if(count($record->review)>0){
                 foreach($record->review as $k => $rv){
-               if($i<=2){
+               if($i<=2){ // only latest 2 reviews 
                   $Totalrating += $rv->rating_overall;  
                   if($rv->rating_overall==5){
                    $Totalrating_5star ++;   
@@ -522,7 +522,7 @@ class ListingService
                $i++;
                }
            }
-                $Totalrating = number_format($Totalrating/2,1);
+                $Totalrating = number_format($Totalrating/count($record->review),1);
             }
             $reviews=  $Review_list; //$record->review;
             $cancellationPolicyContent=$record->cancellation_policy_desc;
