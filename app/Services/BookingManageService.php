@@ -16,15 +16,19 @@ use InvalidArgumentException;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Arr;
+use App\Models\User;
+
 
 class BookingManageService
 {
     
     protected $bookingManageRepository;    
-    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository)
+    protected $user;    
+    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository,User $user)
     {
         $this->bookingManageRepository = $bookingManageRepository;
         $this->cancelTicketRepository = $cancelTicketRepository;
+        $this->user = $user;
     }
     public function getJourneyDetails($request)
     {
@@ -167,6 +171,11 @@ class BookingManageService
                 }  
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
+              
+
+              
+              
+              
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -196,6 +205,16 @@ class BookingManageService
                     'owner_fare'=> $b->booking[0]->owner_fare,
                     'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
                 ];
+
+                if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
+                    $agent_number= $this->user->where('id',$b->booking[0]->user_id)->get();
+                    if(isset($agent_number[0])){
+                        $body['agent_number'] = $agent_number[0]->phone;
+                        $body['customer_comission'] = $b->booking[0]->customer_comission;
+                    }
+                   
+                }
+
                 if($b->email != ''){
                     $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($body,$b->booking[0]->pnr); 
                 }
