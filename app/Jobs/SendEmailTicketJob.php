@@ -51,6 +51,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $seat_names;
     protected $subject;
     protected $qrCodeText;
+    protected $qrcode_image_path;
     
     
 
@@ -99,10 +100,12 @@ class SendEmailTicketJob implements ShouldQueue
 
         \QrCode::size(500)
         ->format('png')
-        ->generate($this->qrCodeText, public_path('qrcode/qrcode.png')); 
+        ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png')); 
 
         $this->subject ='';
+        $this->qrcode_image_path = url('public/qrcode/'.$this->email_pnr.'.png');
 
+       
     }
 
     /**
@@ -145,7 +148,7 @@ class SendEmailTicketJob implements ShouldQueue
             'total_seats'=>  $this->total_seats ,
             'seat_names'=>  $this->seat_names ,
             'customer_comission'=> $this->customer_comission,
-            'qrCodeText' => $this->qrCodeText
+            'qrcode_image_path' => $this->qrcode_image_path 
             
         ];
 

@@ -700,7 +700,7 @@ border: 0;
 
             <div class="col-md-3">
               <div class="od-qrcode">
-              <img src="{{url('public/qrcode/qrcode.png')}}"/>
+              <img src="{{$qrcode_image_path}}"/>
               </div>
             </div>
         </div>
