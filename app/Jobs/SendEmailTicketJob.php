@@ -50,6 +50,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $total_seats;
     protected $seat_names;
     protected $subject;
+    protected $qrCodeText;
     
     
 
@@ -94,6 +95,12 @@ class SendEmailTicketJob implements ShouldQueue
     
         $this->email_pnr= $email_pnr;
 
+        $this->qrCodeText= "PNR - ".$this->email_pnr." , Customer Phone No- ".$this->customer_number.", Conductor No- ".$this->conductor_number." , Bus Name- ".$this->busname.", Bus No- ".$this->busNumber." , Journey Date- ". $this->journeydate.", Bus Route- ".$this->source.' -> '.$this->destination.", Seat- ".$this->seat_names;
+
+        \QrCode::size(500)
+        ->format('png')
+        ->generate($this->qrCodeText, public_path('qrcode/qrcode.png')); 
+
         $this->subject ='';
 
     }
@@ -137,9 +144,12 @@ class SendEmailTicketJob implements ShouldQueue
             'owner_fare'=> $this->owner_fare,
             'total_seats'=>  $this->total_seats ,
             'seat_names'=>  $this->seat_names ,
-            'customer_comission'=> $this->customer_comission
+            'customer_comission'=> $this->customer_comission,
+            'qrCodeText' => $this->qrCodeText
             
         ];
+
+        Log::info($data);
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);

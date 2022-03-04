@@ -494,7 +494,7 @@ border: 0;
       width: 100%;
   }
   .od-qrcode{
-      background:#c4c4c4;
+      background:#fff;
       padding: 15px;
       margin-top: 34px;
   }
@@ -700,7 +700,7 @@ border: 0;
 
             <div class="col-md-3">
               <div class="od-qrcode">
-              <img src="{{url('public/template/qr-code.png')}}"/>
+              <img src="{{url('public/qrcode/qrcode.png')}}"/>
               </div>
             </div>
         </div>
