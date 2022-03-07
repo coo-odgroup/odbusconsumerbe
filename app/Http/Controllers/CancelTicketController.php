@@ -41,23 +41,26 @@ class CancelTicketController extends Controller
  *     summary="refund initiated for ticket cancellation",
  *     @OA\Parameter(
  *          name="pnr",
- *          description="pnr",
+ *          description="pnr number",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="integer",
+ *              example="21212121"
  *          )
  *      ),
  *     @OA\Parameter(
  *          name="phone",
- *          description="user phone",
+ *          description="mobile number",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="String"
+ *              type="integer",
+ *              example="9090909090"
  *          )
  *      ),
- *     @OA\Response(response="201", description=" refund initiated"),
+ *     @OA\Response(response="201", description=" refund initiated on cancellation of ticket"),
+ *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
  *     @OA\Response(response=401, description="Unauthorized user"),
  *     security={{ "apiAuth": {} }}
  * )

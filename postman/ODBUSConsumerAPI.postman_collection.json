@@ -267,6 +267,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjY1MTIxMywiZXhwIjoxNjQ2NjU0ODEzLCJuYmYiOjE2NDY2NTEyMTMsImp0aSI6IjZrZzcwakhpQVdnR2dYOUkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.mV5zm34WDSnfG5uz4b_X2JW7UHlFFW7-g5ZzYjuIxZQ",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -1721,6 +1731,16 @@
 		{
 			"name": "Contact save",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ2NjQ5NTM3LCJleHAiOjE2NDY2NTMxMzcsIm5iZiI6MTY0NjY0OTUzNywianRpIjoieEZRMHhKUzZxM3B1dURiTyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BE8fd5Dcq8Ecd8IKPQi369nmI8jkCOE-e_gdvmRHXA8",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -2089,6 +2109,68 @@
 					"path": [
 						"api",
 						"EmailSms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Filter Options",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjY1MTIxMywiZXhwIjoxNjQ2NjU0ODEzLCJuYmYiOjE2NDY2NTEyMTMsImp0aSI6IjZrZzcwakhpQVdnR2dYOUkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.mV5zm34WDSnfG5uz4b_X2JW7UHlFFW7-g5ZzYjuIxZQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/FilterOptions?sourceID=82&destinationID=434&busIDs[]=483&busIDs[]=508",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"FilterOptions"
+					],
+					"query": [
+						{
+							"key": "sourceID",
+							"value": "82"
+						},
+						{
+							"key": "destinationID",
+							"value": "434"
+						},
+						{
+							"key": "busIDs[]",
+							"value": "483"
+						},
+						{
+							"key": "busIDs[]",
+							"value": "508"
+						}
 					]
 				}
 			},

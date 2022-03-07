@@ -788,25 +788,30 @@
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "phone",
                         "in": "query",
-                        "description": "user phone",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "String"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": " refund initiated"
+                        "description": " refund initiated on cancellation of ticket"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -834,7 +839,8 @@
                         "description": "BusId",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "1"
                         }
                     },
                     {
@@ -843,7 +849,8 @@
                         "description": "sourceId",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "82"
                         }
                     },
                     {
@@ -852,7 +859,8 @@
                         "description": "destinationId",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "434"
                         }
                     },
                     {
@@ -861,7 +869,8 @@
                         "description": "customer transaction id against booking",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "20211220105201752211"
                         }
                     },
                     {
@@ -884,7 +893,8 @@
                         "description": "journey date",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "31-12-2021"
                         }
                     },
                     {
@@ -893,7 +903,8 @@
                         "description": "total price",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "600"
                         }
                     }
                 ],
@@ -921,7 +932,7 @@
         "/api/PaymentStatus": {
             "post": {
                 "tags": [
-                    "PaymentStatus API"
+                    "PaymentStatus Success/Failure API"
                 ],
                 "summary": "payment status success or failure",
                 "operationId": "efe1a6fafae9fe0e9d7cd67cb158f293",
@@ -1609,7 +1620,7 @@
                     "Listing API"
                 ],
                 "summary": "Get List of Buses",
-                "description": "Listing",
+                "description": "Get List of Buses",
                 "operationId": "14fe0b3b790010559aaa1f21cbd94a6b",
                 "parameters": [
                     {
@@ -1618,7 +1629,8 @@
                         "description": "name of source",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Bhubaneswar"
                         }
                     },
                     {
@@ -1627,7 +1639,8 @@
                         "description": "name of destination",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "balasore"
                         }
                     },
                     {
@@ -1636,7 +1649,8 @@
                         "description": "journey date",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "25-01-2022"
                         }
                     },
                     {
@@ -1664,6 +1678,9 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "206": {
+                        "description": "validation error: Not a valid entry date"
                     }
                 },
                 "security": [
@@ -1679,7 +1696,7 @@
                     "Filter API"
                 ],
                 "summary": "Get List of Buses with Filter Params",
-                "description": "Filter",
+                "description": "Get List of Buses with Filter Params",
                 "operationId": "f097df7de11c7b717e6236d2354c2a2a",
                 "parameters": [
                     {
@@ -1688,7 +1705,8 @@
                         "description": "Buses sort by price:0-without sorting, 1- ascending order sorting",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "default": "0"
                         }
                     },
                     {
@@ -1697,7 +1715,8 @@
                         "description": "source Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "82"
                         }
                     },
                     {
@@ -1706,7 +1725,8 @@
                         "description": "destination Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "434"
                         }
                     },
                     {
@@ -1715,7 +1735,8 @@
                         "description": "journey date",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "15-01-2022"
                         }
                     },
                     {
@@ -1825,6 +1846,9 @@
                     "200": {
                         "description": "List of Buses"
                     },
+                    "206": {
+                        "description": "validation error: Not a valid entry date"
+                    },
                     "401": {
                         "description": "Unauthorized"
                     }
@@ -1851,7 +1875,8 @@
                         "description": "source Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "82"
                         }
                     },
                     {
@@ -1860,7 +1885,8 @@
                         "description": "destination Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "434"
                         }
                     },
                     {
@@ -1873,7 +1899,7 @@
                             "items": {
                                 "type": "integer",
                                 "format": "int64",
-                                "example": 1
+                                "example": 483
                             }
                         }
                     }
@@ -1881,6 +1907,9 @@
                 "responses": {
                     "200": {
                         "description": "get all Filter Options"
+                    },
+                    "206": {
+                        "description": "validation error"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1899,7 +1928,7 @@
                     "BusDetails API"
                 ],
                 "summary": "Get Details of a Bus",
-                "description": "BusDetails",
+                "description": "Get details of a Bus",
                 "operationId": "08c1505c7f8a66c3153c88d1d9c419bd",
                 "parameters": [
                     {
@@ -1908,7 +1937,8 @@
                         "description": "bus Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "483"
                         }
                     },
                     {
@@ -1917,7 +1947,8 @@
                         "description": "source Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "82"
                         }
                     },
                     {
@@ -1926,13 +1957,17 @@
                         "description": "destination Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "434"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Bus Details"
+                    },
+                    "206": {
+                        "description": "validation error"
                     },
                     "401": {
                         "description": "Unauthorized"

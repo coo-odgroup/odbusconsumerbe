@@ -128,7 +128,8 @@ class ChannelController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="1"
  *          )
  *      ),  
  *     @OA\Parameter(
@@ -137,7 +138,8 @@ class ChannelController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="82"
  *          )
  *      ), 
  *     @OA\Parameter(
@@ -146,7 +148,8 @@ class ChannelController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="434"
  *          )
  *      ),        
  *     @OA\Parameter(
@@ -155,7 +158,8 @@ class ChannelController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="20211220105201752211"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -179,6 +183,7 @@ class ChannelController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="string",
+ *              example="31-12-2021"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -187,7 +192,8 @@ class ChannelController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="600"
  *          )
  *      ),
  *     @OA\Response(response="201", description="Order Id generated Successfully"),
@@ -243,7 +249,7 @@ class ChannelController extends Controller
 /**
  * @OA\POST(
  *     path="/api/PaymentStatus",
- *     tags={"PaymentStatus API"},
+ *     tags={"PaymentStatus Success/Failure API"},
  *     summary="payment status success or failure",
  *     @OA\RequestBody(
  *        required = true,

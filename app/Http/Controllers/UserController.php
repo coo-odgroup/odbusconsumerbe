@@ -90,7 +90,8 @@ public function clientLogin(Request $request){
   $loginClient =  $this->createNewToken($token);
   User::where('id', $loginClient['user']->id)->update(['client_access_token' => $token ]);
   // User::where('client_id', $request['client_id'])->update(['client_access_token' => $token ]);
-  return $this->successResponse($loginClient,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
+  //return $this->successResponse($loginClient,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
+  return $this->successResponse($token,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
 }
   catch (Exception $e) {
    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);

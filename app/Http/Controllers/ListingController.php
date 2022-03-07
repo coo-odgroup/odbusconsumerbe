@@ -104,7 +104,7 @@ class ListingController extends Controller
  * @OA\Get(
  *     path="/api/Listing",
  *     tags={"Listing API"},
- *     description="Listing",
+ *     description="Get List of Buses",
  *     summary="Get List of Buses",
  *     @OA\Parameter(
  *          name="source",
@@ -112,7 +112,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="Bhubaneswar"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -121,7 +122,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="balasore"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -130,7 +132,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="25-01-2022"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -153,6 +156,7 @@ class ListingController extends Controller
  *      ),
  *  @OA\Response(response="200", description="List of Buses"),
  *  @OA\Response(response=401, description="Unauthorized"),
+ *  @OA\Response(response=206, description="validation error: Not a valid entry date"),
  *     security={
  *       {"apiAuth": {}}
  *     }
@@ -184,7 +188,7 @@ class ListingController extends Controller
  * @OA\Get(
  *     path="/api/Filter",
  *     tags={"Filter API"},
- *     description="Filter",
+ *     description="Get List of Buses with Filter Params",
  *     summary="Get List of Buses with Filter Params",
  *     @OA\Parameter(
  *          name="price",
@@ -192,7 +196,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              default="0"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -201,7 +206,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="82"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -210,7 +216,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="434"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -219,7 +226,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="15-01-2022"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -325,6 +333,7 @@ class ListingController extends Controller
  *          )
  *      ),
  *  @OA\Response(response="200", description="List of Buses"),
+ *  @OA\Response(response=206, description="validation error: Not a valid entry date"),
  *  @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}
@@ -361,7 +370,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="82"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -370,7 +380,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="434"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -383,11 +394,12 @@ class ListingController extends Controller
  *          @OA\Items(
  *              type="integer",
  *              format="int64",
- *              example=1,
+ *              example=483,
  *              )
  *          )
  *      ),
  *  @OA\Response(response="200", description="get all Filter Options"),
+ *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}
@@ -413,7 +425,7 @@ class ListingController extends Controller
  * @OA\Get(
  *     path="/api/BusDetails",
  *     tags={"BusDetails API"},
- *     description="BusDetails",
+ *     description="Get details of a Bus",
  *     summary="Get Details of a Bus",
  *     @OA\Parameter(
  *          name="bus_id",
@@ -421,7 +433,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="483"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -430,7 +443,8 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="82"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -439,11 +453,13 @@ class ListingController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example="434"
  *          )
  *      ),
  *     @OA\Response(response="200", description="Bus Details"),
- *  @OA\Response(response=401, description="Unauthorized"),
+  *    @OA\Response(response=206, description="validation error"),
+ *     @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}
  *     }
