@@ -44,23 +44,26 @@ class BookingManageController extends Controller
      *     summary="Journey Details",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Journey details"),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -98,23 +101,26 @@ class BookingManageController extends Controller
      *     summary="Passenger Details",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Passenger details"),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -152,23 +158,26 @@ class BookingManageController extends Controller
      *     summary="Booking Details",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Response(response="200", description="get all Booking details of a customer"),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -203,28 +212,31 @@ class BookingManageController extends Controller
     /**
      * @OA\Post(
      *     path="/api/EmailSms",
-     *     tags={"email/sms send"},
-     *     description="send email/sms",
-     *     summary="send email/sms",
+     *     tags={"Resending Ticket via Email/Sms"},
+     *     description="Resending Ticket via Email/Sms",
+     *     summary="Resending Ticket via Email/Sms",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Response(response="200", description="send email/sms"),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -244,8 +256,7 @@ class BookingManageController extends Controller
           return $this->errorResponse($response,Response::HTTP_PARTIAL_CONTENT);
          }else{
           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-         }
-        
+         }   
      }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
@@ -254,28 +265,31 @@ class BookingManageController extends Controller
     /**
      * @OA\Post(
      *     path="/api/cancelTicketInfo",
-     *     tags={"Ticket Cancel Information"},
-     *     description="Ticket Cancel Information",
-     *     summary="Ticket Cancel Information",
+     *     tags={"Get detail information of a cancelled ticket"},
+     *     description="Get detail information of a cancelled ticket",
+     *     summary="Get detail information of a cancelled ticket",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="Ticket Cancel Information"),
+     *     @OA\Response(response="200", description="Get detail information of a cancelled ticket"),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -317,23 +331,26 @@ class BookingManageController extends Controller
      *     summary="Agent Ticket Cancel send otp to costumer for conformation",
      *     @OA\Parameter(
      *          name="pnr",
-     *          description="pnr",
+     *          description="pnr number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
      *          name="mobile",
-     *          description="mobile",
+     *          description="mobile number",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Response(response="200", description="Agent ticket cancel confirmation otp sent to       costumer "),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -375,7 +392,8 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="integer",
+     *              example="21212121"
      *          )
      *      ),
      *     @OA\Parameter(
@@ -384,7 +402,8 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="string"
+     *              type="integer",
+     *              example="9090909090"
      *          )
      *      ),
      *     @OA\Parameter(
@@ -393,10 +412,12 @@ class BookingManageController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="integer",
+     *              example="1212121"
      *          )
      *      ),
      *     @OA\Response(response="200", description="Agent ticket cancellation successful "),
+     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number or otp"),
      *     @OA\Response(response=401, description="Unauthorized user"),
      *     security={{ "apiAuth": {} }}
      * )
@@ -431,7 +452,5 @@ class BookingManageController extends Controller
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
-    } 
-
-    
+    }     
 }

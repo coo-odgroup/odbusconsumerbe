@@ -442,25 +442,30 @@
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "get all Journey details"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -485,25 +490,30 @@
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "get all Passenger details"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -528,25 +538,30 @@
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "get all Booking details of a customer"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -562,34 +577,39 @@
         "/api/EmailSms": {
             "post": {
                 "tags": [
-                    "email/sms send"
+                    "Resending Ticket via Email/Sms"
                 ],
-                "summary": "send email/sms",
-                "description": "send email/sms",
+                "summary": "Resending Ticket via Email/Sms",
+                "description": "Resending Ticket via Email/Sms",
                 "operationId": "9f16c6a3c6e568a5c7b5987d89555311",
                 "parameters": [
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "send email/sms"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -605,34 +625,39 @@
         "/api/cancelTicketInfo": {
             "post": {
                 "tags": [
-                    "Ticket Cancel Information"
+                    "Get detail information of a cancelled ticket"
                 ],
-                "summary": "Ticket Cancel Information",
-                "description": "Ticket Cancel Information",
+                "summary": "Get detail information of a cancelled ticket",
+                "description": "Get detail information of a cancelled ticket",
                 "operationId": "be66a3872e42dedf728eeae29f225439",
                 "parameters": [
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Ticket Cancel Information"
+                        "description": "Get detail information of a cancelled ticket"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -657,25 +682,30 @@
                     {
                         "name": "pnr",
                         "in": "query",
-                        "description": "pnr",
+                        "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
                         "name": "mobile",
                         "in": "query",
-                        "description": "mobile",
+                        "description": "mobile number",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Agent ticket cancel confirmation otp sent to       costumer "
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
                     },
                     "401": {
                         "description": "Unauthorized user"
@@ -703,7 +733,8 @@
                         "description": "pnr",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "21212121"
                         }
                     },
                     {
@@ -712,7 +743,8 @@
                         "description": "mobile",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "example": "9090909090"
                         }
                     },
                     {
@@ -721,13 +753,17 @@
                         "description": "otp",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": "1212121"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Agent ticket cancellation successful "
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number or otp"
                     },
                     "401": {
                         "description": "Unauthorized user"

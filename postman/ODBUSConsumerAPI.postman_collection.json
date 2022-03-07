@@ -44,7 +44,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=15-01-2022",
+					"raw": "https://consumer.odbus.co.in/api/Listing?source=Bhubaneswar&destination=baripada&entry_date=25-01-2022",
 					"protocol": "https",
 					"host": [
 						"consumer",
@@ -63,11 +63,11 @@
 						},
 						{
 							"key": "destination",
-							"value": "rourkela"
+							"value": "baripada"
 						},
 						{
 							"key": "entry_date",
-							"value": "15-01-2022"
+							"value": "25-01-2022"
 						}
 					]
 				}
@@ -92,7 +92,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/viewSeats?entry_date=21-12-2021&busId=1&sourceId=82&destinationId=434",
+					"raw": "https://consumer.odbus.co.in/api/viewSeats?entry_date=25-02-2022&busId=287&sourceId=82&destinationId=53",
 					"protocol": "https",
 					"host": [
 						"consumer",
@@ -107,11 +107,11 @@
 					"query": [
 						{
 							"key": "entry_date",
-							"value": "21-12-2021"
+							"value": "25-02-2022"
 						},
 						{
 							"key": "busId",
-							"value": "1"
+							"value": "287"
 						},
 						{
 							"key": "sourceId",
@@ -119,7 +119,7 @@
 						},
 						{
 							"key": "destinationId",
-							"value": "434"
+							"value": "53"
 						}
 					]
 				}
@@ -1091,7 +1091,7 @@
 		{
 			"name": "AllOperators",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"url": {
 					"raw": "https://consumer.odbus.co.in/api/AllOperators",
@@ -1251,11 +1251,21 @@
 		{
 			"name": "Journey details",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ2NjQxNjEwLCJleHAiOjE2NDY2NDUyMTAsIm5iZiI6MTY0NjY0MTYxMCwianRpIjoiUkJlRTdFR1UzVGVvcEY3WCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.5Z59ucxWcnKcKOvgVOaziXc99Bz_5OqAreugGcy0kVg",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"95087243\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"raw": "{\r\n    \"pnr\" : \"42971035\",\r\n    \"mobile\" : \"9916457575\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1844,34 +1854,31 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "http://consumer.odbus.co.in/api/ClientLogin?client_id=odbusSas&password=Admin@2010",
+					"raw": "http://127.0.0.1:8000/api/OperatorDetails?operator_url=gpm-travels",
 					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
-						"ClientLogin"
+						"OperatorDetails"
 					],
 					"query": [
 						{
-							"key": "client_id",
-							"value": "odbusSas"
-						},
-						{
-							"key": "client_secret",
-							"value": "1234",
-							"disabled": true
-						},
-						{
-							"key": "password",
-							"value": "Admin@2010"
+							"key": "operator_url",
+							"value": "gpm-travels"
 						}
 					]
 				}
@@ -2038,6 +2045,50 @@
 					"path": [
 						"api",
 						"BookingDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resend tickect to email/sms",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ2NjQxNjEwLCJleHAiOjE2NDY2NDUyMTAsIm5iZiI6MTY0NjY0MTYxMCwianRpIjoiUkJlRTdFR1UzVGVvcEY3WCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.5Z59ucxWcnKcKOvgVOaziXc99Bz_5OqAreugGcy0kVg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\" : \"30257496\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/EmailSms",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"EmailSms"
 					]
 				}
 			},
