@@ -37,7 +37,8 @@ class OfferController extends Controller
      *          required=true,
      *          in="query",
      *          @OA\Schema(
-     *              type="integer"
+     *              type="integer",
+     *              example="1"
      *          )
      *      ),
      *  @OA\Response(response="200", description="get all Offers"),
@@ -57,14 +58,15 @@ class OfferController extends Controller
          *     path="/api/Coupons",
          *     tags={"Coupons API"},
          *     description="get all Valid Coupons",
-         *     summary="Get all Valid Coupons",
+         *     summary="Get all Valid Coupons with respect to bus,route and bus operator",
          *     @OA\Parameter(
          *          name="coupon_code",
          *          description="coupon code",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="TEST123"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -73,7 +75,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="1"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -82,7 +85,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="82"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -91,7 +95,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="377"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -100,7 +105,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="2022-02-16"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -109,7 +115,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="1"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -118,7 +125,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="1000"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -127,7 +135,8 @@ class OfferController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="20211129150129121955"
          *          )
          *      ),
          *  @OA\Response(response="200", description="get all Valid Coupons"),
@@ -153,7 +162,7 @@ class OfferController extends Controller
                 case('min_tran_amount'):   //Transaction amount is Less then Minimum Transation
                     return $this->errorResponse(Config::get('constants.COUPON_NOT_APPLICABLE'),Response::HTTP_OK);
                 break;
-                case('inval_coupon'):     //Invalid or Unknown Coupon ID
+                case('inval_coupon'):     //Invalid or Unknown Coupon code
                     return $this->errorResponse(Config::get('constants.INVALID_COUPON'),Response::HTTP_OK);   
                 break;
                 case('coupon_expired'):   //Validity of Coupon Has Expired

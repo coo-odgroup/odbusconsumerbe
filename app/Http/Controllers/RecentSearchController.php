@@ -30,7 +30,7 @@ class RecentSearchController extends Controller
          * @OA\Post(
          *     path="/api/RecentSearch",
          *     tags={"Save Recent Search of a user"},
-         *     description="Save Recent Search of a user",
+         *     description="Save Recent Search details of a user",
          *     summary="Save Recent Search of a user",
          *     @OA\Parameter(
          *          name="users_id",
@@ -38,7 +38,8 @@ class RecentSearchController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="1"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -47,7 +48,8 @@ class RecentSearchController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="Bhubaneswar"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -56,7 +58,8 @@ class RecentSearchController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="Balasore"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -65,10 +68,12 @@ class RecentSearchController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="07-12-2021"
          *          )
          *      ),
          *  @OA\Response(response="201", description="Save search details of a user"),
+         *  @OA\Response(response="206", description="Validation error"),
          *  @OA\Response(response=401, description="Unauthorized"),
          *     security={
          *       {"apiAuth": {}}
@@ -105,7 +110,8 @@ class RecentSearchController extends Controller
    *         name="userId",
    *         required=true,
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example=1
    *          )
    *     ), 
    *  @OA\Response(response="200", description="Get Recent Search of a User"),

@@ -57,11 +57,12 @@ class ReviewController extends Controller
          *     summary="Add Review of a customer",
          *     @OA\Parameter(
          *          name="pnr",
-         *          description="pnr",
+         *          description="pnr number",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="integer",
+         *              example="21212121"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -70,7 +71,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="7"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -79,7 +81,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example="2"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -88,7 +91,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="abcd@gmail.com"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -97,7 +101,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *              example="4"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -106,7 +111,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *               example="4"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -115,7 +121,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *              example="4"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -124,7 +131,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *               example="5"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -133,7 +141,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *               example="4"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -142,7 +151,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="testing"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -151,7 +161,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *               example="testing"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -160,7 +171,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="Sam"
          *          )
          *      ),
          *     @OA\Parameter(
@@ -169,7 +181,8 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="number"
+         *              type="number",
+         *              example="1"
          *          )
          *      ),
          *  @OA\Response(response="200", description="Add reviews by a customer"),
@@ -204,21 +217,23 @@ class ReviewController extends Controller
    *     tags={"Update existing Review"},
    *     summary="Update Review",
    *     @OA\Parameter(
-   *         description="Add Review of a customer",
+   *         description="Update Review of a customer",
    *         in="path",
    *         name="id",
    *         required=true,
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example=1
    *          )
    *     ),
    *     @OA\Parameter(
    *          name="pnr",
-   *          description="pnr",
+   *          description="pnr number",
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="integer",
+   *              example="21212121"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -227,7 +242,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example="1"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -236,7 +252,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example="2"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -245,7 +262,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="abcd@gmail.com"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -254,7 +272,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=4
    *          )
    *      ),
    *     @OA\Parameter(
@@ -263,7 +282,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=4
    *          )
    *      ),
    *     @OA\Parameter(
@@ -272,7 +292,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=5
    *          )
    *      ),
    *     @OA\Parameter(
@@ -281,7 +302,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=4
    *          )
    *      ),
    *     @OA\Parameter(
@@ -290,7 +312,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=5
    *          )
    *      ),
    *     @OA\Parameter(
@@ -299,7 +322,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="testing"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -308,7 +332,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="testing"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -317,7 +342,8 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="Sam"
    *          )
    *      ),
     *     @OA\Parameter(
@@ -326,10 +352,12 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=1
    *          )
    *      ),
    *  @OA\Response(response="201", description="Updated reviews by a customer"),
+   *  @OA\Response(response="206", description="Review of a customer not exist"),
    *  @OA\Response(response="404", description="Record not Found"),
    *  @OA\Response(response=401, description="Unauthorized"),
    *     security={
@@ -360,20 +388,32 @@ class ReviewController extends Controller
     }
   /**
    * @OA\Delete(
-   *     path="/api/DeleteReview/{id}{userId}",
-   *     tags={"Delete Review"},
+   *     path="/api/DeleteReview/{id}/{userId}",
+   *     tags={"Delete Review added by a customer"},
    *     summary="Delete Review",
    *     @OA\Parameter(
-   *         description="Delete Review of a customer",
+   *         description="review Id",
    *         in="path",
    *         name="id",
    *         required=true,
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example=1
    *          )
    *     ), 
+   *     @OA\Parameter(
+   *         description="User Id",
+   *         in="path",
+   *         name="userId",
+   *         required=true,
+   *          @OA\Schema(
+   *              type="integer",
+   *              example=1
+   *          )
+   *     ),
    *  @OA\Response(response="202", description="Delete Review"),
    *  @OA\Response(response="404", description="Record not Found"),
+   *  @OA\Response(response="206", description="User does not match to the review"),
    *  @OA\Response(response=401, description="Unauthorized"),
    *     security={
    *       {"apiAuth": {}}
@@ -408,10 +448,11 @@ class ReviewController extends Controller
    *     @OA\Parameter(
    *         description="Review detail of a customer",
    *         in="path",
-   *         name="id",
+   *         name="review Id",
    *         required=true,
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example=1
    *          )
    *     ), 
    *  @OA\Response(response="200", description="Get Review of a Customer"),
@@ -433,29 +474,7 @@ class ReviewController extends Controller
       }
       return $this->successResponse($result, Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
     }
-    /**
-   * @OA\Get(
-   *     path="/api/SingleBusReviewList/{bid}",
-   *     tags={"Reviews on Single Bus"},
-   *     summary="Reviews on Single Bus",
-   *     @OA\Parameter(
-   *         description="Reviews on Single Bus",
-   *         in="path",
-   *         name="bid",
-   *         required=true,
-   *          @OA\Schema(
-   *              type="integer"
-   *          )
-   *     ), 
-   *  @OA\Response(response="200", description="Get Review of a Single Bus"),
-   *  @OA\Response(response="404", description="Record not Found"),
-   *  @OA\Response(response=401, description="Unauthorized"),
-   *     security={
-   *       {"apiAuth": {}}
-   *     }
-   *     )
-   * )
-   */  
+   
     public function getReviewByBid($bid) {
 
       try{

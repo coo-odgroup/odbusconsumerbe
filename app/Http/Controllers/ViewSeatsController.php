@@ -54,7 +54,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              example="25-02-2022"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -63,7 +64,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example=287
  *          )
  *      ),
  *     @OA\Parameter(
@@ -72,7 +74,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example=82
  *          )
  *      ),
  *     @OA\Parameter(
@@ -81,10 +84,12 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example=53
  *          )
  *      ),
  *     @OA\Response(response="200", description=" get all seats information"),
+ *     @OA\Response(response="206", description=" validation error"),
  *     @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}
@@ -121,7 +126,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example=1
  *          )
  *      ),
  *      @OA\Parameter(
@@ -130,7 +136,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *               example=82
  *          )
  *      ),
  *      @OA\Parameter(
@@ -139,7 +146,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *               example=434
  *          )
  *      ),
  *      @OA\Parameter(
@@ -148,7 +156,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *               example="15-01-2022"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -161,7 +170,7 @@ class ViewSeatsController extends Controller
 *          @OA\Items(
  *              type="integer",
  *              format="int64",
- *              example=1,
+ *              example=2694,
  *              )
  *          )
  *      ),
@@ -175,11 +184,12 @@ class ViewSeatsController extends Controller
 *          @OA\Items(
  *              type="integer",
  *              format="int64",
- *              example=1,
+ *              example=2755,
  *              )
  *          )
  *      ),
  *     @OA\Response(response="200", description=" get Total Price on seats selection"),
+ *     @OA\Response(response="206", description=" validation error"),
  *     @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}
@@ -218,7 +228,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *              example=1
  *          )
  *      ),
  *     @OA\Parameter(
@@ -227,7 +238,8 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *               example=82
  *          )
  *      ),
  *     @OA\Parameter(
@@ -236,10 +248,12 @@ class ViewSeatsController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer"
+ *              type="integer",
+ *               example=434
  *          )
  *      ),
  *     @OA\Response(response="200", description=" get all Boarding Dropping Points"),
+ *     @OA\Response(response="206", description=" validation error"),
  *     @OA\Response(response=401, description="Unauthorized"),
  *     security={
  *       {"apiAuth": {}}

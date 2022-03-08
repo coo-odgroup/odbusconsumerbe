@@ -61,7 +61,7 @@ class UsersController extends Controller
  *          required=false,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="integer"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -118,7 +118,7 @@ class UsersController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema( 
- *              type="string",
+ *              type="integer",
  *          )
  *      ),
  *     @OA\Parameter(
@@ -127,7 +127,7 @@ class UsersController extends Controller
  *          required=false,
  *          in="query",
  *          @OA\Schema(
- *              type="string",
+ *              type="integer",
  *          )
  *      ),
  *     @OA\Response(response="200", description="Registered successfully"),

@@ -1168,6 +1168,16 @@
 		{
 			"name": "Offers",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjcxNTExMywiZXhwIjoxNjQ2NzE4NzEzLCJuYmYiOjE2NDY3MTUxMTMsImp0aSI6IkROd25pY1pvbjJSVHBjM3kiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.odNpLRXFferixJpY3iAb5KsAe5FiBxKB-evd9OsrkJw",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -1772,6 +1782,16 @@
 		{
 			"name": "Add review",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjcxODkwNSwiZXhwIjoxNjQ2NzIyNTA1LCJuYmYiOjE2NDY3MTg5MDUsImp0aSI6Ik1IZFBUb1BLc3YxbjNaM2siLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.7AMn0pCMFbmf1EDGUuyQrL07yZHEiVTuVT_NJHanxRI",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -1852,17 +1872,6 @@
 						"1",
 						"67"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "New Request",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": ""
 				}
 			},
 			"response": []
@@ -2171,6 +2180,80 @@
 							"key": "busIDs[]",
 							"value": "508"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save recent Search",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjcxODkwNSwiZXhwIjoxNjQ2NzIyNTA1LCJuYmYiOjE2NDY3MTg5MDUsImp0aSI6Ik1IZFBUb1BLc3YxbjNaM2siLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.7AMn0pCMFbmf1EDGUuyQrL07yZHEiVTuVT_NJHanxRI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"users_id\":1,\r\n    \"source\":\"bbsr\",\r\n    \"destination\":\"ctc\",\r\n    \"journey_date\":\"07-12-2021\"\r\n   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"RecentSearch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get search details of a user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjcxODkwNSwiZXhwIjoxNjQ2NzIyNTA1LCJuYmYiOjE2NDY3MTg5MDUsImp0aSI6Ik1IZFBUb1BLc3YxbjNaM2siLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.7AMn0pCMFbmf1EDGUuyQrL07yZHEiVTuVT_NJHanxRI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://consumer.odbus.co.in/api/RecentSearch/1",
+					"protocol": "https",
+					"host": [
+						"consumer",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"RecentSearch",
+						"1"
 					]
 				}
 			},
