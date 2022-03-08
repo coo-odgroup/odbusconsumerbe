@@ -653,7 +653,7 @@ class ChannelRepository
       }
 
       public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId){
-        $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
+        $walletBalance = AgentWallet::where('user_id',$agentId)->where('status',1)->latest()->first()->balance;
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
         $agetWallet->amount = $amount;
