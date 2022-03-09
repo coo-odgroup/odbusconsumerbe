@@ -2280,6 +2280,40 @@
                 ]
             }
         },
+        "/api/downloadapp": {
+            "post": {
+                "tags": [
+                    "sending sms to download ODBUS App"
+                ],
+                "summary": "sending sms to download ODBUS App",
+                "description": "sending sms to download ODBUS App",
+                "operationId": "94f33035b702a34ea4180253bd86c074",
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "user mobile number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized user"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/OperatorDetails": {
             "get": {
                 "tags": [
@@ -3165,30 +3199,32 @@
                 ]
             }
         },
-        "/api/updateProfile/{id}{token}": {
-            "put": {
+        "/api/updateProfile": {
+            "post": {
                 "tags": [
-                    "update User Profile"
+                    "update User Profile details"
                 ],
-                "summary": "Update User Profile",
-                "operationId": "b79ac07702d5fa41858a222ae6aa3c9c",
+                "summary": "Update User Profile details",
+                "operationId": "bca8ec1334c185327dfa7313a2b4d925",
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "path",
+                        "name": "userId",
+                        "in": "query",
                         "description": "User Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     },
                     {
                         "name": "token",
-                        "in": "path",
+                        "in": "query",
                         "description": "User Token",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "E7CDunOAhJ"
                         }
                     },
                     {
@@ -3196,16 +3232,17 @@
                         "in": "query",
                         "description": "user name",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "SAM"
                         }
                     },
                     {
                         "name": "email",
                         "in": "query",
                         "description": "user email",
-                        "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "abcd@gmail.com"
                         }
                     },
                     {
@@ -3213,7 +3250,8 @@
                         "in": "query",
                         "description": "pincode",
                         "schema": {
-                            "type": "number"
+                            "type": "number",
+                            "example": 122345
                         }
                     },
                     {
@@ -3221,7 +3259,8 @@
                         "in": "query",
                         "description": "street",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "St marry road"
                         }
                     },
                     {
@@ -3229,7 +3268,8 @@
                         "in": "query",
                         "description": "district",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Bangalore"
                         }
                     },
                     {
@@ -3237,7 +3277,8 @@
                         "in": "query",
                         "description": "address",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Bangalore"
                         }
                     },
                     {
@@ -3245,7 +3286,8 @@
                         "in": "query",
                         "description": "profile image",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "profile.png"
                         }
                     }
                 ],
@@ -3331,26 +3373,37 @@
                 "tags": [
                     "User Reviews"
                 ],
-                "summary": "Get userReviews of an authenticated user",
-                "description": "Get user  review details",
-                "operationId": "getAuthUser",
+                "summary": "Get user Reviews of an authenticated user",
+                "description": "Get user review details",
+                "operationId": "51d8224b8a9392638279617044617ef5",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "User Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "User Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "E7CDunOAhI"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "authorized user reviews",
-                        "headers": {
-                            "X-Rate-Limit": {
-                                "schema": {
-                                    "type": "integer",
-                                    "format": "int32"
-                                }
-                            },
-                            "X-Expires-After": {
-                                "schema": {
-                                    "type": "string",
-                                    "format": "date-time"
-                                }
-                            }
-                        }
+                        "description": "Update User Profile"
+                    },
+                    "404": {
+                        "description": "Record not Found"
                     },
                     "401": {
                         "description": "Unauthorized user"

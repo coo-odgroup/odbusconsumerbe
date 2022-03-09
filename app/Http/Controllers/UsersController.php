@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\UsersValidator;
 use App\AppValidator\LoginValidator;
+use App\AppValidator\UserProfileValidator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
 use App\Services\UsersService;
@@ -24,12 +25,14 @@ class UsersController extends Controller
     protected $usersService;
     protected $usersValidator;
     protected $loginValidator;
+    protected $userProfileValidator;
 
-    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator)
+    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator,UserProfileValidator $userProfileValidator)
     {
         $this->usersService = $usersService; 
         $this->usersValidator = $usersValidator; 
-        $this->loginValidator = $loginValidator; 
+        $this->loginValidator = $loginValidator;
+        $this->userProfileValidator = $userProfileValidator; 
     }
 /**
  * @OA\Post(
@@ -247,26 +250,28 @@ public function userProfile(Request $request) {
       } 
 }
    /**
-   * @OA\Put(
-   *     path="/api/updateProfile/{id}{token}",
-   *     tags={"update User Profile"},
-   *     summary="Update User Profile",
+   * @OA\Post(
+   *     path="/api/updateProfile",
+   *     tags={"update User Profile details"},
+   *     summary="Update User Profile details",
    *     @OA\Parameter(
    *         description="User Id",
-   *         in="path",
-   *         name="id",
+   *         in="query",
+   *         name="userId",
    *         required=true,
    *          @OA\Schema(
-   *              type="integer"
+   *              type="integer",
+   *              example=1
    *          )
    *     ),
    *     @OA\Parameter(
    *         description="User Token",
-   *         in="path",
+   *         in="query",
    *         name="token",
    *         required=true,
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="E7CDunOAhJ"
    *          )
    *     ),
    *     @OA\Parameter(
@@ -274,16 +279,17 @@ public function userProfile(Request $request) {
    *          description="user name",
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="SAM"
    *          )
    *      ),
    *     @OA\Parameter(
    *          name="email",
    *          description="user email",
-   *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="abcd@gmail.com"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -291,7 +297,8 @@ public function userProfile(Request $request) {
    *          description="pincode",
    *          in="query",
    *          @OA\Schema(
-   *              type="number"
+   *              type="number",
+   *              example=122345
    *          )
    *      ),
    *     @OA\Parameter(
@@ -299,7 +306,8 @@ public function userProfile(Request $request) {
    *          description="street",
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="St marry road"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -307,7 +315,8 @@ public function userProfile(Request $request) {
    *          description="district",
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="Bangalore"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -315,7 +324,8 @@ public function userProfile(Request $request) {
    *          description="address",
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="Bangalore"
    *          )
    *      ),
    *     @OA\Parameter(
@@ -323,7 +333,8 @@ public function userProfile(Request $request) {
    *          description="profile image",
    *          in="query",
    *          @OA\Schema(
-   *              type="string"
+   *              type="string",
+   *              example="profile.png"
    *          )
    *      ),
    *  @OA\Response(response=200, description="Update User Profile"),
@@ -333,14 +344,26 @@ public function userProfile(Request $request) {
    * )
    */ 
   public function updateProfile(Request $request) {
+      
+      $data = $request->all();
+      $userProfileValidation = $this->userProfileValidator->validate($data);
+     
+      if ($userProfileValidation->fails()) {
+        $errors = $userProfileValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      try{
       $response = $this->usersService->updateProfile($request); 
-    
       if($response=='Invalid'){
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
       }
       else{
         return $this->successResponse($response,Config::get('constants.PROFILE_UPDATED'),Response::HTTP_CREATED);
       }
+    }
+      catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      }  
 }
   
 
@@ -417,28 +440,30 @@ public function refreshToken() {
   /**
  * @OA\Get(path="/api/UserReviews",
  *   tags={"User Reviews"},
- *   summary="Get userReviews of an authenticated user",
- *   description="Get user  review details",
- *   operationId="getAuthUser",
- *   @OA\Response(
- *     response=200,
- *     description="authorized user reviews",
- *     @OA\Schema(type="string"),
- *     @OA\Header(
- *       header="X-Rate-Limit",
- *       @OA\Schema(
- *           type="integer",
- *           format="int32"
- *       ),
+ *   summary="Get user Reviews of an authenticated user",
+ *   description="Get user review details",
+ *     @OA\Parameter(
+ *         description="User Id",
+ *         in="query",
+ *         name="userId",
+ *         required=true,
+ *          @OA\Schema(
+ *              type="integer",
+ *              example=1
+ *          )
  *     ),
- *     @OA\Header(
- *       header="X-Expires-After",
- *       @OA\Schema(
- *          type="string",
- *          format="date-time",
- *       ),
- *     )
- *   ),
+ *     @OA\Parameter(
+ *         description="User Token",
+ *         in="query",
+ *         name="token",
+ *         required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              example="E7CDunOAhI"
+ *          )
+ *     ),
+ *  @OA\Response(response=200, description="Update User Profile"),
+ *  @OA\Response(response="404", description="Record not Found"),
  *  @OA\Response(response=401, description="Unauthorized user"),
  *     security={
  *       {"apiAuth": {}}
@@ -446,7 +471,15 @@ public function refreshToken() {
  * )
  */
   public function userReviews(Request $request)
-  {      
+  {    
+    $data = $request->all();
+    $userReviewsValidation = $this->userProfileValidator->validate($data);
+   
+    if ($userReviewsValidation->fails()) {
+      $errors = $userReviewsValidation->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }
+    try{
       $response =  $this->usersService->userReviews($request); 
       if($response=='Invalid'){
         return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
@@ -454,7 +487,9 @@ public function refreshToken() {
       else{
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    } 
   }
-
-
 }

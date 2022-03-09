@@ -91,7 +91,27 @@ class PopularController extends Controller
         $allRoutes = $this->popularService->allOperators($request);
         return $this->successResponse($allRoutes,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
-
+/**
+ * @OA\Post(
+ *     path="/api/downloadapp",
+ *     tags={"sending sms to download ODBUS App"},
+ *     description="sending sms to download ODBUS App",
+ *     summary="sending sms to download ODBUS App",
+ *     @OA\Parameter(
+ *          name="phone",
+ *          description="user mobile number",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer"
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="Record Fetched Successfully"),
+ *     @OA\Response(response=401, description="Unauthorized user"),
+ *     security={{ "apiAuth": {} }}
+ * )
+ * 
+ */
     public function downloadApp(Request $request){
 
         $data = $request->all();
