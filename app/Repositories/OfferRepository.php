@@ -120,7 +120,8 @@ class OfferRepository
         }else{
             return "inval_coupon";
         }                                            
-        $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)->get();
+        $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
+                                ->where('status','1')->get();
         $maxRedeemCount = $couponDetails[0]->max_redeem;
 
         if($couponCount < $maxRedeemCount){     
@@ -130,6 +131,7 @@ class OfferRepository
                 
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;
+                   
                     $discount = ($totalFare*($percentage))/100;
                     
                     if($discount <=  $maxDiscount ){
