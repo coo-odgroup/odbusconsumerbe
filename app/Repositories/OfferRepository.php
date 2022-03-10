@@ -59,6 +59,7 @@ class OfferRepository
         $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
                                 ->where('destination_id', $destId)
                                 ->where('type', 2)
+                                ->where('status','1')
                                 ->get();
         if(isset($routeCoupon[0])){                           
                 $routeCouponCode = $routeCoupon[0]->coupon_code;
@@ -68,6 +69,7 @@ class OfferRepository
         
         $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
                                 ->where('type', 1)
+                                ->where('status','1')
                                 ->get();
         if(isset($operatorCoupon[0])){                           
             $opCouponCode = $operatorCoupon[0]->coupon_code;
@@ -79,6 +81,7 @@ class OfferRepository
                                     ->where('type', 3)
                                     ->where('source_id', $sourceId)
                                     ->where('destination_id', $destId)
+                                    ->where('status','1')
                                     ->get();
         if(isset($opRouteCoupon[0])){                           
             $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;
@@ -89,13 +92,15 @@ class OfferRepository
 
         $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);        
         $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
-        
+
         ///Coupon applicable on specific date range
         $appliedCoupon = collect([]);
         $date = Carbon::now();
         $bookingDate = $date->toDateString();
         foreach($CouponRecords as $key => $coupon){
+        
             $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
+           
             switch($type){
                 case(1):    //Coupon available on journey date
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
