@@ -668,7 +668,7 @@ border: 0;
                       </tr>
 
                       <tr>
-                        <td><b>Diparature Time:</b>  {{$departureTime}} </td>
+                        <td><b>Deparature Time:</b>  {{$departureTime}} </td>
                         <td><b>Arrival Time:</b> {{$arrivalTime}}</td>
                       </tr>
 
