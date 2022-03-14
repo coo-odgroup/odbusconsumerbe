@@ -26,5 +26,9 @@ class Coupon extends Model
      {
         return $this->hasMany(CouponRoute::class);        
      }
+     public function couponType()
+	{        
+		return $this->belongsTo(CouponType::class);        
+	}
 
 }

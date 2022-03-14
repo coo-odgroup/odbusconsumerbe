@@ -55,10 +55,10 @@ class OfferRepository
         $transactionId = $request['transaction_id'];
         $selCouponRecords = Coupon::where('status','1')->get();
         //return $selCouponRecords;
-
+    
         $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
                                 ->where('destination_id', $destId)
-                                ->where('type', 2)
+                                ->where('coupon_type_id', 2)
                                 ->where('status','1')
                                 ->get();
         if(isset($routeCoupon[0])){                           
@@ -68,7 +68,7 @@ class OfferRepository
         } 
         
         $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
-                                ->where('type', 1)
+                                ->where('coupon_type_id', 1)
                                 ->where('status','1')
                                 ->get();
         if(isset($operatorCoupon[0])){                           
@@ -78,7 +78,7 @@ class OfferRepository
         } 
         //return $opCouponCode;
         $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
-                                    ->where('type', 3)
+                                    ->where('coupon_type_id', 3)
                                     ->where('source_id', $sourceId)
                                     ->where('destination_id', $destId)
                                     ->where('status','1')
