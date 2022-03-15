@@ -21,9 +21,9 @@ class PageContentController extends Controller
     /**
      * @OA\Post(
      *     path="/api/GetPageData",
-     *     tags={"Get Page contents"},
-     *     description="Get Page contents",
-     *     summary="Get Page contents",
+     *     tags={"Get Page descriptions on about-us,terms-conditions,privacy-policy"},
+     *     description="Get Page descriptions on about-us,terms-conditions,privacy-policy",
+     *     summary="Get Page descriptions on about-us,terms-conditions,privacy-policy",
      *     @OA\Parameter(
      *          name="user_id",
      *          description="user Id",
@@ -31,7 +31,7 @@ class PageContentController extends Controller
      *          in="query",
      *          @OA\Schema(
      *              type="integer",
-     *              default=152,
+     *              default=1,
      *          )
      *      ),
      *     @OA\Parameter(
@@ -44,7 +44,7 @@ class PageContentController extends Controller
      *              default="about-us",
      *          )
      *      ),
-     *  @OA\Response(response="200", description="Get all Page contents"),
+     *  @OA\Response(response="200", description="Get all Page descriptions"),
      *  @OA\Response(response=401, description="Unauthorized"),
      *     security={
      *       {"apiAuth": {}}

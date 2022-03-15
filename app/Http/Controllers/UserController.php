@@ -68,6 +68,7 @@ class UserController extends Controller
  *          )
  *      ),
  *     @OA\Response(response="200", description="client access token generated"),
+ *     @OA\Response(response="422", description="wrong credentials"),
  *     @OA\Response(response="206", description="not a valid credential"),
  * )
  * 

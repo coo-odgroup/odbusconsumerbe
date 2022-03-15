@@ -32,7 +32,7 @@ class TestimonialController extends Controller
      *          in="query",
      *          @OA\Schema(
      *              type="integer",
-     *              default=152,
+     *              default=1,
      *          )
      *      ),
      *  @OA\Response(response="200", description="Get all Testimonials"),

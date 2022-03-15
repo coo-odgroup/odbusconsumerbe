@@ -1482,7 +1482,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "default": 152
+                            "default": 1
                         }
                     }
                 ],
@@ -2125,8 +2125,8 @@
                 "tags": [
                     "All PathUrls API"
                 ],
-                "summary": "get all Path Urls",
-                "description": "get all Path Urls",
+                "summary": "get all urls related to images",
+                "description": "get all urls related to images",
                 "operationId": "b128a7fa5a5d8d26171a64663d86e968",
                 "responses": {
                     "200": {
@@ -2146,10 +2146,10 @@
         "/api/GetPageData": {
             "post": {
                 "tags": [
-                    "Get Page contents"
+                    "Get Page descriptions on about-us,terms-conditions,privacy-policy"
                 ],
-                "summary": "Get Page contents",
-                "description": "Get Page contents",
+                "summary": "Get Page descriptions on about-us,terms-conditions,privacy-policy",
+                "description": "Get Page descriptions on about-us,terms-conditions,privacy-policy",
                 "operationId": "c85725e85a43f55f9545050ba31c8298",
                 "parameters": [
                     {
@@ -2159,7 +2159,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "default": 152
+                            "default": 1
                         }
                     },
                     {
@@ -2175,7 +2175,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Get all Page contents"
+                        "description": "Get all Page descriptions"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -2904,7 +2904,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "default": 152
+                            "default": 1
                         }
                     }
                 ],
@@ -2939,7 +2939,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "default": 152
+                            "default": 1
                         }
                     }
                 ],
@@ -2989,6 +2989,9 @@
                 "responses": {
                     "200": {
                         "description": "client access token generated"
+                    },
+                    "422": {
+                        "description": "wrong credentials"
                     },
                     "206": {
                         "description": "not a valid credential"

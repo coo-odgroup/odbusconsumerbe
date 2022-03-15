@@ -179,8 +179,8 @@ class OfferController extends Controller
      * @OA\Get(
      *     path="/api/AllPathUrls",
      *     tags={"All PathUrls API"},
-     *     description="get all Path Urls",
-     *     summary="get all Path Urls",
+     *     description="get all urls related to images",
+     *     summary="get all urls related to images",
      *  @OA\Response(response="200", description="get all Path Urls"),
      *  @OA\Response(response=401, description="Unauthorized"),
      *     security={
