@@ -67,7 +67,7 @@ class CommonController extends Controller
 
          try {
           $response =  $this->commonService->getAll($request);
-           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_PARTIAL_CONTENT);
+           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
        }
        catch (Exception $e) {
            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
