@@ -30,5 +30,9 @@ class Coupon extends Model
 	{        
 		return $this->belongsTo(CouponType::class);        
 	}
+   public function slider()
+	{        
+		return $this->hasMany(Slider::class);        
+	}
 
 }
