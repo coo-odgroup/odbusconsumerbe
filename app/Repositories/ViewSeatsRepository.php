@@ -340,24 +340,24 @@ class ViewSeatsRepository
     }
 
     public function ticketFareSlab($user_id){
-    $user_id = Config::get('constants.USER_ID'); 
+    $defUserId = Config::get('constants.USER_ID'); 
         
     $ticketFareRecord = $this->ticketFareSlab->where('user_id', $user_id)->get();
         if(isset($ticketFareRecord[0])){
             return $this->ticketFareSlab->where('user_id', $user_id)->get();
         }else{
-            return $this->ticketFareSlab->where('user_id', $user_id)->get();
+            return $this->ticketFareSlab->where('user_id', $defUserId)->get();
         }  
     }
 
     public function odbusCharges($user_id){
-        $user_id = Config::get('constants.USER_ID');
+        $defUserId = Config::get('constants.USER_ID');
 
         $odbusChargesRec = $this->odbusCharges->where('user_id', $user_id)->get();
         if(isset($odbusChargesRec[0])){
             return $this->odbusCharges->where('user_id', $user_id)->get();
         }else{
-            return $this->odbusCharges->where('user_id', $user_id)->get();
+            return $this->odbusCharges->where('user_id', $defUserId)->get();
         }  
 
     }
