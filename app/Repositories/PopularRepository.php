@@ -77,6 +77,7 @@ class PopularRepository
 
         return $this->ticketPrice
         ->select('source_id','destination_id',(DB::raw('count(*) as count')))
+        ->where("status",1)
         ->groupBy('source_id', 'destination_id')
         ->orderBy('count', 'DESC')
         ->get();
