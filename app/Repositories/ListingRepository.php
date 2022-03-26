@@ -95,7 +95,12 @@ class ListingRepository
      {
          return $this->location->where("name", $name)->where("status", 1)->get('id');
      }
-
+     public function getBusCoupon($busId)
+     {
+         return Coupon::where('bus_id', $busId)
+                        ->where('status','1')
+                        ->get();
+     }
      public function getrouteCoupon($sourceID,$destinationID)
      {
          return Coupon::where('source_id', $sourceID)

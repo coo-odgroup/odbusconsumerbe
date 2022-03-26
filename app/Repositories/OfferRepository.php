@@ -48,7 +48,7 @@ class OfferRepository
     public function coupons($request)
     {   
         $requestedCouponCode = $request['coupon_code'];
-        //$busId = $request['bus_id'];
+        $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
         $destId = $request['destination_id'];
         $busOperatorId = $request['bus_operator_id'];
@@ -90,9 +90,18 @@ class OfferRepository
         }else{
             $opRouteCouponCode =[];
         } 
-        //return $opRouteCouponCode;
-
-        $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);        
+        
+        $busCoupon = Coupon::where('bus_id', $busId) ////Operator wise coupon
+                                ->where('status','1')
+                                ->get();
+        if(isset($busCoupon[0])){                           
+            $busCouponCode = $busCoupon[0]->coupon_code;
+        }else{
+            $busCouponCode =[];
+        } 
+        
+        //$CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]); 
+        $CouponRecords = collect($busCouponCode);       
         $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
         ///Coupon applicable on specific date range
@@ -102,7 +111,6 @@ class OfferRepository
         foreach($CouponRecords as $key => $coupon){
         
             $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
-           
             switch($type){
                 case(1):    //Coupon available on journey date
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
