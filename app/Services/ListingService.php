@@ -297,6 +297,7 @@ class ListingService
             $operatorUrl = $record->busOperator->operator_url;
             $operatorName = $record->busOperator->operator_name;
             $sittingType = $record->BusSitting->name;   
+            $bus_description = $record->bus_description; 
             $busType = $record->BusType->busClass->class_name;
             $busTypeName = $record->BusType->name;
             $ticketPriceDatas = $record->ticketPrice->where("status","1");
@@ -559,6 +560,7 @@ class ListingService
                 "operatorUrl" => $operatorUrl,
                 "operatorName" => $operatorName,
                 "sittingType" => $sittingType,
+                "bus_description" => $bus_description,
                 "busType" => $busType,
                 "busTypeName" => $busTypeName,
                 "totalSeats" => $totalSeats,
