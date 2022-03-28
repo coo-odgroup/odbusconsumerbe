@@ -161,6 +161,7 @@ class ListingService
                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty())
                 {
                     $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
+                   // return $records;
                 } 
             }
                else
@@ -222,6 +223,7 @@ class ListingService
         }  
         $ListingRecords = array();
         foreach($records as $record){
+            //return $record;
             $unavailbleSeats = 0;
             $busId = $record->id; 
             $busName = $record->name;
@@ -538,9 +540,10 @@ class ListingService
                 $Totalrating = number_format($Totalrating/count($record->review),1);
             }
             $reviews=  $Review_list; //$record->review;
-            $cancellationPolicyContent=$record->cancellation_policy_desc;
+            $cancellationPolicyContent = $record->cancellationslabs->cancellation_policy_desc;
             $TravelPolicyContent=$record->travel_policy_desc;
             $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
+            
             $cSlabDuration = $cSlabDatas->pluck('duration');
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
 
