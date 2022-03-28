@@ -252,15 +252,21 @@ class BookingManageService
 
                 $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                 $current_date_time = Carbon::now()->toDateTimeString(); 
+
                 $bookingDate = new DateTime($combinedDT);
                 $cancelDate = new DateTime($current_date_time);
+
                 $interval = $bookingDate->diff($cancelDate);
-                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                 
+                if($cancelDate >= $bookingDate || $interval < 12)
+                {
+                    return "CANCEL_NOT_ALLOWED";
+                }else
 
-                 if($interval < 12) {
-                    return 'CANCEL_NOT_ALLOWED';                    
-                }
-
+                //  if($interval < 12) {
+                //     return 'CANCEL_NOT_ALLOWED';                    
+                // }
 
                 $srcId = $booking_detail[0]->booking[0]->source_id;
                 $desId = $booking_detail[0]->booking[0]->destination_id;

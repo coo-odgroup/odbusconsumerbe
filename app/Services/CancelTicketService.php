@@ -78,9 +78,13 @@ class CancelTicketService
                         'seat_no' => $seat_arr,
                         'cancellationDateTime' => $current_date_time
                     );
-                     if($interval < 12) {
-                        return 'Cancellation is not allowed';                    
-                    }
+                    if($cancelDate >= $bookingDate || $interval < 12)
+                    {
+                        return 'Cancellation is not allowed'; 
+                    }else
+                    //  if($interval < 12) {
+                    //     return 'Cancellation is not allowed';                    
+                    // }
 
                     $paidAmount = $booking_detail[0]->booking[0]->total_fare;
 
