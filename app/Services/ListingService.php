@@ -66,6 +66,7 @@ class ListingService
             $busId = $busDetail['bus_id'];
             $startJDay = $busDetail['start_j_days'];
             $JDay =  $busDetail->j_day;
+            
         ////////////////bus cancelled on specific date//////////////////////
             switch($startJDay){
                 case(1):
@@ -618,7 +619,8 @@ class ListingService
         
         $selCouponRecords = $this->listingRepository->getAllCoupon();
         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);    
-   
+        
+        //return $busDetails;
         $records = array();
         $FilterRecords = array();
         $showBusRecords = [];

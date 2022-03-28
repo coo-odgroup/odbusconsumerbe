@@ -23,6 +23,7 @@ use App\Models\Booking;
 use App\Models\BusSchedule;
 use App\Models\CouponRoute;
 use App\Models\Coupon;
+use App\Models\AssocAssignBus;
 use App\Models\BookingSequence;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -133,19 +134,30 @@ class ListingRepository
 
      public function getticketPrice($sourceID,$destinationID,$busOperatorId,$journey_date, $userId)
      {
-        $CurrentDate = Carbon::now()->toDateString();
-        return $this->ticketPrice
-        ->where('source_id', $sourceID)
-        ->where('destination_id', $destinationID)
-        ->where('status','1')
-        ->when($userId != null || isset($userId), function ($query) use ($userId){
-            $query->where('user_id',$userId);
-            })
-        // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
-        //     $query->where('bus_operator_id',$busOperatorId);
+        if($userId != null || isset($userId)){
+            $busIds = AssocAssignBus::where('user_id',$userId)->pluck('bus_id');
+            return $this->ticketPrice
+                        ->where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID)
+                        ->whereIn('bus_id',$busIds)
+                        ->where('status','1') 
+                        ->get(['id','bus_id','bus_operator_id','start_j_days','seize_booking_minute','dep_time']);  
+        }else{
+            return $this->ticketPrice
+                        ->where('source_id', $sourceID)
+                        ->where('destination_id', $destinationID)
+                        ->where('status','1')
+                        ->get(['id','bus_id','bus_operator_id','start_j_days','seize_booking_minute','dep_time']); 
+        }
+        
+        // return $this->ticketPrice
+        // ->where('source_id', $sourceID)
+        // ->where('destination_id', $destinationID)
+        // ->where('status','1')
+        // ->when($userId != null || isset($userId), function ($query) use ($userId){
+        //     $query->where('user_id',$userId);
         //     })
-        //->orderBy('dep_time', 'asc')
-        ->get(['id','bus_id','bus_operator_id','start_j_days','seize_booking_minute','dep_time']);  
+        // ->get(['id','bus_id','bus_operator_id','start_j_days','seize_booking_minute','dep_time']);  
      }
 
      public function checkBusentry($busId,$new_date)
@@ -165,23 +177,16 @@ class ListingRepository
      public function getBusData($busOperatorId,$busId,$userId,$entry_date)
      {  
         return $this->bus
-        // ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
-        //     $query->where('bus_operator_id',$busOperatorId);
+        // ->when($userId != null || isset($userId), function ($query) use ($userId){
+        //     $query->where('user_id',$userId);
         //     })
-        ->when($userId != null || isset($userId), function ($query) use ($userId){
-            $query->where('user_id',$userId);
-            })
-        //->with('couponAssignedBus.coupon')
-        //->with('busOperator.coupon')
         ->with('busContacts')       
-        //->with('busAmenities.amenities')
         ->with(['busAmenities'  => function ($query) {
             $query->with(['amenities' =>function ($a){
                 $a->where('status',1);
                 $a->select('id','name','amenities_image','android_image');
             }]);
         }]) 
-        //->with('busSafety.safety')
         ->with(['busSafety'  => function ($query) {
             $query->with(['safety' =>function ($a){
                 $a->where('status',1);
@@ -189,14 +194,7 @@ class ListingRepository
             }]);
         }]) 
         ->with('BusType.busClass')
-        //->with('busSeats.seats')
         ->with(['busSeats' => function ($bs) use ($entry_date) {
-            // $bs->where([['operation_date', $entry_date]] )
-            //     // $bs->where(function ($q) use ($entry_date){
-            //     //         $q->where([['operation_date', $entry_date],['type',1]]);
-            //     //     })
-            //     ->orwhereNull('operation_date')
-            //        //->whereNull('operation_date')
                 $bs->where('status',1)
                    ->with(['seats' => function ($s) {
                         $s->where('status',1);
@@ -223,17 +221,9 @@ class ListingRepository
      public function getFilterBusList($busOperatorId,$busId,$busType,
      $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date){
          return  $this->bus
-        //  ->when($busOperatorId != null || isset($busOperatorId), function ($query) use ($busOperatorId){
-        //     $query->where('bus_operator_id',$busOperatorId);
+        // ->when($userId != null || isset($userId), function ($query) use ($userId){
+        //     $query->where('user_id',$userId);
         //     })
-        ->when($userId != null || isset($userId), function ($query) use ($userId){
-            $query->where('user_id',$userId);
-            })
-         //->with('couponAssignedBus.coupon')
-         //->with('busOperator.coupon')
-         //->with('busOperator')
-         //->with('busAmenities.amenities')
-         //->with('busSafety.safety')
          ->with(['busAmenities'  => function ($query) {
             $query->with(['amenities' =>function ($a){
                 $a->where('status',1);
@@ -247,17 +237,13 @@ class ListingRepository
             }]);
         }]) 
          ->with('BusType.busClass')
-         //->with('busSeats.seats')
         ->with(['busSeats' => function ($bs) use ($entry_date) {
-            // $bs->where([['operation_date', $entry_date]])
-            //    ->orwhereNull('operation_date')
             $bs->where('status',1)
                ->with(['seats' => function ($s) {
                         $s->where('status',1);
                    }]);   
             }])
          ->with('BusSitting')
-         //->with('busGallery')
          ->with(['busGallery' => function ($a){
             $a->where('status',1);
             }])
@@ -358,13 +344,11 @@ class ListingRepository
                     ->where('bus_operator_id', $busOperatorId) 
                     ->with('couponAssignedBus.coupon')
                     ->with('busOperator.coupon')
-                    ->with('busContacts')
-                    //->with('busOperator')       
+                    ->with('busContacts')     
                     ->with('busAmenities.amenities')
                     ->with('busSafety.safety')
                     ->with('BusType.busClass')
                     ->with('busSeats.seats')
-                    //->with('seatOpen.seatOpenSeats')
                     ->with('BusSitting')
                     ->with('busGallery')
                     ->with('cancellationslabs.cancellationSlabInfo')
@@ -979,25 +963,21 @@ class ListingRepository
 
         $result['busDetails'] =  $this->bus->where('id',$busId)->where('id',$busId)
                                 ->with('cancellationslabs.cancellationSlabInfo')
-                                //->with('busAmenities.amenities')
                                 ->with(['busAmenities'  => function ($query) {
                                     $query->with(['amenities' =>function ($a){
                                         $a->where('status',1);
                                         $a->select('id','name','android_image');
                                     }]);
                                 }]) 
-                                //->with('busSafety.safety')
                                 ->with(['busSafety'  => function ($query) {
                                     $query->with(['safety' =>function ($a){
                                         $a->where('status',1);
                                         $a->select('id','name','android_image');
                                     }]);
                                 }]) 
-                                //->with('busGallery')
                                 ->with(['busGallery' => function ($a){
                                     $a->where('status',1);
                                     }])
-                               // ->with('review')
                                 ->with(['review' => function ($query) {                    
                                         $query->where('status',1);
                                         $query->select('bus_id','users_id','title','rating_overall','rating_comfort','rating_clean','rating_behavior','rating_timing','comments');  
