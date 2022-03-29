@@ -171,11 +171,7 @@ class BookingManageService
                 }  
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
-              
-
-              
-              
-              
+               
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -211,10 +207,8 @@ class BookingManageService
                     if(isset($agent_number[0])){
                         $body['agent_number'] = $agent_number[0]->phone;
                         $body['customer_comission'] = $b->booking[0]->customer_comission;
-                    }
-                   
+                    }   
                 }
-
                 if($b->email != ''){
                     $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($body,$b->booking[0]->pnr); 
                 }
@@ -239,9 +233,7 @@ class BookingManageService
         $pnr = $request['pnr'];
         $mobile = $request['mobile'];
 
-         $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);
-
-       
+        $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);  
       //return $booking_detail;
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
@@ -262,8 +254,7 @@ class BookingManageService
                 if($cancelDate >= $bookingDate || $interval < 12)
                 {
                     return "CANCEL_NOT_ALLOWED";
-                }else
-
+                }
                 //  if($interval < 12) {
                 //     return 'CANCEL_NOT_ALLOWED';                    
                 // }
@@ -371,9 +362,13 @@ class BookingManageService
                 $interval = $bookingDate->diff($cancelDate);
                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
 
-                if($interval < 12) {
-                    return 'CANCEL_NOT_ALLOWED';                    
+                if($cancelDate >= $bookingDate || $interval < 12)
+                {
+                    return "CANCEL_NOT_ALLOWED";
                 }
+                // if($interval < 12) {
+                //     return 'CANCEL_NOT_ALLOWED';                    
+                // }
                 $paidAmount = $booking_detail[0]->booking[0]->total_fare; 
                 $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
                 
@@ -476,9 +471,13 @@ class BookingManageService
                         'seat_no' => $seat_arr,
                         'cancellationDateTime' => $current_date_time
                     );
-                    if($interval < 12) {
-                        return 'CANCEL_NOT_ALLOWED';                    
+                    if($cancelDate >= $bookingDate || $interval < 12)
+                    {
+                    return "CANCEL_NOT_ALLOWED";
                     }
+                    // if($interval < 12) {
+                    //     return 'CANCEL_NOT_ALLOWED';                    
+                    // }
                     $userId = $booking_detail[0]->booking[0]->user_id;
                     $bookingId = $booking_detail[0]->booking[0]->id;
                     $srcId = $booking_detail[0]->booking[0]->source_id;

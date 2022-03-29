@@ -81,7 +81,7 @@ class CancelTicketService
                     if($cancelDate >= $bookingDate || $interval < 12)
                     {
                         return 'Cancellation is not allowed'; 
-                    }else
+                    }
                     //  if($interval < 12) {
                     //     return 'Cancellation is not allowed';                    
                     // }
