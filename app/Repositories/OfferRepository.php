@@ -47,51 +47,50 @@ class OfferRepository
     }
     public function coupons($request)
     {   
+   
         $requestedCouponCode = $request['coupon_code'];
         $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
         $destId = $request['destination_id'];
-        $busOperatorId = $request['bus_operator_id'];
+        //$busOperatorId = $request['bus_operator_id'];
         $jDate = $request['journey_date'];
         $totalFare = $request['total_fare'];
         $transactionId = $request['transaction_id'];
         $selCouponRecords = Coupon::where('status','1')->get();
-        //return $selCouponRecords;
     
-        $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
-                                ->where('destination_id', $destId)
-                                ->where('coupon_type_id', 2)
-                                ->where('status','1')
-                                ->get();
-        if(isset($routeCoupon[0])){                           
-                $routeCouponCode = $routeCoupon[0]->coupon_code;
-        }else{
-            $routeCouponCode =[];
-        } 
+        // $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
+        //                         ->where('destination_id', $destId)
+        //                         ->where('coupon_type_id', 2)
+        //                         ->where('status','1')
+        //                         ->get();
+        // if(isset($routeCoupon[0])){                           
+        //         $routeCouponCode = $routeCoupon[0]->coupon_code;
+        // }else{
+        //     $routeCouponCode =[];
+        // } 
         
-        $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
-                                ->where('coupon_type_id', 1)
-                                ->where('status','1')
-                                ->get();
-        if(isset($operatorCoupon[0])){                           
-            $opCouponCode = $operatorCoupon[0]->coupon_code;
-        }else{
-            $opCouponCode =[];
-        } 
-        //return $opCouponCode;
-        $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
-                                    ->where('coupon_type_id', 3)
-                                    ->where('source_id', $sourceId)
-                                    ->where('destination_id', $destId)
-                                    ->where('status','1')
-                                    ->get();
-        if(isset($opRouteCoupon[0])){                           
-            $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;
-        }else{
-            $opRouteCouponCode =[];
-        } 
+        // $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
+        //                         ->where('coupon_type_id', 1)
+        //                         ->where('status','1')
+        //                         ->get();
+        // if(isset($operatorCoupon[0])){                           
+        //     $opCouponCode = $operatorCoupon[0]->coupon_code;
+        // }else{
+        //     $opCouponCode =[];
+        // } 
+        // $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
+        //                             ->where('coupon_type_id', 3)
+        //                             ->where('source_id', $sourceId)
+        //                             ->where('destination_id', $destId)
+        //                             ->where('status','1')
+        //                             ->get();
+        // if(isset($opRouteCoupon[0])){                           
+        //     $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;
+        // }else{
+        //     $opRouteCouponCode =[];
+        // } 
         
-        $busCoupon = Coupon::where('bus_id', $busId) ////Operator wise coupon
+        $busCoupon = Coupon::where('bus_id', $busId) ////Bus wise coupon
                                 ->where('status','1')
                                 ->get();
         if(isset($busCoupon[0])){                           

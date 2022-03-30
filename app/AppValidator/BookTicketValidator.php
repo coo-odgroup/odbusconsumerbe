@@ -15,7 +15,7 @@ class BookTicketValidator
             'bookingInfo.bus_id' => 'required|numeric',
             'bookingInfo.source_id' => 'required|numeric',
             'bookingInfo.destination_id' => 'required|numeric',
-            'bookingInfo.journey_dt' => 'required|date_format:Y-m-d',
+            'bookingInfo.journey_date' => 'required|date_format:Y-m-d',
             'bookingInfo.boarding_point' => 'required',
             'bookingInfo.dropping_point' => 'required',
             'bookingInfo.boarding_time' => 'required',

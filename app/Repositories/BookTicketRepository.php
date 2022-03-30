@@ -87,7 +87,7 @@ class BookTicketRepository
                                                 ->get();
                                                 
         $booking->j_day = $ticketPriceDetails[0]->j_day;
-        $booking->journey_dt = $bookingInfo['journey_dt'];
+        $booking->journey_dt = $bookingInfo['journey_date'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
         $booking->boarding_time = $bookingInfo['boarding_time'];
