@@ -69,28 +69,34 @@ class BookTicketController extends Controller
  *                property="bookingInfo",
  *                type="object",
  *                @OA\Property(
+ *                  property="coupon_code",
+ *                  type="string",
+ *                  default="ODTEST3",
+ *                  example="ODTEST3"
+ *                  ),
+ *                @OA\Property(
  *                  property="bus_id",
  *                  type="number",
- *                  default=3,
- *                  example=3
+ *                  default=1,
+ *                  example=1
  *                  ),
  *                @OA\Property(
  *                  property="source_id",
  *                  type="number",
- *                  default=1345,
- *                  example=1345
+ *                  default=82,
+ *                  example=82
  *                  ),
  *                @OA\Property(
  *                  property="destination_id",
  *                  type="number",
- *                  default=1374,
- *                  example=1374
+ *                  default=434,
+ *                  example=434
  *                  ),
  *                @OA\Property(
- *                  property="journey_dt",
+ *                  property="journey_date",
  *                  type="string",
- *                  default="2021-10-09",
- *                  example="2021-10-09" ,
+ *                  default="2022-03-09",
+ *                  example="2022-03-09" ,
  *                  ),
  *                @OA\Property(
  *                  property="boarding_point",
@@ -180,23 +186,17 @@ class BookTicketController extends Controller
  *                  property="bookingDetail",
  *                  type="array",
  *                  example={{
- *                    "bus_seats_id" : "49",
+ *                    "bus_seats_id" : "2755",
  *                    "passenger_name": "Bob",
  *                    "passenger_gender": "M",
  *                    "passenger_age": "22",
- *                    "created_by": "Customer"
- *                  }, {
- *                    "bus_seats_id" : "50",
- *                    "passenger_name": "Mom",
- *                    "passenger_gender": "F",
- *                    "passenger_age": "20",
  *                    "created_by": "Customer"
  *                  }},
  *                  @OA\Items(
  *                      @OA\Property(
  *                         property="bus_seats_id",
- *                         type="string",
- *                         example="ST1"
+ *                         type="number",
+ *                         example="2755"
  *                      ),
  *                      @OA\Property(
  *                         property="passenger_name",

@@ -132,6 +132,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NzkyMzM4NiwiZXhwIjoxNjQ3OTI2OTg2LCJuYmYiOjE2NDc5MjMzODYsImp0aSI6InhZOTR6SFFKbVVzeXVCWFMiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.S9gDvNUfadq8kcnCzdyInBwDtK73e48FaCztodSVPGo",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -189,11 +199,21 @@
 		{
 			"name": "BookTicket",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0ODcwNjE1OSwiZXhwIjoxNjQ4NzA5NzU5LCJuYmYiOjE2NDg3MDYxNTksImp0aSI6IndSU2ZUc0xzTVBnMnNHd2MiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.LRxZ-8p3jwDci-zMH82U_GumkqdzhcoGFuxzMOqUp24",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 685,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 599,\r\n        \"odbus_service_Charges\": 30,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1173,7 +1193,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjcxNTExMywiZXhwIjoxNjQ2NzE4NzEzLCJuYmYiOjE2NDY3MTUxMTMsImp0aSI6IkROd25pY1pvbjJSVHBjM3kiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.odNpLRXFferixJpY3iAb5KsAe5FiBxKB-evd9OsrkJw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ3NDk4MzI1LCJleHAiOjE2NDc1MDE5MjUsIm5iZiI6MTY0NzQ5ODMyNSwianRpIjoiYmNWNmJVd0JiNURlTjFSTyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.10Zx3Q31U9MRiD7IhMdcYghL6iNxmyKuvhlf4BCf8gM",
 							"type": "string"
 						}
 					]
@@ -1492,11 +1512,21 @@
 		{
 			"name": "update profile",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ2ODA5MDIyLCJleHAiOjE2NDY4MTI2MjIsIm5iZiI6MTY0NjgwOTAyMiwianRpIjoiZGVmMnJ0U3Z4TEMyUHlYVSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.Pw4eV6LMB55IN7blSyoLuZn2oKjCnzK4Xl0p49zT3fk",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"1\",\r\n     \"token\":\"F26MbmBvBy\",\r\n    \"name\": \"Lima Mohanty\",\r\n    \"email\": \"banashri.seofied@gmail.com\",\r\n    \"pincode\": \"756000\",\r\n    \"street\": \"Bhadrak\",\r\n    \"district\": \"Bhadrak\",\r\n    \"address\": \"Berhampur\",\r\n    \"profile_image\": \"sss1.png\"\r\n}",
+					"raw": "{\r\n    \"userId\":\"1\",\r\n     \"token\":\"E7CDunOAhI\",\r\n    \"name\": \"Lima Mohanty\",\r\n    \"email\": \"banashri.seofied@gmail.com\",\r\n    \"pincode\": \"756000\",\r\n    \"street\": \"Bhadrak\",\r\n    \"district\": \"Bhadrak\",\r\n    \"address\": \"Berhampur\",\r\n    \"profile_image\": \"sss1.png\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1855,22 +1885,33 @@
 		{
 			"name": "DeleteReview",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ2NzIyNDA1LCJleHAiOjE2NDY3MjYwMDUsIm5iZiI6MTY0NjcyMjQwNSwianRpIjoiMG1VOERFRkNLWDBaQXB6ZSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.gajYLxIx9iR-zP-1x9SvwiBvmV1igrBfmyRForIaK3w",
+							"type": "string"
+						}
+					]
+				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/DeleteReview/1/67",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/DeleteReview/8/2",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"DeleteReview",
-						"1",
-						"67"
+						"8",
+						"2"
 					]
 				}
 			},
