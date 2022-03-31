@@ -653,19 +653,20 @@ class ChannelRepository
       }
 
       public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId){
-        $walletBalance = AgentWallet::where('user_id',$agentId)->where('status',1)->latest()->first()->balance;
+        $walletBalance =  $walletBalance = AgentWallet::where('user_id',$agentId)->orderBy('id','DESC')->where("status",1)->limit(1)->get();
+        //AgentWallet::where('user_id',$agentId)->where('status',1)->latest()->first()->balance;
         $agetWallet = new AgentWallet();
         $agetWallet->transaction_id = $transactionId;
         $agetWallet->amount = $amount;
         $agetWallet->transaction_type = 'd';
         $agetWallet->booking_id = $bookingId;
-        $agetWallet->balance = $walletBalance - $amount;
+        $agetWallet->balance = $walletBalance [0]->balance - $amount;
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = $agentName;
         $agetWallet->status = 1;
         $agetWallet->save();
 
-        $newBalance = $walletBalance - $amount;
+        $newBalance = $walletBalance [0]->balance - $amount;
         $notification = new Notification;
         $notification->notification_heading = "New Balance is Rs.$newBalance after booking for Rs.$amount";
         $notification->notification_details = "New Balance is Rs.$newBalance after booking for Rs.$amount";
