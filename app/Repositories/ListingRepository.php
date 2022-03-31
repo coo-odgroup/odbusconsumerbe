@@ -220,7 +220,11 @@ class ListingRepository
 
      public function getFilterBusList($busOperatorId,$busId,$busType,
      $seatType,$boardingPointId,$dropingingPointId,$operatorId,$amenityId,$userId,$entry_date){
-         return  $this->bus
+
+        return $this->bus
+                ->when($seatType != null || isset($seatType), function ($query) use ($seatType){
+                    $query->where('type',$seatType);
+                    })
         // ->when($userId != null || isset($userId), function ($query) use ($userId){
         //     $query->where('user_id',$userId);
         //     })
@@ -255,16 +259,14 @@ class ListingRepository
                  $u->select('id','name','profile_image');
              }]);                      
              }])
-         ->where('status','1')
-         ->where('id',$busId)
          ->whereHas('busType.busClass', function ($query) use ($busType){
              if($busType)
              $query->whereIn('id', (array)$busType);            
              })
-         ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
-             if($seatType)
-             $query->whereIn('id', (array)$seatType);            
-             })
+        //  ->whereHas('busSeats.seats.seatClass', function ($query) use ($seatType){
+        //      if($seatType)
+        //      $query->whereIn('id', (array)$seatType);            
+        //      })
          ->whereHas('busStoppageTiming.boardingDroping', function ($query) use ($boardingPointId){  
              if($boardingPointId)                   
              $query->whereIn('id', (array)$boardingPointId);
