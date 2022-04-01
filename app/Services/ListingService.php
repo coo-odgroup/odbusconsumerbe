@@ -262,6 +262,7 @@ class ListingService
 
             ///Coupon applicable for specific date range
             $appliedCoupon = collect([]);
+            $CouponDetails = [];
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
              
