@@ -246,7 +246,6 @@ class ListingService
             // {
             //     $opRouteCouponCode =[];
             // }
-           
             $busCoupon = $this->listingRepository->getBusCoupon($busId);
             if(isset($busCoupon[0]))
             {                           
@@ -285,7 +284,9 @@ class ListingService
                 }
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
-                    $CouponDetails = $busCoupon[0]->where('coupon_code',$appliedCoupon)->get(); 
+                    $CouponDetails = $busCoupon[0]->where('coupon_code',$appliedCoupon)
+                                                  ->where('bus_id',$busId)
+                                                  ->get(); 
                     //return $CouponDetails;
                  }
             }
