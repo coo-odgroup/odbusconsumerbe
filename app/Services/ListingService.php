@@ -229,23 +229,23 @@ class ListingService
             $via = $record->via;
             $busOperatorId = $record->bus_operator_id;
             
-            $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId);
-            if(isset($operatorCoupon[0]))
-            {                           
-                $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
-            }else
-            {
-                $opCouponCode =[];
-            } 
-            $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID);
+            // $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId);
+            // if(isset($operatorCoupon[0]))
+            // {                           
+            //     $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
+            // }else
+            // {
+            //     $opCouponCode =[];
+            // } 
+            // $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID);
 
-            if(isset($opRouteCoupon[0]))
-            {                           
-                $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
-            }else
-            {
-                $opRouteCouponCode =[];
-            }
+            // if(isset($opRouteCoupon[0]))
+            // {                           
+            //     $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
+            // }else
+            // {
+            //     $opRouteCouponCode =[];
+            // }
            
             $busCoupon = $this->listingRepository->getBusCoupon($busId);
             if(isset($busCoupon[0]))
@@ -284,6 +284,8 @@ class ListingService
                 }
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
+                    $CouponDetails = $busCoupon[0]->where('coupon_code',$appliedCoupon)->get(); 
+                    //return $CouponDetails;
                  }
             }
             $maxSeatBook = $record->max_seat_book;
@@ -573,7 +575,8 @@ class ListingService
                 "busNumber" => $busNumber,
                 "maxSeatBook" => $maxSeatBook,
                 "conductor_number" => $conductor_number,
-                "couponCode" =>$appliedCoupon->all(),
+                "couponCode" => $appliedCoupon->all(),
+                "couponDetails" => $CouponDetails,
                 "operatorId" => $operatorId,
                 "operatorUrl" => $operatorUrl,
                 "operatorName" => $operatorName,
