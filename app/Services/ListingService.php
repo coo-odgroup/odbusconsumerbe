@@ -85,9 +85,11 @@ class ListingService
                 ->where('status', '1')
                 ->with(['busCancelledDate' => function ($bcd) use ($new_date){
                 $bcd->where('cancelled_date',$new_date);
-                }])->get();  
+                }])->get(); 
+           
+
             if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
-                break;
+                continue;
             }
         
         /////////////////Bus Seize//////////////////////////////////////////////
@@ -672,8 +674,10 @@ class ListingService
                 ->with(['busCancelledDate' => function ($bcd) use ($new_date){
                 $bcd->where('cancelled_date',$new_date);
                 }])->get();  
+
+
             if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
-                break;
+                continue;
             }
         
         /////////////////Bus Seize//////////////////////////////////////////////
