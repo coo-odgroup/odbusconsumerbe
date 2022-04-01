@@ -9,6 +9,7 @@ use App\Models\BusCancelled;
 use App\Models\BusCancelledDate;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
+use App\Repositories\ViewSeatsRepository;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,10 +25,11 @@ class ListingService
     protected $listingRepository; 
     protected $commonRepository;  
     
-    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository)
     {
         $this->listingRepository = $listingRepository;
         $this->commonRepository = $commonRepository;
+        $this->viewSeatsRepository = $viewSeatsRepository;
     }
     public function getAll(Request $request)
     {  
@@ -182,7 +184,6 @@ class ListingService
                 if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){
                     $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                 }
-                // $hideBusRecords[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
                }
         }        
          $showBusRecords = Arr::flatten($records);
@@ -204,13 +205,8 @@ class ListingService
                     ['departureTime', 'asc']
                 ]);
          } 
-
          return $ListingRecords;
-        // return $ListingRecords->sortBy([
-        //     ['departureTime', 'asc']
-        // ]);
-
-       // return $this->listingRepository->getAll($request);
+        
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag){
         $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
@@ -226,6 +222,7 @@ class ListingService
             //return $record;
             $unavailbleSeats = 0;
             $busId = $record->id; 
+            $user_id = $record->user_id; 
             $busName = $record->name;
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
@@ -309,9 +306,26 @@ class ListingService
                     ->where('source_id', $sourceID)
                     ->where('destination_id', $destinationID)
                     ->first(); 
-      
             $ticketPriceId = $ticketPriceRecords->id;
-            $startingFromPrice = $ticketPriceRecords->base_seat_fare;
+////////////owner/special/festive fare with service charges added to base fare////////////
+           
+            $baseFare = $ticketPriceRecords->base_seat_fare; 
+            $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
+            $totalMiscfares = $miscfares[0]+$miscfares[2]+$miscfares[4];
+            $misBaseFare = $baseFare + $totalMiscfares; 
+            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+            $odbusServiceCharges = 0;
+            foreach($ticketFareSlabs as $ticketFareSlab){
+
+                $startingFare = $ticketFareSlab->starting_fare;
+                $uptoFare = $ticketFareSlab->upto_fare;
+                if($startingFare <= $misBaseFare && $uptoFare >= $misBaseFare){
+                    $percentage = $ticketFareSlab->odbus_commision;
+                    $odbusServiceCharges = round($misBaseFare * ($percentage/100));
+                    $startingFromPrice = round($misBaseFare + $odbusServiceCharges);
+                }     
+            }  
+            //$startingFromPrice = $ticketPriceRecords->base_seat_fare;
             $departureTime = $ticketPriceRecords->dep_time;
             $arrivalTime = $ticketPriceRecords->arr_time;
             $depTime = date("H:i",strtotime($departureTime));

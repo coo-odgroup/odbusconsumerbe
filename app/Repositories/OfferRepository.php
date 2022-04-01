@@ -47,7 +47,6 @@ class OfferRepository
     }
     public function coupons($request)
     {   
-   
         $requestedCouponCode = $request['coupon_code'];
         $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
@@ -137,7 +136,7 @@ class OfferRepository
         $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
                                 ->where('status','1')->get();
         $maxRedeemCount = $couponDetails[0]->max_redeem;
-
+        
         if($couponCount < $maxRedeemCount){     
             if(isset($couponDetails)){ 
                 $couponType = $couponDetails[0]->type;  ///type:1 for percentage and 2 for amount
@@ -154,6 +153,7 @@ class OfferRepository
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
+                            "couponDetails" => $couponDetails
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
@@ -169,6 +169,7 @@ class OfferRepository
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
+                            "couponDetails" => $couponDetails
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
@@ -186,6 +187,7 @@ class OfferRepository
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
                             "payableAmount" => $totalAmount, 
+                            "couponDetails" => $couponDetails
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
