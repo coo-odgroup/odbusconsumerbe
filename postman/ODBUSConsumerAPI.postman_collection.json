@@ -204,7 +204,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0ODcwNjE1OSwiZXhwIjoxNjQ4NzA5NzU5LCJuYmYiOjE2NDg3MDYxNTksImp0aSI6IndSU2ZUc0xzTVBnMnNHd2MiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.LRxZ-8p3jwDci-zMH82U_GumkqdzhcoGFuxzMOqUp24",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0ODg4NTk4MywiZXhwIjoxNjQ4ODg5NTgzLCJuYmYiOjE2NDg4ODU5ODMsImp0aSI6IkJwWHdKS0FBWFplZGNSRnoiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.P95VKxqJGWjBTvATsvtkI0cBBS3tJfiXECujtbBKgyY",
 							"type": "string"
 						}
 					]
@@ -213,7 +213,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\r\n           \r\n\t\t\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1233,7 +1233,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":1,  \r\n    \"source_id\":\"82\", \r\n    \"destination_id\":\"434\",\r\n    \"journey_date\":\"2022-01-16\",\r\n    \"bus_operator_id\":1,\r\n    \"total_fare\":1000,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
+					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":1,  \r\n    \"source_id\":\"82\", \r\n    \"destination_id\":\"434\",\r\n    \"journey_date\":\"2022-01-16\",\r\n    \"bus_operator_id\":1,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -97,12 +97,11 @@ class BookTicketRepository
         $booking->typ_id = $bookingInfo['typ_id'];
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
-        //////
         $booking->additional_special_fare = $bookingInfo['specialFare'];
         $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
         $booking->additional_festival_fare = $bookingInfo['festiveFare'];
-        //////
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        $booking->transactionFee = $bookingInfo['transactionFee'];
 
 
         if(isset($bookingInfo['adj_note'])){
