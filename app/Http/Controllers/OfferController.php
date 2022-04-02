@@ -110,26 +110,6 @@ class OfferController extends Controller
          *          )
          *      ),
          *     @OA\Parameter(
-         *          name="bus_operator_id",
-         *          description="bus operator id",
-         *          required=true,
-         *          in="query",
-         *          @OA\Schema(
-         *              type="integer",
-         *              example="1"
-         *          )
-         *      ),
-         *     @OA\Parameter(
-         *          name="total_fare",
-         *          description="total fare",
-         *          required=true,
-         *          in="query",
-         *          @OA\Schema(
-         *              type="integer",
-         *              example="1000"
-         *          )
-         *      ),
-         *     @OA\Parameter(
          *          name="transaction_id",
          *          description="transaction id",
          *          required=true,

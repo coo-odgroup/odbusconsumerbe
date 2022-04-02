@@ -177,6 +177,12 @@ class BookTicketController extends Controller
  *                  example="70" ,
  *                  ),
  *                @OA\Property(
+ *                  property="transactionFee",
+ *                  type="double",
+ *                  default="10",
+ *                  example="10" ,
+ *                  ),
+ *                @OA\Property(
  *                  property="created_by",
  *                  type="string",
  *                  default="Customer",

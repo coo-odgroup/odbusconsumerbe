@@ -359,6 +359,11 @@
                                                 "default": "70",
                                                 "example": "70"
                                             },
+                                            "transactionFee": {
+                                                "type": "double",
+                                                "default": "10",
+                                                "example": "10"
+                                            },
                                             "created_by": {
                                                 "type": "string",
                                                 "default": "Customer",
@@ -2070,26 +2075,6 @@
                         "schema": {
                             "type": "string",
                             "example": "2022-02-16"
-                        }
-                    },
-                    {
-                        "name": "bus_operator_id",
-                        "in": "query",
-                        "description": "bus operator id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": "1"
-                        }
-                    },
-                    {
-                        "name": "total_fare",
-                        "in": "query",
-                        "description": "total fare",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": "1000"
                         }
                     },
                     {

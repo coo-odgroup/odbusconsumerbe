@@ -1229,11 +1229,21 @@
 		{
 			"name": "coupons",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0ODg4NTk4MywiZXhwIjoxNjQ4ODg5NTgzLCJuYmYiOjE2NDg4ODU5ODMsImp0aSI6IkJwWHdKS0FBWFplZGNSRnoiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.P95VKxqJGWjBTvATsvtkI0cBBS3tJfiXECujtbBKgyY",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"coupon_code\":\"OD0122\",\r\n    \"bus_id\":1,  \r\n    \"source_id\":\"82\", \r\n    \"destination_id\":\"434\",\r\n    \"journey_date\":\"2022-01-16\",\r\n    \"bus_operator_id\":1,\r\n    \"transaction_id\":\"20211129150129121955\"\r\n}  ",
+					"raw": "{\r\n    \"coupon_code\": \"ODTEST2\",\r\n    \"bus_id\": 1,\r\n    \"source_id\": \"82\",\r\n    \"destination_id\": \"323\",\r\n    \"journey_date\": \"2022-03-29\",\r\n    \"transaction_id\": \"20220402131923625674\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
