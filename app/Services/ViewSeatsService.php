@@ -118,7 +118,7 @@ class ViewSeatsService
 
                             /////////// add odbus gst to seat fare
 
-                           
+                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -137,7 +137,8 @@ class ViewSeatsService
                                 $new_fare=$ub->busSeats->new_fare;
 
                                 /////////// add odbus gst to seat fare
-                           
+
+                         
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -175,7 +176,7 @@ class ViewSeatsService
 
                             /////////// add odbus gst to seat fare
 
-                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -313,25 +314,26 @@ class ViewSeatsService
        // $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
        // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
        //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;             
-      
+       
+        $odbusServiceCharges = 0;
         $transactionFee = 0;
-        $totalFare = $ownerFare;
+        $totalFare = $ownerFare; 
+        foreach($ticketFareSlabs as $ticketFareSlab){
 
-        $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
-        $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
-        $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
-        $gwCharges = (($ownerFare +  $smsEmailCharges) * $gwPercentage);
-        $transactionFee = round($smsEmailCharges + $gwCharges);
-        $totalFare = round($ownerFare  + $transactionFee);
-
-        // $seatWithPriceRecords[] = array(
-        //     "seaterPrice" => $seaterPrice,
-        //     "sleeperPrice" => $sleeperPrice,
-        //     "ownerFare" => $ownerFare,
-        //     "odbusServiceCharges" => $odbusServiceCharges,
-        //     "transactionFee" => $transactionFee,
-        //     "totalFare" => $totalFare,
-        //     ); 
+            $startingFare = $ticketFareSlab->starting_fare;
+            $uptoFare = $ticketFareSlab->upto_fare;
+            if($startingFare <= $ownerFare && $uptoFare >= $ownerFare){
+                $percentage = $ticketFareSlab->odbus_commision;
+                $odbusServiceCharges = round($ownerFare * ($percentage/100));
+                $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
+                $smsEmailCharges = $odbusCharges[0]->email_sms_charges;
+                $gwPercentage = ($odbusCharges[0]->payment_gateway_charges)/100;
+                $gwCharges = (($ownerFare + $smsEmailCharges) * $gwPercentage);
+                $transactionFee = round($smsEmailCharges + $gwCharges);
+                $totalFare = round($ownerFare + $transactionFee);
+                }     
+            } 
+      
 
             $seatWithPriceRecords[] = array(
                 "PriceDetail" => $PriceDetail,
@@ -339,6 +341,7 @@ class ViewSeatsService
                 "specialFare" => $totalSplFare,
                 "addOwnerFare" => $totalOwnFare,
                 "festiveFare" => $totalFestiveFare,
+                "odbusServiceCharges" => $odbusServiceCharges,
                 "transactionFee" => $transactionFee,
                 "totalFare" => $totalFare,
                 ); 
