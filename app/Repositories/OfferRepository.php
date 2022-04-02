@@ -157,7 +157,7 @@ class OfferRepository
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount, 
+                            "payableAmount" => $totalAmount+ $bookingDetails[0]->transactionFee 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
@@ -172,7 +172,7 @@ class OfferRepository
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount, 
+                            "payableAmount" => $totalAmount+ $bookingDetails[0]->transactionFee 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
@@ -189,7 +189,7 @@ class OfferRepository
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount, 
+                            "payableAmount" => $totalAmount + $bookingDetails[0]->transactionFee 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
