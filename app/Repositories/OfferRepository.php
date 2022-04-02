@@ -53,9 +53,14 @@ class OfferRepository
         $destId = $request['destination_id'];
         //$busOperatorId = $request['bus_operator_id'];
         $jDate = $request['journey_date'];
-        $totalFare = $request['total_fare'];
+        //$totalFare = $request['total_fare'];
         $transactionId = $request['transaction_id'];
         $selCouponRecords = Coupon::where('status','1')->get();
+        $bookingDetails = Booking::where('transaction_id',$transactionId)->get();
+        $totalFare = 0;
+        if(isset($bookingDetails[0])){
+            $totalFare = ($bookingDetails[0]->owner_fare) + ($bookingDetails[0]->odbus_charges);
+        }
     
         // $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
         //                         ->where('destination_id', $destId)
