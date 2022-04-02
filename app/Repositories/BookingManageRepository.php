@@ -92,6 +92,7 @@ class BookingManageRepository
       return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
         $u->where('booking.pnr', '=', $pnr);            
         $u->with(["bus" => function($bs){
+            $bs->with('cancellationslabs.cancellationSlabInfo');
             $bs->with('BusType.busClass');
             $bs->with('BusSitting');                
             $bs->with('busContacts');
