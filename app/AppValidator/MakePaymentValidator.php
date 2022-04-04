@@ -15,7 +15,7 @@ class MakePaymentValidator
             'destinationId' => 'required|numeric',
             'transaction_id' => 'required|numeric',
             'seatIds' => 'required|array|min:1',
-            'amount' => 'required',
+            //'amount' => 'required',
             'entry_date' => 'required|date_format:d-m-Y',
         ];      
       

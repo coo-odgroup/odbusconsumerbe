@@ -115,12 +115,17 @@ class ChannelService
                     return $value == null;
                 });
                 $records = $this->channelRepository->getBookingRecord($transationId);
-                
+
+                if($records[0]->payable_amount == 0.00){
+                    $amount = $records[0]->total_fare;
+                }else{
+                    $amount = $records[0]->payable_amount;
+                }
                 if(sizeof($filtered->all())==0){
                     //$records = $this->channelRepository->getBookingRecord($transationId);
                     $bookingId = $records[0]->id;   
                     $name = $records[0]->users->name;
-                    $amount = $request['amount'];
+                    //$amount = $request['amount'];
                     $receiptId = 'rcpt_'.$transationId;
                     //$key = config('services.razorpay.key');
                     //$secretKey = config('services.razorpay.secret');
@@ -145,7 +150,7 @@ class ChannelService
                     $orderId = CustomerPayment::where('booking_id',$records[0]->id)->first()->order_id;
                     $data = array(
                         'name' => $records[0]->users->name,
-                        'amount' => $request['amount'],
+                        'amount' => $amount,
                         'key' => $key,
                         'razorpay_order_id' => $orderId   
                     );
