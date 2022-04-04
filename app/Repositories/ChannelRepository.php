@@ -263,7 +263,7 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsTicket($data, $pnr) {
+      public function sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$data, $pnr) {
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
@@ -279,10 +279,10 @@ class ChannelRepository
         $busDetails = $data['busname'].'-'.$data['busNumber'];
         $SmsGW = config('services.sms.otpservice');
 
-        $payable_amount= $data['payable_amount'];
+        //$payable_amount= $data['payable_amount'];
 
         if(isset($data['customer_comission'])){
-          $payable_amount= $data['payable_amount'] + $data['customer_comission'];
+          $payable_amount= $payable_amount + $data['customer_comission'];
         }
 
        
@@ -540,11 +540,11 @@ class ChannelRepository
 
       }
  
-      public function sendEmailTicket($request, $pnr) {
+      public function sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr) {
         //$email_pnr = $pnr;
         //$data =  $request->all();
         //SendEmailTicketJob::dispatch($data, $email_pnr);
-        SendEmailTicketJob::dispatch($request, $pnr);
+        SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr);
       }
 
       public function sendEmailTicketCancel($request) {
@@ -602,8 +602,7 @@ class ChannelRepository
       }
 
 
-      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
-      ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
+      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
        
@@ -620,10 +619,10 @@ class ChannelRepository
                                     'payment_done' => $paymentDone
                                 ]);
             if($request['phone']){
-                $sendsms = $this->sendSmsTicket($request,$pnr); 
+                $sendsms = $this->sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr); 
             } 
             if($request['email']){
-                $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+                $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr); 
             }
       ///////////////////CMO SMS/////////////////////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)

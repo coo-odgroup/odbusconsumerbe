@@ -216,9 +216,8 @@ class ChannelService
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
             $data = $request->all();
-
+            
             $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
-
             $customerId = $customerId[0];
             $busId = $request['bus_id'];
             $seatIds = $request['seat_id'];
@@ -230,10 +229,23 @@ class ChannelService
             $bookingRecord = $this->channelRepository->getBookingData($busId,$transationId);
 
             $pnr = $bookingRecord[0]->pnr;
-            $bookingId = $bookingRecord[0]->id;    
+            $bookingId = $bookingRecord[0]->id; 
+            //////////////////////////////////////////
+            $totalfare = $bookingRecord[0]->total_fare;
+            $discount = $bookingRecord[0]->coupon_discount;
+            //$payable_amount = $bookingRecord[0]->payable_amount;
+            if($bookingRecord[0]->payable_amount == 0.00){
+                $payable_amount = $bookingRecord[0]->total_fare;
+            }else{
+                $payable_amount = $bookingRecord[0]->payable_amount;
+            }
+            $odbus_charges = $bookingRecord[0]->odbus_charges;
+            $odbus_gst = $bookingRecord[0]->odbus_gst_charges;
+            $owner_fare = $bookingRecord[0]->owner_fare;
+            //////////////////////////////////////////
 
             return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
-            ,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId);
+            ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId);
 
 
         } catch (Exception $e) {

@@ -59,7 +59,7 @@ class SendEmailTicketJob implements ShouldQueue
 
     //protected $request = [];
     //public function __construct($to, $name, $email_pnr)
-    public function __construct($request, $email_pnr)
+    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr)
 
     {
       
@@ -80,12 +80,20 @@ class SendEmailTicketJob implements ShouldQueue
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
         $this->sittingType = $request['sittingType'];
-        $this->totalfare = $request['totalfare'];
-        $this->discount = $request['discount'];
-        $this->payable_amount = $request['payable_amount'];
-        $this->odbus_gst = $request['odbus_gst'];
-        $this->odbus_charges = $request['odbus_charges'];
-        $this->owner_fare = $request['owner_fare'];
+        // $this->totalfare = $request['totalfare'];
+        // $this->discount = $request['discount'];
+        // $this->payable_amount = $request['payable_amount'];
+        // $this->odbus_gst = $request['odbus_gst'];
+        // $this->odbus_charges = $request['odbus_charges'];
+        // $this->owner_fare = $request['owner_fare'];
+
+        $this->totalfare = $totalfare;
+        $this->discount = $discount;
+        $this->payable_amount = $payable_amount;
+        $this->odbus_gst = $odbus_gst;
+        $this->odbus_charges = $odbus_charges;
+        $this->owner_fare = $owner_fare;
+
         $this->conductor_number = $request['conductor_number'];
         $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';        
         $this->customer_number = $request['phone'];
@@ -152,7 +160,7 @@ class SendEmailTicketJob implements ShouldQueue
             
         ];
 
-        Log::info($data);
+        //Log::info($data);
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
