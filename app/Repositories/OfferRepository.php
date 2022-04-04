@@ -154,30 +154,34 @@ class OfferRepository
                     
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
+                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount+ $bookingDetails[0]->transactionFee 
+                            "payableAmount" => $payableAmount 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
                                                                 'coupon_code' => $requestedCouponCode,
-                                                                'coupon_discount' => $discount
+                                                                'coupon_discount' => $discount,
+                                                                'payable_amount' => $payableAmount
                                                             ]);
                                                             
                         return $couponRecords;
                     }else{
                         $discount = $maxDiscount;
                         $totalAmount = $totalFare - $maxDiscount;
+                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount+ $bookingDetails[0]->transactionFee 
+                            "payableAmount" => $payableAmount 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
                                                                 'coupon_code' => $requestedCouponCode,
-                                                                'coupon_discount' => $discount
+                                                                'coupon_discount' => $discount,
+                                                                'payable_amount' => $payableAmount
                                                             ]);
                         return $couponRecords;
                     }
@@ -186,15 +190,18 @@ class OfferRepository
                     if($totalFare >= $minTransactionAmount ){
                         $discount = $couponDetails[0]->amount;
                         $totalAmount = $totalFare - $discount; 
+                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
+                        
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
-                            "payableAmount" => $totalAmount + $bookingDetails[0]->transactionFee 
+                            "payableAmount" => $payableAmount 
                         );
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
                                                                 'coupon_code' => $requestedCouponCode,
-                                                                'coupon_discount' => $discount
+                                                                'coupon_discount' => $discount,
+                                                                'payable_amount' => $payableAmount
                                                             ]);
                         return $couponRecords;
                     }else{
