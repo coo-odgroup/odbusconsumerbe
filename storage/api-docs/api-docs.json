@@ -899,16 +899,6 @@
                             "type": "string",
                             "example": "31-12-2021"
                         }
-                    },
-                    {
-                        "name": "amount",
-                        "in": "query",
-                        "description": "total price",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "600"
-                        }
                     }
                 ],
                 "responses": {

@@ -186,16 +186,6 @@ class ChannelController extends Controller
  *              example="31-12-2021"
  *          )
  *      ),
- *     @OA\Parameter(
- *          name="amount",
- *          description="total price",
- *          required=true,
- *          in="query",
- *          @OA\Schema(
- *              type="string",
- *              example="600"
- *          )
- *      ),
  *     @OA\Response(response="201", description="Order Id generated Successfully"),
  *     @OA\Response(response="406", description="seats already booked"),
  *     @OA\Response(response="404", description="Invalid Argument Passed"),
