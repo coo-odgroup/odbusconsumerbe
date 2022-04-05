@@ -163,6 +163,20 @@ class BookTicketRepository
         $bookingDetailModels = [];  
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
+
+        if($bDetail['passenger_gender']=='Female' || $bDetail['passenger_gender']=='female' ){
+
+            $bDetail['passenger_gender']='F';
+
+        }
+
+        if($bDetail['passenger_gender']=='Male' || $bDetail['passenger_gender']=='male' ){
+
+            $bDetail['passenger_gender']='M';
+
+        }
+
+
             $collection= collect($bDetail);
             $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
             $bookingDetailModels[] = new BookingDetail($merged);
