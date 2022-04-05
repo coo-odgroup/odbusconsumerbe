@@ -10,15 +10,20 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use App\Services\ViewSeatsService;
 use InvalidArgumentException;
+use App\Repositories\CommonRepository;
+
 
 class ChannelService
 {
     protected $channelRepository; 
-    protected $viewSeatsService;   
-    public function __construct(ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService)
+    protected $viewSeatsService; 
+    protected $commonRepository;
+
+    public function __construct(ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,CommonRepository $commonRepository)
     {
         $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
+        $this->commonRepository = $commonRepository;
     }
     public function storeGWInfo($data)
     {
@@ -121,6 +126,50 @@ class ChannelService
                 }else{
                     $amount = $records[0]->payable_amount;
                 }
+
+                /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
+
+
+                $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
+
+                if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
+
+                    $update_customer_gst['customer_gst_status']=1;
+                    $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
+                    $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
+                    $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
+                    $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
+
+                    $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
+
+                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
+
+                    $amount = round($amount+$customer_gst_amount,2);
+                    $update_customer_gst['payable_amount']=$amount;
+                    
+                    $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
+
+                }else{
+                    $update_customer_gst['customer_gst_status']=0;
+                    $update_customer_gst['customer_gst_number']=null;
+                    $update_customer_gst['customer_gst_business_name']=null;
+                    $update_customer_gst['customer_gst_business_email']=null;
+                    $update_customer_gst['customer_gst_business_address']=null;
+                    $update_customer_gst['customer_gst_percent']=0;                    
+                    $update_customer_gst['customer_gst_amount']=0;
+                    $update_customer_gst['payable_amount']=$amount;
+                   
+                }
+
+               // Log::info($update_customer_gst);
+                //return $update_customer_gst;
+
+                $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
+
+                ////////// ///////////////////////////////////////////////////////
+
+
+
                 if(sizeof($filtered->all())==0){
                     //$records = $this->channelRepository->getBookingRecord($transationId);
                     $bookingId = $records[0]->id;   

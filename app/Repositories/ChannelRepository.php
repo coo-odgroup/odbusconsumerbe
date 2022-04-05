@@ -601,6 +601,12 @@ class ChannelRepository
           return $this->customerPayment->where('order_id', $razorpay_order_id)->pluck('id');
       }
 
+      public function updateCustomerGST($update_customer_gst,$transationId){
+
+        $this->booking->where('transaction_id', $transationId)->update($update_customer_gst);
+
+      }
+
 
       public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
         $key = $this->getRazorpayKey();

@@ -40,7 +40,7 @@ class OfferRepository
                                   ->with(['coupon' => function ($a){
                                     $a->where('status',1);
                                     }])
-                                  ->get(['id','coupon_id','user_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time']);
+                                  ->get(['id','coupon_id','user_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time','slider_description']);
 
        
         return $allOffers;    
@@ -154,7 +154,7 @@ class OfferRepository
                     
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
-                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
@@ -171,7 +171,7 @@ class OfferRepository
                     }else{
                         $discount = $maxDiscount;
                         $totalAmount = $totalFare - $maxDiscount;
-                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
@@ -190,7 +190,7 @@ class OfferRepository
                     if($totalFare >= $minTransactionAmount ){
                         $discount = $couponDetails[0]->amount;
                         $totalAmount = $totalFare - $discount; 
-                        $payableAmount = $totalAmount + $bookingDetails[0]->transactionFee; 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
                         
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
