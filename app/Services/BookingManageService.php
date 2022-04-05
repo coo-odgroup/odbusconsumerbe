@@ -292,12 +292,12 @@ class BookingManageService
                        if( $interval > 240){
                            $deduction = 10;//minimum deduction
                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-                           $refundAmt =  ($refund['refundAmount']/100);
+                           $refundAmt =  round($refund['refundAmount']/100,2);
                            $paidAmt =  ($refund['paidAmount']/100);
    
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                           $emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
                            $emailData['totalfare'] = $paidAmt;
                               
                            return $emailData;
@@ -306,12 +306,12 @@ class BookingManageService
    
                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
    
-                           $refundAmt =  round(($refund['refundAmount']/100));
+                           $refundAmt =  round(($refund['refundAmount']/100),2);
                            $paidAmt =  ($refund['paidAmount']/100);
    
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
-                           $emailData['deductAmount'] =$paidAmt-$refundAmt;
+                           $emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
                            $emailData['totalfare'] = $paidAmt;                          
                            return $emailData;   
                        }
@@ -386,19 +386,19 @@ class BookingManageService
 
                    if( $interval > 240){
                        $deduction = 10;//minimum deduction
-                       $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                       $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                        $emailData['refundAmount'] = $refundAmt;
                        $emailData['deductionPercentage'] = $deduction."%";
-                       $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                       $emailData['deductAmount'] =round($paidAmount-$refundAmt,2);
                        $emailData['totalfare'] = $paidAmount + $customer_comission ;
                           
                        return $emailData;
    
                    }elseif($min <= $interval && $interval <= $max){ 
-                        $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                        $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                        $emailData['refundAmount'] = $refundAmt;
                        $emailData['deductionPercentage'] = $deduction."%";
-                       $emailData['deductAmount'] =$paidAmount-$refundAmt;
+                       $emailData['deductAmount'] =round($paidAmount-$refundAmt,2);
                        $emailData['totalfare'] = $paidAmount + $customer_comission  ;                          
                        return $emailData;   
                    }
@@ -507,10 +507,10 @@ class BookingManageService
                        if( $interval > 240){
                            
                            $deduction = 10;//minimum deduction
-                           $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                           $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                            $data['refundAmount'] = $refundAmt;
                            $data['deductionPercentage'] = $deduction."%";
-                           $data['deductAmount'] =$paidAmount-$refundAmt;
+                           $data['deductAmount'] =round($paidAmount-$refundAmt,2);
                            $data['totalfare'] = $paidAmount;
                            $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction); 
 
@@ -527,10 +527,10 @@ class BookingManageService
        
                        }elseif($min <= $interval && $interval <= $max){ 
                        
-                           $refundAmt = round($paidAmount * ((100-$deduction) / 100));
+                           $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                            $data['refundAmount'] = $refundAmt;
                            $data['deductionPercentage'] = $deduction."%";
-                           $data['deductAmount'] =$paidAmount-$refundAmt;
+                           $data['deductAmount'] =round($paidAmount-$refundAmt,2);
                            $data['totalfare'] = $paidAmount;                        
                           
                            $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt,$deduction);
