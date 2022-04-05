@@ -575,6 +575,7 @@ class ListingService
                 "display" => $flag,
                 "busId" => $busId, 
                 "busName" => $busName,
+                "via" => $via,
                 "popularity" => $popularity,
                 "busNumber" => $busNumber,
                 "maxSeatBook" => $maxSeatBook,
