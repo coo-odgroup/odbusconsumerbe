@@ -117,6 +117,8 @@ class AgentBookingRepository
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        $booking->transactionFee = $bookingInfo['transactionFee'];
+
 
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
@@ -127,6 +129,7 @@ class AgentBookingRepository
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
+        
         
         $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
