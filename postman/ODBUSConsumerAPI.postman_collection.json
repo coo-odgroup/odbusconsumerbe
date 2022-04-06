@@ -805,11 +805,21 @@
 		{
 			"name": "Payment Status",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ5MjM5Mzg4LCJleHAiOjE2NDkyNDI5ODgsIm5iZiI6MTY0OTIzOTM4OCwianRpIjoiQjQwQmlUWG84N0IzRjFqdSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.JBz0fFUyNWoped5EFYlYqVlT2uPibCKI1qJy9NDTDj4",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"2021121122030548535\",\r\n\t\"razorpay_payment_id\": \"pay_IWEdc6zZHNMBYt\",\r\n\t\"razorpay_order_id\": \"order_IWEdVgiq4Ahig9\",\r\n\t\"razorpay_signature\": \"a9022f869de1a759d28fdf807e9a0f2614b3b4b27f992a203830304af61ecfd5\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"1111111111\",\r\n\t\"email\": \"sahu.swagatika@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Rourkela\",\r\n\t\"bookingdate\": \"11-12-2021\",\r\n\t\"journeydate\": \"18-12-2021\",\r\n\t\"boarding_point\": \"Rasulgarh\",\r\n\t\"departureTime\": \"05:00\",\r\n\t\"dropping_point\": \"bus stand\",\r\n\t\"arrivalTime\": \"07:30\",\r\n\t\"seat_id\": [\"26\"],\r\n\t\"seat_no\": [\"SL6\"],\r\n\t\"bus_id\": 1,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Bhadrak\",\r\n\t\"busname\": \"ISPAT\",\r\n\t\"busNumber\": \"OD 01 AW 1234\",\r\n\t\"bustype\": \"NON AC\",\r\n\t\"busTypeName\": \"DELUX\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"7978817539\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"26\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": \"22\",\r\n\t\t\"created_by\": \"Customer\"\r\n\t}],\r\n\t\"totalfare\": 285,\r\n\t\"discount\": 0,\r\n\t\"payable_amount\": 285,\r\n\t\"odbus_charges\": 25,\r\n\t\"odbus_gst\": 10,\r\n\t\"owner_fare\": 250\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220406142311512211\",\r\n\t\"razorpay_payment_id\": \"pay_JG0loz3zFryFG8\",\r\n\t\"razorpay_order_id\": \"order_JG0lhY5U0CR6ZC\",\r\n\t\"razorpay_signature\": \"ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203\",\r\n\t\"name\": \"Mrityunjay Mandal\",\r\n\t\"phone\": \"9937763653\",\r\n\t\"email\": \"mrityunjay.mandal5@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Baripada\",\r\n\t\"bookingdate\": \"06-04-2022\",\r\n\t\"journeydate\": \"07-04-2022\",\r\n\t\"boarding_point\": \"Baramunda\",\r\n\t\"departureTime\": \"04:00\",\r\n\t\"dropping_point\": \"Baripada Bus Stand\",\r\n\t\"arrivalTime\": \"10:05\",\r\n\t\"seat_id\": [\"2176\"],\r\n\t\"seat_no\": [\"SL7B\"],\r\n\t\"bus_id\": 420,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Baripada\",\r\n\t\"busname\": \"AJAY\",\r\n\t\"busNumber\": \"OD 05 P 8199\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"AC SLEEPER\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"9439504879\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"2176\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 35,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -817,15 +827,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/PaymentStatus",
-					"protocol": "http",
+					"raw": "https://consumer.odbus.co.in/api/PaymentStatus",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"consumer",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"PaymentStatus"

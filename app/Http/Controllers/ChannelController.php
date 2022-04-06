@@ -299,7 +299,7 @@ class ChannelController extends Controller
  *             @OA\Property(
  *                property="transaction_id",
  *                type="string",
- *                example="20211102112722583214"
+ *                example="20220406142311512211"
  *                ),
  *             @OA\Property(
  *                property="name",
@@ -324,27 +324,27 @@ class ChannelController extends Controller
  *              @OA\Property(
  *                property="razorpay_order_id",
  *                type="string",
- *                example="order_IGcyPNVZ9fkc2t"
+ *                example="order_JG0lhY5U0CR6ZC"
  *                ),
  *              @OA\Property(
  *                property="razorpay_payment_id",
  *                type="string",
- *                example="pay_IGcyXMFeqdRA23"
+ *                example="pay_JG0loz3zFryFG8"
  *                ),
  *              @OA\Property(
  *                property="razorpay_signature",
  *                type="string",
- *                example="d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
+ *                example="ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203"
  *                ),
  *               @OA\Property(
  *                property="bookingdate",
  *                type="string",
- *                example="02-11-2021"
+ *                example="06-04-2022"
  *                ),
  *              @OA\Property(
  *                property="journeydate",
  *                type="string",
- *                example="02-11-2021"
+ *                example="07-04-2022"
  *                ),
  *            @OA\Property(
  *                property="boarding_point",
@@ -369,7 +369,7 @@ class ChannelController extends Controller
  *            @OA\Property(
  *                property="bus_id",
  *                type="integer",
- *                example="1"
+ *                example="420"
  *                ),
  *            @OA\Property(
  *                property="busname",
@@ -402,49 +402,19 @@ class ChannelController extends Controller
  *                example="7978817539"
  *                ),
  *            @OA\Property(
- *                property="totalfare",
- *                type="string",
- *                example="285"
- *                ),
- *            @OA\Property(
  *                 property="seat_id",
  *                 type="array",
  *                 @OA\Items(type="string",
- *                 example="26",
+ *                 example="2176",
  *                  ),
  *                 ),
  *             @OA\Property(
  *                 property="seat_no",
  *                 type="array",
  *                 @OA\Items(type="string",
- *                 example="sl6",
+ *                 example="SL7B",
  *                  ),
  *                 ),
- *            @OA\Property(
- *                property="discount",
- *                type="string",
- *                example="0"
- *                ),
- *            @OA\Property(
- *                property="payable_amount",
- *                type="string",
- *                example="285"
- *                ),
- *            @OA\Property(
- *                property="odbus_charges",
- *                type="string",
- *                example="0"
- *                ),
- *            @OA\Property(
- *                property="odbus_gst",
- *                type="string",
- *                example="25"
- *                ),
- *            @OA\Property(
- *                property="owner_fare",
- *                type="string",
- *                example="250"
- *                ),
  *            @OA\Property(
  *                property="source",
  *                type="string",

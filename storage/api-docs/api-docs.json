@@ -988,7 +988,7 @@
                                 "properties": {
                                     "transaction_id": {
                                         "type": "string",
-                                        "example": "20211102112722583214"
+                                        "example": "20220406142311512211"
                                     },
                                     "name": {
                                         "type": "string",
@@ -1008,23 +1008,23 @@
                                     },
                                     "razorpay_order_id": {
                                         "type": "string",
-                                        "example": "order_IGcyPNVZ9fkc2t"
+                                        "example": "order_JG0lhY5U0CR6ZC"
                                     },
                                     "razorpay_payment_id": {
                                         "type": "string",
-                                        "example": "pay_IGcyXMFeqdRA23"
+                                        "example": "pay_JG0loz3zFryFG8"
                                     },
                                     "razorpay_signature": {
                                         "type": "string",
-                                        "example": "d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
+                                        "example": "ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203"
                                     },
                                     "bookingdate": {
                                         "type": "string",
-                                        "example": "02-11-2021"
+                                        "example": "06-04-2022"
                                     },
                                     "journeydate": {
                                         "type": "string",
-                                        "example": "02-11-2021"
+                                        "example": "07-04-2022"
                                     },
                                     "boarding_point": {
                                         "type": "string",
@@ -1044,7 +1044,7 @@
                                     },
                                     "bus_id": {
                                         "type": "integer",
-                                        "example": "1"
+                                        "example": "420"
                                     },
                                     "busname": {
                                         "type": "string",
@@ -1070,43 +1070,19 @@
                                         "type": "string",
                                         "example": "7978817539"
                                     },
-                                    "totalfare": {
-                                        "type": "string",
-                                        "example": "285"
-                                    },
                                     "seat_id": {
                                         "type": "array",
                                         "items": {
                                             "type": "string",
-                                            "example": "26"
+                                            "example": "2176"
                                         }
                                     },
                                     "seat_no": {
                                         "type": "array",
                                         "items": {
                                             "type": "string",
-                                            "example": "sl6"
+                                            "example": "SL7B"
                                         }
-                                    },
-                                    "discount": {
-                                        "type": "string",
-                                        "example": "0"
-                                    },
-                                    "payable_amount": {
-                                        "type": "string",
-                                        "example": "285"
-                                    },
-                                    "odbus_charges": {
-                                        "type": "string",
-                                        "example": "0"
-                                    },
-                                    "odbus_gst": {
-                                        "type": "string",
-                                        "example": "25"
-                                    },
-                                    "owner_fare": {
-                                        "type": "string",
-                                        "example": "250"
                                     },
                                     "source": {
                                         "type": "string",
