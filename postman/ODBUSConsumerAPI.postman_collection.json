@@ -447,16 +447,11 @@
 			"name": "Make PAYMENT",
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "password",
-							"value": "Knrj6u3sPiEjpImmIzfPPu79",
-							"type": "string"
-						},
-						{
-							"key": "username",
-							"value": "rzp_live_KQgBHf2DBATAfF",
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0OTIyMjY4OCwiZXhwIjoxNjQ5MjI2Mjg4LCJuYmYiOjE2NDkyMjI2ODgsImp0aSI6IjIwdnFQZ0xwNlVob0dTdGkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.M-m-7mhuoONF2BsG8fDyx71ABUdpciOdH9W8GbcP69Y",
 							"type": "string"
 						}
 					]
@@ -465,7 +460,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"transaction_id\": \"20211220105201752217\",\r\n    \"amount\":\"685\",\r\n    \"seatIds\":[2755],\r\n    \"entry_date\":\"31-12-2021\"\r\n}",
+					"raw": "{\r\n\t\"busId\": 254,\r\n\t\"sourceId\": \"82\",\r\n\t\"destinationId\": \"53\",\r\n\t\"transaction_id\": \"20220404141311561229\",\r\n\t\"seatIds\": [\"3972\"],\r\n\t\"entry_date\": \"06-04-2022\",\r\n\t\"customer_gst_status\": true,\r\n\t\"customer_gst_number\": \"2323232323\",\r\n\t\"customer_gst_business_name\": \"lima\",\r\n\t\"customer_gst_business_email\": \"mailto:banashri.seofied@gmail.com\",\r\n\t\"customer_gst_business_address\": \"mailto:banashri.seofied@gmail.com\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

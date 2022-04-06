@@ -129,7 +129,7 @@ class ChannelController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
- *              example="1"
+ *              example="254"
  *          )
  *      ),  
  *     @OA\Parameter(
@@ -149,7 +149,7 @@ class ChannelController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
- *              example="434"
+ *              example="53"
  *          )
  *      ),        
  *     @OA\Parameter(
@@ -159,7 +159,7 @@ class ChannelController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="string",
- *              example="20211220105201752211"
+ *              example="20220404141311561229"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -171,8 +171,8 @@ class ChannelController extends Controller
  *          type="array",
  *          @OA\Items(
  *              type="integer",
- *              format="37",
- *              example=37,
+ *              format="3972",
+ *              example=3972,
  *              )
  *          )
  *      ),
@@ -183,7 +183,57 @@ class ChannelController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="string",
- *              example="31-12-2021"
+ *              example="06-04-2022"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_gst_status",
+ *          description="customer gst required or not",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="boolean",
+ *              example="true"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_gst_number",
+ *          description="customer gst number",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="2323232323"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_gst_business_name",
+ *          description="customer gst business name",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="Bob"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_gst_business_email",
+ *          description="customer gst business email",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="example@gmail.com"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_gst_business_address",
+ *          description="customer gst business address",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="example"
  *          )
  *      ),
  *     @OA\Response(response="201", description="Order Id generated Successfully"),

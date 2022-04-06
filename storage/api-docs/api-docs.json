@@ -843,7 +843,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "example": "1"
+                            "example": "254"
                         }
                     },
                     {
@@ -863,7 +863,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "example": "434"
+                            "example": "53"
                         }
                     },
                     {
@@ -873,7 +873,7 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "20211220105201752211"
+                            "example": "20220404141311561229"
                         }
                     },
                     {
@@ -885,8 +885,8 @@
                             "type": "array",
                             "items": {
                                 "type": "integer",
-                                "format": "37",
-                                "example": 37
+                                "format": "3972",
+                                "example": 3972
                             }
                         }
                     },
@@ -897,7 +897,57 @@
                         "required": true,
                         "schema": {
                             "type": "string",
-                            "example": "31-12-2021"
+                            "example": "06-04-2022"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_status",
+                        "in": "query",
+                        "description": "customer gst required or not",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": "true"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_number",
+                        "in": "query",
+                        "description": "customer gst number",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2323232323"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_name",
+                        "in": "query",
+                        "description": "customer gst business name",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bob"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_email",
+                        "in": "query",
+                        "description": "customer gst business email",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "example@gmail.com"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_address",
+                        "in": "query",
+                        "description": "customer gst business address",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "example"
                         }
                     }
                 ],
