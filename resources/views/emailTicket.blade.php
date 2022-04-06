@@ -692,7 +692,7 @@ border: 0;
 
                       <tr>
                         <td>Seat({{$total_seats}})- {{$seat_names}}</td>
-                        <td>&nbsp;</td>
+                        <td>GST Invoive : {{ ($customer_gst_status == 1) ? 'Yes' : 'No' }} </td>
                       </tr>
 
                       @else
