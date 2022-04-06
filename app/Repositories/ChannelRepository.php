@@ -15,6 +15,7 @@ use App\Models\CustomerPayment;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
+use App\Models\Bus;
 use App\Models\Credentials;
 use App\Models\AgentWallet;
 use App\Models\AgentCommission;
@@ -540,11 +541,11 @@ class ChannelRepository
 
       }
  
-      public function sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr) {
+      public function sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount) {
         //$email_pnr = $pnr;
         //$data =  $request->all();
         //SendEmailTicketJob::dispatch($data, $email_pnr);
-        SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr);
+        SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
       }
 
       public function sendEmailTicketCancel($request) {
@@ -558,7 +559,11 @@ class ChannelRepository
 
       public function getBookingData($busId,$transationId){
        
-          return $this->booking->where('bus_id', $busId)->where('transaction_id', $transationId)->get();
+          return $this->booking->with(["bus" => function($bs){
+                        $bs->with('cancellationslabs.cancellationSlabInfo');
+                      } ] )
+                     ->where('bus_id', $busId)
+                     ->where('transaction_id', $transationId)->get();
       }
 
       public function getRazorpayKey(){
@@ -608,7 +613,8 @@ class ChannelRepository
       }
 
 
-      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId){
+      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount){
+
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
        
@@ -628,7 +634,7 @@ class ChannelRepository
                 $sendsms = $this->sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr); 
             } 
             if($request['email']){
-                $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr); 
+                $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
             }
       ///////////////////CMO SMS/////////////////////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -743,13 +749,14 @@ class ChannelRepository
         $notification->userNotification()->save($userNotification);
         return $notification;
       }
-      public function UpdateAgentPaymentInfo($paymentDone,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked)
+      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
       {  
         if($request['phone']){
-            $sendsms = $this->sendSmsTicket($request,$pnr); 
+
+          $sendsms = $this->sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr);
         } 
         if($request['email']){
-            $sendEmailTicket = $this->sendEmailTicket($request,$pnr); 
+            $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
         } 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
         $booking = $this->booking->find($bookingId);

@@ -681,18 +681,39 @@ border: 0;
 
                       <tr>
                         <td><b>Agent Mobile No:</b> {{$agent_number}}</td>
-                        <td></td>
+                        <td>Seat({{$total_seats}})- {{$seat_names}}</td>
                       </tr>
 
                       @else
                                 
                       @endif
 
+                      @if($agent_number == '') 
+
                       <tr>
-                        <td>Total Fare: Rs.{{$payable_amount + $customer_comission }}/-</td>
                         <td>Seat({{$total_seats}})- {{$seat_names}}</td>
+                        <td>&nbsp;</td>
                       </tr>
-                      
+
+                      @else
+                                
+                      @endif
+
+                      @if($customer_gst_status == 1)
+                    
+                    <tr>
+                      <td>GSTIN : {{$customer_gst_number}}</td>
+                      <td>Business Name : {{$customer_gst_business_name}}</td>
+                      </tr>
+
+                      <tr>
+                      <td>Business Email : {{$customer_gst_business_email}}</td>
+                      <td>Business Address : {{$customer_gst_business_address}}</td>
+                      </tr>
+
+                      @else
+                    @endif
+
                     </tbody>
                   </table>
                 
@@ -737,9 +758,99 @@ border: 0;
             
         </div>
 
-        <div class="row mt30 mb25">
+        <!-- <div class="row mt30 mb25">
             <div class="col-md-12"><img src="{{url('public/template/banner-01.png')}}" class="od-banner"/></div>
-        </div>
+        </div> -->
+
+        <div class="row">  
+
+        <div class="col-md-6 odtext24">
+
+           <h3>FARE BREAKUP</h3>
+
+            <table style="width: 100%; margin-top: 20px;">
+              <tr>
+                            
+               
+                <table class="table table-bordered" cellpadding="0" cellspacing="0" border="1" style="width: 100%;" >
+
+                  <tbody>
+                    <tr>
+                      <td class="text-left">Base Fare</td>
+                      <td class="text-right"><b>₹{{$owner_fare + $odbus_charges}}</b></td>
+                    </tr>	
+
+                    @if($coupon_discount > 0)
+                    
+                    <tr>
+                      <td class="text-left">Coupon Discount</td>
+                      <td class="text-right"><b>- ₹{{$coupon_discount}}</b></td>
+                      </tr>
+
+                      @else
+                    @endif
+
+
+                    @if($customer_gst_status == 1)
+                    
+                    <tr>
+                      <td class="text-left">GST ({{$customer_gst_percent}}%)</td>
+                      <td class="text-right"><b>+ ₹{{$customer_gst_amount}}</b></td>
+                      </tr>
+
+                      @else
+                    @endif
+
+                    
+                    <tr>
+                      <td class="text-left">Transaction Fee</td>
+                      <td class="text-right"><b>+₹{{$transactionFee}}</b></td>
+                    </tr>
+
+                    @if($customer_comission > 0)
+                    
+                    <tr>
+                      <td class="text-left">Commission</td>
+                      <td class="text-right"><b>+₹{{$customer_comission}}</b></td>
+                      </tr>
+
+                      @else
+                    @endif
+                  
+                    <tr>
+                      <td class="text-left"><strong>Total Fare</strong></td>
+                      <td class="text-right"><strong>₹{{$payable_amount + $customer_comission}}</strong></td>
+                    </tr>
+                    </tbody>
+                  
+                </table>
+
+        </div> 
+
+        <div class="col-md-6 odtext24">  
+               
+                <h3>CANCELLATION POLICY</h3>					  
+
+
+                <table class="table table-bordered odbus-journey" cellpadding="0" cellspacing="0" border="1" style="width: 100%;">
+                <thead>
+                  <tr style="color: black !important;background-color: #fff !important;">
+                    <th scope="col">Cancellation Time</th>
+                    <th scope="col">Cancellation Charges</th>
+                  </tr>
+                </thead>
+                <tbody>
+                @foreach($cancelation_policy as $can) 
+                <tr>
+                    <td>{{ $can->duration }} hr</td>
+                    <td>{{ $can->deduction }}%</td>
+                  </tr>
+                  @endforeach                 
+                </tbody>
+              </table>
+
+        </div> 
+</div>  
 
         <div class="row mt30">
             <div class="col-md-12 odtext24"><h3>TERMS & CONDITIONS</h3></div>
@@ -748,7 +859,7 @@ border: 0;
             <div class="col-md-12 ">
               <div class="odbox1">
               <div class="row ">
-                <div class="col-md-6">
+                <div class="col-md-12">
                   <ol>
 
                   <li>ODBUS is an Online Platform which provides online bus ticket booking services and does not operate bus services.</li>
@@ -769,64 +880,7 @@ border: 0;
                   <li>The tickets booked through ODBUS Can be cancelled and note that Cancel Can be possible before 12 hours For More Details Please refer Cancelation Policy.</li>
                  </ol>
                 </div>
-                <div class="col-md-6 odtext24">
-
-                  <ol>
-
-                    
-                    <li>We are at ODBUS advice to all customers is to choose bus  they are comfortable with.</li>
-                    
-                    <li>In case the bus operator changes the typ reason, ODBUS will refund in 24 hours of the journey.</li>
-                    
-                    <li>The tickets booked through ODBUS be possible before 12 hours.</li>
-                    
-                    
-                   </ol>
-
-                   <h3>CANCELATION POLICY</h3>
-                   <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th scope="col">Cancellation Cut Off Time</th>
-                        <th scope="col">Cancellation Return Amount</th>
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>4 Hours To 8 Hours</td>
-                        <td>25%</td>
-                      </tr>
-                      <tr>
-                        <td>8 Hours To 24 Hours</td>
-                        <td>35%</td>
-                      </tr>
-                      <tr>
-                        <td>24 Hours To 72 Hours</td>
-                        <td>80%</td>
-                      </tr>
-                      <tr>
-                        <td>More than 72 Hours</td>
-                        <td>90%</td>
-                      </tr>
-                      
-                      <tr>
-                        <td colspan="2">
-                          <ol>
-                            <li>All customers is to choose bus they are comfortable.</li>
-                            
-                            <li>Bus operator changes ODBUS wilustomers in 24 hours of the journey.</li>
-                            
-                            <li>The tickets booked through ODBUS  before 12 hours.</li>
-                            
-                           </ol>
-                        </td>
-                         
-                      </tr>
-                      
-                    </tbody>
-                  </table>
-                </div>
+              
               </div>
             </div>
             </div>

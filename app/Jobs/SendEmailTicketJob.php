@@ -52,14 +52,21 @@ class SendEmailTicketJob implements ShouldQueue
     protected $subject;
     protected $qrCodeText;
     protected $qrcode_image_path;
-    
-    
-
+    protected $cancelation_policy;
+    protected $transactionFee;
+    protected $customer_gst_status;
+    protected $customer_gst_number;
+    protected $customer_gst_business_name;
+    protected $customer_gst_business_email;
+    protected $customer_gst_business_address;
+    protected $customer_gst_percent;
+    protected $customer_gst_amount;
+    protected $coupon_discount;
 
 
     //protected $request = [];
     //public function __construct($to, $name, $email_pnr)
-    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr)
+    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
       
@@ -93,6 +100,20 @@ class SendEmailTicketJob implements ShouldQueue
         $this->odbus_gst = $odbus_gst;
         $this->odbus_charges = $odbus_charges;
         $this->owner_fare = $owner_fare;
+        $this->transactionFee = $transactionFee;
+
+        $this->customer_gst_status = $customer_gst_status;
+        $this->customer_gst_number = $customer_gst_number;
+        $this->customer_gst_business_name = $customer_gst_business_name;
+        $this->customer_gst_business_email = $customer_gst_business_email;
+        $this->customer_gst_business_address = $customer_gst_business_address;
+        $this->customer_gst_percent = $customer_gst_percent;
+        $this->customer_gst_amount = $customer_gst_amount;
+        $this->coupon_discount = $coupon_discount;
+        
+        $this->cancelation_policy = $cancelation_policy;
+
+        
 
         $this->conductor_number = $request['conductor_number'];
         $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';        
@@ -153,10 +174,20 @@ class SendEmailTicketJob implements ShouldQueue
             'odbus_gst'=> $this->odbus_gst,
             'odbus_charges'=> $this->odbus_charges,
             'owner_fare'=> $this->owner_fare,
+            'transactionFee'=> $this->transactionFee,             
+            'customer_gst_status'=> $this->customer_gst_status, 
+            'customer_gst_number'=> $this->customer_gst_number, 
+            'customer_gst_business_name'=> $this->customer_gst_business_name, 
+            'customer_gst_business_email'=> $this->customer_gst_business_email, 
+            'customer_gst_business_address'=> $this->customer_gst_business_address, 
+            'customer_gst_percent'=> $this->customer_gst_percent, 
+            'customer_gst_amount'=> $this->customer_gst_amount, 
+            'coupon_discount'=> $this->coupon_discount,
             'total_seats'=>  $this->total_seats ,
             'seat_names'=>  $this->seat_names ,
             'customer_comission'=> $this->customer_comission,
-            'qrcode_image_path' => $this->qrcode_image_path 
+            'qrcode_image_path' => $this->qrcode_image_path ,
+            'cancelation_policy' => $this->cancelation_policy
             
         ];
 
