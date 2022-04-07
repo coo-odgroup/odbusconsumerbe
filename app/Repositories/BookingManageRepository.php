@@ -146,9 +146,31 @@ class BookingManageRepository
                 'owner_fare'=> $b->booking[0]->owner_fare,
                 'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name    
             ];
+
+
+            $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
+            $transactionFee=$b->booking[0]->transactionFee;
+
+            $customer_gst_status=$b->booking[0]->customer_gst_status;
+            $customer_gst_number=$b->booking[0]->customer_gst_number;
+            $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
+            $customer_gst_business_email=$b->booking[0]->customer_gst_business_email;
+            $customer_gst_business_address=$b->booking[0]->customer_gst_business_address;
+            $customer_gst_percent=$b->booking[0]->customer_gst_percent;
+            $customer_gst_amount=$b->booking[0]->customer_gst_amount;
+            $coupon_discount=$b->booking[0]->coupon_discount;
+            $totalfare=$b->booking[0]->total_fare;
+            $discount=$b->booking[0]->coupon_discount;
+            $payable_amount=$b->booking[0]->payable_amount;
+            $odbus_charges = $b->booking[0]->odbus_charges;
+            $odbus_gst = $b->booking[0]->odbus_gst_charges;
+            $owner_fare = $b->booking[0]->owner_fare;
+
+
           
             if($b->email != ''){  
-                 $sendEmailTicket = $this->sendEmailTicket($body,$b->booking[0]->pnr); 
+                 $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
             }
             if($b->phone != ''){
                  $sendEmailTicket = $this->sendSmsTicket($body,$b->booking[0]->pnr); 
@@ -289,8 +311,11 @@ class BookingManageRepository
         return $data;
     }
 
-    public function sendEmailTicket($request, $pnr) {
-       return SendEmailTicketJob::dispatch($request, $pnr);
+    public function sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount) {
+
+        return  SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+       
+        //return SendEmailTicketJob::dispatch($request, $pnr);
       }
 
     public function sendSmsTicket($data, $pnr) {

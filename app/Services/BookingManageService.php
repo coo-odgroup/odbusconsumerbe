@@ -202,6 +202,27 @@ class BookingManageService
                     'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
                 ];
 
+                $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
+                $transactionFee=$b->booking[0]->transactionFee;
+    
+                $customer_gst_status=$b->booking[0]->customer_gst_status;
+                $customer_gst_number=$b->booking[0]->customer_gst_number;
+                $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
+                $customer_gst_business_email=$b->booking[0]->customer_gst_business_email;
+                $customer_gst_business_address=$b->booking[0]->customer_gst_business_address;
+                $customer_gst_percent=$b->booking[0]->customer_gst_percent;
+                $customer_gst_amount=$b->booking[0]->customer_gst_amount;
+                $coupon_discount=$b->booking[0]->coupon_discount;
+                $totalfare=$b->booking[0]->total_fare;
+                $discount=$b->booking[0]->coupon_discount;
+                $payable_amount=$b->booking[0]->payable_amount;
+                $odbus_charges = $b->booking[0]->odbus_charges;
+                $odbus_gst = $b->booking[0]->odbus_gst_charges;
+                $owner_fare = $b->booking[0]->owner_fare;
+
+
+
                 if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
                     $agent_number= $this->user->where('id',$b->booking[0]->user_id)->get();
                     if(isset($agent_number[0])){
@@ -210,7 +231,7 @@ class BookingManageService
                     }   
                 }
                 if($b->email != ''){
-                    $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($body,$b->booking[0]->pnr); 
+                    $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
                 }
                 if($b->phone != ''){
                     $sendEmailTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
