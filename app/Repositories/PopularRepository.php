@@ -134,11 +134,11 @@ class PopularRepository
     public function allOperators($filter){  
 
         if($filter!=''){
-            $operators = BusOperator::where('organisation_name','LIKE', $filter.'%')
+            $operators = BusOperator::where('organisation_name','LIKE', $filter.'%')->where('status',1)
             ->select(['id','operator_name','organisation_name','operator_url','operator_info']);
 
         }else{
-            $operators = BusOperator::select(['id','operator_name','organisation_name','operator_url','operator_info']);
+            $operators = BusOperator::where('status',1)->select(['id','operator_name','organisation_name','operator_url','operator_info']);
 
         }
 
