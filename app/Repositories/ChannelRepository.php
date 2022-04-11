@@ -650,7 +650,7 @@ class ChannelRepository
       
         //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
-        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
             return "Payment Done";
@@ -758,7 +758,7 @@ class ChannelRepository
         if($request['email']){
             $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
         } 
-        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $request['payable_amount'] ]);
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
         return "Payment Done";
