@@ -39,8 +39,15 @@ class ReviewController extends Controller
      *     tags={"All Reviews"},
      *     description="get all Reviews of a customer",
      *     summary="get all Reviews of a customer",
-     *     @OA\Response(response="200", description="get all Reviews of a customer"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="Get all Reviews of a customer"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -185,8 +192,15 @@ class ReviewController extends Controller
          *              example="1"
          *          )
          *      ),
-         *  @OA\Response(response="200", description="Add reviews by a customer"),
-         *  @OA\Response(response=401, description="Unauthorized"),
+         *  @OA\Response(response="200", description="Add reviews by a customer"), 
+         *  @OA\Response(response=206, description="validation error"),
+         *  @OA\Response(response=400, description="Bad request"),
+         *  @OA\Response(response=401, description="Unauthorized access"),
+         *  @OA\Response(response=404, description="No record found"),
+         *  @OA\Response(response=500, description="Internal server error"),
+         *  @OA\Response(response=502, description="Bad gateway"),
+         *  @OA\Response(response=503, description="Service unavailable"),
+         *  @OA\Response(response=504, description="Gateway timeout"),
          *     security={
          *       {"apiAuth": {}}
          *     }
@@ -358,8 +372,13 @@ class ReviewController extends Controller
    *      ),
    *  @OA\Response(response="201", description="Updated reviews by a customer"),
    *  @OA\Response(response="206", description="Review of a customer not exist"),
-   *  @OA\Response(response="404", description="Record not Found"),
-   *  @OA\Response(response=401, description="Unauthorized"),
+   *  @OA\Response(response=400, description="Bad request"),
+   *  @OA\Response(response=401, description="Unauthorized access"),
+   *  @OA\Response(response=404, description="No record found"),
+   *  @OA\Response(response=500, description="Internal server error"),
+   *  @OA\Response(response=502, description="Bad gateway"),
+   *  @OA\Response(response=503, description="Service unavailable"),
+   *  @OA\Response(response=504, description="Gateway timeout"),
    *     security={
    *       {"apiAuth": {}}
    *     }
@@ -412,9 +431,14 @@ class ReviewController extends Controller
    *          )
    *     ),
    *  @OA\Response(response="202", description="Delete Review"),
-   *  @OA\Response(response="404", description="Record not Found"),
    *  @OA\Response(response="206", description="User does not match to the review"),
-   *  @OA\Response(response=401, description="Unauthorized"),
+   *  @OA\Response(response=400, description="Bad request"),
+   *  @OA\Response(response=401, description="Unauthorized access"),
+   *  @OA\Response(response=404, description="No record found"),
+   *  @OA\Response(response=500, description="Internal server error"),
+   *  @OA\Response(response=502, description="Bad gateway"),
+   *  @OA\Response(response=503, description="Service unavailable"),
+   *  @OA\Response(response=504, description="Gateway timeout"),
    *     security={
    *       {"apiAuth": {}}
    *     }
@@ -456,8 +480,14 @@ class ReviewController extends Controller
    *          )
    *     ), 
    *  @OA\Response(response="200", description="Get Review of a Customer"),
-   *  @OA\Response(response="404", description="Record not Found"),
-   *  @OA\Response(response=401, description="Unauthorized"),
+   *  @OA\Response(response=206, description="validation error"),
+   *  @OA\Response(response=400, description="Bad request"),
+   *  @OA\Response(response=401, description="Unauthorized access"),
+   *  @OA\Response(response=404, description="No record found"),
+   *  @OA\Response(response=500, description="Internal server error"),
+   *  @OA\Response(response=502, description="Bad gateway"),
+   *  @OA\Response(response=503, description="Service unavailable"),
+   *  @OA\Response(response=504, description="Gateway timeout"),
    *     security={
    *       {"apiAuth": {}}
    *     }

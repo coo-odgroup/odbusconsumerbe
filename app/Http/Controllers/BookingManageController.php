@@ -62,9 +62,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="get all Journey details"),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="get all Journey details"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -119,9 +125,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="get all Passenger details"),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="get all Passenger details"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -176,9 +188,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="get all Booking details of a customer"),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="get all Booking details of a customer"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -235,9 +253,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="send email/sms"),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="send email/sms"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -288,9 +312,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="Get detail information of a cancelled ticket"),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="Get detail information of a cancelled ticket"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -349,9 +379,15 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="Agent ticket cancel confirmation otp sent to       costumer "),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="Agent ticket cancel confirmation otp sent to       costumer "),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 
@@ -416,9 +452,15 @@ class BookingManageController extends Controller
      *              example="1212121"
      *          )
      *      ),
-     *     @OA\Response(response="200", description="Agent ticket cancellation successful "),
-     *     @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number or otp"),
-     *     @OA\Response(response=401, description="Unauthorized user"),
+     *  @OA\Response(response="200", description="Agent ticket cancellation successful "),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number or otp"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
      * 

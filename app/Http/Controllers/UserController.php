@@ -70,6 +70,13 @@ class UserController extends Controller
  *     @OA\Response(response="200", description="client access token generated"),
  *     @OA\Response(response="422", description="wrong credentials"),
  *     @OA\Response(response="206", description="not a valid credential"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=401, description="Unauthorized access"),
+ *     @OA\Response(response=404, description="No record found"),
+ *     @OA\Response(response=500, description="Internal server error"),
+ *     @OA\Response(response=502, description="Bad gateway"),
+ *     @OA\Response(response=503, description="Service unavailable"),
+ *     @OA\Response(response=504, description="Gateway timeout"),
  * )
  * 
  */
@@ -113,7 +120,14 @@ protected function createNewToken($token){
  *  summary="Get client details",
  *  tags={"Authorized Client Details"},
  *  @OA\Response(response=200, description="Authorized Client details"),
- *  @OA\Response(response=401, description="Unauthorized Client"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *  security={{ "apiAuth": {} }}
  * )
  */

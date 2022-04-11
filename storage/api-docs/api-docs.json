@@ -219,11 +219,29 @@
                     "201": {
                         "description": "records added"
                     },
-                    "404": {
-                        "description": "not found"
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -417,13 +435,31 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "records added"
+                        "description": "Records added"
                     },
-                    "404": {
-                        "description": "not found"
+                    "206": {
+                        "description": "Validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -470,8 +506,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -518,8 +572,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -566,8 +638,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -614,8 +704,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -662,8 +770,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -710,8 +836,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -768,8 +912,26 @@
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number or otp"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -811,13 +973,31 @@
                 ],
                 "responses": {
                     "201": {
-                        "description": " refund initiated on cancellation of ticket"
+                        "description": " Refund initiated on cancellation of ticket"
                     },
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -955,14 +1135,32 @@
                     "201": {
                         "description": "Order Id generated Successfully"
                     },
-                    "406": {
-                        "description": "seats already booked"
+                    "206": {
+                        "description": "validation error"
                     },
-                    "404": {
-                        "description": "Invalid Argument Passed"
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "406": {
+                        "description": "Seats already booked"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1146,14 +1344,32 @@
                     "200": {
                         "description": "Payment successfully done"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
                     "402": {
                         "description": "Payment required"
                     },
                     "404": {
-                        "description": "Invalid Argument Passed"
+                        "description": "No record found"
                     },
-                    "401": {
-                        "description": "Unauthorized user"
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1263,14 +1479,32 @@
                     "201": {
                         "description": "Wallet Payment Successful"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
                     "406": {
                         "description": "seats already booked"
                     },
-                    "404": {
-                        "description": "Invalid Argument Passed"
+                    "500": {
+                        "description": "Internal server error"
                     },
-                    "401": {
-                        "description": "Unauthorized user"
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1468,14 +1702,32 @@
                     "200": {
                         "description": "Payment successfully done"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
                     "402": {
                         "description": "Payment required"
                     },
                     "404": {
-                        "description": "Invalid Argument Passed"
+                        "description": "No record found"
                     },
-                    "401": {
-                        "description": "Unauthorized user"
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1509,8 +1761,29 @@
                     "200": {
                         "description": "Get all Social media links"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1588,8 +1861,29 @@
                     "200": {
                         "description": "Add Contacts of a acustomer"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1622,8 +1916,26 @@
                     "200": {
                         "description": "all locations"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1695,11 +2007,29 @@
                     "200": {
                         "description": "List of Buses"
                     },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
                     "206": {
                         "description": "validation error: Not a valid entry date"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1868,8 +2198,26 @@
                     "206": {
                         "description": "validation error: Not a valid entry date"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1930,8 +2278,26 @@
                     "206": {
                         "description": "validation error"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -1988,8 +2354,26 @@
                     "206": {
                         "description": "validation error"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2021,10 +2405,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "get all Offers"
+                        "description": "Get all Offers"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2108,8 +2513,29 @@
                     "200": {
                         "description": "get all Valid Coupons"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2129,10 +2555,31 @@
                 "operationId": "b128a7fa5a5d8d26171a64663d86e968",
                 "responses": {
                     "200": {
-                        "description": "get all Path Urls"
+                        "description": "Get all Path Urls"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2176,8 +2623,29 @@
                     "200": {
                         "description": "Get all Page descriptions"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2197,10 +2665,31 @@
                 "operationId": "4041a5107390129607bbbf69ced3b3c8",
                 "responses": {
                     "200": {
-                        "description": "get all Popular Routes"
+                        "description": "Get all Popular Routes"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2220,10 +2709,31 @@
                 "operationId": "c24915a8a9ba6e55266fcef0a7ecf6af",
                 "responses": {
                     "200": {
-                        "description": "get all Top Operators"
+                        "description": "Get all Top Operators"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2245,8 +2755,29 @@
                     "200": {
                         "description": "Record Fetched Successfully"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2268,8 +2799,29 @@
                     "200": {
                         "description": "Record Fetched Successfully"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2302,8 +2854,29 @@
                     "200": {
                         "description": "Record Fetched Successfully"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2336,8 +2909,29 @@
                     "200": {
                         "description": "Record Fetched Successfully"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2404,8 +2998,26 @@
                     "206": {
                         "description": "Validation error"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2438,11 +3050,29 @@
                     "200": {
                         "description": "Get Recent Search of a User"
                     },
-                    "404": {
-                        "description": "Record not Found"
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2462,10 +3092,31 @@
                 "operationId": "264ef0c3ab1ded9373510646f6b003d1",
                 "responses": {
                     "200": {
-                        "description": "get all Reviews of a customer"
+                        "description": "Get all Reviews of a customer"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2619,8 +3270,29 @@
                     "200": {
                         "description": "Add reviews by a customer"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2786,11 +3458,26 @@
                     "206": {
                         "description": "Review of a customer not exist"
                     },
-                    "404": {
-                        "description": "Record not Found"
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2833,14 +3520,29 @@
                     "202": {
                         "description": "Delete Review"
                     },
-                    "404": {
-                        "description": "Record not Found"
-                    },
                     "206": {
                         "description": "User does not match to the review"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2873,11 +3575,29 @@
                     "200": {
                         "description": "Get Review of a Customer"
                     },
-                    "404": {
-                        "description": "Record not Found"
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2911,8 +3631,29 @@
                     "200": {
                         "description": "Get all SEO lists"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2946,8 +3687,29 @@
                     "200": {
                         "description": "Get all Testimonials"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -2994,6 +3756,27 @@
                     },
                     "206": {
                         "description": "not a valid credential"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 }
             }
@@ -3009,8 +3792,29 @@
                     "200": {
                         "description": "Authorized Client details"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized Client"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3073,8 +3877,26 @@
                     "206": {
                         "description": "not a valid credential"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3122,8 +3944,26 @@
                     "406": {
                         "description": "Invalid otp"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3168,8 +4008,26 @@
                     "206": {
                         "description": "not a valid credential"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3190,8 +4048,29 @@
                     "200": {
                         "description": "Authorized User details"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3297,11 +4176,29 @@
                     "200": {
                         "description": "Update User Profile"
                     },
-                    "404": {
-                        "description": "Record not Found"
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3359,8 +4256,29 @@
                     "200": {
                         "description": "Get Booking Details Of a Customer"
                     },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3404,11 +4322,29 @@
                     "200": {
                         "description": "Update User Profile"
                     },
-                    "404": {
-                        "description": "Record not Found"
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized user"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3475,8 +4411,26 @@
                     "206": {
                         "description": " validation error"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3571,8 +4525,26 @@
                     "206": {
                         "description": " validation error"
                     },
+                    "400": {
+                        "description": "Bad request"
+                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [
@@ -3627,10 +4599,28 @@
                         "description": " get all Boarding Dropping Points"
                     },
                     "206": {
-                        "description": " validation error"
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
                     }
                 },
                 "security": [

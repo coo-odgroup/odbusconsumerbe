@@ -78,7 +78,13 @@ class UsersController extends Controller
  *      ),
  *     @OA\Response(response="200", description="otp generated"),
  *     @OA\Response(response="206", description="not a valid credential"),
- *     @OA\Response(response=401, description="Unauthorized"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=401, description="Unauthorized access"),
+ *     @OA\Response(response=404, description="No record found"),
+ *     @OA\Response(response=500, description="Internal server error"),
+ *     @OA\Response(response=502, description="Bad gateway"),
+ *     @OA\Response(response=503, description="Service unavailable"),
+ *     @OA\Response(response=504, description="Gateway timeout"),
  *     security={
  *       {"apiAuth": {}}
  *     }
@@ -136,7 +142,13 @@ class UsersController extends Controller
  *     @OA\Response(response="200", description="Registered successfully"),
  *     @OA\Response(response="206", description="otp not provided"),
  *     @OA\Response(response="406", description="Invalid otp"),
- *     @OA\Response(response=401, description="Unauthorized"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=401, description="Unauthorized access"),
+ *     @OA\Response(response=404, description="No record found"),
+ *     @OA\Response(response=500, description="Internal server error"),
+ *     @OA\Response(response=502, description="Bad gateway"),
+ *     @OA\Response(response=503, description="Service unavailable"),
+ *     @OA\Response(response=504, description="Gateway timeout"),
  *     security={
  *       {"apiAuth": {}}
  *     }
@@ -187,7 +199,13 @@ class UsersController extends Controller
  *      ),
  *     @OA\Response(response="200", description="otp generated"),
  *     @OA\Response(response="206", description="not a valid credential"),
- *     @OA\Response(response=401, description="Unauthorized"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=401, description="Unauthorized access"),
+ *     @OA\Response(response=404, description="No record found"),
+ *     @OA\Response(response=500, description="Internal server error"),
+ *     @OA\Response(response=502, description="Bad gateway"),
+ *     @OA\Response(response=503, description="Service unavailable"),
+ *     @OA\Response(response=504, description="Gateway timeout"),
  *     security={
  *       {"apiAuth": {}}
  *     }
@@ -233,7 +251,14 @@ protected function createNewToken($token){
  *  summary="Get user details",
  *  tags={"User Profile"},
  *  @OA\Response(response=200, description="Authorized User details"),
- *  @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *  security={{ "apiAuth": {} }}
  * )
  */
@@ -338,8 +363,14 @@ public function userProfile(Request $request) {
    *          )
    *      ),
    *  @OA\Response(response=200, description="Update User Profile"),
-   *  @OA\Response(response="404", description="Record not Found"),
-   *  @OA\Response(response=401, description="Unauthorized user"),
+   *  @OA\Response(response=206, description="validation error"),
+   *  @OA\Response(response=400, description="Bad request"),
+   *  @OA\Response(response=401, description="Unauthorized access"),
+   *  @OA\Response(response=404, description="No record found"),
+   *  @OA\Response(response=500, description="Internal server error"),
+   *  @OA\Response(response=502, description="Bad gateway"),
+   *  @OA\Response(response=503, description="Service unavailable"),
+   *  @OA\Response(response=504, description="Gateway timeout"),
    *  security={{ "apiAuth": {} }}
    * )
    */ 
@@ -419,7 +450,14 @@ public function refreshToken() {
          *          )
          *      ),
          *  @OA\Response(response="200", description="Get Booking Details Of a Customer"),
-         *  @OA\Response(response=401, description="Unauthorized"),
+         *  @OA\Response(response=206, description="validation error"),
+         *  @OA\Response(response=400, description="Bad request"),
+         *  @OA\Response(response=401, description="Unauthorized access"),
+         *  @OA\Response(response=404, description="No record found"),
+         *  @OA\Response(response=500, description="Internal server error"),
+         *  @OA\Response(response=502, description="Bad gateway"),
+         *  @OA\Response(response=503, description="Service unavailable"),
+         *  @OA\Response(response=504, description="Gateway timeout"),
          *     security={
          *       {"apiAuth": {}}
          *     }
@@ -463,8 +501,14 @@ public function refreshToken() {
  *          )
  *     ),
  *  @OA\Response(response=200, description="Update User Profile"),
- *  @OA\Response(response="404", description="Record not Found"),
- *  @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={
  *       {"apiAuth": {}}
  *     }

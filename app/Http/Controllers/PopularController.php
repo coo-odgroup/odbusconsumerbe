@@ -33,8 +33,15 @@ class PopularController extends Controller
  *     tags={"PopularRoutes API"},
  *     description="get all Popular Routes",
  *     summary="get all Popular Routes",
- *     @OA\Response(response="200", description="get all Popular Routes"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Get all Popular Routes"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
@@ -49,8 +56,15 @@ class PopularController extends Controller
  *     tags={"TopOperators API"},
  *     description="get all Top Operators",
  *     summary="get all Top Operators",
- *     @OA\Response(response="200", description="get all Top Operators"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Get all Top Operators"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
@@ -65,8 +79,15 @@ class PopularController extends Controller
  *     tags={"All Routes API"},
  *     description="get all Routes of bus running",
  *     summary="get all Routes of bus running",
- *     @OA\Response(response="200", description="Record Fetched Successfully"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Record Fetched Successfully"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
@@ -81,8 +102,15 @@ class PopularController extends Controller
  *     tags={"All Operators API"},
  *     description="get all Operators names",
  *     summary="get all Operators names",
- *     @OA\Response(response="200", description="Record Fetched Successfully"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Record Fetched Successfully"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
@@ -106,8 +134,15 @@ class PopularController extends Controller
  *              type="integer"
  *          )
  *      ),
- *     @OA\Response(response="200", description="Record Fetched Successfully"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Record Fetched Successfully"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
@@ -151,8 +186,15 @@ class PopularController extends Controller
  *              type="string"
  *          )
  *      ),
- *     @OA\Response(response="200", description="Record Fetched Successfully"),
- *     @OA\Response(response=401, description="Unauthorized user"),
+ *  @OA\Response(response="200", description="Record Fetched Successfully"),
+ *  @OA\Response(response=206, description="validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
  *     security={{ "apiAuth": {} }}
  * )
  * 
