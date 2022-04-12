@@ -375,27 +375,41 @@ class ListingService
        }
     
        /////seat close/////
-            $blockSeats = $record->busSeats
-                                   ->where('ticket_price_id',$ticketPriceId)
-                                   ->where('operation_date',$entry_date)
-                                   ->where('bus_id',$busId)
-                                   ->where('type',2)                              
-                                   ->pluck('seats_id');
-            $unavailbleSeats = $record->busSeats
+       ///////////////////////////////////
+               
+                $blockSeats = $record->busSeats
+                                        ->where('ticket_price_id',$ticketPriceId)
+                                        ->where('operation_date',$entry_date)
+                                        ->where('bus_id',$busId)
+                                        ->where('type',2)                              
+                                        ->pluck('seats_id');
+                $unavailbleSeats = $record->busSeats
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->where('bus_id',$busId)
                                 ->where('type',1)
-                                ->where('operation_date','!=',$entry_date) 
-                                ->where('ticket_price_id',$ticketPriceId)                             
-                                ->pluck('seats_id');
+                                ->where('operation_date','!=',$entry_date)                              
+                                ->pluck('seats_id')
+                                ->unique();
 
-            $moreAddedSeats = $record->busSeats->whereNull('operation_date')
-                                                ->whereNull('type')
-                                                ->where('bus_id',$busId)
-                                                ->whereIn('seats_id',$unavailbleSeats)
-                                                ->where('status',1)
-                                                ->where('ticket_price_id',$ticketPriceId)
-                                                ->pluck('seats_id');
+                $availableSeatsOnDate = $record->busSeats
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('bus_id',$busId)
+                                ->where('type',1)
+                                ->where('operation_date',$entry_date)                              
+                                ->pluck('seats_id')
+                                ->unique();
+ 
+                if(isset($availableSeatsOnDate) && $availableSeatsOnDate->isNotEmpty()){
+                    $unavailbleSeats = collect($unavailbleSeats)->diff(collect($availableSeatsOnDate));
+
+                }
+                $moreAddedSeats = $record->busSeats->whereNull('operation_date')    
+                                                    ->whereNull('type')
+                                                    ->where('bus_id',$busId)
+                                                    ->whereIn('seats_id',$unavailbleSeats)
+                                                    ->where('status',1)
+                                                    ->where('ticket_price_id',$ticketPriceId)
+                                                    ->pluck('seats_id');
 
             if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
                 $blockSeats = $blockSeats->concat(collect($unavailbleSeats)->diff(collect($moreAddedSeats)));
@@ -418,14 +432,15 @@ class ListingService
             if(!$extraSeatsBlock->isEmpty()){
                 $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
             }
+            
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                            ->where('bus_id',$busId)
                                            ->where("status","1")
                                            ->whereNotIn('seats_id',$blockSeats)
                                            ->whereNotNull('seats')
                                            ->unique('seats_id')
-                                           ->count('id');                                      
-
+                                           ->count('id');  
+                                      
             $seatClassRecords = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                           ->where('bus_id',$busId)
                                           ->where("status","1")
@@ -439,8 +454,7 @@ class ListingService
                                           ->whereNotIn('seats_id',$blockSeats)
                                           ->whereIn('seats.seat_class_id',[2,3])
                                           ->unique('seats_id')
-                                          ->count();   
-                                          
+                                          ->count();     
             $amenityDatas = [];  
 
            if($record->busAmenities)
@@ -568,6 +582,9 @@ class ListingService
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
 
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+        //    if($busId==420){
+        //     return [$bookedSeats];
+        // }   
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
