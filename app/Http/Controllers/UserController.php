@@ -51,7 +51,7 @@ class UserController extends Controller
  *     summary="client login to generate client access token",
  *     @OA\Parameter(
  *          name="client_id",
- *          description="client_id of user",
+ *          description="client_id of client",
  *          required=true,  
  *          in="query",
  *          @OA\Schema(
@@ -60,11 +60,11 @@ class UserController extends Controller
  *      ),
  *     @OA\Parameter(
  *          name="password",
- *          description="password of user",
+ *          description="password of client",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string",
+ *          format= "password"
  *          )
  *      ),
  *     @OA\Response(response="200", description="client access token generated"),
