@@ -258,67 +258,76 @@ class ViewSeatsService
         $totalFestiveFare =0;
         $PriceDetail=[];
         $service_charges=0;
+
+        
+        
         if(count($ticket_new_fare) > 0){
             foreach($ticket_new_fare as $tktprc){
+
                 foreach($tktprc as $tkt){
+
                     if( $tkt->type==2 || ($tkt->type==null && $tkt->operation_date != null )){
                         // do nothing (this logic is to avoid extra seat block , seat block seats )
                     }  else{
-                        if($tkt->new_fare == 0 ){
+                        if($tkt->operation_date== $entry_date || $tkt->operation_date==null ){
+                           
+                            if($tkt->new_fare == 0 ){
+
+                                if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
+                                    $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                }
+                                else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
+                                    $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                                }
+                                array_push($PriceDetail,$tkt);
+                            }
                             if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
-                                $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                $totalSplFare +=$miscfares[0];
+                                $totalOwnFare +=$miscfares[2];
+                                $totalFestiveFare +=$miscfares[4];
+                                $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                             }
                             else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
-                                $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                                $totalSplFare +=$miscfares[1];
+                                $totalOwnFare +=$miscfares[3];
+                                $totalFestiveFare +=$miscfares[5];
+                                $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
-                            array_push($PriceDetail,$tkt);
+    
+                            $seat_fare=$tkt->new_fare;
+    
+                            $ownerFare +=$tkt->new_fare;
+    
+    
+                            ////////// add odbus service chanrges to seat fare
+    
+                            $odbusServiceCharges = 0;
+                            foreach($ticketFareSlabs as $ticketFareSlab){
+                    
+                                $startingFare = $ticketFareSlab->starting_fare;
+                                $uptoFare = $ticketFareSlab->upto_fare;
+                                if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
+                                    $percentage = $ticketFareSlab->odbus_commision;
+                                    $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
+                                    $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
+                                    $service_charges += $odbusServiceCharges;
+                                    }     
+                                } 
+    
+    
+                                ////////////////////////////////////////////////
+    
+                            $odbus_charges_ownerFare +=$tkt->new_fare; 
+
+
                         }
-                        if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
-                            $totalSplFare +=$miscfares[0];
-                            $totalOwnFare +=$miscfares[2];
-                            $totalFestiveFare +=$miscfares[4];
-                            $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
-                        }
-                        else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
-                            $totalSplFare +=$miscfares[1];
-                            $totalOwnFare +=$miscfares[3];
-                            $totalFestiveFare +=$miscfares[5];
-                            $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
-                        }
-
-                        $seat_fare=$tkt->new_fare;
-
-                        $ownerFare +=$tkt->new_fare;
-
-
-                        ////////// add odbus service chanrges to seat fare
-
-                        $odbusServiceCharges = 0;
-                        foreach($ticketFareSlabs as $ticketFareSlab){
-                
-                            $startingFare = $ticketFareSlab->starting_fare;
-                            $uptoFare = $ticketFareSlab->upto_fare;
-                            if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
-                                $percentage = $ticketFareSlab->odbus_commision;
-                                $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
-                                $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
-                                $service_charges += $odbusServiceCharges;
-                                }     
-                            } 
-
-
-                            ////////////////////////////////////////////////
-
-                        $odbus_charges_ownerFare +=$tkt->new_fare;                        
+                                              
 
                     }       
                 }  
             }
         }
-       // $seaterPrice = $busWithTicketPrice->base_seat_fare;
-       // $sleeperPrice = $busWithTicketPrice->base_sleeper_fare;
-       // $ownerFare = count($seaterIds)*$busWithTicketPrice->base_seat_fare+
-       //              count($sleeperIds)*$busWithTicketPrice->base_sleeper_fare;             
+             
        
         $odbusServiceCharges = 0;
         $transactionFee = 0;
