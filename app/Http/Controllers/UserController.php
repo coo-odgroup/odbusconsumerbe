@@ -52,7 +52,7 @@ class UserController extends Controller
  *     @OA\Parameter(
  *          name="client_id",
  *          description="client_id of user",
- *          required=false,  
+ *          required=true,  
  *          in="query",
  *          @OA\Schema(
  *              type="string",
@@ -61,7 +61,7 @@ class UserController extends Controller
  *     @OA\Parameter(
  *          name="password",
  *          description="password of user",
- *          required=false,
+ *          required=true,
  *          in="query",
  *          @OA\Schema(
  *              type="string",

@@ -3732,7 +3732,7 @@
                         "name": "client_id",
                         "in": "query",
                         "description": "client_id of user",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -3741,7 +3741,7 @@
                         "name": "password",
                         "in": "query",
                         "description": "password of user",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
