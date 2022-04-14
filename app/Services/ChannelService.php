@@ -180,7 +180,7 @@ class ChannelService
                     //$secretKey = config('services.razorpay.secret');
 
                     $key= $this->channelRepository->getRazorpayKey();
-                    
+
                     $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
                     
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   

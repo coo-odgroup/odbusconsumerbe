@@ -625,9 +625,11 @@ class ChannelRepository
         $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
         $api = new Api($key, $secretKey);
+
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
-        if ($generated_signature == $razorpay_signature && $paymentStatus == 'authorized') { 
+
+        if ($generated_signature == $razorpay_signature && $paymentStatus == 'captured') { //authorized (may be for test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
