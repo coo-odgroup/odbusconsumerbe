@@ -359,12 +359,16 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsCMO($data, $pnr, $contact_number) {
+      public function sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$data, $pnr, $contact_number) {
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
+
+        if(isset($data['customer_comission'])){
+          $payable_amount= $payable_amount + $data['customer_comission'];
+        }
    
         foreach($passengerDetails as $pDetail){
             $nameList = "{$nameList},{$pDetail['passenger_name']}";
@@ -393,7 +397,7 @@ class ChannelRepository
             $message = str_replace("<name>",$nameList,$message);
             $message = str_replace("<gender>",$genderList,$message);
             $message = str_replace("<seat>",$seatList,$message);
-            $message = str_replace("<fare>",$data['payable_amount'],$message);
+            $message = str_replace("<fare>",$payable_amount,$message);
             $message = str_replace("<contactmob>",$data['phone'],$message);
             //return $message;
             $message = rawurlencode($message);
@@ -643,7 +647,7 @@ class ChannelRepository
                                           ->get('phone');
         if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-            //$this->sendSmsCMO($request, $pnr, $contact_number);
+            $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
         }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -749,7 +753,7 @@ class ChannelRepository
         $notification->userNotification()->save($userNotification);
         return $notification;
       }
-      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
+      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
       {  
         if($request['phone']){
 
@@ -758,6 +762,19 @@ class ChannelRepository
         if($request['email']){
             $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
         } 
+
+         ///////////////////CMO SMS/////////////////////////////////////////////////
+         $busContactDetails = BusContacts::where('bus_id',$busId)
+         ->where('status','1')
+         ->where('booking_sms_send','1')
+         ->get('phone');
+
+          if($busContactDetails->isNotEmpty()){
+          $contact_number = collect($busContactDetails)->implode('phone',',');
+          $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
+          }
+
+
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
