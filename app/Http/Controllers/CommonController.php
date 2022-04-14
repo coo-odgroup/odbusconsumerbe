@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\CommonValidator;
 use App\Services\CommonService;
+use Illuminate\Support\Facades\DB;
 
 class CommonController extends Controller
 {
@@ -80,4 +81,13 @@ class CommonController extends Controller
            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
          }      
    } 
+
+   public function Appversion(){
+
+         $version = DB::table('app_version')->where("id",1)->get();
+
+         return $this->successResponse($version,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+ 
+
+   }
 }

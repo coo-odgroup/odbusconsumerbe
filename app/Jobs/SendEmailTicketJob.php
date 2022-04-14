@@ -201,6 +201,11 @@ class SendEmailTicketJob implements ShouldQueue
             //->subject(config('services.email.subjectTicket'));
             ->subject($this->subject);
         });
+
+        Mail::send('emailTicket', $data, function ($messageNew) {
+            $messageNew->to('booking@odbus.in')
+            ->subject($this->subject);
+        });
         
         // check for failures
         if (Mail::failures()) {
