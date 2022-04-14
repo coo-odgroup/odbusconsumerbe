@@ -417,7 +417,7 @@ class ChannelService
             //////////////////////////////////////////
 
 
-            return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$booked,$bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+            return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
             
         } catch (Exception $e) {
             Log::info($e->getMessage());
