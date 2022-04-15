@@ -63,6 +63,7 @@ class ListingService
             $ListingRecords = array();
             $showBusRecords = [];
             $hideBusRecords = [];
+     
             foreach($busDetails as $busDetail)
             {
                 $ticketPriceId = $busDetail['id'];
@@ -88,12 +89,13 @@ class ListingService
                     $bcd->where('cancelled_date',$new_date);
                     }])->get(); 
                
-    
-                if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
+                $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+                if(isset($busCancel) && $busCancel->isNotEmpty()){
                     continue;
                 }
-            
+    
             /////////////////Bus Seize//////////////////////////////////////////////
+
             $seizedTime = $busDetail['seize_booking_minute'];
             $depTime = date("H:i:s", strtotime($busDetail['dep_time']));  
             $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
@@ -696,10 +698,13 @@ class ListingService
                 $bcd->where('cancelled_date',$new_date);
                 }])->get();  
 
-
-            if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
+            $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+            if(isset($busCancel) && $busCancel->isNotEmpty()){
                 continue;
             }
+            // if(isset($cancelledBus[0]) && $cancelledBus[0]->busCancelledDate->isNotEmpty()){
+            //     continue;
+            // }
         
         /////////////////Bus Seize//////////////////////////////////////////////
             $seizedTime = $busDetail['seize_booking_minute'];
