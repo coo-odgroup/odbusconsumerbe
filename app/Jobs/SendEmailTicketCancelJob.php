@@ -79,8 +79,14 @@ class SendEmailTicketCancelJob implements ShouldQueue
         //dd($data);
         $this->subject = config('services.email.subjectTicketCancel');
         $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
+
         Mail::send('emailTicketCancel', $data, function ($messageNew) {
             $messageNew->to($this->to)
+            ->subject($this->subject);
+        });
+
+        Mail::send('emailTicketCancel', $data, function ($messageNew) {
+            $messageNew->to('support@odbus.in')
             ->subject($this->subject);
         });
 
