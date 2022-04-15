@@ -62,6 +62,9 @@ class SendEmailTicketJob implements ShouldQueue
     protected $customer_gst_percent;
     protected $customer_gst_amount;
     protected $coupon_discount;
+    protected $p_names;
+
+    
 
 
     //protected $request = [];
@@ -134,6 +137,21 @@ class SendEmailTicketJob implements ShouldQueue
         $this->subject ='';
         $this->qrcode_image_path = url('public/qrcode/'.$this->email_pnr.'.png');
 
+
+        $p_name=[];
+        foreach($request['passengerDetails'] as $p){
+            $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
+            array_push($p_name,$pp);
+        }
+
+        $pp_names='';
+
+        if($p_name){
+            $pp_names = implode(',',$p_name);
+        }
+
+        $this->p_names=$pp_names;
+
        
     }
 
@@ -145,6 +163,7 @@ class SendEmailTicketJob implements ShouldQueue
 
     public function handle()
     {
+        
 
 
         $data = [
@@ -187,8 +206,8 @@ class SendEmailTicketJob implements ShouldQueue
             'seat_names'=>  $this->seat_names ,
             'customer_comission'=> $this->customer_comission,
             'qrcode_image_path' => $this->qrcode_image_path ,
-            'cancelation_policy' => $this->cancelation_policy
-            
+            'cancelation_policy' => $this->cancelation_policy,
+            'p_names' => $this->p_names,            
         ];
 
         //Log::info($data);
@@ -202,7 +221,7 @@ class SendEmailTicketJob implements ShouldQueue
             ->subject($this->subject);
         });
 
-        Mail::send('emailTicket', $data, function ($messageNew) {
+        Mail::send('AdminemailTicket', $data, function ($messageNew) {
             $messageNew->to('booking@odbus.in')
             ->subject($this->subject);
         });
