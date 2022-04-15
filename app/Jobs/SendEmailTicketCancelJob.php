@@ -45,7 +45,7 @@ class SendEmailTicketCancelJob implements ShouldQueue
         $this->contactNo = $request['contactNo'];
         $this->route = $request['route'];
         $this->deductionPercentage = $request['deductionPercentage'];
-        $this->refundAmount = $request['refundAmount'];
+        $this->refundAmount = number_format($request['refundAmount'],2);
         $this->seat_no = $request['seat_no'];
         $this->totalfare = $request['totalfare'];
         $this->cancellationDateTime = $request['cancellationDateTime'];
