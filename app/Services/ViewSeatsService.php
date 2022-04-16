@@ -66,7 +66,7 @@ class ViewSeatsService
 
                 //seat available on requested seq so blocked seats are none.
                 if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                    $blockedSeats=array();
+                    //$blockedSeats=array();
                     
                 }
                 else{   //seat not available on requested seq so blocked seats are calculated   
