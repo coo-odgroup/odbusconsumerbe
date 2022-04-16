@@ -328,7 +328,7 @@
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
                                                          <td align="left" style="padding: 10px; font-size: 14px; font-family: Arial, sans-serif; color: #444; font-weight:normal; padding-left:40px; border-right: solid 1px #f9f9f9;">
-                                                            19 to 24 Hours Before Departure                                                        </td>
+                                                            18 to 24 Hours Before Departure                                                        </td>
                                                         
                                                         <td align="right" style="padding: 10px; font-size: 14px; font-family: Arial, sans-serif; color: #444; font-weight:normal; padding-left:40px;">25%</td>      
                                                     </tr>

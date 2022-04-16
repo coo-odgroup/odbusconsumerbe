@@ -178,14 +178,14 @@ class CancelTicketRepository
 
                 $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
 
-                $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
+                // $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
               
-                $emailData['refundAmount'] = $refundAmt;
-                $emailData['deductionPercentage'] = $percentage;
-                $emailData['totalfare'] = $paidAmount;
-                if($emailData['email'] != ''){
-                    $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
-                } 
+                // $emailData['refundAmount'] = $refundAmt;
+                // $emailData['deductionPercentage'] = $percentage;
+                // $emailData['totalfare'] = $paidAmount;
+                // if($emailData['email'] != ''){
+                //     $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+                // } 
 ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
                                         ->where('status','1')
