@@ -65,13 +65,18 @@ class ViewSeatsService
                  $bookedRange = Arr::sort($bookedSequence);
 
                 //seat available on requested seq so blocked seats are none.
-                if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                    //$blockedSeats=array();
+                // if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
+                //    //$blockedSeats=array();
                     
-                }
-                else{   //seat not available on requested seq so blocked seats are calculated   
+                // }
+                // else{   //seat not available on requested seq so blocked seats are calculated   
+                //     $blockedSeats = array_merge($blockedSeats,$seatsIds);
+                // } 
+
+                //seat not available on requested seq so blocked seats are calculated 
+                if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
                     $blockedSeats = array_merge($blockedSeats,$seatsIds);
-                } 
+                 }
             }
         }else{          //no booking on that specific date, so all seats are available
                 $blockedSeats=array();
