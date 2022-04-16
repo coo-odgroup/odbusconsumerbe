@@ -587,9 +587,7 @@ class ListingService
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
 
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
-        //    if($busId==420){
-        //     return [$bookedSeats];
-        // }   
+          
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];

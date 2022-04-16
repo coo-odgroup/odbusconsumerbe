@@ -566,15 +566,24 @@ class ListingRepository
                  $bookedRange = Arr::sort($bookedSequence);
 
                 //seat available on requested seq so blocked seats are none.
-                if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                    //$blockedSeats=array();
-                    return [$sl,$st,$tot];
+                // if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
+                //     //$blockedSeats=array();
+                //     return [$sl,$st,$tot];
                     
-                }
-                else{   //seat not available on requested seq so blocked seats are calculated   
-                    //$blockedSeats = array_merge($blockedSeats,$seatsIds);
+                // }
+                // else{   //seat not available on requested seq so blocked seats are calculated   
+                //     //$blockedSeats = array_merge($blockedSeats,$seatsIds);
+                //     $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
+                // } 
+
+
+                
+                //seat not available on requested seq so blocked seats are calculated 
+                if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
                     $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
-                } 
+                 }
+
+
                 $sl = $sl + $a[0];
                 $st = $st + $a[1];
                 $tot = $tot + $a[2];
