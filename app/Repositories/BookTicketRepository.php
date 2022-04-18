@@ -68,10 +68,26 @@ class BookTicketRepository
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
            } while ( $booking->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
+        // do {
+        //     $PNR = substr(str_shuffle("0123456789"), 0, 7);
+        //     //$PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
+        //     } while ( $booking ->where('pnr', $PNR )->exists()); 
+        
         do {
-            $PNR = substr(str_shuffle("0123456789"), 0, 8);
-            //$PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
-            } while ( $booking ->where('pnr', $PNR )->exists()); 
+          switch($bookingInfo['app_type'])
+          {
+            case("WEB"):
+                $PNR = 'ODW'."".substr(str_shuffle("0123456789"), 0, 7);
+                break;
+            case("MOB"):
+                $PNR = 'ODM'."".substr(str_shuffle("0123456789"), 0, 7);
+                break;
+            case("ANDROID"):
+                $PNR = 'ODA'."".substr(str_shuffle("0123456789"), 0, 7);
+                break;
+          }
+        } while ( $booking ->where('pnr', $PNR )->exists());  
+
         $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
         $busId = $bookingInfo['bus_id'];
