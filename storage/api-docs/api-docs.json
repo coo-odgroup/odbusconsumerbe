@@ -1805,7 +1805,7 @@
                     {
                         "name": "name",
                         "in": "query",
-                        "description": "name",
+                        "description": "customer name",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1814,7 +1814,7 @@
                     {
                         "name": "email",
                         "in": "query",
-                        "description": "email",
+                        "description": "customer email",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1823,7 +1823,7 @@
                     {
                         "name": "phone",
                         "in": "query",
-                        "description": "phone",
+                        "description": "customer mobile no",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1832,16 +1832,24 @@
                     {
                         "name": "service",
                         "in": "query",
-                        "description": "service",
+                        "description": "Type of service required by a customer",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "Select Services",
+                                "Feedback",
+                                "Complaints",
+                                "Marketing",
+                                "Agency Enquiry",
+                                "Solutions Enquiry"
+                            ]
                         }
                     },
                     {
                         "name": "message",
                         "in": "query",
-                        "description": "message",
+                        "description": "detail message about the service required by a customer",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -1853,7 +1861,8 @@
                         "description": "User Id",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer",
+                            "default": 1
                         }
                     }
                 ],
@@ -2123,7 +2132,7 @@
                     {
                         "name": "seatType[]",
                         "in": "query",
-                        "description": "Seater or Sleeper type Bus:1-seater, 2&3-sleeper",
+                        "description": "Seater or Sleeper type Bus:1-seater, 2-sleeper",
                         "required": false,
                         "schema": {
                             "type": "array",

@@ -276,7 +276,7 @@ class ListingController extends Controller
  *    ),            
  *     @OA\Parameter(
  *          name="seatType[]",
- *          description="Seater or Sleeper type Bus:1-seater, 2&3-sleeper",
+ *          description="Seater or Sleeper type Bus:1-seater, 2-sleeper",
  *          in="query",
  *          required=false,
  *          @OA\Schema(

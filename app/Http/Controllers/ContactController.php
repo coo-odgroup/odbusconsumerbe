@@ -34,7 +34,7 @@ class ContactController extends Controller
          *     summary="Add Contacts",
          *     @OA\Parameter(
          *          name="name",
-         *          description="name",
+         *          description="customer name",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
@@ -43,7 +43,7 @@ class ContactController extends Controller
          *      ),
          *     @OA\Parameter(
          *          name="email",
-         *          description="email",
+         *          description="customer email",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
@@ -52,7 +52,7 @@ class ContactController extends Controller
          *      ),
          *     @OA\Parameter(
          *          name="phone",
-         *          description="phone",
+         *          description="customer mobile no",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
@@ -61,20 +61,21 @@ class ContactController extends Controller
          *      ),
          *     @OA\Parameter(
          *          name="service",
-         *          description="service",
+         *          description="Type of service required by a customer",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              enum={"Select Services", "Feedback", "Complaints","Marketing","Agency Enquiry", "Solutions Enquiry"}
          *          )
          *      ),
          *     @OA\Parameter(
          *          name="message",
-         *          description="message",
+         *          description="detail message about the service required by a customer",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
          *          )
          *      ),
          *     @OA\Parameter(
@@ -83,7 +84,8 @@ class ContactController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="integer",
+         *              default=1,
          *          )
          *      ),
          *  @OA\Response(response="200", description="Add Contacts of a acustomer"),
