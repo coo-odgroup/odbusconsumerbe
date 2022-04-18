@@ -76,15 +76,27 @@ class BookTicketRepository
         do {
           switch($bookingInfo['app_type'])
           {
+            // case("WEB"):
+            //     $PNR = 'ODW'."".substr(str_shuffle("0123456789"), 0, 7);
+            //     break;
+            // case("MOB"):
+            //     $PNR = 'ODM'."".substr(str_shuffle("0123456789"), 0, 7);
+            //     break;
+            // case("ANDROID"):
+            //     $PNR = 'ODA'."".substr(str_shuffle("0123456789"), 0, 7);
+            //     break;
+
             case("WEB"):
-                $PNR = 'ODW'."".substr(str_shuffle("0123456789"), 0, 7);
+                $PNR = 'ODW'.rand(1000000,9999999);
                 break;
             case("MOB"):
-                $PNR = 'ODM'."".substr(str_shuffle("0123456789"), 0, 7);
+                $PNR = 'ODM'.rand(1000000,9999999);
                 break;
             case("ANDROID"):
-                $PNR = 'ODA'."".substr(str_shuffle("0123456789"), 0, 7);
+                $PNR = 'ODA'."".rand(1000000,9999999);
                 break;
+
+
           }
         } while ( $booking ->where('pnr', $PNR )->exists());  
 
