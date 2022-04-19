@@ -21,7 +21,7 @@ class BookTicketValidator
             'bookingInfo.boarding_time' => 'required',
             'bookingInfo.dropping_time' => 'required',
             'bookingInfo.origin' => 'required',
-            'bookingInfo.app_type' => 'required',
+            'bookingInfo.app_type' => ["required" , "in:WEB,MOB,ANDROID"],  
             'bookingInfo.typ_id' => 'required',
             'bookingInfo.total_fare' => 'required|numeric',
             'bookingInfo.owner_fare' => 'required|numeric',
