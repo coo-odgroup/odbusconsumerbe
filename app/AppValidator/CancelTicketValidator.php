@@ -10,7 +10,7 @@ class CancelTicketValidator
     public function validate($data) { 
         
         $rules = [
-            'pnr' => 'required|numeric',
+            'pnr' => 'required',
             'phone' => 'required|digits:10'
 
         ];      
