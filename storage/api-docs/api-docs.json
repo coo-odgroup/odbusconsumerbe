@@ -292,6 +292,11 @@
                                                 "default": "ODTEST3",
                                                 "example": "ODTEST3"
                                             },
+                                            "user_id": {
+                                                "type": "number",
+                                                "default": 1,
+                                                "example": 1
+                                            },
                                             "bus_id": {
                                                 "type": "number",
                                                 "default": 1,
@@ -339,8 +344,8 @@
                                             },
                                             "app_type": {
                                                 "type": "string",
-                                                "default": "WEB",
-                                                "example": "WEB"
+                                                "default": "ANDROID",
+                                                "example": "ANDROID"
                                             },
                                             "typ_id": {
                                                 "type": "number",

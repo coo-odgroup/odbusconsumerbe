@@ -75,6 +75,12 @@ class BookTicketController extends Controller
  *                  example="ODTEST3"
  *                  ),
  *                @OA\Property(
+ *                  property="user_id",
+ *                  type="number",
+ *                  default=1,
+ *                  example=1
+ *                  ),
+ *                @OA\Property(
  *                  property="bus_id",
  *                  type="number",
  *                  default=1,
@@ -131,8 +137,8 @@ class BookTicketController extends Controller
  *                @OA\Property(
  *                  property="app_type",
  *                  type="string",
- *                  default="WEB",
- *                  example="WEB" ,
+ *                  default="ANDROID",
+ *                  example="ANDROID" ,
  *                  ),
  *                @OA\Property(
  *                  property="typ_id",
