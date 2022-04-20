@@ -250,6 +250,26 @@ protected function createNewToken($token){
  *  path="/api/UserProfile",
  *  summary="Get user details",
  *  tags={"User Profile"},
+ *     @OA\Parameter(
+ *         description="User Id",
+ *         in="query",
+ *         name="userId",
+ *         required=true,
+ *          @OA\Schema(
+ *              type="integer",
+ *              example=1
+ *          )
+ *     ),
+ *     @OA\Parameter(
+ *         description="User Token",
+ *         in="query",
+ *         name="token",
+ *         required=true,
+ *          @OA\Schema(
+ *              type="string",
+ *              example="E7CDunOAhI"
+ *          )
+ *     ),
  *  @OA\Response(response=200, description="Authorized User details"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),

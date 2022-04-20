@@ -4059,6 +4059,28 @@
                 ],
                 "summary": "Get user details",
                 "operationId": "82e9f7bb9d7d088c86d0661daf575808",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "User Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "User Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "E7CDunOAhI"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Authorized User details"
