@@ -132,6 +132,9 @@ class CancelTicketService
                             if($emailData['email'] != ''){
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                             } 
+
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);  
+
                             return $refund;    
                         }
                     } 

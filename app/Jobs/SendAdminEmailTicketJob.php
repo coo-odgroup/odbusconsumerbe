@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-class SendEmailTicketJob implements ShouldQueue
+class SendAdminEmailTicketJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -75,7 +75,7 @@ class SendEmailTicketJob implements ShouldQueue
       
         //$this->$request[] = $request;
         $this->name = $request['name'];
-        $this->to = $request['email'];
+        $this->to =  $request['email'];
         $this->bookingdate = $request['bookingdate'];
         $this->journeydate = $request['journeydate'];
         $this->boarding_point = $request['boarding_point'];
@@ -214,13 +214,12 @@ class SendEmailTicketJob implements ShouldQueue
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
-        //dd($this->subject);
-        Mail::send('emailTicket', $data, function ($messageNew) {
-            $messageNew->to($this->to)
-            //->subject(config('services.email.subjectTicket'));
+       
+        Mail::send('AdminemailTicket', $data, function ($messageNew) {
+            $messageNew->to('booking@odbus.in')
             ->subject($this->subject);
         });
-      
+        
         // check for failures
         if (Mail::failures()) {
             return new Error(Mail::failures()); 

@@ -208,13 +208,15 @@ class PopularService
 
         if(sizeof($bookingRoutes)) {
             foreach($bookingRoutes as $bookingRoute){
-                $srcName = $this->popularRepository->getRouteNames($bookingRoute['source_id']);
-                $destName = $this->popularRepository->getRouteNames($bookingRoute['destination_id']);
+                $src = $this->popularRepository->getRoute($bookingRoute['source_id']);
+                $dest = $this->popularRepository->getRoute($bookingRoute['destination_id']);
                 $depTime = $this->popularRepository->GetDepartureTime($bookingRoute['source_id'],$bookingRoute['destination_id'],$busIds);       
                 
                 $popularRoutes[] = [
-                        "sourceName" => $srcName, 
-                        "destinationName" => $destName,
+                        "sourceID" => $src[0]->id, 
+                        "sourceName" => $src[0]->name, 
+                        "destinationID" => $dest[0]->id,
+                        "destinationName" => $dest[0]->name,
                         "depTime" => date("H:i",strtotime($depTime)),
                         ];
 
@@ -227,14 +229,16 @@ class PopularService
         $items = collect($operatorDetails)[0]->ticketPrice; 
         if(sizeof($items)){
             foreach($items as $item){
-                $srcName = $this->popularRepository->getRouteNames($item['source_id']);
-                $destName = $this->popularRepository->getRouteNames($item['destination_id']);
+                $src = $this->popularRepository->getRoute($item['source_id']);
+                $dest = $this->popularRepository->getRoute($item['destination_id']);
               
                $depTime = $this->popularRepository->GetDepartureTime($item['source_id'],$item['destination_id'],$busIds);       
              
                 $allRoutes[] = [   
-                    "sourceName" => $srcName, 
-                    "destinationName" => $destName,
+                    "sourceID" => $src[0]->id, 
+                    "sourceName" => $src[0]->name, 
+                    "destinationID" => $dest[0]->id,
+                    "destinationName" => $dest[0]->name,
                     "depTime" => date("H:i",strtotime($depTime))
                 ];       
             }

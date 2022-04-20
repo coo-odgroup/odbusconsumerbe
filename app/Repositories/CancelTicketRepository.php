@@ -65,6 +65,12 @@ class CancelTicketRepository
        return $this->channelRepository->sendEmailTicketCancel($emailData);
     }
 
+    public function sendAdminEmailTicketCancel($emailData){
+        return $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+     }
+
+    
+
     public function GetBooking($bookingId){
         return $this->booking->find($bookingId);
     }
@@ -113,6 +119,10 @@ class CancelTicketRepository
         if($emailData['email'] != ''){
             $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
         } 
+        ////////////// send to admin /////////////
+
+        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+
         ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
                                         ->where('status','1')

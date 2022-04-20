@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Jobs\SendEmailJob;
 use App\Jobs\SendEmailTicketJob;
+use App\Jobs\SendAdminEmailTicketJob;
 use App\Jobs\SendEmailTicketCancelJob;
+use App\Jobs\SendAdminEmailTicketCancelJob;
 use App\Mail\SendEmailOTP;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
@@ -552,10 +554,26 @@ class ChannelRepository
         SendEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
       }
 
+      public function sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount) {
+        
+        SendAdminEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+      }
+
+
+
+      
+
       public function sendEmailTicketCancel($request) {
 
         SendEmailTicketCancelJob::dispatch($request);
       }
+
+      public function sendAdminEmailTicketCancel($request) {
+
+        SendAdminEmailTicketCancelJob::dispatch($request);
+      }
+
+      
 
       public function getBookingRecord($transationId){
         return $this->booking->with('users')->where('transaction_id', $transationId)->get();
@@ -629,7 +647,7 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
 
-        if ($generated_signature == $razorpay_signature && $paymentStatus == 'captured') { //authorized (may be for test version)
+        if ($generated_signature == $razorpay_signature && $paymentStatus == 'captured') { //captured , authorized (may be for test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
@@ -642,6 +660,13 @@ class ChannelRepository
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
             }
+
+         /////////////////send email to odbus admin////////
+
+
+         $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+         
+         
       ///////////////////CMO SMS/////////////////////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
                                           ->where('status','1')

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 
-class SendEmailTicketCancelJob implements ShouldQueue
+class SendAdminEmailTicketCancelJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -81,11 +81,9 @@ class SendEmailTicketCancelJob implements ShouldQueue
         $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
 
         Mail::send('emailTicketCancel', $data, function ($messageNew) {
-            $messageNew->to($this->to)
+            $messageNew->to('support@odbus.in')
             ->subject($this->subject);
         });
-
-      
 
     }
 }
