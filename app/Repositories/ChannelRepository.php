@@ -647,7 +647,7 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
 
-        if ($generated_signature == $razorpay_signature && $paymentStatus == 'captured') { //captured , authorized (may be for test version)
+        if ($generated_signature == $razorpay_signature && $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
