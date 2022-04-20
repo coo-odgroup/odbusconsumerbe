@@ -489,8 +489,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -555,8 +555,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -621,8 +621,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -687,8 +687,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -753,8 +753,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -819,8 +819,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -885,8 +885,8 @@
                         "description": "pnr",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -961,8 +961,8 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": "21212121"
+                            "type": "string",
+                            "example": "ODM5163863"
                         }
                     },
                     {
@@ -2915,7 +2915,8 @@
                         "description": "operator url",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "default": "iconic-travels"
                         }
                     }
                 ],
@@ -4236,7 +4237,12 @@
                         "in": "query",
                         "description": "status",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "Completed",
+                                "Upcoming",
+                                "Cancelled"
+                            ]
                         }
                     },
                     {
@@ -4244,7 +4250,8 @@
                         "in": "query",
                         "description": "paginate",
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 5
                         }
                     },
                     {
@@ -4253,7 +4260,8 @@
                         "description": "user Id",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     },
                     {
@@ -4262,13 +4270,14 @@
                         "description": "token",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "E7CDunOAhI"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Get Booking Details Of a Customer"
+                        "description": "Get Booking History Of a Customer"
                     },
                     "206": {
                         "description": "validation error"
@@ -4334,7 +4343,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Update User Profile"
+                        "description": "Get User Reviews"
                     },
                     "206": {
                         "description": "validation error"

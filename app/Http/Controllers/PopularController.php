@@ -183,7 +183,8 @@ class PopularController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="string",
+ *              default="iconic-travels",
  *          )
  *      ),
  *  @OA\Response(response="200", description="Record Fetched Successfully"),

@@ -420,7 +420,8 @@ public function refreshToken() {
          *          description="status",
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              enum={"Completed", "Upcoming", "Cancelled"}
          *          )
          *      ),
          *     @OA\Parameter(
@@ -428,7 +429,8 @@ public function refreshToken() {
          *          description="paginate",
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example=5
          *          )
          *      ),
          *     @OA\Parameter(
@@ -437,7 +439,8 @@ public function refreshToken() {
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer"
+         *              type="integer",
+         *              example=1
          *          )
          *      ),
          *     @OA\Parameter(
@@ -446,10 +449,11 @@ public function refreshToken() {
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="string"
+         *              type="string",
+         *              example="E7CDunOAhI"
          *          )
          *      ),
-         *  @OA\Response(response="200", description="Get Booking Details Of a Customer"),
+         *  @OA\Response(response="200", description="Get Booking History Of a Customer"),
          *  @OA\Response(response=206, description="validation error"),
          *  @OA\Response(response=400, description="Bad request"),
          *  @OA\Response(response=401, description="Unauthorized access"),
@@ -500,7 +504,7 @@ public function refreshToken() {
  *              example="E7CDunOAhI"
  *          )
  *     ),
- *  @OA\Response(response=200, description="Update User Profile"),
+ *  @OA\Response(response=200, description="Get User Reviews"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),
  *  @OA\Response(response=401, description="Unauthorized access"),

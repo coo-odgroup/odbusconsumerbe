@@ -45,8 +45,8 @@ class CancelTicketController extends Controller
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="integer",
- *              example="21212121"
+ *              type="string",
+ *              example="ODM5163863"
  *          )
  *      ),
  *     @OA\Parameter(
