@@ -272,13 +272,37 @@ class ChannelRepository
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
-   
+        $i = 0;
+        $m = 0;
+        $f = 0;
+        //$nameList = $passengerDetails[0]->passenger_name;
         foreach($passengerDetails as $pDetail){
-            $nameList = "{$nameList},{$pDetail['passenger_name']}";
-            $genderList = "{$genderList},{$pDetail['passenger_gender']}";
+            if($i==0){
+              $nameList = "{$nameList},{$pDetail['passenger_name']}";
+            }
+            if($i>0){
+              $nameList = "{$nameList}+{$i}";   
+            }
+            $i++;
+            switch($pDetail['passenger_gender']){
+              case("M"):
+                $m++;
+              break;
+              case("F"):
+                $f++;
+              break;
+            }
         } 
+        $genderList = "{$m}M/{$f}F";
+        if($m==0){
+          $genderList = substr($genderList,3);
+        }
+        if($f==0){
+          $genderList = substr($genderList,0,-3);
+        }
+        
         $nameList = substr($nameList,1);
-        $genderList = substr($genderList,1);
+        //$genderList = substr($genderList,1);
         $busDetails = $data['busname'].'-'.$data['busNumber'];
         $SmsGW = config('services.sms.otpservice');
 
@@ -663,8 +687,7 @@ class ChannelRepository
 
          /////////////////send email to odbus admin////////
 
-
-         $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+        $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
          
          
       ///////////////////CMO SMS/////////////////////////////////////////////////
@@ -674,7 +697,7 @@ class ChannelRepository
                                           ->get('phone');
         if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-            $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
+           $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
         }
 
       ///////////////////////////////////////////////////////////////////////////////////
