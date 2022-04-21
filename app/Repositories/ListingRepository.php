@@ -102,28 +102,37 @@ class ListingRepository
                         ->where('status','1')
                         ->get();
      }
-     public function getrouteCoupon($sourceID,$destinationID)
+     public function getrouteCoupon($sourceID,$destinationID,$busId,$entry_date)
      {
          return Coupon::where('source_id', $sourceID)
                         ->where('destination_id', $destinationID)
                         ->where('coupon_type_id', 2)
-                        ->where('status','1')
+                        ->where('status',1)
+                        ->where('from_date', '<=', $entry_date)
+                        ->where('to_date', '>=', $entry_date)
+                        ->where('bus_id', $busId)
                         ->get();
      }
-     public function getOperatorCoupon($busOperatorId)
+     public function getOperatorCoupon($busOperatorId,$busId,$entry_date)
      {
          return Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
                         ->where('coupon_type_id', 1)
                         ->where('status', 1)
+                        ->where('from_date', '<=', $entry_date)
+                        ->where('to_date', '>=', $entry_date)
+                        ->where('bus_id', $busId)
                         ->get();
      }
-     public function getOpRouteCoupon($busOperatorId,$sourceID,$destinationID)
+     public function getOpRouteCoupon($busOperatorId,$sourceID,$destinationID,$busId,$entry_date)
      {
          return Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
                         ->where('coupon_type_id', 3)
                         ->where('source_id', $sourceID)
                         ->where('destination_id', $destinationID)
                         ->where('status', 1)
+                        ->where('from_date', '<=', $entry_date)
+                        ->where('to_date', '>=', $entry_date)
+                        ->where('bus_id', $busId)
                         ->get();
      }
 

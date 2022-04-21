@@ -216,14 +216,7 @@ class ListingService
          }    
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag){
-        $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID);
-        if(isset($routeCoupon[0]))
-        {                           
-           $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
-        }else
-        {
-           $routeCouponCode =[];
-        }  
+       
         $ListingRecords = array();
         foreach($records as $record){
             //return $record;
@@ -235,35 +228,48 @@ class ListingService
             $busNumber = $record->bus_number;
             $via = $record->via;
             $busOperatorId = $record->bus_operator_id;
-            
-            // $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId);
-            // if(isset($operatorCoupon[0]))
-            // {                           
-            //     $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
-            // }else
-            // {
-            //     $opCouponCode =[];
-            // } 
-            // $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID);
 
-            // if(isset($opRouteCoupon[0]))
-            // {                           
-            //     $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
-            // }else
-            // {
-            //     $opRouteCouponCode =[];
-            // }
-            $busCoupon = $this->listingRepository->getBusCoupon($busId);
-            if(isset($busCoupon[0]))
+
+            $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
+            if(isset($routeCoupon[0]))
             {                           
-                $busCouponCode = $busCoupon[0]->coupon_code;//bus wise coupon
+               $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
             }else
             {
-                $busCouponCode =[];
-            } 
-            //$CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
+               $routeCouponCode =[];
+            }  
+
             
-            $CouponRecords = collect($busCouponCode);
+            $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId,$busId,$entry_date);
+            if(isset($operatorCoupon[0]))
+            {                           
+                $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
+            }else
+            {
+                $opCouponCode =[];
+            } 
+            $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID,$busId,$entry_date);
+
+            if(isset($opRouteCoupon[0]))
+            {                           
+                $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
+            }else
+            {
+                $opRouteCouponCode =[];
+            }
+
+            // $busCoupon = $this->listingRepository->getBusCoupon($busId);
+            // if(isset($busCoupon[0]))
+            // {                           
+            //     $busCouponCode = $busCoupon[0]->coupon_code;//bus wise coupon
+            // }else
+            // {
+            //     $busCouponCode =[];
+            // } 
+
+            $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
+            
+            //$CouponRecords = collect($busCouponCode);
             $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
             ///Coupon applicable for specific date range
@@ -291,7 +297,7 @@ class ListingService
                 }
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
-                    $CouponDetails = $busCoupon[0]->where('coupon_code',$appliedCoupon)
+                    $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
                                                   ->where('bus_id',$busId)
                                                   ->get(); 
                     //return $CouponDetails;

@@ -51,7 +51,7 @@ class OfferRepository
         $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
         $destId = $request['destination_id'];
-        //$busOperatorId = $request['bus_operator_id'];
+        $busOperatorId = $request['bus_operator_id'];
         $jDate = $request['journey_date'];
         //$totalFare = $request['total_fare'];
         $transactionId = $request['transaction_id'];
@@ -62,49 +62,58 @@ class OfferRepository
             $totalFare = ($bookingDetails[0]->owner_fare) + ($bookingDetails[0]->odbus_charges);
         }
     
-        // $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
-        //                         ->where('destination_id', $destId)
-        //                         ->where('coupon_type_id', 2)
-        //                         ->where('status','1')
-        //                         ->get();
-        // if(isset($routeCoupon[0])){                           
-        //         $routeCouponCode = $routeCoupon[0]->coupon_code;
-        // }else{
-        //     $routeCouponCode =[];
-        // } 
-        
-        // $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
-        //                         ->where('coupon_type_id', 1)
-        //                         ->where('status','1')
-        //                         ->get();
-        // if(isset($operatorCoupon[0])){                           
-        //     $opCouponCode = $operatorCoupon[0]->coupon_code;
-        // }else{
-        //     $opCouponCode =[];
-        // } 
-        // $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
-        //                             ->where('coupon_type_id', 3)
-        //                             ->where('source_id', $sourceId)
-        //                             ->where('destination_id', $destId)
-        //                             ->where('status','1')
-        //                             ->get();
-        // if(isset($opRouteCoupon[0])){                           
-        //     $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;
-        // }else{
-        //     $opRouteCouponCode =[];
-        // } 
-        
-        $busCoupon = Coupon::where('bus_id', $busId) ////Bus wise coupon
+        $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
+                                ->where('destination_id', $destId)
+                                ->where('coupon_type_id', 2)
                                 ->where('status','1')
+                                ->where('from_date', '<=', $jDate)
+                                ->where('to_date', '>=', $jDate)
+                                ->where('bus_id', $busId)
                                 ->get();
-        if(isset($busCoupon[0])){                           
-            $busCouponCode = $busCoupon[0]->coupon_code;
+        if(isset($routeCoupon[0])){                           
+                $routeCouponCode = $routeCoupon[0]->coupon_code;
         }else{
-            $busCouponCode =[];
+            $routeCouponCode =[];
         } 
         
-        //$CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]); 
-        $CouponRecords = collect($busCouponCode);       
+        $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
+                                ->where('coupon_type_id', 1)
+                                ->where('status','1')
+                                ->where('from_date', '<=', $jDate)
+                                ->where('to_date', '>=', $jDate)
+                                ->where('bus_id', $busId)
+                                ->get();
+        if(isset($operatorCoupon[0])){                           
+            $opCouponCode = $operatorCoupon[0]->coupon_code;
+        }else{
+            $opCouponCode =[];
+        } 
+        $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
+                                    ->where('coupon_type_id', 3)
+                                    ->where('source_id', $sourceId)
+                                    ->where('destination_id', $destId)
+                                    ->where('status','1')
+                                    ->where('from_date', '<=', $jDate)
+                                    ->where('to_date', '>=', $jDate)
+                                    ->where('bus_id', $busId)
+                                    ->get();
+        if(isset($opRouteCoupon[0])){                           
+            $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;
+        }else{
+            $opRouteCouponCode =[];
+        } 
+        
+        // $busCoupon = Coupon::where('bus_id', $busId) ////Bus wise coupon
+        //                         ->where('status','1')
+        //                         ->get();
+        // if(isset($busCoupon[0])){                           
+        //     $busCouponCode = $busCoupon[0]->coupon_code;
+        // }else{
+        //     $busCouponCode =[];
+        // } 
+        
+        $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]); 
+        //$CouponRecords = collect($busCouponCode);       
         $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
         ///Coupon applicable on specific date range
@@ -128,6 +137,7 @@ class OfferRepository
             }
             if($dateInRange){
                 $appliedCoupon->push($coupon);
+                
             }
         } 
         $couponExists = $appliedCoupon->contains($requestedCouponCode);
@@ -137,9 +147,17 @@ class OfferRepository
             $couponCount = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->count('id');
         }else{
             return "inval_coupon";
-        }                                            
-        $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
-                                ->where('status','1')->get();
+        } 
+
+        $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+                                                  ->where('bus_id',$busId)
+                                                  ->get(); 
+
+        // $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
+        //                         ->where('status','1')->get();
+
+                                
+        //Log::info($couponDetails);                           
         $maxRedeemCount = $couponDetails[0]->max_redeem;
         
         if($couponCount < $maxRedeemCount){     
@@ -166,6 +184,8 @@ class OfferRepository
                                                                 'coupon_discount' => $discount,
                                                                 'payable_amount' => $payableAmount
                                                             ]);
+                    // Log::info('11111');                                   
+                    // Log::info($couponRecords);                                      
                                                             
                         return $couponRecords;
                     }else{
@@ -183,6 +203,9 @@ class OfferRepository
                                                                 'coupon_discount' => $discount,
                                                                 'payable_amount' => $payableAmount
                                                             ]);
+
+                            // Log::info('2222');                                   
+                            // Log::info($couponRecords);                                      
                         return $couponRecords;
                     }
                 }elseif($couponType == '2'){  
@@ -203,6 +226,8 @@ class OfferRepository
                                                                 'coupon_discount' => $discount,
                                                                 'payable_amount' => $payableAmount
                                                             ]);
+                        //  Log::info('3333');                                   
+                        //  Log::info($couponRecords);                                   
                         return $couponRecords;
                     }else{
                         return "min_tran_amount";
