@@ -275,14 +275,13 @@ class ChannelRepository
         $i = 0;
         $m = 0;
         $f = 0;
+        $O = 0;
         //$nameList = $passengerDetails[0]->passenger_name;
         foreach($passengerDetails as $pDetail){
             if($i==0){
               $nameList = "{$nameList},{$pDetail['passenger_name']}";
             }
-            if($i>0){
-              $nameList = "{$nameList}+{$i}";   
-            }
+           
             $i++;
             switch($pDetail['passenger_gender']){
               case("M"):
@@ -291,15 +290,58 @@ class ChannelRepository
               case("F"):
                 $f++;
               break;
+              case("O"):
+                $O++;
+              break;
             }
         } 
-        $genderList = "{$m}M/{$f}F";
-        if($m==0){
-          $genderList = substr($genderList,3);
+        
+        // if($m==0){
+        //   $genderList = substr($genderList,3);
+        // }
+        // if($f==0){
+        //   $genderList = substr($genderList,0,-3);
+        // }
+
+        if($m>0 && $f>0 && $O > 0){
+          $genderList = "{$m}M/{$f}F/{$O}O";
         }
-        if($f==0){
-          $genderList = substr($genderList,0,-3);
+
+        else if($m>0 && $f>0 && $O == 0){
+          $genderList = "{$m}M/{$f}F";
         }
+
+        else if($m>0 && $f==0 && $O > 0){
+          $genderList = "{$m}M/{$O}O";
+        }
+
+        else if($m==0 && $f>0 && $O > 0){
+          $genderList = "{$f}F/{$O}O";
+        }
+
+        else if($m>0 && $f==0 && $O == 0){
+          $genderList = "{$m}M";
+        }
+
+        else if($m==0 && $f>0 && $O == 0){
+          $genderList = "{$f}F";
+        }
+
+        else if($m==0 && $f==0 && $O > 0){
+          $genderList = "{$O}O";
+        }
+
+
+        
+
+        if(count($passengerDetails) > 1){
+          $restNo = count($passengerDetails) -1 ;
+
+          $nameList = "{$nameList}+{$restNo}"; 
+
+        }
+      
+       
         
         $nameList = substr($nameList,1);
         //$genderList = substr($genderList,1);
@@ -391,17 +433,86 @@ class ChannelRepository
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
+        $i = 0;
+        $m = 0;
+        $f = 0;
+        $O = 0;
+
+        foreach($passengerDetails as $pDetail){
+          if($i==0){
+            $nameList = "{$nameList},{$pDetail['passenger_name']}";
+          }
+         
+          $i++;
+          switch($pDetail['passenger_gender']){
+            case("M"):
+              $m++;
+            break;
+            case("F"):
+              $f++;
+            break;
+            case("O"):
+              $O++;
+            break;
+          }
+      } 
+      
+      // if($m==0){
+      //   $genderList = substr($genderList,3);
+      // }
+      // if($f==0){
+      //   $genderList = substr($genderList,0,-3);
+      // }
+      
+      if($m>0 && $f>0 && $O > 0){
+        $genderList = "{$m}M/{$f}F/{$O}O";
+      }
+      
+      else if($m>0 && $f>0 && $O == 0){
+        $genderList = "{$m}M/{$f}F";
+      }
+      
+      else if($m>0 && $f==0 && $O > 0){
+        $genderList = "{$m}M/{$O}O";
+      }
+      
+      else if($m==0 && $f>0 && $O > 0){
+        $genderList = "{$f}F/{$O}O";
+      }
+      
+      else if($m>0 && $f==0 && $O == 0){
+        $genderList = "{$m}M";
+      }
+      
+      else if($m==0 && $f>0 && $O == 0){
+        $genderList = "{$f}F";
+      }
+      
+      else if($m==0 && $f==0 && $O > 0){
+        $genderList = "{$O}O";
+      } 
+      
+      
+      if(count($passengerDetails) > 1){
+        $restNo = count($passengerDetails) -1 ;
+      
+        $nameList = "{$nameList}+{$restNo}"; 
+        
+      }
+      
+      $nameList = substr($nameList,1);
+
 
         if(isset($data['customer_comission'])){
           $payable_amount= $payable_amount + $data['customer_comission'];
         }
    
-        foreach($passengerDetails as $pDetail){
-            $nameList = "{$nameList},{$pDetail['passenger_name']}";
-            $genderList = "{$genderList},{$pDetail['passenger_gender']}";
-        } 
-        $nameList = substr($nameList,1);
-        $genderList = substr($genderList,1);
+        // foreach($passengerDetails as $pDetail){
+        //     $nameList = "{$nameList},{$pDetail['passenger_name']}";
+        //     $genderList = "{$genderList},{$pDetail['passenger_gender']}";
+        // } 
+
+        //$genderList = substr($genderList,1);
         $busDetails = $data['busname'].'-'.$data['busNumber'];
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
@@ -413,7 +524,7 @@ class ChannelRepository
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.msgTicketCMO');
             $apiKey = urlencode( $apiKey);
-            $receiver = urlencode($contact_number);
+            $receiver = urlencode($contact_number); //$contact_number
             //$message = str_replace("<PNR>",$data['PNR'],$message);
             $message = str_replace("<PNR>",$pnr,$message);
             $message = str_replace("<busdetails>",$busDetails,$message);
