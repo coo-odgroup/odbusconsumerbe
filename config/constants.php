@@ -16,7 +16,7 @@ return [
     'VERIFIED' => 'verification is successful',
     'REGISTERED' => 'Registered User',
     'LOGIN' => 'Login Successful',
-    'UN_REGISTERED' => 'Not a Registered User',
+    'UN_REGISTERED' => 'Your have not registered yet SIGNUP first',
     'OTP_GEN' => 'OTP generated',
     'OTP_NULL' => 'No Value provided in OTP',
     'OTP_INVALID' => 'Invalid OTP',
