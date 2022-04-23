@@ -86,7 +86,7 @@ class CancelTicketService
                     //     return 'Cancellation is not allowed';                    
                     // }
 
-                    $paidAmount = $booking_detail[0]->booking[0]->total_fare;
+                    $paidAmount = $booking_detail[0]->booking[0]->payable_amount ;
 
                  if($booking_detail[0]->booking[0]->customerPayment != null){
 

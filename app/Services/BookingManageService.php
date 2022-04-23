@@ -390,7 +390,7 @@ class BookingManageService
                 // if($interval < 12) {
                 //     return 'CANCEL_NOT_ALLOWED';                    
                 // }
-                $paidAmount = $booking_detail[0]->booking[0]->total_fare; 
+                $paidAmount = $booking_detail[0]->booking[0]->payable_amount; 
                 $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
                 
                 $otp = rand(10000, 99999);
@@ -503,7 +503,8 @@ class BookingManageService
                     $bookingId = $booking_detail[0]->booking[0]->id;
                     $srcId = $booking_detail[0]->booking[0]->source_id;
                     $desId = $booking_detail[0]->booking[0]->destination_id;
-                    $paidAmount = $booking_detail[0]->booking[0]->total_fare;
+                    $paidAmount = $booking_detail[0]->booking[0]->payable_amount;
+                    $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
                     $sourceName = Location::where('id',$srcId)->first()->name;
                     $destinationName = Location::where('id',$desId)->first()->name;
                     $data['source'] = $sourceName;
@@ -532,13 +533,13 @@ class BookingManageService
                            $data['refundAmount'] = $refundAmt;
                            $data['deductionPercentage'] = $deduction."%";
                            $data['deductAmount'] =round($paidAmount-$refundAmt,2);
-                           $data['totalfare'] = $paidAmount;
+                           $data['totalfare'] = $paidAmount + $customer_comission;
                            $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction); 
 
                            $smsData['refundAmount'] = $refundAmt;     
                            $emailData['deductionPercentage'] = $deduction;
                            $emailData['refundAmount'] = $refundAmt;
-                           $emailData['totalfare'] = $paidAmount;
+                           $emailData['totalfare'] = $paidAmount + $customer_comission;
                  
                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
@@ -552,14 +553,14 @@ class BookingManageService
                            $data['refundAmount'] = $refundAmt;
                            $data['deductionPercentage'] = $deduction."%";
                            $data['deductAmount'] =round($paidAmount-$refundAmt,2);
-                           $data['totalfare'] = $paidAmount;                        
+                           $data['totalfare'] = $paidAmount + $customer_comission;                        
                           
                            $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt,$deduction);
                            
                            $smsData['refundAmount'] = $refundAmt; 
                            $emailData['deductionPercentage'] = $deduction;
                            $emailData['refundAmount'] = $refundAmt;
-                           $emailData['totalfare'] = $paidAmount;
+                           $emailData['totalfare'] = $paidAmount + $customer_comission;;
                        
                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
