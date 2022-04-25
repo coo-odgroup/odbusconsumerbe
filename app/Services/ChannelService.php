@@ -425,6 +425,17 @@ class ChannelService
         }
         
     }   
+////////////resend SmsEmail icket///////////////////////////
+    public function resendTicket($request)
+    {
+        try {
+            $resend = $this->channelRepository->resendTicket($request);
 
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+        return $resend;
+    }
    
 }

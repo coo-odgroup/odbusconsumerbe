@@ -24,6 +24,8 @@ use App\Models\AgentCommission;
 use App\Models\Notification;
 use App\Models\UserNotification;
 use App\Models\BusContacts;
+use App\Models\Location;
+use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -266,9 +268,10 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$data, $pnr) {
-
-        $seatList = implode(",",$data['seat_no']);
+      public function sendSmsTicket($payable_amount,$data, $pnr) {
+        $collection = collect($data['seat_no']);
+        $seatList = $collection->implode(',');
+        //$seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
@@ -331,18 +334,13 @@ class ChannelRepository
           $genderList = "{$O}O";
         }
 
-
-        
-
         if(count($passengerDetails) > 1){
           $restNo = count($passengerDetails) -1 ;
 
           $nameList = "{$nameList}+{$restNo}"; 
 
         }
-      
        
-        
         $nameList = substr($nameList,1);
         //$genderList = substr($genderList,1);
         $busDetails = $data['busname'].'-'.$data['busNumber'];
@@ -354,7 +352,6 @@ class ChannelRepository
           $payable_amount= $payable_amount + $data['customer_comission'];
         }
 
-       
         if($SmsGW =='textLocal'){
 
             //Environment Variables
@@ -427,9 +424,11 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$data, $pnr, $contact_number) {
+      public function sendSmsCMO($payable_amount,$data, $pnr, $contact_number) {
 
-        $seatList = implode(",",$data['seat_no']);
+        $collection = collect($data['seat_no']);
+        $seatList = $collection->implode(',');
+        //$seatList = implode(",",$data['seat_no']);
         $nameList = "";
         $genderList ="";
         $passengerDetails = $data['passengerDetails'];
@@ -456,13 +455,6 @@ class ChannelRepository
             break;
           }
       } 
-      
-      // if($m==0){
-      //   $genderList = substr($genderList,3);
-      // }
-      // if($f==0){
-      //   $genderList = substr($genderList,0,-3);
-      // }
       
       if($m>0 && $f>0 && $O > 0){
         $genderList = "{$m}M/{$f}F/{$O}O";
@@ -496,12 +488,10 @@ class ChannelRepository
       if(count($passengerDetails) > 1){
         $restNo = count($passengerDetails) -1 ;
       
-        $nameList = "{$nameList}+{$restNo}"; 
-        
+        $nameList = "{$nameList}+{$restNo}";  
       }
       
       $nameList = substr($nameList,1);
-
 
         if(isset($data['customer_comission'])){
           $payable_amount= $payable_amount + $data['customer_comission'];
@@ -694,10 +684,6 @@ class ChannelRepository
         SendAdminEmailTicketJob::dispatch($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
       }
 
-
-
-      
-
       public function sendEmailTicketCancel($request) {
 
         SendEmailTicketCancelJob::dispatch($request);
@@ -707,8 +693,6 @@ class ChannelRepository
 
         SendAdminEmailTicketCancelJob::dispatch($request);
       }
-
-      
 
       public function getBookingRecord($transationId){
         return $this->booking->with('users')->where('transaction_id', $transationId)->get();
@@ -790,7 +774,8 @@ class ChannelRepository
                                     'payment_done' => $paymentDone
                                 ]);
             if($request['phone']){
-                $sendsms = $this->sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr); 
+                $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr); 
+                //$msgId = $sendsms->messages[0]->id;
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
@@ -808,7 +793,7 @@ class ChannelRepository
                                           ->get('phone');
         if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-           $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
+           $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
         }
 
       ///////////////////////////////////////////////////////////////////////////////////
@@ -818,6 +803,11 @@ class ChannelRepository
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+
+        ///////// save msgId(textLocal) in customer_payment table//////////////////////
+
+        //CustomerPayment::where('booking_id', $bookingId)->update(['textlocal_msg_id' => $msgId ]);
+      
             return "Payment Done";
         }
         else{ 
@@ -918,7 +908,7 @@ class ChannelRepository
       {  
         if($request['phone']){
 
-          $sendsms = $this->sendSmsTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr);
+          $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr);
         } 
         if($request['email']){
             $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
@@ -932,7 +922,7 @@ class ChannelRepository
 
           if($busContactDetails->isNotEmpty()){
           $contact_number = collect($busContactDetails)->implode('phone',',');
-          $this->sendSmsCMO($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr, $contact_number);
+          $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
           }
 
 
@@ -946,5 +936,97 @@ class ChannelRepository
                       ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
         return "Payment Failed"; 
       }
+    ////////////resend SmsEmail icket///////////////////////////
+    public function resendTicket($request)
+    {
+      $pnr = $request['pnr_no'];
+      $action = $request['action'];
 
+      $bookingDetails = $this->booking->where('pnr', $pnr)
+                                          ->with('bookingDetail')
+                                          ->get();
+      $phone = Users::where('id',$bookingDetails[0]->users_id)->first()->phone;
+      $busname = $bookingDetails[0]->bus->name;
+      $busNumber = $bookingDetails[0]->bus->bus_number;
+      $journeydate = $bookingDetails[0]->journey_dt;
+      $srcName = Location::where('id',$bookingDetails[0]->source_id)->first()->name;
+      $destName = Location::where('id',$bookingDetails[0]->destination_id)->first()->name;
+      $routedetails = $srcName.'-'.$destName;
+      $departureTime = TicketPrice::where('bus_id',$bookingDetails[0]->bus_id)->first()->dep_time;
+      $departureTime = date("H:i:s",strtotime($departureTime));
+
+      if($bookingDetails[0]->payable_amount == 0.00){
+        $payable_amount = $bookingDetails[0]->total_fare;
+      }else{
+        $payable_amount = $bookingDetails[0]->payable_amount;
+      }
+
+      $passengerDetails = $bookingDetails[0]->bookingDetail;
+      $conductor_number = BusContacts::where('bus_id',$bookingDetails[0]->bus_id)->where('type','2')  ->first()->phone;
+      $busSeatsIds = $bookingDetails[0]->bookingDetail->pluck('bus_seats_id');
+      $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
+      $seat_no = $busSeatsDetails->pluck('seats.seatText');
+      
+      $data = array(
+          "seat_no" => $seat_no,
+          "passengerDetails" => $passengerDetails, 
+          "busname" => $busname,
+          "busNumber" => $busNumber,
+          "phone" => $phone,
+          "journeydate" => $journeydate,
+          "routedetails" => $routedetails,
+          "departureTime" => $departureTime,
+          "conductor_number" => $conductor_number,
+      );
+                                 
+      if($action == "smsToCustomer"){
+        
+        $sendsms = $this->sendSmsTicket($payable_amount,$data,$pnr); 
+        return "msg_sent";
+      }
+      if($action == "smsToConductor"){
+        $contact_number = BusContacts::where('bus_id',$bookingDetails[0]->bus_id)
+                                          ->where('status','1')
+                                          ->where('booking_sms_send','1')
+                                          ->where('type','2')
+                                          ->first()->phone;
+        if(isset($contact_number)){
+          $this->sendSmsCMO($payable_amount,$data, $pnr, $contact_number);
+          return "msg_sent";
+        }
+      }
+      if($action == "smsToManager"){
+        $contact_number = BusContacts::where('bus_id',$bookingDetails[0]->bus_id)
+                                          ->where('status','1')
+                                          ->where('booking_sms_send','1')
+                                          ->where('type','1')
+                                          ->first()->phone;
+        if(isset($contact_number)){
+          $this->sendSmsCMO($payable_amount,$data, $pnr, $contact_number);
+          return "msg_sent";
+        }
+      }
+      if($action == "smsToOwner"){
+        $contact_number = BusContacts::where('bus_id',$bookingDetails[0]->bus_id)
+                                          ->where('status','1')
+                                          ->where('booking_sms_send','1')
+                                          ->where('type','0')
+                                          ->first()->phone;
+        if(isset($contact_number)){
+          $this->sendSmsCMO($payable_amount,$data, $pnr, $contact_number);
+          return "msg_sent";
+        }
+      }
+      ////////testing pending////////////
+      if($action == "emailToCustomer"){
+        
+        $sendemail = $this->sendEmailTicket(); 
+        return "msg_sent";
+      }
+      if($action == "emailToAdmin"){
+        
+        $sendemail = $this->sendEmailTicket(); 
+        return "msg_sent";
+      }
+    }
 }

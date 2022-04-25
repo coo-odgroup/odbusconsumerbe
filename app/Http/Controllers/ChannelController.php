@@ -899,4 +899,19 @@ class ChannelController extends Controller
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
       }     
 }
+///////////////resend Sms/Email Ticket///////////////////////////////
+
+public function resendTicket(Request $request)
+    {
+         
+          try {
+           $response = $this->channelService->resendTicket($request); 
+           //return $response;
+            return $this->successResponse($response,Config::get('constants.MSG_SENT'),Response::HTTP_OK);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+          }       
+    }
+
 }
