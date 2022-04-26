@@ -501,7 +501,8 @@ class ChannelController extends Controller
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }  
         try{
-            $response = $this->channelService->pay($request); 
+            $response = $this->channelService->pay($request);
+            //return $response; 
             If($response == 'Payment Done'){
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
             }
