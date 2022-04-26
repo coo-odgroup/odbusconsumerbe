@@ -585,5 +585,61 @@ class BookingManageService
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-    }         
+    } 
+    
+    public function getPnrDetails($pnr){
+
+        try {  
+            $pnrdetail = $this->bookingManageRepository->getPnrDetails($pnr);
+    
+            if(isset($pnrdetail[0])){ 
+                    
+                    $ticketPriceRecords = TicketPrice::where('bus_id', $pnrdetail[0]->bus_id)
+                    ->where('source_id', $pnrdetail[0]->source_id)
+                    ->where('destination_id', $pnrdetail[0]->destination_id)
+                    ->get(); 
+    
+                    $departureTime = $ticketPriceRecords[0]->dep_time;
+                    $arrivalTime = $ticketPriceRecords[0]->arr_time;
+                    $depTime = date("H:i",strtotime($departureTime));
+                    $arrTime = date("H:i",strtotime($arrivalTime)); 
+                    $jdays = $ticketPriceRecords[0]->j_day;
+                    $arr_time = new DateTime($arrivalTime);
+                    $dep_time = new DateTime($departureTime);
+                    $totalTravelTime = $dep_time->diff($arr_time);
+                    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+                    switch($jdays)
+                    {
+                        case(1):
+                            $j_endDate = $pnrdetail[0]->journey_dt;
+                            break;
+                        case(2):
+                            $j_endDate = date('Y-m-d', strtotime('+1 day', strtotime($pnrdetail[0]->journey_dt)));
+                            break;
+                        case(3):
+                            $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($pnrdetail[0]->journey_dt)));
+                            break;
+                    }
+
+
+                     $pnrdetail[0]['source']=$this->bookingManageRepository->GetLocationName($pnrdetail[0]->source_id);
+                     $pnrdetail[0]['destination']=$this->bookingManageRepository->GetLocationName($pnrdetail[0]->destination_id);  
+                     $pnrdetail[0]['journeyDuration'] =  $totalJourneyTime;
+                     $pnrdetail[0]['journey_end_dt'] =  $j_endDate;           
+                     
+                    return $pnrdetail;    
+               
+            }            
+            else{            
+                return "INVALID_PNR";            
+            }
+
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+
+    }
 }

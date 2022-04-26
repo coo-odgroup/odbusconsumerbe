@@ -123,7 +123,7 @@ Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchD
 //Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 Route::post('/ResendTicket', [ChannelController::class, 'resendTicket']);
-
+Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 });
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
@@ -131,4 +131,5 @@ Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
 Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
+
 

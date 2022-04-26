@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\BookingManageService;
 use App\AppValidator\BookingManageValidator;
 use App\AppValidator\AgentCancelTicketValidator;
+use Illuminate\Support\Facades\Log;
+
 
 class BookingManageController extends Controller
 {
@@ -494,5 +496,25 @@ class BookingManageController extends Controller
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
-    }     
+    }  
+    
+    public function pnrDetail($pnr){
+
+      try {
+      $result = $this->bookingManageService->getPnrDetails($pnr);
+   
+      if($result=='INVALID_PNR'){
+
+        return $this->errorResponse(Config::get('constants.INVALID_PNR'),Response::HTTP_PARTIAL_CONTENT);
+
+      } else{
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+      }     
+      
+    }   
+      catch (Exception $e) {     
+        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      } 
+
+    }
 }

@@ -74,4 +74,5 @@ return [
     'CLIENT_UNAUTHORIZED' => 'Unauthorized Client',
     'OTP_SENT_CUSTOMER' => 'OTP Sent to customer',
     'MSG_SENT' => 'Message sent successfully',
+    'INVALID_PNR' => 'Invalid PNR'
 ];
