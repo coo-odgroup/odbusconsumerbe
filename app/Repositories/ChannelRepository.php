@@ -14,6 +14,7 @@ use App\Jobs\SendAdminEmailTicketCancelJob;
 use App\Mail\SendEmailOTP;
 use Razorpay\Api\Api;
 use App\Models\CustomerPayment;
+use App\Models\ManageSms;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
@@ -41,8 +42,9 @@ class ChannelRepository
     protected $bookingDetail;
     protected $busSeats;
     protected $credentials;
+    protected $manageSms;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail,ManageSms $manageSms)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
@@ -51,6 +53,7 @@ class ChannelRepository
         $this->busSeats = $busSeats;
         $this->credentials = $credentials;
         $this->bookingDetail = $bookingDetail;
+        $this->manageSms = $manageSms;
     } 
     
     public function storeGWInfo($data) {
@@ -758,6 +761,7 @@ class ChannelRepository
 
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
+        $SmsGW = config('services.sms.otpservice');
        
         $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
 
@@ -774,8 +778,31 @@ class ChannelRepository
                                     'payment_done' => $paymentDone
                                 ]);
             if($request['phone']){
+  
                 $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr); 
-                //$msgId = $sendsms->messages[0]->id;
+                //return $sendsms;
+                 $msgId = $sendsms->messages[0]->id;
+                 $status = $sendsms->status;
+                 $from = $sendsms->message->sender;
+                 $to1 = $sendsms->messages[0]->recipient;
+                 $to = substr($to1, 2); 
+                 $contents = $sendsms->message->content;
+                 $response = collect($sendsms);
+                //dd($response);
+                /// save sms related things in manage_sms table///////////////
+        
+                $sms = new $this->manageSms();
+                $sms->pnr = $pnr;
+                $sms->booking_id = $bookingId;
+                $sms->sms_engine = $SmsGW;
+                $sms->status = $status;
+                $sms->from = $from;
+                $sms->to = $to;
+                $sms->contents = $contents;
+                $sms->response = $response;
+                $sms->message_id = $msgId;
+                $sms->save();
+                //return $sms;
             } 
             if($request['email']){
                 $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
@@ -804,10 +831,6 @@ class ChannelRepository
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-        ///////// save msgId(textLocal) in customer_payment table//////////////////////
-
-        //CustomerPayment::where('booking_id', $bookingId)->update(['textlocal_msg_id' => $msgId ]);
-      
             return "Payment Done";
         }
         else{ 
