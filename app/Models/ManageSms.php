@@ -10,7 +10,7 @@ class ManageSms extends Model
 {
     use HasFactory;
     protected $table = 'manage_sms';
-    protected $fillable = ['pnr','booking_id','sms_engine','status',
+    protected $fillable = ['pnr','booking_id','sms_engine','type','status',
                             'from','to','contents','response ','message_id',
                             'is_engine_verification','engine_verification_sts','engine_verification_info'];
 
