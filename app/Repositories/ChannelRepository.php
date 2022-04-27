@@ -795,6 +795,7 @@ class ChannelRepository
                 $sms->pnr = $pnr;
                 $sms->booking_id = $bookingId;
                 $sms->sms_engine = $SmsGW;
+                $sms->type = 'customer';
                 $sms->status = $status;
                 $sms->from = $from;
                 $sms->to = $to;
@@ -834,6 +835,7 @@ class ChannelRepository
             $sms->pnr = $pnr;
             $sms->booking_id = $bookingId;
             $sms->sms_engine = $SmsGW;
+            $sms->type = 'cmo';
             $sms->status = $status;
             $sms->from = $from;
             $sms->to = $to;
@@ -965,6 +967,7 @@ class ChannelRepository
           $sms->pnr = $pnr;
           $sms->booking_id = $bookingId;
           $sms->sms_engine = $SmsGW;
+          $sms->type = 'customer';
           $sms->status = $status;
           $sms->from = $from;
           $sms->to = $to;
@@ -977,6 +980,12 @@ class ChannelRepository
         if($request['email']){
             $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
         } 
+
+
+        /////////////////send email to odbus admin////////
+
+           $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+ 
 
          ///////////////////CMO SMS/////////////////////////////////////////////////
          $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -1001,6 +1010,7 @@ class ChannelRepository
             $sms->pnr = $pnr;
             $sms->booking_id = $bookingId;
             $sms->sms_engine = $SmsGW;
+            $sms->type = 'cmo';
             $sms->status = $status;
             $sms->from = $from;
             $sms->to = $to;
