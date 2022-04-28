@@ -122,7 +122,7 @@ Route::post('/RecentSearch', [RecentSearchController::class, 'createSearch']);
 Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchDetails']);
 //Route::get('/busSeats', [ArticleController::class, 'getBusSeats']);
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
-Route::post('/ResendTicket', [ChannelController::class, 'resendTicket']);
+//Route::post('/ResendTicket', [ChannelController::class, 'resendTicket']);
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 });
 
