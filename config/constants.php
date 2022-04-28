@@ -75,6 +75,6 @@ return [
     'OTP_SENT_CUSTOMER' => 'OTP Sent to customer',
     'MSG_SENT' => 'Message sent successfully',
     'INVALID_PNR' => 'Invalid PNR',
-    'BUS_CANCELLED' => 'Bus Cancelled',
-    'SEAT_BLOCKED' => 'Seat Blocked'
+    'BUS_CANCELLED' => 'The Bus Chosen By You Currently Unavailable, Please Choose Another Bus.',
+    'SEAT_BLOCKED' => 'Your Selected Seat Is Not Available Now, Please Select Another Seat'
 ];
