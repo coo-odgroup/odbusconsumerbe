@@ -11,6 +11,9 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\BookTicketService;
 use App\AppValidator\BookTicketValidator;
+use Illuminate\Support\Facades\Log;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class BookTicketController extends Controller
 {
@@ -249,15 +252,24 @@ class BookTicketController extends Controller
  * 
  */
     public function bookTicket(Request $request) {
+
+        
+        $token = JWTAuth::getToken();
+
+        $user = JWTAuth::toUser($token);
+
          $data = $request->all();
-           $bookTicketValidation = $this->bookTicketValidator->validate($data);
+
+         $data['bookingInfo']['origin']=$user->name;
+
+        $bookTicketValidation = $this->bookTicketValidator->validate($data);
    
         if ($bookTicketValidation->fails()) {
         $errors = $bookTicketValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
           try {
-           $response =  $this->bookTicketService->bookTicket($request);  
+           $response =  $this->bookTicketService->bookTicket($data);  
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) {

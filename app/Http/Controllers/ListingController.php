@@ -18,7 +18,10 @@ use App\AppValidator\FilterOptionsValidator;
 use App\AppValidator\BusDetailsValidator;
 use App\AppValidator\LocationValidator;
 //use Debugbar;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\Debugbar\Facades\Debugbar;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ListingController extends Controller
 {
@@ -176,6 +179,8 @@ class ListingController extends Controller
  * 
  */
     public function getAllListing(Request $request) {
+
+
         $data = $request->only([
             'source',
             'destination',

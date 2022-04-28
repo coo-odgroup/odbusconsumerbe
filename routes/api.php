@@ -56,8 +56,7 @@ use App\Http\Controllers\AuthClientsController;
 
 Route::group(['middleware' => ['jwt.verify']], function() {
 
-    
-// Route::group(['middleware' => ['checkIp', 'log.route']], function() {
+    Route::group(['middleware' => ['checkIp', 'log.route']], function() {
 //         Route::get('/getLocation', [ListingController::class, 'getLocation']);
 // });    
 
@@ -124,6 +123,8 @@ Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchD
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 //Route::post('/ResendTicket', [ChannelController::class, 'resendTicket']);
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
+
+});
 });
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
