@@ -75,5 +75,6 @@ return [
     'OTP_SENT_CUSTOMER' => 'OTP Sent to customer',
     'MSG_SENT' => 'Message sent successfully',
     'INVALID_PNR' => 'Invalid PNR',
-    'BUS_CANCELLED' => 'Bus Cancelled'
+    'BUS_CANCELLED' => 'Bus Cancelled',
+    'SEAT_BLOCKED' => 'Seat Blocked'
 ];

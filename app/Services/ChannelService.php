@@ -6,6 +6,7 @@ use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
 use App\Models\TicketPrice;
 use App\Models\BusCancelled;
+use App\Models\BusSeats;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -110,13 +111,15 @@ class ChannelService
                 $entry_date = date("Y-m-d", strtotime($entry_date));
 
             ///////////////////////cancelled bus recheck////////////////////////
-            $startJDay = TicketPrice::where('source_id', $sourceId)
+            $routeDetails = TicketPrice::where('source_id', $sourceId)
                             ->where('destination_id', $destinationId)
                             ->where('bus_id', $busId)
                             ->where('status','1')
-                            ->first()->start_j_days; 
-            //return $startJDay;
-            
+                            ->get(); 
+           
+            $startJDay = $routeDetails[0]->start_j_days;
+            $ticketPriceId = $routeDetails[0]->id;
+
             switch($startJDay){
                 case(1):
                     $new_date = $entry_date;
@@ -135,11 +138,23 @@ class ChannelService
                                         }])->get(); 
            
             $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
-            //return $busCancel;
 
             if(isset($busCancel) && $busCancel->isNotEmpty()){
                 return "BUS_CANCELLED";
-            }else{
+            }
+          /////////////////seat block recheck////////////////////////
+            $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                    ->where('type',2)
+                                    ->where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->whereIn('seats_id',$seatIds)
+                                    ->get();
+                                                    
+            if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                return "SEAT_BLOCKED";
+            }
+          ////////////////////////////////////////////////////////////
                 $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
@@ -236,7 +251,7 @@ class ChannelService
                 else{
                     return "SEAT UN-AVAIL";
                 }
-            }
+            
 
         } catch (Exception $e) {
             Log::info($e);
@@ -420,8 +435,6 @@ class ChannelService
          
             $bookingId = $bookingRecord[0]->id;   
 
-           
-            //////////////////////////////////////////
             $totalfare = $bookingRecord[0]->total_fare;
             $discount = $bookingRecord[0]->coupon_discount;
             //$payable_amount = $bookingRecord[0]->payable_amount;

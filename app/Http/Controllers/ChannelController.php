@@ -269,6 +269,9 @@ class ChannelController extends Controller
                 case('BUS_CANCELLED'):    
                     return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
                 break;
+                case('SEAT_BLOCKED'):    
+                    return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
+                break;
             }
             return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);    
         }
