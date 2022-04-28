@@ -259,19 +259,34 @@ class ChannelController extends Controller
         if ($makePaymentValidation->fails()) {
         $errors = $makePaymentValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        }  
+        } 
         try {
-            $response = $this->channelService->makePayment($request); 
-            if($response == 'SEAT UN-AVAIL'){
-                return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+            $response = $this->channelService->makePayment($request);
+            switch($response){
+                case('SEAT UN-AVAIL'):  
+                    return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+                break;
+                case('BUS_CANCELLED'):    
+                    return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
+                break;
             }
-            else{
-                return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
-            }
-         }
-         catch (Exception $e) {
+            return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);    
+        }
+        catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-           }  
+        }        
+        // try {
+        //     $response = $this->channelService->makePayment($request); 
+        //     if($response == 'SEAT UN-AVAIL'){
+        //         return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+        //     }
+        //     else{
+        //         return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
+        //     }
+        //  }
+        //  catch (Exception $e) {
+        //      return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        //    }  
     }
 
     public function checkSeatStatus(Request $request)

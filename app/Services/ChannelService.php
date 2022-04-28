@@ -4,6 +4,8 @@ namespace App\Services;
 use App\Models\CustomerNotification;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
+use App\Models\TicketPrice;
+use App\Models\BusCancelled;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -99,10 +101,45 @@ class ChannelService
 
             //$payment = $this->channelRepository->makePayment($data);
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
-                $busId = $request['busId'];    
+                $busId = $request['busId']; 
+                $sourceId = $request['sourceId'];
+                $destinationId = $request['destinationId'];  
                 $transationId = $request['transaction_id']; 
                 $seatIds = $request['seatIds'];
+                $entry_date = $request['entry_date'];
+                $entry_date = date("Y-m-d", strtotime($entry_date));
 
+            ///////////////////////cancelled bus recheck////////////////////////
+            $startJDay = TicketPrice::where('source_id', $sourceId)
+                            ->where('destination_id', $destinationId)
+                            ->where('bus_id', $busId)
+                            ->where('status','1')
+                            ->first()->start_j_days; 
+            //return $startJDay;
+            
+            switch($startJDay){
+                case(1):
+                    $new_date = $entry_date;
+                    break;
+                case(2):
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    break;
+                case(3):
+                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                    break;
+            }   
+            $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                        ->where('status', '1')
+                                        ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                        $bcd->where('cancelled_date',$new_date);
+                                        }])->get(); 
+           
+            $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+            //return $busCancel;
+
+            if(isset($busCancel) && $busCancel->isNotEmpty()){
+                return "BUS_CANCELLED";
+            }else{
                 $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
@@ -128,7 +165,6 @@ class ChannelService
                 }
 
                 /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
-
 
                 $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
 
@@ -157,18 +193,10 @@ class ChannelService
                     $update_customer_gst['customer_gst_business_address']=null;
                     $update_customer_gst['customer_gst_percent']=0;                    
                     $update_customer_gst['customer_gst_amount']=0;
-                    $update_customer_gst['payable_amount']=$amount;
-                   
+                    $update_customer_gst['payable_amount']=$amount;    
                 }
 
-               // Log::info($update_customer_gst);
-                //return $update_customer_gst;
-
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
-
-                ////////// ///////////////////////////////////////////////////////
-
-
 
                 if(sizeof($filtered->all())==0){
                     //$records = $this->channelRepository->getBookingRecord($transationId);
@@ -208,6 +236,7 @@ class ChannelService
                 else{
                     return "SEAT UN-AVAIL";
                 }
+            }
 
         } catch (Exception $e) {
             Log::info($e);
