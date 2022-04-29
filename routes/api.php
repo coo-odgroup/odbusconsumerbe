@@ -132,5 +132,6 @@ Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
 Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
+Route::get('/testing', [ChannelController::class, 'testing']);
 
 

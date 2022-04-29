@@ -19,6 +19,9 @@ use App\AppValidator\PaymentStatusValidator;
 use App\AppValidator\AgentWalletPaymentValidator;
 use App\AppValidator\AgentPaymentStatusValidator;
 use App\Jobs\TestingEmailJob;
+use Razorpay\Api\Api;
+use Razorpay\Api\Errors\SignatureVerificationError;
+Use hash_hmac;
 
 class ChannelController extends Controller
 {
@@ -931,6 +934,26 @@ public function resendTicket(Request $request)
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }       
+    }
+
+    public function testing(){
+        
+
+        $key = $this->channelRepository->getRazorpayKey();
+        $secretKey = $this->channelRepository->getRazorpaySecret();
+
+        $api = new Api($key, $secretKey); 
+
+        $res= $api->order->fetch("order_JP4kBCFQ3CYcpI")->payments();
+
+        //Log::info($res->items[0]->id);
+
+        $payment = $api->payment->fetch($res->items[0]->id);
+        $paymentStatus = $payment->status;
+
+       // Log::info($paymentStatus);
+
+       // return $res;
     }
 
 }
