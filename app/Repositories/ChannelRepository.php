@@ -392,10 +392,12 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-             
-            return $response;
+
             $msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
+             
+            return $response;
+           
 
             // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
@@ -543,9 +545,12 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response); 
-            return $response;
+
             $msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
+            
+            return $response;
+           
             // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // $err = curl_error($ch);
             // if ($err) { 
@@ -777,6 +782,14 @@ class ChannelRepository
                                     'razorpay_signature' => $razorpay_signature,
                                     'payment_done' => $paymentDone
                                 ]);
+
+             //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+
+            $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
+            $booking = $this->booking->find($bookingId);
+            $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+        
+        
             if($request['phone']){
   
                 $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr); 
@@ -845,13 +858,6 @@ class ChannelRepository
             $sms->save();
             //return $sms;
         }
-      
-        //Update  Booking Ticket Status in booking Change status to 1(Booked)  
-
-        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
-        $booking = $this->booking->find($bookingId);
-        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
-
             return "Payment Done";
         }
         else{ 
@@ -950,6 +956,11 @@ class ChannelRepository
       }
       public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
       {  
+
+        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
+        $booking = $this->booking->find($bookingId);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+        
         $SmsGW = config('services.sms.otpservice');
         if($request['phone']){
 
@@ -1019,17 +1030,8 @@ class ChannelRepository
             $sms->message_id = $msgId;
             $sms->save();
           }
-
-
-        $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
-        $booking = $this->booking->find($bookingId);
-        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
-        return "Payment Done";
        
-        $this->booking->where('id', $bookingId)
-                      ->where('transaction_id', $transationId)
-                      ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
-        return "Payment Failed"; 
+        return "Payment Done";
       }
 
 
