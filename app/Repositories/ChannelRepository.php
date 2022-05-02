@@ -1035,11 +1035,7 @@ class ChannelRepository
             $sms->response = $response;
             $sms->message_id = $msgId;
             $sms->save();
-
-
-            }
-
-            
+            }  
           }
        
         return "Payment Done";
