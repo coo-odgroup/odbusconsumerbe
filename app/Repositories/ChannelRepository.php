@@ -393,8 +393,8 @@ class ChannelRepository
             curl_close($ch);
             $response = json_decode($response);
 
-            $msgId = $response->messages[0]->id;  // Store msg id in DB
-            session(['msgId'=> $msgId]);
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            //session(['msgId'=> $msgId]);
              
             return $response;
            
@@ -546,8 +546,8 @@ class ChannelRepository
             curl_close($ch);
             $response = json_decode($response); 
 
-            $msgId = $response->messages[0]->id;  // Store msg id in DB
-            session(['msgId'=> $msgId]);
+            //$msgId = $response->messages[0]->id;  // Store msg id in DB
+            //session(['msgId'=> $msgId]);
             
             return $response;
            
@@ -966,6 +966,8 @@ class ChannelRepository
 
           $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr);
 
+          if(isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)){
+
           $msgId = $sendsms->messages[0]->id;
           $status = $sendsms->status;
           $from = $sendsms->message->sender;
@@ -986,6 +988,8 @@ class ChannelRepository
           $sms->response = $response;
           $sms->message_id = $msgId;
           $sms->save();
+
+          }
         } 
 
         if($request['email']){
@@ -1008,6 +1012,8 @@ class ChannelRepository
             $contact_number = collect($busContactDetails)->implode('phone',',');
             $sendSmsCMO = $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
 
+            if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+
             $msgId = $sendSmsCMO->messages[0]->id;
             $status = $sendSmsCMO->status;
             $from = $sendSmsCMO->message->sender;
@@ -1029,6 +1035,11 @@ class ChannelRepository
             $sms->response = $response;
             $sms->message_id = $msgId;
             $sms->save();
+
+
+            }
+
+            
           }
        
         return "Payment Done";
