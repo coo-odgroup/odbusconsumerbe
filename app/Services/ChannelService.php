@@ -366,7 +366,7 @@ class ChannelService
                 $busId = $request['busId']; 
                 $sourceId = $request['sourceId'];
                 $destinationId = $request['destinationId'];  
-                $transationId = $request['transaction_id']; 
+                $transactionId = $request['transaction_id']; 
                 $seatIds = $request['seatIds'];
                 $entry_date = $request['entry_date'];
                 $entry_date = date("Y-m-d", strtotime($entry_date));
