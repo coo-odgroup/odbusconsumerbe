@@ -326,7 +326,7 @@ class ChannelService
             //////////////////////////////////////////
             $totalfare = $bookingRecord[0]->total_fare;
             $discount = $bookingRecord[0]->coupon_discount;
-            //$payable_amount = $bookingRecord[0]->payable_amount;
+        
             if($bookingRecord[0]->payable_amount == 0.00){
                 $payable_amount = $bookingRecord[0]->total_fare;
             }else{
@@ -438,26 +438,28 @@ class ChannelService
                 $filtered = $checkBookedSeat->reject(function ($value, $key) {                 //remove the null value
                     return $value == null;
                 });
+               
                 if(sizeof($filtered->all())==0){
                
                     $records = $this->channelRepository->getBookingRecord($transactionId);
                     $bookingId = $records[0]->id;  
                     
                     $name = $records[0]->users->name;
-                    $amount = $request['amount'];
+                    if($records[0]->payable_amount == 0.00){
+                        $amount = $records[0]->total_fare;
+                    }else{
+                        $amount = $records[0]->payable_amount;
+                    }
 
                     $details=$this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId);   
 
                     $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission);
-                    //return $totalSeatsBookedByAgent;
+                    
                     $data = array(
-                        //'Comission' => $totalSeatsBookedByAgent->amount,
-                        //'Total Balance' =>  $totalSeatsBookedByAgent->balance,
-                        //'Agent ID' => $totalSeatsBookedByAgent->user_id,
+                    
                         'notifications' => $totalSeatsBookedByAgent->notification_heading,
                     );
                     return $data;
-                    //return "SEAT AVAIL";
                 }else{
                     return "SEAT UN-AVAIL";
                 }
@@ -486,7 +488,7 @@ class ChannelService
 
             $totalfare = $bookingRecord[0]->total_fare;
             $discount = $bookingRecord[0]->coupon_discount;
-            //$payable_amount = $bookingRecord[0]->payable_amount;
+            
             if($bookingRecord[0]->payable_amount == 0.00){
                 $payable_amount = $bookingRecord[0]->total_fare;
             }else{
@@ -505,8 +507,6 @@ class ChannelService
             $customer_gst_percent=$bookingRecord[0]->customer_gst_percent;
             $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
             $coupon_discount=$bookingRecord[0]->coupon_discount;
-            //////////////////////////////////////////
-
 
             return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
             

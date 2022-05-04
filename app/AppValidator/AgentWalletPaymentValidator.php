@@ -17,7 +17,7 @@ class AgentWalletPaymentValidator
             'destinationId' => 'required',
             'applied_comission' => 'required',    
             'transaction_id' => 'required',    
-            'amount' => 'required',    
+            //'amount' => 'required',    
             'seatIds' => 'required|array|min:1',    
             'entry_date' => 'required|date_format:d-m-Y',    
         ];      

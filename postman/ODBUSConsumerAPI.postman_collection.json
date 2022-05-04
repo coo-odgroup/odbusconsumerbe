@@ -27,7 +27,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjJkZ0p2Zi1VdXV5am1BT0hWdXpUUCJ9.eyJpc3MiOiJodHRwczovL2Rldi1zZW9maWVkLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiIyZmdzRkNrOG1tRkpobTVFeG5lRmJYTXNUWWpBRTVOWkBjbGllbnRzIiwiYXVkIjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FwaS8iLCJpYXQiOjE2MzQ3OTU4NTgsImV4cCI6MTYzNDg4MjI1OCwiYXpwIjoiMmZnc0ZDazhtbUZKaG01RXhuZUZiWE1zVFlqQUU1TloiLCJzY29wZSI6InJlYWQ6bWVzc2FnZXMiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.K6oyJNHZ8K0mzljzWPb5NdeqLWN_y_cow75ZlOZBnDdIgdGfjMGtiryfqBOcYSdUbFl6zEonh3eQBbqauIt9UrtUk4T0gCBytnRuh8DBoL2vuaMmQEpiUjGqUaJmaLNiRIp1VneOfyWvWCpeLfxz6RpliNHT6e7C8R349cqwJHfbkNYeBIkGkyKW2f3cGc8RUADrV-aWfLwXgP8DIVCoPZZTH2d0shFAQKL1kif-N329R4xIBKn_ME1HK5UiTUA-WA6hntIotYZrk9qtgsfCqsjWE4qTm3ukMpOZ0dGFYAskK6-lny1SncbN_t2BTHEkr9LDO3V9JnAnZlEw02YTNA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUwODY4MjgxLCJleHAiOjE2NTA4NzE4ODEsIm5iZiI6MTY1MDg2ODI4MSwianRpIjoidU1seUt0OTFLWUhlSDAxNyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.LBFs0idSPv8B296fi1w29dd5KvOEeq7pITm2oen3w3Y",
 							"type": "string"
 						}
 					]
@@ -44,14 +44,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Listing?source=Bhubaneswar&destination=baripada&entry_date=25-01-2022",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=digha&entry_date=28-04-2022",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Listing"
@@ -63,11 +64,11 @@
 						},
 						{
 							"key": "destination",
-							"value": "baripada"
+							"value": "digha"
 						},
 						{
 							"key": "entry_date",
-							"value": "25-01-2022"
+							"value": "28-04-2022"
 						}
 					]
 				}
@@ -451,7 +452,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0OTIyMjY4OCwiZXhwIjoxNjQ5MjI2Mjg4LCJuYmYiOjE2NDkyMjI2ODgsImp0aSI6IjIwdnFQZ0xwNlVob0dTdGkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.M-m-7mhuoONF2BsG8fDyx71ABUdpciOdH9W8GbcP69Y",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUxMTMwMzcxLCJleHAiOjE2NTExMzM5NzEsIm5iZiI6MTY1MTEzMDM3MSwianRpIjoiOWJESXA3NTdrM0VtQlZyTyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.Eai1LxCFNOBtuTc_SfqC1tGrAQKUg1xdpXleBwq4ZQk",
 							"type": "string"
 						}
 					]
@@ -460,7 +461,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"busId\": 254,\r\n\t\"sourceId\": \"82\",\r\n\t\"destinationId\": \"53\",\r\n\t\"transaction_id\": \"20220404141311561229\",\r\n\t\"seatIds\": [\"3972\"],\r\n\t\"entry_date\": \"06-04-2022\",\r\n\t\"customer_gst_status\": true,\r\n\t\"customer_gst_number\": \"2323232323\",\r\n\t\"customer_gst_business_name\": \"lima\",\r\n\t\"customer_gst_business_email\": \"mailto:banashri.seofied@gmail.com\",\r\n\t\"customer_gst_business_address\": \"mailto:banashri.seofied@gmail.com\"\r\n}",
+					"raw": "{\r\n\t\"busId\": 798,\r\n\t\"sourceId\": \"144\",\r\n\t\"destinationId\": \"388\",\r\n\t\"transaction_id\": \"20220428112755972751\",\r\n\t\"seatIds\": [\"1880\", \"1881\"],\r\n\t\"entry_date\": \"25-04-2022\",\r\n\t\"customer_gst_status\": false,\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -468,14 +469,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/MakePayment",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/MakePayment",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"MakePayment"
@@ -810,7 +812,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjQ5MjM5Mzg4LCJleHAiOjE2NDkyNDI5ODgsIm5iZiI6MTY0OTIzOTM4OCwianRpIjoiQjQwQmlUWG84N0IzRjFqdSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.JBz0fFUyNWoped5EFYlYqVlT2uPibCKI1qJy9NDTDj4",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUwOTczMDQ0LCJleHAiOjE2NTA5NzY2NDQsIm5iZiI6MTY1MDk3MzA0NCwianRpIjoibVN3aDJuZHdxR0U4dTBiUyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.sDfeM9C1E5b4u67gWq6Fn39v8_UHccNAE4LJpC7Rvz8",
 							"type": "string"
 						}
 					]
@@ -819,7 +821,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220406142311512211\",\r\n\t\"razorpay_payment_id\": \"pay_JG0loz3zFryFG8\",\r\n\t\"razorpay_order_id\": \"order_JG0lhY5U0CR6ZC\",\r\n\t\"razorpay_signature\": \"ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203\",\r\n\t\"name\": \"Mrityunjay Mandal\",\r\n\t\"phone\": \"9937763653\",\r\n\t\"email\": \"mrityunjay.mandal5@gmail.com\",\r\n\t\"routedetails\": \"Bhubaneswar-Baripada\",\r\n\t\"bookingdate\": \"06-04-2022\",\r\n\t\"journeydate\": \"07-04-2022\",\r\n\t\"boarding_point\": \"Baramunda\",\r\n\t\"departureTime\": \"04:00\",\r\n\t\"dropping_point\": \"Baripada Bus Stand\",\r\n\t\"arrivalTime\": \"10:05\",\r\n\t\"seat_id\": [\"2176\"],\r\n\t\"seat_no\": [\"SL7B\"],\r\n\t\"bus_id\": 420,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Baripada\",\r\n\t\"busname\": \"AJAY\",\r\n\t\"busNumber\": \"OD 05 P 8199\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"AC SLEEPER\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"9439504879\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"2176\",\r\n\t\t\"passenger_name\": \"lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 35,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}]\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220421110232999533\",\r\n\t\"razorpay_payment_id\": \"pay_JLtMukQjpnhAsb\",\r\n\t\"razorpay_order_id\": \"order_JLtMp6EuiPD8m5\",\r\n\t\"razorpay_signature\": \"467d151ccb240d623ddc783d5989c598370ace014678932b0b4cd0346d418cbb\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"9916457575\",\r\n\t\"email\": \"\",\r\n\t\"routedetails\": \"Bhubaneswar-Baripada\",\r\n\t\"bookingdate\": \"21-04-2022\",\r\n\t\"journeydate\": \"30-04-2022\",\r\n\t\"boarding_point\": \"Baramunda\",\r\n\t\"departureTime\": \"20:15\",\r\n\t\"dropping_point\": \"Baripada Bus Stand\",\r\n\t\"arrivalTime\": \"04:00\",\r\n\t\"seat_id\": [\"4544\", \"4555\"],\r\n\t\"seat_no\": [\"18\", \"17\"],\r\n\t\"bus_id\": 289,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Baripada\",\r\n\t\"busname\": \"DADIMAA\",\r\n\t\"busNumber\": \"OD 11 H 3388\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"AC SLEEPER\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"9437136588\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"4544\",\r\n\t\t\"passenger_name\": \"dency\",\r\n\t\t\"passenger_gender\": \"M\",\r\n\t\t\"passenger_age\": 25,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}, {\r\n\t\t\"bus_seats_id\": \"4555\",\r\n\t\t\"passenger_name\": \"nancy\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 28,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -827,14 +829,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/PaymentStatus",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/PaymentStatus",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"PaymentStatus"
@@ -1409,11 +1412,21 @@
 		{
 			"name": "AgentWallet payment",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUxNjU3MDMxLCJleHAiOjE2NTE2NjA2MzEsIm5iZiI6MTY1MTY1NzAzMSwianRpIjoiWlhmQWV2VzhCajlXQ0VkUiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.fQesvOfWTBIEuG0C1gwgpesd8d2owcOuMj87eCO_3P4",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"user_id\":2,\r\n    \"busId\": 1,\r\n    \"sourceId\":82, \r\n    \"destinationId\":434,\r\n    \"applied_comission\":\"20\",\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"amount\":\"700\",\r\n    \"seatIds\":[37],\r\n    \"entry_date\":\"13-11-2021\"\r\n}",
+					"raw": "{\r\n\t\"user_id\": 51,\r\n\t\"user_name\": \"M Mandal\",\r\n\t\"busId\": 798,\r\n\t\"sourceId\": \"144\",\r\n\t\"destinationId\": \"388\",\r\n\t\"applied_comission\": \"10\",\r\n\t\"transaction_id\": \"20220504145258498083\",\r\n\t\"seatIds\": [\"1861\"],\r\n\t\"entry_date\": \"05-05-2022\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1421,14 +1434,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/AgentWalletPayment",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AgentWalletPayment",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AgentWalletPayment"
@@ -1440,11 +1454,21 @@
 		{
 			"name": "AgentPaymentStatus",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUxNjU3MDMxLCJleHAiOjE2NTE2NjA2MzEsIm5iZiI6MTY1MTY1NzAzMSwianRpIjoiWlhmQWV2VzhCajlXQ0VkUiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.fQesvOfWTBIEuG0C1gwgpesd8d2owcOuMj87eCO_3P4",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"transaction_id\": \"20211115153214909203\",\r\n    \"name\": \"ssssss\",\r\n    \"phone\": \"9916457575\",\r\n    \"email\": \"sahu.swagatika@gmail.com\",\r\n    \"routedetails\": \"Bhubaneswar-Bhadrak\",\r\n    \"bookingdate\": \"02-11-2021\",\r\n    \"journeydate\": \"02-11-2021\",\r\n    \"boarding_point\": \"Rasulgarh\",\r\n    \"departureTime\": \"05:00\",\r\n    \"dropping_point\": \"Bonth Chhawk\",\r\n    \"arrivalTime\": \"07:30\",\r\n    \"seat_id\": [\r\n        \"37\"\r\n    ],\r\n    \"seat_no\": [\r\n        \"SL6\"\r\n    ],\r\n    \"bus_id\": 10,\r\n    \"source\": \"Bhubaneswar\",\r\n    \"destination\": \"Bhadrak\",\r\n    \"busname\": \"Bus 2\",\r\n    \"busNumber\": \"OD 01 AW 1234\",\r\n    \"bustype\": \"NON AC\",\r\n    \"busTypeName\": \"DELUX\",\r\n    \"sittingType\": \"2+2\",\r\n    \"conductor_number\": \"7978817539\",\r\n    \"passengerDetails\": [\r\n        {\r\n            \"bus_seats_id\": \"37\",\r\n            \"passenger_name\": \"Lima\",\r\n            \"passenger_gender\": \"F\",\r\n            \"passenger_age\": \"22\",\r\n            \"created_by\": \"Agent\"\r\n        }\r\n    ],\r\n    \"totalfare\": 285,\r\n    \"discount\": 0,\r\n    \"payable_amount\": 285,\r\n    \"odbus_charges\": 25,\r\n    \"odbus_gst\": 10,\r\n    \"owner_fare\": 250\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220504145258498083\",\r\n\t\"name\": \"M Mandal\",\r\n\t\"phone\": \"9916457575\",\r\n\t\"email\": \"\",\r\n\t\"routedetails\": \"Cuttack-Phulbani\",\r\n\t\"bookingdate\": \"04-05-2022\",\r\n\t\"journeydate\": \"05-05-2022\",\r\n\t\"boarding_point\": \"Badambari Bus Stand\",\r\n\t\"departureTime\": \"14:00\",\r\n\t\"dropping_point\": \"Phulbani Bus Stand\",\r\n\t\"arrivalTime\": \"22:00\",\r\n\t\"seat_id\": [\"1861\"],\r\n\t\"seat_no\": [\"41\"],\r\n\t\"bus_id\": 798,\r\n\t\"source\": \"Cuttack\",\r\n\t\"destination\": \"Phulbani\",\r\n\t\"busname\": \"Mandal testing\",\r\n\t\"busNumber\": \"OD 25 C 4852\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"Deluxe Luxury AC sleeper\",\r\n\t\"sittingType\": \"1+1+1\",\r\n\t\"conductor_number\": \"9583918888\",\r\n\t\"agent_number\": \"9776290692\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"1861\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 26,\r\n\t\t\"created_by\": \"M Mandal\"\r\n\t}],\r\n\t\"customer_comission\": \"10\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1452,14 +1476,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/AgentPaymentStatus",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/AgentPaymentStatus",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"AgentPaymentStatus"
