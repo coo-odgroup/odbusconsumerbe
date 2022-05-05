@@ -102,6 +102,23 @@ class PopularController extends Controller
  *     tags={"All Operators API"},
  *     description="get all Operators names",
  *     summary="get all Operators names",
+ *     @OA\Parameter(
+ *          name="filter params(example:A)",
+ *          description="filter operator names alphabetically(example:A, it will filter opertors starting name with A only)",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="paginate",
+ *          description="paginate all operators",
+ *          in="query",
+ *          @OA\Schema(
+ *              type="integer",
+ *              example="400"
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="Record Fetched Successfully"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),

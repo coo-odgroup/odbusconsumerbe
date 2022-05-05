@@ -2781,6 +2781,25 @@
                 "summary": "get all Operators names",
                 "description": "get all Operators names",
                 "operationId": "d5f2d154f4e53b8d6088f3ff21ad4cf0",
+                "parameters": [
+                    {
+                        "name": "filter params(example:A)",
+                        "in": "query",
+                        "description": "filter operator names alphabetically(example:A, it will filter opertors starting name with A only)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "paginate",
+                        "in": "query",
+                        "description": "paginate all operators",
+                        "schema": {
+                            "type": "integer",
+                            "example": "400"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Record Fetched Successfully"
