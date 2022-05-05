@@ -637,12 +637,12 @@ class ChannelController extends Controller
  *          )
  *      ),
  *     @OA\Parameter(
- *          name="amount",
- *          description="total price",
+ *          name="applied_comission",
+ *          description="applied comission",
  *          required=true,
  *          in="query",
  *          @OA\Schema(
- *              type="string"
+ *              type="number"
  *          )
  *      ),
  *  @OA\Response(response="201", description="Wallet Payment Successful"),
@@ -724,21 +724,6 @@ class ChannelController extends Controller
  *                type="string",
  *                example="Bhubaneswar-Bhadrak"
  *                ),
- *              @OA\Property(
- *                property="razorpay_order_id",
- *                type="string",
- *                example="order_IGcyPNVZ9fkc2t"
- *                ),
- *              @OA\Property(
- *                property="razorpay_payment_id",
- *                type="string",
- *                example="pay_IGcyXMFeqdRA23"
- *                ),
- *              @OA\Property(
- *                property="razorpay_signature",
- *                type="string",
- *                example="d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
- *                ),
  *               @OA\Property(
  *                property="bookingdate",
  *                type="string",
@@ -800,9 +785,14 @@ class ChannelController extends Controller
  *                example="7978817539"
  *                ),
  *            @OA\Property(
- *                property="totalfare",
+ *                property="agent_number",
  *                type="string",
- *                example="285"
+ *                example="9898989898"
+ *                ),
+ *            @OA\Property(
+ *                property="customer_comission",
+ *                type="number",
+ *                example="10"
  *                ),
  *            @OA\Property(
  *                 property="seat_id",
@@ -818,31 +808,6 @@ class ChannelController extends Controller
  *                 example="sl6",
  *                  ),
  *                 ),
- *            @OA\Property(
- *                property="discount",
- *                type="string",
- *                example="0"
- *                ),
- *            @OA\Property(
- *                property="payable_amount",
- *                type="string",
- *                example="285"
- *                ),
- *            @OA\Property(
- *                property="odbus_charges",
- *                type="string",
- *                example="0"
- *                ),
- *            @OA\Property(
- *                property="odbus_gst",
- *                type="string",
- *                example="25"
- *                ),
- *            @OA\Property(
- *                property="owner_fare",
- *                type="string",
- *                example="250"
- *                ),
  *            @OA\Property(
  *                property="source",
  *                type="string",

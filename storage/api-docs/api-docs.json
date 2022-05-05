@@ -1471,12 +1471,12 @@
                         }
                     },
                     {
-                        "name": "amount",
+                        "name": "applied_comission",
                         "in": "query",
-                        "description": "total price",
+                        "description": "applied comission",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "number"
                         }
                     }
                 ],
@@ -1553,18 +1553,6 @@
                                         "type": "string",
                                         "example": "Bhubaneswar-Bhadrak"
                                     },
-                                    "razorpay_order_id": {
-                                        "type": "string",
-                                        "example": "order_IGcyPNVZ9fkc2t"
-                                    },
-                                    "razorpay_payment_id": {
-                                        "type": "string",
-                                        "example": "pay_IGcyXMFeqdRA23"
-                                    },
-                                    "razorpay_signature": {
-                                        "type": "string",
-                                        "example": "d75cef95085a484f7a40f6f5ba1dffaa4b7f06b2f2b88ee6e816c2babc1c7f12"
-                                    },
                                     "bookingdate": {
                                         "type": "string",
                                         "example": "02-11-2021"
@@ -1613,9 +1601,13 @@
                                         "type": "string",
                                         "example": "7978817539"
                                     },
-                                    "totalfare": {
+                                    "agent_number": {
                                         "type": "string",
-                                        "example": "285"
+                                        "example": "9898989898"
+                                    },
+                                    "customer_comission": {
+                                        "type": "number",
+                                        "example": "10"
                                     },
                                     "seat_id": {
                                         "type": "array",
@@ -1630,26 +1622,6 @@
                                             "type": "string",
                                             "example": "sl6"
                                         }
-                                    },
-                                    "discount": {
-                                        "type": "string",
-                                        "example": "0"
-                                    },
-                                    "payable_amount": {
-                                        "type": "string",
-                                        "example": "285"
-                                    },
-                                    "odbus_charges": {
-                                        "type": "string",
-                                        "example": "0"
-                                    },
-                                    "odbus_gst": {
-                                        "type": "string",
-                                        "example": "25"
-                                    },
-                                    "owner_fare": {
-                                        "type": "string",
-                                        "example": "250"
                                     },
                                     "source": {
                                         "type": "string",
