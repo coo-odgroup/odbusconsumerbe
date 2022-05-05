@@ -66,11 +66,11 @@ class PopularService
                        );
                } 
            }
-           return collect($topOperators)->unique('operatorName')->values();
-            
-          // $temp = array_unique(array_column($topOperators, 'operatorName'));
-           //return $unique_arr = array_intersect_key($topOperators, $temp);
+           //return collect($topOperators)->unique('operatorName')->values();
+           return collect($topOperators)->unique('operatorName')->values()->skip(0)->take(20);
 
+          // $temp = array_unique(array_column($topOperators, 'operatorName'));
+          //return $unique_arr = array_intersect_key($topOperators, $temp);
 
     }
     public function allRoutes(Request $request)
