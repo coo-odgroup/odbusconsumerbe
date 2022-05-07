@@ -79,6 +79,7 @@ return [
     'PAYMENT_NOT_DONE' => 'payment not done',
     'TICKET_REGENERATED' => 'Ticket regenerated Successfully',
     'BOOKING_TYPE' => 'Failled Ticket Generated',
-    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
+    //'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
+    'CONSUMER_FRONT_URL' => 'https://odtesting.odbus.co.in/',
 
 ];

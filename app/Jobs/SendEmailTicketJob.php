@@ -132,11 +132,11 @@ class SendEmailTicketJob implements ShouldQueue
     
         $this->email_pnr= $email_pnr;
 
-       // $this->qrCodeText= "PNR - ".$this->email_pnr." , Customer Phone No- ".$this->customer_number.", Conductor No- ".$this->conductor_number." , Bus Name- ".$this->busname.", Bus No- ".$this->busNumber." , Journey Date- ". $this->journeydate.", Bus Route- ".$this->source.' -> '.$this->destination.", Seat- ".$this->seat_names;
-
        $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
 
        $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
+
+       Log::info($this->qrCodeText);
 
         \QrCode::size(500)
         ->format('png')

@@ -775,7 +775,9 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
 
-        if ($generated_signature == $razorpay_signature && ($paymentStatus == 'authorized' || $paymentStatus == 'captured')) { //captured(live version) , authorized (test version)
+        //Log::info($paymentStatus);
+
+        if ($generated_signature == $razorpay_signature && $paymentStatus == 'authorized') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
@@ -862,7 +864,7 @@ class ChannelRepository
             $sms->message_id = $msgId;
             $sms->save();
           }
-            return $sms;
+          
         }
             return "Payment Done";
         }
@@ -1069,7 +1071,7 @@ class ChannelRepository
      
       $paymentStatus = $res->items[0]->status;
 
-      if($paymentStatus != 'authorized' &&  $paymentStatus != 'captured'){
+      if($paymentStatus != 'authorized'){ // captured (Live), authorized (Testing)
 
         return "payment_not_done";
 
