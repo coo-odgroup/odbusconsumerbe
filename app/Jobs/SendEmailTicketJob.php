@@ -116,14 +116,16 @@ class SendEmailTicketJob implements ShouldQueue
         
         $this->cancelation_policy = $cancelation_policy;
 
-        
-
         $this->conductor_number = $request['conductor_number'];
         $this->agent_number = (isset($request['agent_number'])) ? $request['agent_number'] : '';        
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
-        $this->total_seats = count($request['passengerDetails']);       
-        $this->seat_names = implode(',',$request['seat_no']);
+        $this->total_seats = count($request['passengerDetails']); 
+///////////////////////////
+        $collection = collect($request['seat_no']);
+        $this->seat_names = $collection->implode(',');
+        ///$this->seat_names = implode(',',$request['seat_no']);
+///////////////////////////
         $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
         $this->email_pnr= $email_pnr;

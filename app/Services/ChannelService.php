@@ -323,7 +323,7 @@ class ChannelService
 
             $pnr = $bookingRecord[0]->pnr;
             $bookingId = $bookingRecord[0]->id; 
-            //////////////////////////////////////////
+           
             $totalfare = $bookingRecord[0]->total_fare;
             $discount = $bookingRecord[0]->coupon_discount;
         
@@ -345,8 +345,6 @@ class ChannelService
             $customer_gst_percent=$bookingRecord[0]->customer_gst_percent;
             $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
             $coupon_discount=$bookingRecord[0]->coupon_discount;
-            //////////////////////////////////////////
-
 
             return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
             ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
@@ -516,11 +514,11 @@ class ChannelService
         }
         
     }   
-////////////resend SmsEmail icket///////////////////////////
-    public function resendTicket($request)
+//////////// generateFailedTicket///////////////////////////
+    public function generateFailedTicket($request)
     {
         try {
-            $resend = $this->channelRepository->resendTicket($request);
+            $resend = $this->channelRepository->generateFailedTicket($request);
 
         } catch (Exception $e) {
             Log::info($e->getMessage());

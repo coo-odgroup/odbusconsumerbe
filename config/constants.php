@@ -73,8 +73,11 @@ return [
     'CLIENT_DETAILS' => 'Authorized Client details',
     'CLIENT_UNAUTHORIZED' => 'Unauthorized Client',
     'OTP_SENT_CUSTOMER' => 'OTP Sent to customer',
-    'MSG_SENT' => 'Message sent successfully',
     'INVALID_PNR' => 'Invalid PNR',
     'BUS_CANCELLED' => 'The Bus Chosen By You Currently Unavailable, Please Choose Another Bus.',
-    'SEAT_BLOCKED' => 'Your Selected Seat Is Not Available Now, Please Select Another Seat'
+    'SEAT_BLOCKED' => 'Your Selected Seat Is Not Available Now, Please Select Another Seat',
+    'PAYMENT_NOT_DONE' => 'payment not done',
+    'TICKET_REGENERATED' => 'Ticket regenerated Successfully',
+    'BOOKING_TYPE' => 'Failled Ticket Generated',
+
 ];

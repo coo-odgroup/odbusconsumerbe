@@ -893,19 +893,22 @@ class ChannelController extends Controller
         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
       }     
 }
-///////////////resend Sms/Email Ticket///////////////////////////////
+///////////////generateFailedTicket///////////////////////////////
 
-public function resendTicket(Request $request)
-    {
-         
-          try {
-           $response = $this->channelService->resendTicket($request); 
-           //return $response;
-            return $this->successResponse($response,Config::get('constants.MSG_SENT'),Response::HTTP_OK);
-        }
+public function generateFailedTicket(Request $request)
+    { 
+        try {
+            $response = $this->channelService->generateFailedTicket($request); 
+            if($response == 'payment_not_done'){
+                return $this->errorResponse(Config::get('constants.PAYMENT_NOT_DONE'),Response::HTTP_OK);
+            }
+            else{
+                return $this->successResponse($response,Config::get('constants.TICKET_REGENERATED'),Response::HTTP_CREATED);
+            }
+         }
         catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-          }       
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+        }     
     }
 
     public function testing(){
