@@ -1097,7 +1097,6 @@ class ChannelRepository
       $departureTime = $bookingDetails[0]->boarding_time;
       $dropping_point = $bookingDetails[0]->dropping_point;
       $arrivalTime = $bookingDetails[0]->dropping_time;
-      //$departureTime = TicketPrice::where('bus_id',$bookingDetails[0]->bus_id)->first()->dep_time;
       $departureTime = date("H:i:s",strtotime($departureTime));
       $bookingdate = $bookingDetails[0]->created_at;
       $bookingdate = date("d-m-Y", strtotime($bookingdate));
@@ -1218,10 +1217,6 @@ class ChannelRepository
       }else{
         return "payment_not_done";
       }
-
-      //return $paymentStatus;
-
-      //$payment = $api->payment->fetch($res->items[0]->id);
        
     }
 }
