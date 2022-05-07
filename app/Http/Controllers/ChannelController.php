@@ -920,15 +920,15 @@ public function generateFailedTicket(Request $request)
         $api = new Api($key, $secretKey); 
 
         $res= $api->order->fetch("order_JP4kBCFQ3CYcpI")->payments();
-
-        //Log::info($res->items[0]->id);
-
         $payment = $api->payment->fetch($res->items[0]->id);
+
+        //Log::info($res->items[0]->email);
+        
         $paymentStatus = $payment->status;
 
-       // Log::info($paymentStatus);
+        //Log::info($paymentStatus);
 
-       // return $res;
+        //return $payment;
     }
 
 }

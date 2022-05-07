@@ -1065,10 +1065,16 @@ class ChannelRepository
 
       $api = new Api($key, $secretKey); 
 
-      $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
+       $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
      
       $paymentStatus = $res->items[0]->status;
-      $razorpay_signature = $customerPaymentDatas[0]->razorpay_signature;
+
+      if($paymentStatus != 'authorized' &&  $paymentStatus != 'captured'){
+
+        return "payment_not_done";
+
+      }else{
+     
       $razorpay_payment_id = $res->items[0]->id;
       
       $bookingDetails = $this->booking->where('id', $bookingId)
@@ -1169,12 +1175,10 @@ class ChannelRepository
         "sittingType" => $sittingType,
       );
 
-      $generated_signature = hash_hmac('sha256', $customerPaymentDatas[0]->order_id."|" .$razorpay_payment_id, $secretKey);
-        
-      if ($generated_signature == $razorpay_signature && $paymentStatus == 'authorized') { //captured(live version) , authorized (test version)
-          $this->customerPayment->where('booking_id', $bookingId)
+     $this->customerPayment->where('booking_id', $bookingId)
                               ->update([
                                   'payment_done' => $paymentDone,
+                                  'razorpay_id' => $razorpay_payment_id,
                               ]);  
           //Update  Booking Ticket Status in booking Change status to 1(Booked)  
           $this->booking->where('id', $bookingId)->update(['status' => $booked,
@@ -1208,14 +1212,12 @@ class ChannelRepository
             $sms->message_id = $msgId;
             $sms->save();
             }
-            if(isset($email)){
+            if($email){
               $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
             }
 
-        return "ticket regenerated";
+          return "ticket regenerated";
         
-      }else{
-        return "payment_not_done";
       }
        
     }
