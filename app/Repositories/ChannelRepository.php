@@ -775,9 +775,7 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
 
-        //Log::info($paymentStatus);
-
-        if ($generated_signature == $razorpay_signature && $paymentStatus == 'authorized') { //captured(live version) , authorized (test version)
+        if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
@@ -864,7 +862,7 @@ class ChannelRepository
             $sms->message_id = $msgId;
             $sms->save();
           }
-          
+            //return $sms;
         }
             return "Payment Done";
         }
@@ -1053,6 +1051,7 @@ class ChannelRepository
     ////////////generateFailedTicket///////////////////////////
     public function generateFailedTicket($request)
     {
+
       $bookingId = $request['booking_id'];
       $createdBy = $request['created_by'];
 
@@ -1066,12 +1065,15 @@ class ChannelRepository
       $bookingType = Config::get('constants.BOOKING_TYPE');
 
       $api = new Api($key, $secretKey); 
+     
+
+    if(isset($res->items[0])){
 
        $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
-     
+
       $paymentStatus = $res->items[0]->status;
 
-      if($paymentStatus != 'authorized'){ // captured (Live), authorized (Testing)
+      if($paymentStatus != 'captured'){ //captured(Live), authorized(testing)
 
         return "payment_not_done";
 
@@ -1221,6 +1223,11 @@ class ChannelRepository
           return "ticket regenerated";
         
       }
+    }else{
+
+        return "payment_not_done";
        
+    }
+
     }
 }

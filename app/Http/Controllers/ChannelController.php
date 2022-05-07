@@ -897,8 +897,12 @@ class ChannelController extends Controller
 
 public function generateFailedTicket(Request $request)
     { 
+
         try {
+
             $response = $this->channelService->generateFailedTicket($request); 
+
+
             if($response == 'payment_not_done'){
                 return $this->errorResponse(Config::get('constants.PAYMENT_NOT_DONE'),Response::HTTP_OK);
             }
@@ -907,6 +911,7 @@ public function generateFailedTicket(Request $request)
             }
          }
         catch (Exception $e) {
+         
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }     
     }
