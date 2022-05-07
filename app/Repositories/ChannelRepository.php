@@ -1066,12 +1066,13 @@ class ChannelRepository
 
       $api = new Api($key, $secretKey); 
      
+      $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
 
     if(isset($res->items[0])){
 
-       $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
-
       $paymentStatus = $res->items[0]->status;
+
+      //Log::info($paymentStatus);
 
       if($paymentStatus != 'captured'){ //captured(Live), authorized(testing)
 
@@ -1219,6 +1220,52 @@ class ChannelRepository
             if($email){
               $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
             }
+
+
+             /////////////////send email to odbus admin////////
+
+        $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+
+
+       $busId= $bookingDetails[0]->bus->id;
+         
+         
+      ///////////////////CMO SMS/////////////////////////////////////////////////
+        $busContactDetails = BusContacts::where('bus_id',$busId)
+                                          ->where('status','1')
+                                          ->where('booking_sms_send','1')
+                                          ->get('phone');
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
+
+            if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+
+            $msgId = $sendSmsCMO->messages[0]->id;
+            $status = $sendSmsCMO->status;
+            $from = $sendSmsCMO->message->sender;
+            $to = collect($sendSmsCMO->messages)->pluck('recipient');
+            $contents = $sendSmsCMO->message->content;
+            $response = collect($sendSmsCMO);
+
+            /// save sms related things in manage_sms table///////////////
+        
+            $sms = new $this->manageSms();
+            $sms->pnr = $pnr;
+            $sms->booking_id = $bookingId;
+            $sms->sms_engine = $SmsGW;
+            $sms->type = 'cmo';
+            $sms->status = $status;
+            $sms->from = $from;
+            $sms->to = $to;
+            $sms->contents = $contents;
+            $sms->response = $response;
+            $sms->message_id = $msgId;
+            $sms->save();
+          }
+            //return $sms;
+        }
+
 
           return "ticket regenerated";
         
