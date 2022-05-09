@@ -90,12 +90,6 @@ class SendAdminEmailTicketJob implements ShouldQueue
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
         $this->sittingType = $request['sittingType'];
-        // $this->totalfare = $request['totalfare'];
-        // $this->discount = $request['discount'];
-        // $this->payable_amount = $request['payable_amount'];
-        // $this->odbus_gst = $request['odbus_gst'];
-        // $this->odbus_charges = $request['odbus_charges'];
-        // $this->owner_fare = $request['owner_fare'];
 
         $this->totalfare = $totalfare;
         $this->discount = $discount;
@@ -123,7 +117,8 @@ class SendAdminEmailTicketJob implements ShouldQueue
         $this->customer_number = $request['phone'];
         $this->passengerDetails = $request['passengerDetails'];
         $this->total_seats = count($request['passengerDetails']);       
-        $this->seat_names = implode(',',$request['seat_no']);
+         $collection = collect($request['seat_no']);
+        $this->seat_names = $collection->implode(',');
         $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
         $this->email_pnr= $email_pnr;

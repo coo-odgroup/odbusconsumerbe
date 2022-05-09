@@ -92,12 +92,6 @@ class SendEmailTicketJob implements ShouldQueue
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
         $this->sittingType = $request['sittingType'];
-        // $this->totalfare = $request['totalfare'];
-        // $this->discount = $request['discount'];
-        // $this->payable_amount = $request['payable_amount'];
-        // $this->odbus_gst = $request['odbus_gst'];
-        // $this->odbus_charges = $request['odbus_charges'];
-        // $this->owner_fare = $request['owner_fare'];
 
         $this->totalfare = $totalfare;
         $this->discount = $discount;
