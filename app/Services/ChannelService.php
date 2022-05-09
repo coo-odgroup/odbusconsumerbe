@@ -587,29 +587,55 @@ class ChannelService
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
             $data = $request->all();
-
-            $busId = $request['bus_id'];
-            $seatIds = $request['seat_id'];
+            //$busId = $request['bus_id'];
+            //$seatIds = $request['seat_id'];
             $transationId = $data['transaction_id'];
             
-            $bookingRecord = $this->channelRepository->getBookingData($busId,$transationId);
+            $bookingRecord = $this->channelRepository->getBookingData($transationId);
+          
+            $busId= $bookingRecord[0]->bus->id;
+            $bookingId = $bookingRecord[0]->id; 
             $pnr = $bookingRecord[0]->pnr;
-         
-            $bookingId = $bookingRecord[0]->id;   
-
+            $phone = $bookingRecord[0]->users->phone;
+            $email = $bookingRecord[0]->users->email;
+            $name = $bookingRecord[0]->users->name;
+            $busname = $bookingRecord[0]->bus->name;
+            $busNumber = $bookingRecord[0]->bus->bus_number;
+            $journeydate = $bookingRecord[0]->journey_dt;
+            $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
+            $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
+            $routedetails = $source.'-'.$destination;
+            $boarding_point = $bookingRecord[0]->boarding_point;
+            $departureTime = $bookingRecord[0]->boarding_time;
+            $dropping_point = $bookingRecord[0]->dropping_point;
+            $arrivalTime = $bookingRecord[0]->dropping_time;
+            $departureTime = date("H:i:s",strtotime($departureTime));
+            $bookingdate = $bookingRecord[0]->created_at;
+            $bookingdate = date("d-m-Y", strtotime($bookingdate));
+            $bustype = $bookingRecord[0]->bus->BusType->busClass->class_name;
+            $busTypeName = $bookingRecord[0]->bus->BusType->name;
+            $sittingType = $bookingRecord[0]->bus->BusSitting->name;
+                                          
+            if($bookingRecord[0]->payable_amount == 0.00){
+              $payable_amount = $bookingRecord[0]->total_fare;
+            }else{
+              $payable_amount = $bookingRecord[0]->payable_amount;
+            }
+     
+            $passengerDetails = $bookingRecord[0]->bookingDetail;
+            $conductor_number = $bookingRecord[0]->bus->busContacts->phone;
+            $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
+            $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
+            $seat_no = $busSeatsDetails->pluck('seats.seatText');
+     
             $totalfare = $bookingRecord[0]->total_fare;
             $discount = $bookingRecord[0]->coupon_discount;
-            
-            if($bookingRecord[0]->payable_amount == 0.00){
-                $payable_amount = $bookingRecord[0]->total_fare;
-            }else{
-                $payable_amount = $bookingRecord[0]->payable_amount;
-            }
+             
             $odbus_charges = $bookingRecord[0]->odbus_charges;
             $odbus_gst = $bookingRecord[0]->odbus_gst_charges;
             $owner_fare = $bookingRecord[0]->owner_fare;
+     
             $transactionFee=$bookingRecord[0]->transactionFee;
-
             $customer_gst_status=$bookingRecord[0]->customer_gst_status;
             $customer_gst_number=$bookingRecord[0]->customer_gst_number;
             $customer_gst_business_name=$bookingRecord[0]->customer_gst_business_name;
@@ -618,8 +644,43 @@ class ChannelService
             $customer_gst_percent=$bookingRecord[0]->customer_gst_percent;
             $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
             $coupon_discount=$bookingRecord[0]->coupon_discount;
-
-            return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+            $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
+          
+            $smsData = array(
+              "seat_no" => $seat_no,
+              "passengerDetails" => $passengerDetails, 
+              "busname" => $busname,
+              "busNumber" => $busNumber,
+              "phone" => $phone,
+              "journeydate" => $journeydate,
+              "routedetails" => $routedetails,
+              "departureTime" => $departureTime,
+              "conductor_number" => $conductor_number,
+            );
+            $emailData = array(
+                "pnr" => $pnr,
+                "seat_no" => $seat_no,
+                "passengerDetails" => $passengerDetails, 
+                "busname" => $busname,
+                "busNumber" => $busNumber,
+                "phone" => $phone,
+                "name" => $name,
+                "email" => $email,
+                "journeydate" => $journeydate,
+                "bookingdate" => $bookingdate,
+                "boarding_point" => $boarding_point,
+                "arrivalTime" => $arrivalTime,
+                "dropping_point" => $dropping_point,
+                "routedetails" => $routedetails,
+                "departureTime" => $departureTime,
+                "conductor_number" => $conductor_number,
+                "source" => $source,
+                "destination" => $destination,
+                "bustype" => $bustype,
+                "busTypeName" => $busTypeName,
+                "sittingType" => $sittingType,
+            );
+            return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData);
             
         } catch (Exception $e) {
             Log::info($e->getMessage());

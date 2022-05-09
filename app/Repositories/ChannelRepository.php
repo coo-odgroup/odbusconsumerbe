@@ -964,7 +964,7 @@ class ChannelRepository
         $notification->userNotification()->save($userNotification);
         return $notification;
       }
-      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
+      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData)
       {  
 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
@@ -972,44 +972,42 @@ class ChannelRepository
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
         
         $SmsGW = config('services.sms.otpservice');
-        if($request['phone']){
 
-          $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr);
+          $sendsms = $this->sendSmsTicket($payable_amount,$smsData,$pnr);//sms to customer
 
           if(isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)){
 
-          $msgId = $sendsms->messages[0]->id;
-          $status = $sendsms->status;
-          $from = $sendsms->message->sender;
-          $to = $sendsms->messages[0]->recipient;
-          $contents = $sendsms->message->content;
-          $response = collect($sendsms);
-          /// save sms related things in manage_sms table///////////////
-        
-          $sms = new $this->manageSms();
-          $sms->pnr = $pnr;
-          $sms->booking_id = $bookingId;
-          $sms->sms_engine = $SmsGW;
-          $sms->type = 'customer';
-          $sms->status = $status;
-          $sms->from = $from;
-          $sms->to = $to;
-          $sms->contents = $contents;
-          $sms->response = $response;
-          $sms->message_id = $msgId;
-          $sms->save();
+            $msgId = $sendsms->messages[0]->id;
+            $status = $sendsms->status;
+            $from = $sendsms->message->sender;
+            $to = $sendsms->messages[0]->recipient;
+            $contents = $sendsms->message->content;
+            $response = collect($sendsms);
+            /// save sms related things in manage_sms table///////////////
+          
+            $sms = new $this->manageSms();
+            $sms->pnr = $pnr;
+            $sms->booking_id = $bookingId;
+            $sms->sms_engine = $SmsGW;
+            $sms->type = 'customer';
+            $sms->status = $status;
+            $sms->from = $from;
+            $sms->to = $to;
+            $sms->contents = $contents;
+            $sms->response = $response;
+            $sms->message_id = $msgId;
+            $sms->save();
 
           }
-        } 
 
-        if($request['email']){
-            $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+        if($email){
+            $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
         } 
 
 
         /////////////////send email to odbus admin////////
 
-           $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+           $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
  
 
          ///////////////////CMO SMS/////////////////////////////////////////////////
@@ -1020,7 +1018,7 @@ class ChannelRepository
 
           if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
+            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$smsData, $pnr, $contact_number);
 
             if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
 
