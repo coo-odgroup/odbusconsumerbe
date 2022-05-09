@@ -72,8 +72,6 @@ class SendAdminEmailTicketJob implements ShouldQueue
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
-      
-        //$this->$request[] = $request;
         $this->name = $request['name'];
         $this->to =  $request['email'];
         $this->bookingdate = $request['bookingdate'];

@@ -66,32 +66,25 @@ class SendEmailTicketJob implements ShouldQueue
     protected $coupon_discount;
     protected $p_names;
 
-    
-
-
-    //protected $request = [];
-    //public function __construct($to, $name, $email_pnr)
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
-      
-        //$this->$request[] = $request;
-        // $this->name = $request['name'];
-        // $this->to = $request['email'];
-        // $this->bookingdate = $request['bookingdate'];
-        // $this->journeydate = $request['journeydate'];
-        // $this->boarding_point = $request['boarding_point'];
-        // $this->dropping_point = $request['dropping_point'];
-        // $this->departureTime = $request['departureTime'];
-        // $this->arrivalTime = $request['arrivalTime'];
-        // $this->seat_no = $request['seat_no'];
-        // $this->busname = $request['busname'];
-        // $this->source = $request['source'];
-        // $this->destination = $request['destination'];
-        // $this->busNumber = $request['busNumber'];
-        // $this->bustype = $request['bustype'];
-        // $this->busTypeName = $request['busTypeName'];
-        // $this->sittingType = $request['sittingType'];
+        $this->name = $request['name'];
+        $this->to = $request['email'];
+        $this->bookingdate = $request['bookingdate'];
+        $this->journeydate = $request['journeydate'];
+        $this->boarding_point = $request['boarding_point'];
+        $this->dropping_point = $request['dropping_point'];
+        $this->departureTime = $request['departureTime'];
+        $this->arrivalTime = $request['arrivalTime'];
+        $this->seat_no = $request['seat_no'];
+        $this->busname = $request['busname'];
+        $this->source = $request['source'];
+        $this->destination = $request['destination'];
+        $this->busNumber = $request['busNumber'];
+        $this->bustype = $request['bustype'];
+        $this->busTypeName = $request['busTypeName'];
+        $this->sittingType = $request['sittingType'];
 
         $this->totalfare = $totalfare;
         $this->discount = $discount;
