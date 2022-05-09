@@ -76,22 +76,22 @@ class SendEmailTicketJob implements ShouldQueue
     {
       
         //$this->$request[] = $request;
-        $this->name = $request['name'];
-        $this->to = $request['email'];
-        $this->bookingdate = $request['bookingdate'];
-        $this->journeydate = $request['journeydate'];
-        $this->boarding_point = $request['boarding_point'];
-        $this->dropping_point = $request['dropping_point'];
-        $this->departureTime = $request['departureTime'];
-        $this->arrivalTime = $request['arrivalTime'];
-        $this->seat_no = $request['seat_no'];
-        $this->busname = $request['busname'];
-        $this->source = $request['source'];
-        $this->destination = $request['destination'];
-        $this->busNumber = $request['busNumber'];
-        $this->bustype = $request['bustype'];
-        $this->busTypeName = $request['busTypeName'];
-        $this->sittingType = $request['sittingType'];
+        // $this->name = $request['name'];
+        // $this->to = $request['email'];
+        // $this->bookingdate = $request['bookingdate'];
+        // $this->journeydate = $request['journeydate'];
+        // $this->boarding_point = $request['boarding_point'];
+        // $this->dropping_point = $request['dropping_point'];
+        // $this->departureTime = $request['departureTime'];
+        // $this->arrivalTime = $request['arrivalTime'];
+        // $this->seat_no = $request['seat_no'];
+        // $this->busname = $request['busname'];
+        // $this->source = $request['source'];
+        // $this->destination = $request['destination'];
+        // $this->busNumber = $request['busNumber'];
+        // $this->bustype = $request['bustype'];
+        // $this->busTypeName = $request['busTypeName'];
+        // $this->sittingType = $request['sittingType'];
 
         $this->totalfare = $totalfare;
         $this->discount = $discount;

@@ -709,14 +709,21 @@ class ChannelRepository
         return $this->booking->with('users')->where('transaction_id', $transationId)->get();
       }
 
-      public function getBookingData($busId,$transationId){
+      public function getBookingData($transationId){
        
-          return $this->booking->with(["bus" => function($bs){
-                        $bs->with('cancellationslabs.cancellationSlabInfo');
-                      } ] )
-                     ->where('bus_id', $busId)
-                     ->where('transaction_id', $transationId)->get();
+          return $this->booking->where('transaction_id', $transationId)
+                               //->where('bus_id', $busId)
+                               ->with('users')
+                               ->with(["bus" => function($bs){
+                                $bs->with('cancellationslabs.cancellationSlabInfo');
+                                $bs->with('BusType.busClass');
+                                $bs->with('BusSitting');                
+                                $bs->with('busContacts');
+                                }])
+                              ->with('bookingDetail')
+                              ->get();
       }
+    
 
       public function getRazorpayKey(){
           return $this->credentials->first()->razorpay_key;
@@ -765,7 +772,7 @@ class ChannelRepository
       }
 
 
-      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount){
+      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData){
 
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
@@ -792,21 +799,15 @@ class ChannelRepository
             $booking = $this->booking->find($bookingId);
             $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
         
-        
-            if($request['phone']){
-  
-                $sendsms = $this->sendSmsTicket($payable_amount,$request,$pnr); 
-              
+            $sendsms = $this->sendSmsTicket($payable_amount,$smsData,$pnr);////send sms ticket customer
                 if(isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)){
       
                  $msgId = $sendsms->messages[0]->id;
                  $status = $sendsms->status;
                  $from = $sendsms->message->sender;
                  $to = $sendsms->messages[0]->recipient;
-                 //$to = substr($to, 2); 
                  $contents = $sendsms->message->content;
                  $response = collect($sendsms);
-                //dd($response);
                 /// save sms related things in manage_sms table///////////////
         
                 $sms = new $this->manageSms();
@@ -822,14 +823,14 @@ class ChannelRepository
                 $sms->message_id = $msgId;
                 $sms->save();
               }
-            } 
-            if($request['email']){
-                $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+
+          if($email){
+                $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
             }
 
          /////////////////send email to odbus admin////////
 
-        $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+        $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
          
          
       ///////////////////CMO SMS/////////////////////////////////////////////////
@@ -839,7 +840,7 @@ class ChannelRepository
                                           ->get('phone');
         if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$request, $pnr, $contact_number);
+            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$smsData, $pnr, $contact_number);
 
             if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
 
