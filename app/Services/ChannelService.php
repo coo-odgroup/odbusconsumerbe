@@ -622,6 +622,8 @@ class ChannelService
               $payable_amount = $bookingRecord[0]->payable_amount;
             }
      
+            $customer_comission = $bookingRecord[0]->customer_comission;
+
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $conductor_number = $bookingRecord[0]->bus->busContacts->phone;
             $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
@@ -656,6 +658,7 @@ class ChannelService
               "routedetails" => $routedetails,
               "departureTime" => $departureTime,
               "conductor_number" => $conductor_number,
+              "customer_comission" => $customer_comission
             );
             $emailData = array(
                 "pnr" => $pnr,
@@ -679,6 +682,7 @@ class ChannelService
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
+                "customer_comission" => $customer_comission
             );
             return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData);
             
