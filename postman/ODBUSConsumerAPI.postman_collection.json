@@ -205,7 +205,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUwMzQ4NTcxLCJleHAiOjE2NTAzNTIxNzEsIm5iZiI6MTY1MDM0ODU3MSwianRpIjoicG1HM09PaERISHl5VmZKbyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BvAI1r70iljipHfgwA27M74XbjQZa9FMiTL32cUz_Xc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyMDAzMzQ5LCJleHAiOjE2NTIwMDY5NDksIm5iZiI6MTY1MjAwMzM0OSwianRpIjoiUmpOTTlCdE13d2hXek9nRyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.EmXvOMC-R-WYpGzchWKdTrOMleqk-gMhZKro5eQWGgk",
 							"type": "string"
 						}
 					]
@@ -222,14 +222,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/BookTicket",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/BookTicket",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"BookTicket"
@@ -452,7 +453,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUxMTMwMzcxLCJleHAiOjE2NTExMzM5NzEsIm5iZiI6MTY1MTEzMDM3MSwianRpIjoiOWJESXA3NTdrM0VtQlZyTyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.Eai1LxCFNOBtuTc_SfqC1tGrAQKUg1xdpXleBwq4ZQk",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyMDAzMzQ5LCJleHAiOjE2NTIwMDY5NDksIm5iZiI6MTY1MjAwMzM0OSwianRpIjoiUmpOTTlCdE13d2hXek9nRyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.EmXvOMC-R-WYpGzchWKdTrOMleqk-gMhZKro5eQWGgk",
 							"type": "string"
 						}
 					]
@@ -812,7 +813,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUwOTczMDQ0LCJleHAiOjE2NTA5NzY2NDQsIm5iZiI6MTY1MDk3MzA0NCwianRpIjoibVN3aDJuZHdxR0U4dTBiUyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.sDfeM9C1E5b4u67gWq6Fn39v8_UHccNAE4LJpC7Rvz8",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyMDk2MzU1LCJleHAiOjE2NTIwOTk5NTUsIm5iZiI6MTY1MjA5NjM1NSwianRpIjoiY1lqc0d4UGxRS2RPSG13ZiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.KHI-RtKZFbN6LVoR5kd5X4dgs4X6srO3kOuJlFMsueo",
 							"type": "string"
 						}
 					]
@@ -821,7 +822,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220421110232999533\",\r\n\t\"razorpay_payment_id\": \"pay_JLtMukQjpnhAsb\",\r\n\t\"razorpay_order_id\": \"order_JLtMp6EuiPD8m5\",\r\n\t\"razorpay_signature\": \"467d151ccb240d623ddc783d5989c598370ace014678932b0b4cd0346d418cbb\",\r\n\t\"name\": \"Lima Mohanty\",\r\n\t\"phone\": \"9916457575\",\r\n\t\"email\": \"\",\r\n\t\"routedetails\": \"Bhubaneswar-Baripada\",\r\n\t\"bookingdate\": \"21-04-2022\",\r\n\t\"journeydate\": \"30-04-2022\",\r\n\t\"boarding_point\": \"Baramunda\",\r\n\t\"departureTime\": \"20:15\",\r\n\t\"dropping_point\": \"Baripada Bus Stand\",\r\n\t\"arrivalTime\": \"04:00\",\r\n\t\"seat_id\": [\"4544\", \"4555\"],\r\n\t\"seat_no\": [\"18\", \"17\"],\r\n\t\"bus_id\": 289,\r\n\t\"source\": \"Bhubaneswar\",\r\n\t\"destination\": \"Baripada\",\r\n\t\"busname\": \"DADIMAA\",\r\n\t\"busNumber\": \"OD 11 H 3388\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"AC SLEEPER\",\r\n\t\"sittingType\": \"2+2\",\r\n\t\"conductor_number\": \"9437136588\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"4544\",\r\n\t\t\"passenger_name\": \"dency\",\r\n\t\t\"passenger_gender\": \"M\",\r\n\t\t\"passenger_age\": 25,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}, {\r\n\t\t\"bus_seats_id\": \"4555\",\r\n\t\t\"passenger_name\": \"nancy\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 28,\r\n\t\t\"created_by\": \"Customer\"\r\n\t}]\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220509132215631655\",\r\n\t\"razorpay_payment_id\": \"pay_JT3MO4UrPGw9aQ\",\r\n\t\"razorpay_order_id\": \"order_JT3MJLjsb3Lj2K\",\r\n\t\"razorpay_signature\": \"04e6ca7c037d5f6bb8fefb8f87a20ae4f5461fabd2d86232a8656378dce8daf8\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1477,7 +1478,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220504145258498083\",\r\n\t\"name\": \"M Mandal\",\r\n\t\"phone\": \"9916457575\",\r\n\t\"email\": \"\",\r\n\t\"routedetails\": \"Cuttack-Phulbani\",\r\n\t\"bookingdate\": \"04-05-2022\",\r\n\t\"journeydate\": \"05-05-2022\",\r\n\t\"boarding_point\": \"Badambari Bus Stand\",\r\n\t\"departureTime\": \"14:00\",\r\n\t\"dropping_point\": \"Phulbani Bus Stand\",\r\n\t\"arrivalTime\": \"22:00\",\r\n\t\"seat_id\": [\"1861\"],\r\n\t\"seat_no\": [\"41\"],\r\n\t\"bus_id\": 798,\r\n\t\"source\": \"Cuttack\",\r\n\t\"destination\": \"Phulbani\",\r\n\t\"busname\": \"Mandal testing\",\r\n\t\"busNumber\": \"OD 25 C 4852\",\r\n\t\"bustype\": \"AC\",\r\n\t\"busTypeName\": \"Deluxe Luxury AC sleeper\",\r\n\t\"sittingType\": \"1+1+1\",\r\n\t\"conductor_number\": \"9583918888\",\r\n\t\"agent_number\": \"9776290692\",\r\n\t\"passengerDetails\": [{\r\n\t\t\"bus_seats_id\": \"1861\",\r\n\t\t\"passenger_name\": \"Lima\",\r\n\t\t\"passenger_gender\": \"F\",\r\n\t\t\"passenger_age\": 26,\r\n\t\t\"created_by\": \"M Mandal\"\r\n\t}],\r\n\t\"customer_comission\": \"10\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220504145258498083\",\r\n\t\"customer_comission\": \"10\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

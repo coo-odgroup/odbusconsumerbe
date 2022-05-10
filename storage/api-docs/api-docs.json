@@ -1180,171 +1180,50 @@
                 "tags": [
                     "PaymentStatus Success/Failure API"
                 ],
-                "summary": "payment status success or failure",
+                "summary": "payment status success or failure check and on success send sms/email Ticket to customer,CMO,Admin",
                 "operationId": "efe1a6fafae9fe0e9d7cd67cb158f293",
-                "requestBody": {
-                    "description": "updating payment status and sending email/sms to customers with ticket booking details",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "transaction_id": {
-                                        "type": "string",
-                                        "example": "20220406142311512211"
-                                    },
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Bob"
-                                    },
-                                    "phone": {
-                                        "type": "string",
-                                        "example": ""
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "exapmle@gmail.com"
-                                    },
-                                    "routedetails": {
-                                        "type": "string",
-                                        "example": "Bhubaneswar-Bhadrak"
-                                    },
-                                    "razorpay_order_id": {
-                                        "type": "string",
-                                        "example": "order_JG0lhY5U0CR6ZC"
-                                    },
-                                    "razorpay_payment_id": {
-                                        "type": "string",
-                                        "example": "pay_JG0loz3zFryFG8"
-                                    },
-                                    "razorpay_signature": {
-                                        "type": "string",
-                                        "example": "ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203"
-                                    },
-                                    "bookingdate": {
-                                        "type": "string",
-                                        "example": "06-04-2022"
-                                    },
-                                    "journeydate": {
-                                        "type": "string",
-                                        "example": "07-04-2022"
-                                    },
-                                    "boarding_point": {
-                                        "type": "string",
-                                        "example": "Rasulgarh"
-                                    },
-                                    "departureTime": {
-                                        "type": "string",
-                                        "example": "05:00"
-                                    },
-                                    "dropping_point": {
-                                        "type": "string",
-                                        "example": "Bonth Chhawk"
-                                    },
-                                    "arrivalTime": {
-                                        "type": "string",
-                                        "example": "07:30"
-                                    },
-                                    "bus_id": {
-                                        "type": "integer",
-                                        "example": "420"
-                                    },
-                                    "busname": {
-                                        "type": "string",
-                                        "example": "Bus 2"
-                                    },
-                                    "busNumber": {
-                                        "type": "string",
-                                        "example": "OD 01 AW 1234"
-                                    },
-                                    "bustype": {
-                                        "type": "string",
-                                        "example": "NON AC"
-                                    },
-                                    "busTypeName": {
-                                        "type": "string",
-                                        "example": "DELUX"
-                                    },
-                                    "sittingType": {
-                                        "type": "string",
-                                        "example": "2+2"
-                                    },
-                                    "conductor_number": {
-                                        "type": "string",
-                                        "example": "7978817539"
-                                    },
-                                    "seat_id": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "2176"
-                                        }
-                                    },
-                                    "seat_no": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "SL7B"
-                                        }
-                                    },
-                                    "source": {
-                                        "type": "string",
-                                        "example": "Bhubaneswar"
-                                    },
-                                    "destination": {
-                                        "type": "string",
-                                        "example": "Bhadrak"
-                                    },
-                                    "passengerDetails": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "bus_seats_id": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "passenger_name": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "passenger_gender": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "passenger_age": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "created_by": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "example": [
-                                            {
-                                                "bus_seats_id": "14",
-                                                "passenger_name": "Bob",
-                                                "passenger_gender": "M",
-                                                "passenger_age": "25",
-                                                "created_by": "customer"
-                                            },
-                                            {
-                                                "bus_seats_id": "15",
-                                                "passenger_name": "Mom",
-                                                "passenger_gender": "F",
-                                                "passenger_age": "45",
-                                                "created_by": "customer"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "customer transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "20220404141311561229"
+                        }
+                    },
+                    {
+                        "name": "razorpay_payment_id",
+                        "in": "query",
+                        "description": "razorpay payment id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "pay_JT3MO4UrPGw9aQ"
+                        }
+                    },
+                    {
+                        "name": "razorpay_order_id",
+                        "in": "query",
+                        "description": "razorpay order id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "order_JT3MJLjsb3Lj2K"
+                        }
+                    },
+                    {
+                        "name": "razorpay_signature",
+                        "in": "query",
+                        "description": "razorpay signature",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "04e6ca7c037d5f6bb8fefb8f87a20ae4f5461fabd2d86232a8656378dce8daf8"
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Payment successfully done"
@@ -1522,159 +1401,32 @@
         "/api/AgentPaymentStatus": {
             "post": {
                 "tags": [
-                    "AgentPaymentStatus API"
+                    "Agent PaymentStatus Success/Failure API"
                 ],
-                "summary": "payment status success or failure",
+                "summary": "payment status success or failure check and on success send sms/email Ticket to customer,CMO,Admin",
                 "operationId": "91a40e9a7a2692c48125d3a130e745bd",
-                "requestBody": {
-                    "description": "updating payment status and sending email/sms to customers with ticket booking details",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "transaction_id": {
-                                        "type": "string",
-                                        "example": "20211102112722583214"
-                                    },
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Bob"
-                                    },
-                                    "phone": {
-                                        "type": "string",
-                                        "example": ""
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "exapmle@gmail.com"
-                                    },
-                                    "routedetails": {
-                                        "type": "string",
-                                        "example": "Bhubaneswar-Bhadrak"
-                                    },
-                                    "bookingdate": {
-                                        "type": "string",
-                                        "example": "02-11-2021"
-                                    },
-                                    "journeydate": {
-                                        "type": "string",
-                                        "example": "02-11-2021"
-                                    },
-                                    "boarding_point": {
-                                        "type": "string",
-                                        "example": "Rasulgarh"
-                                    },
-                                    "departureTime": {
-                                        "type": "string",
-                                        "example": "05:00"
-                                    },
-                                    "dropping_point": {
-                                        "type": "string",
-                                        "example": "Bonth Chhawk"
-                                    },
-                                    "arrivalTime": {
-                                        "type": "string",
-                                        "example": "07:30"
-                                    },
-                                    "busname": {
-                                        "type": "string",
-                                        "example": "Bus 2"
-                                    },
-                                    "busNumber": {
-                                        "type": "string",
-                                        "example": "OD 01 AW 1234"
-                                    },
-                                    "bustype": {
-                                        "type": "string",
-                                        "example": "NON AC"
-                                    },
-                                    "busTypeName": {
-                                        "type": "string",
-                                        "example": "DELUX"
-                                    },
-                                    "sittingType": {
-                                        "type": "string",
-                                        "example": "2+2"
-                                    },
-                                    "conductor_number": {
-                                        "type": "string",
-                                        "example": "7978817539"
-                                    },
-                                    "agent_number": {
-                                        "type": "string",
-                                        "example": "9898989898"
-                                    },
-                                    "customer_comission": {
-                                        "type": "number",
-                                        "example": "10"
-                                    },
-                                    "seat_id": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "26"
-                                        }
-                                    },
-                                    "seat_no": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "example": "sl6"
-                                        }
-                                    },
-                                    "source": {
-                                        "type": "string",
-                                        "example": "Bhubaneswar"
-                                    },
-                                    "destination": {
-                                        "type": "string",
-                                        "example": "Bhadrak"
-                                    },
-                                    "passengerDetails": {
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "bus_seats_id": {
-                                                    "type": "integer",
-                                                    "example": ""
-                                                },
-                                                "passenger_name": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "passenger_gender": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                },
-                                                "passenger_age": {
-                                                    "type": "string",
-                                                    "example": ""
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "example": [
-                                            {
-                                                "bus_seats_id": "37",
-                                                "passenger_name": "Bob",
-                                                "passenger_gender": "M",
-                                                "passenger_age": "25"
-                                            },
-                                            {
-                                                "bus_seats_id": "38",
-                                                "passenger_name": "Mom",
-                                                "passenger_gender": "F",
-                                                "passenger_age": "45"
-                                            }
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "customer transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "20220404141311561229"
+                        }
+                    },
+                    {
+                        "name": "customer_comission",
+                        "in": "query",
+                        "description": "customer transaction id against booking",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "example": "10"
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Payment successfully done"

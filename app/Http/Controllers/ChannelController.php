@@ -281,18 +281,6 @@ class ChannelController extends Controller
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }        
-        // try {
-        //     $response = $this->channelService->makePayment($request); 
-        //     if($response == 'SEAT UN-AVAIL'){
-        //         return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
-        //     }
-        //     else{
-        //         return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);
-        //     }
-        //  }
-        //  catch (Exception $e) {
-        //      return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-        //    }  
     }
 
     public function checkSeatStatus(Request $request)
@@ -317,187 +305,47 @@ class ChannelController extends Controller
  * @OA\POST(
  *     path="/api/PaymentStatus",
  *     tags={"PaymentStatus Success/Failure API"},
- *     summary="payment status success or failure",
- *     @OA\RequestBody(
- *        required = true,
- *     description="updating payment status and sending email/sms to customers with ticket booking details",
- *        @OA\JsonContent(
- *             type="object",
- *             @OA\Property(
- *                property="transaction_id",
- *                type="string",
- *                example="20220406142311512211"
- *                ),
- *             @OA\Property(
- *                property="name",
- *                type="string",
- *                example="Bob"
- *                ),
- *             @OA\Property(
- *                property="phone",
- *                type="string",
- *                example=""
- *                ),
- *             @OA\Property(
- *                property="email",
- *                type="string",
- *                example="exapmle@gmail.com"
- *                ),
- *              @OA\Property(
- *                property="routedetails",
- *                type="string",
- *                example="Bhubaneswar-Bhadrak"
- *                ),
- *              @OA\Property(
- *                property="razorpay_order_id",
- *                type="string",
- *                example="order_JG0lhY5U0CR6ZC"
- *                ),
- *              @OA\Property(
- *                property="razorpay_payment_id",
- *                type="string",
- *                example="pay_JG0loz3zFryFG8"
- *                ),
- *              @OA\Property(
- *                property="razorpay_signature",
- *                type="string",
- *                example="ce78997bd6d90682b42fc4961e2997248e8e5b0706a07257196a45eb21846203"
- *                ),
- *               @OA\Property(
- *                property="bookingdate",
- *                type="string",
- *                example="06-04-2022"
- *                ),
- *              @OA\Property(
- *                property="journeydate",
- *                type="string",
- *                example="07-04-2022"
- *                ),
- *            @OA\Property(
- *                property="boarding_point",
- *                type="string",
- *                example="Rasulgarh"
- *                ),
- *            @OA\Property(
- *                property="departureTime",
- *                type="string",
- *                example="05:00"
- *                ),
- *            @OA\Property(
- *                property="dropping_point",
- *                type="string",
- *                example="Bonth Chhawk"
- *                ),
- *            @OA\Property(
- *                property="arrivalTime",
- *                type="string",
- *                example="07:30"
- *                ),
- *            @OA\Property(
- *                property="bus_id",
- *                type="integer",
- *                example="420"
- *                ),
- *            @OA\Property(
- *                property="busname",
- *                type="string",
- *                example="Bus 2"
- *                ),
- *            @OA\Property(
- *                property="busNumber",
- *                type="string",
- *                example="OD 01 AW 1234"
- *                ),
- *            @OA\Property(
- *                property="bustype",
- *                type="string",
- *                example="NON AC"
- *                ),
- *            @OA\Property(
- *                property="busTypeName",
- *                type="string",
- *                example="DELUX"
- *                ),
- *            @OA\Property(
- *                property="sittingType",
- *                type="string",
- *                example="2+2"
- *                ),
- *            @OA\Property(
- *                property="conductor_number",
- *                type="string",
- *                example="7978817539"
- *                ),
- *            @OA\Property(
- *                 property="seat_id",
- *                 type="array",
- *                 @OA\Items(type="string",
- *                 example="2176",
- *                  ),
- *                 ),
- *             @OA\Property(
- *                 property="seat_no",
- *                 type="array",
- *                 @OA\Items(type="string",
- *                 example="SL7B",
- *                  ),
- *                 ),
- *            @OA\Property(
- *                property="source",
- *                type="string",
- *                example="Bhubaneswar"
- *                ),
- *            @OA\Property(
- *                property="destination",
- *                type="string",
- *                example="Bhadrak"
- *                ),
- *             @OA\Property(
- *                property="passengerDetails",
- *                type="array",
- *                example={{
- *                  "bus_seats_id" : "14",
- *                  "passenger_name": "Bob",
- *                  "passenger_gender": "M",
- *                  "passenger_age": "25",
- *                  "created_by": "customer"
- *                }, {
- *                  "bus_seats_id" : "15",
- *                  "passenger_name": "Mom",
- *                  "passenger_gender": "F",
- *                  "passenger_age": "45",
-  *                  "created_by": "customer"
- *                }},
- *                @OA\Items(
- *                      @OA\Property(
- *                         property="bus_seats_id",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_name",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_gender",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_age",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="created_by",
- *                         type="string",
- *                         example=""
- *                      ),
- *                ),
- *             ),
- *        ),
- *     ),
+ *     summary="payment status success or failure check and on success send sms/email Ticket to customer,CMO,Admin",
+ *     @OA\Parameter(
+ *          name="transaction_id",
+ *          description="customer transaction id against booking",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="20220404141311561229"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="razorpay_payment_id",
+ *          description="razorpay payment id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="pay_JT3MO4UrPGw9aQ"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="razorpay_order_id",
+ *          description="razorpay order id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="order_JT3MJLjsb3Lj2K"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="razorpay_signature",
+ *          description="razorpay signature",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="04e6ca7c037d5f6bb8fefb8f87a20ae4f5461fabd2d86232a8656378dce8daf8"
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="Payment successfully done"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),
@@ -689,174 +537,31 @@ class ChannelController extends Controller
         }
 
   }
-  /**
+ /**
  * @OA\POST(
  *     path="/api/AgentPaymentStatus",
- *     tags={"AgentPaymentStatus API"},
- *     summary="payment status success or failure",
- *     @OA\RequestBody(
- *        required = true,
- *     description="updating payment status and sending email/sms to customers with ticket booking details",
- *        @OA\JsonContent(
- *             type="object",
- *             @OA\Property(
- *                property="transaction_id",
- *                type="string",
- *                example="20211102112722583214"
- *                ),
- *             @OA\Property(
- *                property="name",
- *                type="string",
- *                example="Bob"
- *                ),
- *             @OA\Property(
- *                property="phone",
- *                type="string",
- *                example=""
- *                ),
- *             @OA\Property(
- *                property="email",
- *                type="string",
- *                example="exapmle@gmail.com"
- *                ),
- *              @OA\Property(
- *                property="routedetails",
- *                type="string",
- *                example="Bhubaneswar-Bhadrak"
- *                ),
- *               @OA\Property(
- *                property="bookingdate",
- *                type="string",
- *                example="02-11-2021"
- *                ),
- *              @OA\Property(
- *                property="journeydate",
- *                type="string",
- *                example="02-11-2021"
- *                ),
- *            @OA\Property(
- *                property="boarding_point",
- *                type="string",
- *                example="Rasulgarh"
- *                ),
- *            @OA\Property(
- *                property="departureTime",
- *                type="string",
- *                example="05:00"
- *                ),
- *            @OA\Property(
- *                property="dropping_point",
- *                type="string",
- *                example="Bonth Chhawk"
- *                ),
- *            @OA\Property(
- *                property="arrivalTime",
- *                type="string",
- *                example="07:30"
- *                ),
- *            @OA\Property(
- *                property="busname",
- *                type="string",
- *                example="Bus 2"
- *                ),
- *            @OA\Property(
- *                property="busNumber",
- *                type="string",
- *                example="OD 01 AW 1234"
- *                ),
- *            @OA\Property(
- *                property="bustype",
- *                type="string",
- *                example="NON AC"
- *                ),
- *            @OA\Property(
- *                property="busTypeName",
- *                type="string",
- *                example="DELUX"
- *                ),
- *            @OA\Property(
- *                property="sittingType",
- *                type="string",
- *                example="2+2"
- *                ),
- *            @OA\Property(
- *                property="conductor_number",
- *                type="string",
- *                example="7978817539"
- *                ),
- *            @OA\Property(
- *                property="agent_number",
- *                type="string",
- *                example="9898989898"
- *                ),
- *            @OA\Property(
- *                property="customer_comission",
- *                type="number",
- *                example="10"
- *                ),
- *            @OA\Property(
- *                 property="seat_id",
- *                 type="array",
- *                 @OA\Items(type="string",
- *                 example="26",
- *                  ),
- *                 ),
- *             @OA\Property(
- *                 property="seat_no",
- *                 type="array",
- *                 @OA\Items(type="string",
- *                 example="sl6",
- *                  ),
- *                 ),
- *            @OA\Property(
- *                property="source",
- *                type="string",
- *                example="Bhubaneswar"
- *                ),
- *            @OA\Property(
- *                property="destination",
- *                type="string",
- *                example="Bhadrak"
- *                ),
- *             @OA\Property(
- *                property="passengerDetails",
- *                type="array",
- *                example={{
- *                  "bus_seats_id" : "37",
- *                  "passenger_name": "Bob",
- *                  "passenger_gender": "M",
- *                  "passenger_age": "25"
- *                }, {
- *                  "bus_seats_id" : "38",
- *                  "passenger_name": "Mom",
- *                  "passenger_gender": "F",
- *                  "passenger_age": "45"
- *                }},
- *                @OA\Items(
- *                      @OA\Property(
- *                         property="bus_seats_id",
- *                         type="integer",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_name",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_gender",
- *                         type="string",
- *                         example=""
- *                      ),
- *                      @OA\Property(
- *                         property="passenger_age",
- *                         type="string",
- *                         example=""
- *                      ),
- *                ),
- *             ),
- *        ),
- *     ),
+ *     tags={"Agent PaymentStatus Success/Failure API"},
+ *     summary="payment status success or failure check and on success send sms/email Ticket to customer,CMO,Admin",
+ *     @OA\Parameter(
+ *          name="transaction_id",
+ *          description="customer transaction id against booking",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="20220404141311561229"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="customer_comission",
+ *          description="customer transaction id against booking",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="number",
+ *              example="10"
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="Payment successfully done"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),
