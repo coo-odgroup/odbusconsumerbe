@@ -554,7 +554,7 @@ class ChannelController extends Controller
  *      ),
  *     @OA\Parameter(
  *          name="customer_comission",
- *          description="customer transaction id against booking",
+ *          description="customer comission",
  *          required=false,
  *          in="query",
  *          @OA\Schema(

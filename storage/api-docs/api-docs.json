@@ -1419,7 +1419,7 @@
                     {
                         "name": "customer_comission",
                         "in": "query",
-                        "description": "customer transaction id against booking",
+                        "description": "customer comission",
                         "required": false,
                         "schema": {
                             "type": "number",

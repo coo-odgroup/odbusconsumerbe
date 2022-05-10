@@ -277,7 +277,7 @@ class ListingService
             $CouponDetails = [];
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
-             
+           
             foreach($CouponRecords as $key => $coupon){
                 
                 $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
@@ -295,11 +295,14 @@ class ListingService
                                                     
                         break;      
                 }
+               
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
                     $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
-                                                  ->where('bus_id',$busId)
-                                                  ->get(); 
+                                                ->where('from_date', '<=', $bookingDate)
+                                                ->where('to_date', '>=', $bookingDate)
+                                                ->where('bus_id',$busId)
+                                                ->get(); 
                     //return $CouponDetails;
                  }
             }
