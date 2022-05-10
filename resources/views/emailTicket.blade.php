@@ -735,7 +735,7 @@ border: 0;
                         <th scope="col">Sl No.</th>
                         <th scope="col">Name</th>
                         <th scope="col">Age</th>
-                        <th scope="col">Sex</th>
+                        <th scope="col">Gender</th>
                         <th scope="col">Seat</th>
                       </tr>
                     </thead>
