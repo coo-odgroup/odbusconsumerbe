@@ -358,6 +358,8 @@ class ChannelRepository
           $payable_amount= $payable_amount + $data['customer_comission'];
         }
 
+        $data['journeydate']= date('d-m-Y',strtotime($data['journeydate']));
+
         if($SmsGW =='textLocal'){
 
             //Environment Variables
@@ -504,6 +506,8 @@ class ChannelRepository
         if(isset($data['customer_comission'])){
           $payable_amount= $payable_amount + $data['customer_comission'];
         }
+
+        $data['journeydate']= date('d-m-Y',strtotime($data['journeydate']));
    
         // foreach($passengerDetails as $pDetail){
         //     $nameList = "{$nameList},{$pDetail['passenger_name']}";
@@ -785,7 +789,7 @@ class ChannelRepository
         $payment = $api->payment->fetch($razorpay_payment_id);
         $paymentStatus = $payment->status;
 
-        if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'authorized') { //captured(live version) , authorized (test version)
+        if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
@@ -1078,7 +1082,7 @@ class ChannelRepository
 
       //Log::info($paymentStatus);
 
-      if($paymentStatus != 'authorized'){ //captured(Live), authorized(testing)
+      if($paymentStatus != 'captured'){ //captured(Live), authorized(testing)
 
         return "payment_not_done";
 

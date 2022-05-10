@@ -71,8 +71,8 @@ class SendEmailTicketJob implements ShouldQueue
     {
         $this->name = $request['name'];
         $this->to = $request['email'];
-        $this->bookingdate = $request['bookingdate'];
-        $this->journeydate = $request['journeydate'];
+        $this->bookingdate = date('d-m-Y',strtotime($request['bookingdate']));
+        $this->journeydate = date('d-m-Y',strtotime($request['journeydate']));
         $this->boarding_point = $request['boarding_point'];
         $this->dropping_point = $request['dropping_point'];
         $this->departureTime = $request['departureTime'];

@@ -135,6 +135,8 @@ class BookingManageService
                      $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);  
                      $booking_detail[0]->booking[0]['journeyDuration'] =  $totalJourneyTime;
                      $booking_detail[0]->booking[0]['journey_end_dt'] =  $j_endDate;           
+                     $booking_detail[0]->booking[0]['created_date'] = date('Y-m-d',strtotime($booking_detail[0]->booking[0]['created_at']));           
+                     $booking_detail[0]->booking[0]['updated_date'] =   date('Y-m-d',strtotime($booking_detail[0]->booking[0]['updated_at']));                    
                      
                     return $booking_detail;                  
                 }                
