@@ -302,7 +302,7 @@ class ListingService
                                                 ->where('from_date', '<=', $bookingDate)
                                                 ->where('to_date', '>=', $bookingDate)
                                                 ->where('bus_id',$busId)
-                                                ->get(); 
+                                                ->get(''); 
                     //return $CouponDetails;
                  }
             }
