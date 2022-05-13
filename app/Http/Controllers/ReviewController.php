@@ -68,7 +68,7 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer",
+         *              type="string",
          *              example="21212121"
          *          )
          *      ),
@@ -94,7 +94,7 @@ class ReviewController extends Controller
          *      ),
          *     @OA\Parameter(
          *          name="reference_key",
-         *          description="reference key",
+         *          description="link for email",
          *          required=true,
          *          in="query",
          *          @OA\Schema(

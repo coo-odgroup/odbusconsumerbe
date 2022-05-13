@@ -741,10 +741,10 @@
         "/api/cancelTicketInfo": {
             "post": {
                 "tags": [
-                    "Get detail information of a cancelled ticket"
+                    "Get detail information on cancellation rules and policies"
                 ],
-                "summary": "Get detail information of a cancelled ticket",
-                "description": "Get detail information of a cancelled ticket",
+                "summary": "Get detail information on cancellation rules and policies",
+                "description": "Get detail information on cancellation rules and policies",
                 "operationId": "be66a3872e42dedf728eeae29f225439",
                 "parameters": [
                     {
@@ -770,7 +770,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Get detail information of a cancelled ticket"
+                        "description": "Get detail information of ticket cancellation rules and policies"
                     },
                     "206": {
                         "description": "Validation error: Not a valid pnr or Mobile number"

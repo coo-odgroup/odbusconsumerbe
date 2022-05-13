@@ -291,9 +291,9 @@ class BookingManageController extends Controller
     /**
      * @OA\Post(
      *     path="/api/cancelTicketInfo",
-     *     tags={"Get detail information of a cancelled ticket"},
-     *     description="Get detail information of a cancelled ticket",
-     *     summary="Get detail information of a cancelled ticket",
+     *     tags={"Get detail information on cancellation rules and policies"},
+     *     description="Get detail information on cancellation rules and policies",
+     *     summary="Get detail information on cancellation rules and policies",
      *     @OA\Parameter(
      *          name="pnr",
      *          description="pnr number",
@@ -314,7 +314,7 @@ class BookingManageController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *  @OA\Response(response="200", description="Get detail information of a cancelled ticket"),
+     *  @OA\Response(response="200", description="Get detail information of ticket cancellation rules and policies"),
      *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
      *  @OA\Response(response=400, description="Bad request"),
      *  @OA\Response(response=401, description="Unauthorized access"),
