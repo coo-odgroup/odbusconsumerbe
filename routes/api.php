@@ -65,7 +65,7 @@ Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
 Route::get('/Filter', [ListingController::class, 'filter']);    
-Route::get('/BusDetails', [ListingController::class, 'busDetails']);
+Route::get('/BusDetails', [ListingController::class, 'busDetails']);////need to doc
 Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
 Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
@@ -95,7 +95,7 @@ Route::post('/AgentcancelTicketOTP', [BookingManageController::class, 'agentcanc
 Route::post('/AgentcancelTicket', [BookingManageController::class, 'agentcancelTicket']);
 
 Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
-Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
+//Route::get('/SingleBusReviewList/{bid}', [ReviewController::class, 'getReviewByBid']);
 Route::post('/AddReview', [ReviewController::class, 'createReview']);
 Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
 Route::delete('/DeleteReview/{id}/{userId}', [ReviewController::class, 'deleteReview']);

@@ -68,7 +68,7 @@ class ReviewController extends Controller
          *          required=true,
          *          in="query",
          *          @OA\Schema(
-         *              type="integer",
+         *              type="string",
          *              example="21212121"
          *          )
          *      ),
@@ -94,7 +94,7 @@ class ReviewController extends Controller
          *      ),
          *     @OA\Parameter(
          *          name="reference_key",
-         *          description="reference key",
+         *          description="link for email",
          *          required=true,
          *          in="query",
          *          @OA\Schema(
@@ -246,7 +246,7 @@ class ReviewController extends Controller
    *          required=true,
    *          in="query",
    *          @OA\Schema(
-   *              type="integer",
+   *              type="string",
    *              example="21212121"
    *          )
    *      ),
@@ -464,36 +464,7 @@ class ReviewController extends Controller
           return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }   
     }
-  /**
-   * @OA\Get(
-   *     path="/api/ReviewDetail/{id}",
-   *     tags={"Review detail of a customer"},
-   *     summary="Review detail of a customer",
-   *     @OA\Parameter(
-   *         description="Review detail of a customer",
-   *         in="path",
-   *         name="review Id",
-   *         required=true,
-   *          @OA\Schema(
-   *              type="integer",
-   *              example=1
-   *          )
-   *     ), 
-   *  @OA\Response(response="200", description="Get Review of a Customer"),
-   *  @OA\Response(response=206, description="validation error"),
-   *  @OA\Response(response=400, description="Bad request"),
-   *  @OA\Response(response=401, description="Unauthorized access"),
-   *  @OA\Response(response=404, description="No record found"),
-   *  @OA\Response(response=500, description="Internal server error"),
-   *  @OA\Response(response=502, description="Bad gateway"),
-   *  @OA\Response(response=503, description="Service unavailable"),
-   *  @OA\Response(response=504, description="Gateway timeout"),
-   *     security={
-   *       {"apiAuth": {}}
-   *     }
-   *     )
-   * )
-   */  
+  
     public function getReview($id) {
 
       try{
