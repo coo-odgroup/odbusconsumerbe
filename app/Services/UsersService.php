@@ -158,6 +158,8 @@ class UsersService
              foreach($list as $k => $l){
                  $l['source']=$this->usersRepository->getLocation($l->source_id);
                  $l['destination']=$this->usersRepository->getLocation($l->destination_id);
+
+                 $l['created_date'] = date('Y-m-d',strtotime($l['created_at']));  
                
                  $l['review']= false;
                  $l['cancel']= false;
