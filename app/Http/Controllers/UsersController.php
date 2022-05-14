@@ -218,8 +218,10 @@ class UsersController extends Controller
     $LoginValidation = $this->loginValidator->validate($data);
      
     if ($LoginValidation->fails()) {
-      $errors = $LoginValidation->errors();
-      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+    
+      // $errors = $LoginValidation->errors();
+      // return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }
     try {
       $response = $this->usersService->login($request);
