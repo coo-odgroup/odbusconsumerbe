@@ -65,7 +65,7 @@ Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
 Route::get('/Filter', [ListingController::class, 'filter']);    
-Route::get('/BusDetails', [ListingController::class, 'busDetails']);////need to doc
+Route::get('/BusDetails', [ListingController::class, 'busDetails']);
 Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
 Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
@@ -99,7 +99,7 @@ Route::get('/allReviews', [ReviewController::class, 'getAllReview']);
 Route::post('/AddReview', [ReviewController::class, 'createReview']);
 Route::put('/UpdateReview/{id}', [ReviewController::class, 'updateReview']);
 Route::delete('/DeleteReview/{id}/{userId}', [ReviewController::class, 'deleteReview']);
-Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
+//Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']); 

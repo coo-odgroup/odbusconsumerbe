@@ -469,7 +469,7 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="source_id",
  *          description="source Id",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
@@ -479,7 +479,7 @@ class ListingController extends Controller
  *     @OA\Parameter(
  *          name="destination_id",
  *          description="destination Id",
- *          required=true,
+ *          required=false,
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
