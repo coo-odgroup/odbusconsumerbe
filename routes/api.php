@@ -28,6 +28,7 @@ use App\Http\Controllers\FilePathUrlsController;
 use App\Http\Controllers\BotManController;
 use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\AuthClientsController;
+use App\Http\Controllers\ClientBookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +124,8 @@ Route::get('/RecentSearch/{userId}', [RecentSearchController::class, 'getSearchD
 Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 Route::post('/GenerateFailedTicket', [ChannelController::class, 'generateFailedTicket']);
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
+
+Route::post('/PassengerInfoOnBooking', [ClientBookingController::class, 'clientBooking']);
 
 });
 });

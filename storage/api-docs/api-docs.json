@@ -2068,7 +2068,7 @@
                         "name": "source_id",
                         "in": "query",
                         "description": "source Id",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": "82"
@@ -2078,7 +2078,7 @@
                         "name": "destination_id",
                         "in": "query",
                         "description": "destination Id",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": "434"
@@ -2899,7 +2899,7 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
+                            "type": "string",
                             "example": "21212121"
                         }
                     },
@@ -2926,7 +2926,7 @@
                     {
                         "name": "reference_key",
                         "in": "query",
-                        "description": "reference key",
+                        "description": "link for email",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -3084,7 +3084,7 @@
                         "description": "pnr number",
                         "required": true,
                         "schema": {
-                            "type": "integer",
+                            "type": "string",
                             "example": "21212121"
                         }
                     },
@@ -3280,61 +3280,6 @@
                     },
                     "206": {
                         "description": "User does not match to the review"
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "401": {
-                        "description": "Unauthorized access"
-                    },
-                    "404": {
-                        "description": "No record found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    },
-                    "502": {
-                        "description": "Bad gateway"
-                    },
-                    "503": {
-                        "description": "Service unavailable"
-                    },
-                    "504": {
-                        "description": "Gateway timeout"
-                    }
-                },
-                "security": [
-                    {
-                        "apiAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/ReviewDetail/{id}": {
-            "get": {
-                "tags": [
-                    "Review detail of a customer"
-                ],
-                "summary": "Review detail of a customer",
-                "operationId": "fa5c4e0e0c1b3062e33f0e8fac3f15e2",
-                "parameters": [
-                    {
-                        "name": "review Id",
-                        "in": "path",
-                        "description": "Review detail of a customer",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Get Review of a Customer"
-                    },
-                    "206": {
-                        "description": "validation error"
                     },
                     "400": {
                         "description": "Bad request"
