@@ -1076,19 +1076,24 @@ class ChannelRepository
      
       $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
 
-    if(isset($res->items[0])){
+      $flag=false;
+      $razorpay_payment_id ='';
 
-      $paymentStatus = $res->items[0]->status;
+      if($res->items){
+          foreach ($res->items as $value){               
+            if($value->status == 'captured'){ //captured(Live), authorized(testing)
+              $flag=true;
+              $razorpay_payment_id = $value->id;
+              break;
+            } 
+          }                  
+      }
 
-      //Log::info($paymentStatus);
-
-      if($paymentStatus != 'captured'){ //captured(Live), authorized(testing)
+      if($flag == false){
 
         return "payment_not_done";
 
       }else{
-     
-      $razorpay_payment_id = $res->items[0]->id;
       
       $bookingDetails = $this->booking->where('id', $bookingId)
                                       ->with('users')
@@ -1278,11 +1283,7 @@ class ChannelRepository
           return "ticket regenerated";
         
       }
-    }else{
-
-        return "payment_not_done";
-       
-    }
+    
 
     }
 }
