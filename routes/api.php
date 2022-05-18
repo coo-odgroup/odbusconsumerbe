@@ -126,6 +126,7 @@ Route::post('/GenerateFailedTicket', [ChannelController::class, 'generateFailedT
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 
 Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
+Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
 
 });
 });

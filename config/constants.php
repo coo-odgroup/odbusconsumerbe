@@ -81,5 +81,6 @@ return [
     'BOOKING_TYPE' => 'Failled Ticket Generated',
     //'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
     'CONSUMER_FRONT_URL' => 'https://odtesting.odbus.co.in/',
+    'SEAT_BLOCKED_FOR_PAYMENT' => 'Seats are blocked for further payment process',
 
 ];
