@@ -194,4 +194,59 @@ class ClientBookingRepository
          return 'CLIENT_INVALID';
      }
     }
+
+    public function ticketConfirmation($request)
+    {
+        $booked = Config::get('constants.BOOKED_STATUS');
+        $transactionId = $request['transaction_id'];
+        $bookingRecord = $this->booking->where('transaction_id', $transactionId)
+                                       ->with('bookingDetail')
+                                       ->get();
+
+        $bookingId = $bookingRecord[0]->id; 
+        $comissionAmount = $bookingRecord[0]->client_comission; 
+                    
+        if($bookingRecord[0]->payable_amount == 0.00){
+          $amount = $bookingRecord[0]->total_fare;
+        }else{
+            $amount = $bookingRecord[0]->payable_amount;
+        }                               
+        
+        $walletBalance = ClientWallet::where('user_id',$request['client_id'])->where('status',1)->latest()->first()->balance;
+      
+        $clientWallet = new ClientWallet();
+        $clientWallet->transaction_id = $transactionId;
+        $clientWallet->booking_id = $bookingId;
+        $clientWallet->amount = $amount;
+        $clientWallet->transaction_type = 'd';
+        $clientWallet->balance = $walletBalance - $amount;
+        $clientWallet->user_id = $request['client_id'];
+        $clientWallet->created_by = $request['client_name'];
+        $clientWallet->status = 1;
+        $clientWallet->save();
+        //return $clientWallet;
+
+        $walletBalance = ClientWallet::where('user_id',$request['client_id'])->latest()->first()->balance;
+        $tranId = date('YmdHis') . gettimeofday()['usec'];
+        $clientWallet = new ClientWallet();
+        $clientWallet->transaction_id = $tranId;
+        $clientWallet->amount = $comissionAmount;
+        $clientWallet->type = 'Commission';
+        $clientWallet->booking_id = $bookingId;
+        $clientWallet->transaction_type = 'c';
+        $clientWallet->balance = $walletBalance + $comissionAmount;
+        $clientWallet->user_id = $request['client_id'];
+        $clientWallet->created_by = $request['client_name'];
+        $clientWallet->status = 1;
+        $clientWallet->save();
+
+        /////////Update booking table as status booked////////////
+  
+        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
+        $booking = $this->booking->find($bookingId);
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+
+        return $clientWallet;
+    }
+
 }

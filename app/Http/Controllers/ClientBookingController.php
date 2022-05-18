@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\ClientBookingService;
 use App\AppValidator\ClientBookingValidator;
 use App\AppValidator\SeatBlockValidator;
+use App\AppValidator\TicketConfirmValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -23,13 +24,15 @@ class clientBookingController extends Controller
     protected $clientBookingService;
     protected $clientBookingValidator;
     protected $seatBlockValidator;
+    protected $ticketConfirmValidator;
     
 
-    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator)
+    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator)
     {
         $this->clientBookingService = $clientBookingService;  
         $this->clientBookingValidator = $clientBookingValidator;
-        $this->seatBlockValidator = $seatBlockValidator;      
+        $this->seatBlockValidator = $seatBlockValidator; 
+        $this->ticketConfirmValidator = $ticketConfirmValidator;     
     }
 
     public function clientBooking(Request $request) {
@@ -87,5 +90,36 @@ class clientBookingController extends Controller
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }        
+    }
+    public function ticketConfirmation(Request $request){
+
+        $data = $request->all();
+        
+        $ticketConfValidation = $this->ticketConfirmValidator->validate($data);
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $data = $request->all();
+        
+        $data['client_id']=$user->id;
+        $data['client_name']=$user->name;
+    
+        if ($ticketConfValidation->fails()) {
+        $errors = $ticketConfValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        }  
+        try{  
+            $response = $this->clientBookingService->ticketConfirmation($data); 
+            return $this->successResponse($response,Config::get('constants.TICKET_CONFIRMED'),Response::HTTP_OK);
+            //  If($response == 'Payment Done'){
+            //      return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
+            //  }
+            //  else{
+            //     return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
+            // }  
+         }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+          }     
     }
 }
