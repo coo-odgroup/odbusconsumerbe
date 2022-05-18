@@ -45,7 +45,6 @@ class clientBookingController extends Controller
         } 
          try {
             $response =  $this->clientBookingService->clientBooking($data);  
-            //return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
             
             if(isset($response['message'])){
              return $this->errorResponse($response['note'],Response::HTTP_OK);

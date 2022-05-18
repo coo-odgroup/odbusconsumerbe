@@ -125,7 +125,7 @@ Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 Route::post('/GenerateFailedTicket', [ChannelController::class, 'generateFailedTicket']);
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 
-Route::post('/PassengerInfoOnBooking', [ClientBookingController::class, 'clientBooking']);
+Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
 
 });
 });

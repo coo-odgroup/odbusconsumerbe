@@ -60,6 +60,10 @@ class ClientBookingRepository
         $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
         //$clientId = $bookingInfo['user_id'];
 
+        $clientId = $this->user->where('id',$bookingInfo['user_id'])
+                                ->where('status','1')
+                                ->first('id');
+
         $existingUser = Users::where('phone',$customerInfo['phone'])
                                     ->exists(); 
         if($existingUser==true){
@@ -114,18 +118,6 @@ class ClientBookingRepository
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
         $booking->transactionFee = $bookingInfo['transactionFee'];
 
-        if(isset($bookingInfo['adj_note'])){
-            $booking->booking_adj_note = $bookingInfo['adj_note'];            
-        }
-
-        if(isset($bookingInfo['status'])){
-            $booking->status = $bookingInfo['status'];
-        } 
-
-        if(isset($bookingInfo['booking_type'])){
-            $booking->booking_type = $bookingInfo['booking_type'];
-        }
-
         $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
       
         $booking->odbus_gst_charges = $odbusGstPercent;
@@ -140,7 +132,6 @@ class ClientBookingRepository
                 $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
                 $booking->owner_gst_amount = $ownerGstAmount;
             }     
-        //$agentCommissionByCustomer = AgentFee::get(); 
         $clientCommissions = ClientFeeSlab::get(); 
         
         $clientComission = 0;
@@ -153,16 +144,14 @@ class ClientBookingRepository
                     break;
                 }  
             }   
-
-        }
-        return  $clientComission;
-
-        ///////need to make two columns in booking table to capture clientComission and percentage/////
+        } 
+        $clientComAmount = round($clientComission/100 * $bookingInfo['total_fare'],2);
+        $booking->client_comission = $clientComAmount;
+        $booking->client_percentage = $clientComission;
                        
         $booking->created_by = $bookingInfo['created_by'];
         $booking->users_id = $userId;
-        $agentId->booking()->save($booking);
-        $booking->customer_comission = $comissionByCustomer;
+        $clientId->booking()->save($booking);
         
         //fetch the sequence from bus_locaton_sequence
         $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
@@ -202,8 +191,7 @@ class ClientBookingRepository
             return $arr;
             } 
      }else{
-         return 'AGENT_INVALID';
+         return 'CLIENT_INVALID';
      }
     }
-
 }
