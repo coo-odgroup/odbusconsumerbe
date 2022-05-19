@@ -50,15 +50,12 @@ class ClientBookingRepository
     }   
     
     public function clientBooking($request)
-    { 
-        
+    {  
         $needGstBill = Config::get('constants.NEED_GST_BILL');
-        //$agentInfo = $request['agentInfo'];
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
         $defUserId = Config::get('constants.USER_ID');
         $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
-        //$clientId = $bookingInfo['user_id'];
 
         $clientId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
@@ -204,14 +201,9 @@ class ClientBookingRepository
                                        ->get();
 
         $bookingId = $bookingRecord[0]->id; 
-        $comissionAmount = $bookingRecord[0]->client_comission; 
-                    
-        if($bookingRecord[0]->payable_amount == 0.00){
-          $amount = $bookingRecord[0]->total_fare;
-        }else{
-            $amount = $bookingRecord[0]->payable_amount;
-        }                               
-        
+        $comissionAmount = $bookingRecord[0]->client_comission;             
+        $amount = $bookingRecord[0]->total_fare;
+                              
         $walletBalance = ClientWallet::where('user_id',$request['client_id'])->where('status',1)->latest()->first()->balance;
       
         $clientWallet = new ClientWallet();
@@ -246,7 +238,25 @@ class ClientBookingRepository
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-        return $clientWallet;
+        $bookingDetails = $this->booking->where('transaction_id', $transactionId)
+                               ->with('users')
+                               ->with(["bus" => function($bs){
+                                $bs->with('cancellationslabs.cancellationSlabInfo');
+                                $bs->with('BusType.busClass');
+                                $bs->with('BusSitting');                
+                                $bs->with('busContacts');
+                                }])
+                              ->with('bookingDetail')
+                              ->with(['clientWallet' => function($cw){
+                                $cw->orderBy('id','DESC');
+                                $cw->where("status",1);
+                                $cw->limit(1);
+                                }])
+                              ->get();
+
+        return $bookingDetails;
+
+       
     }
 
 }

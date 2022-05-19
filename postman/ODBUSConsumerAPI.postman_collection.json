@@ -2378,7 +2378,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyODUwMDY3LCJleHAiOjE2NTI4NTM2NjcsIm5iZiI6MTY1Mjg1MDA2NywianRpIjoiNlpFQ1hZbHM0RkE0OE1hayIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Cy3W8Rw5Zxe4FrQG2RnyMbRqcyrvoiogs5064EKlWL8",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyOTM3NTg5LCJleHAiOjE2NTI5NDExODksIm5iZiI6MTY1MjkzNzU4OSwianRpIjoiS2hFTHJTZTdZbFFQbm5uNiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.vBdS53pvJQKr1FZ6q0xeGza3g3zU3ZwB9AnZmt7sKSY",
 							"type": "string"
 						}
 					]
@@ -2387,7 +2387,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\" :\"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\" :\"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"app_type\": \"WEB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2420,7 +2420,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyODU2MzAxLCJleHAiOjE2NTI4NTk5MDEsIm5iZiI6MTY1Mjg1NjMwMSwianRpIjoiemRoaFZheGVzaFJIT1hDcSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.yDH1kMAxP-trXs2g0kec28N6q8Qrl4knsC_KwPfJcwE",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyOTM3NTg5LCJleHAiOjE2NTI5NDExODksIm5iZiI6MTY1MjkzNzU4OSwianRpIjoiS2hFTHJTZTdZbFFQbm5uNiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.vBdS53pvJQKr1FZ6q0xeGza3g3zU3ZwB9AnZmt7sKSY",
 							"type": "string"
 						}
 					]
@@ -2429,7 +2429,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"busId\": 798,\r\n\t\"sourceId\": \"144\",\r\n\t\"destinationId\": \"388\",\r\n\t\"transaction_id\": \"20220518110931315465\",\r\n\t\"seatIds\": [\"1880\", \"1881\"],\r\n\t\"entry_date\": \"25-04-2022\",\r\n\t\"customer_gst_status\": false,\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
+					"raw": "{\r\n\t\"busId\": 798,\r\n\t\"sourceId\": \"144\",\r\n\t\"destinationId\": \"388\",\r\n\t\"transaction_id\": \"2022051911162169498\",\r\n\t\"seatIds\": [\"1880\", \"1881\"],\r\n\t\"entry_date\": \"25-04-2022\",\r\n\t\"customer_gst_status\": false,\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2462,7 +2462,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyODc1MTc4LCJleHAiOjE2NTI4Nzg3NzgsIm5iZiI6MTY1Mjg3NTE3OCwianRpIjoiMUh3QUpBellma0xJUjBoWSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.jXm95u0v2tIG_Ov3v53eGEn1HKqYTXd0sANXy3dRBVc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyOTM3NTg5LCJleHAiOjE2NTI5NDExODksIm5iZiI6MTY1MjkzNzU4OSwianRpIjoiS2hFTHJTZTdZbFFQbm5uNiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.vBdS53pvJQKr1FZ6q0xeGza3g3zU3ZwB9AnZmt7sKSY",
 							"type": "string"
 						}
 					]
@@ -2471,7 +2471,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220518110931315465\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"2022051911162169498\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

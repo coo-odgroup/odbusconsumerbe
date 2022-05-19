@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Users;
 use App\Models\Bus;
 use App\Models\BookingSequence;
+use App\Models\ClientWallet;
 use App\Models\CustomerPayment;
 class Booking extends Model
 {
@@ -42,5 +43,9 @@ class Booking extends Model
       {
             return $this->belongsTo(User::class);
       }
+      public function clientWallet()
+      {
+            return $this->hasMany(ClientWallet::class);   
+      } 
 
 }
