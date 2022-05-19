@@ -359,7 +359,7 @@ class ChannelController extends Controller
  *     security={{ "apiAuth": {} }}
  * )
  */
-    public function pay(Request $request){
+public function pay(Request $request){
 
     $data = $request->all();
     $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
@@ -380,9 +380,37 @@ class ChannelController extends Controller
             }  
          }
         catch (Exception $e) {
+            Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
-    }
+}
+
+ public function UpdateAdjustStatus(Request $request){
+    $data = $request->all();
+    $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
+
+    if ($paymentStatusValidation->fails()) {
+     
+    $errors = $paymentStatusValidation->errors();
+    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }  
+        try{
+            $response = $this->channelService->UpdateAdjustStatus($request);
+            //return $response; 
+            If($response == 'Payment Done'){
+                return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
+            }
+            else{
+                return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
+            }  
+         }
+        catch (Exception $e) {
+            Log::info($e->getMessage());
+            return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+          }     
+
+
+ }   
   
   public function RazorpayWebhook(){
     

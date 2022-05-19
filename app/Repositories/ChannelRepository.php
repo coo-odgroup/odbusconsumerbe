@@ -1286,4 +1286,98 @@ class ChannelRepository
     
 
     }
+
+
+    public function UpdateAdjustStatus($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData){
+
+    
+      $SmsGW = config('services.sms.otpservice');
+    
+          $this->customerPayment->where('id', $customerId)
+                              ->update([
+                                  'razorpay_id' => $razorpay_payment_id,
+                                  'razorpay_signature' => $razorpay_signature,
+                                  'payment_done' => $paymentDone
+                              ]);
+
+           //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+
+          $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
+          $booking = $this->booking->find($bookingId);
+          $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+      
+          $sendsms = $this->sendSmsTicket($payable_amount,$smsData,$pnr);////send sms ticket customer
+     
+          if(isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)){
+    
+               $msgId = $sendsms->messages[0]->id;
+               $status = $sendsms->status;
+               $from = $sendsms->message->sender;
+               $to = $sendsms->messages[0]->recipient;
+               $contents = $sendsms->message->content;
+               $response = collect($sendsms);
+              /// save sms related things in manage_sms table///////////////
+      
+              $sms = new $this->manageSms();
+              $sms->pnr = $pnr;
+              $sms->booking_id = $bookingId;
+              $sms->sms_engine = $SmsGW;
+              $sms->type = 'customer';
+              $sms->status = $status;
+              $sms->from = $from;
+              $sms->to = $to;
+              $sms->contents = $contents;
+              $sms->response = $response;
+              $sms->message_id = $msgId;
+              $sms->save();
+            }
+
+        if($email){
+              $sendEmailTicket = $this->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+          }
+
+       /////////////////send email to odbus admin////////
+
+      $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+       
+       
+    ///////////////////CMO SMS/////////////////////////////////////////////////
+      $busContactDetails = BusContacts::where('bus_id',$busId)
+                                        ->where('status','1')
+                                        ->where('booking_sms_send','1')
+                                        ->get('phone');
+      if($busContactDetails->isNotEmpty()){
+          $contact_number = collect($busContactDetails)->implode('phone',',');
+          $sendSmsCMO = $this->sendSmsCMO($payable_amount,$smsData, $pnr, $contact_number);
+
+          if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+
+          $msgId = $sendSmsCMO->messages[0]->id;
+          $status = $sendSmsCMO->status;
+          $from = $sendSmsCMO->message->sender;
+          $to = collect($sendSmsCMO->messages)->pluck('recipient');
+          $contents = $sendSmsCMO->message->content;
+          $response = collect($sendSmsCMO);
+
+          /// save sms related things in manage_sms table///////////////
+      
+          $sms = new $this->manageSms();
+          $sms->pnr = $pnr;
+          $sms->booking_id = $bookingId;
+          $sms->sms_engine = $SmsGW;
+          $sms->type = 'cmo';
+          $sms->status = $status;
+          $sms->from = $from;
+          $sms->to = $to;
+          $sms->contents = $contents;
+          $sms->response = $response;
+          $sms->message_id = $msgId;
+          $sms->save();
+        }
+         
+      }
+          return "Payment Done";
+     
+    }
+
 }
