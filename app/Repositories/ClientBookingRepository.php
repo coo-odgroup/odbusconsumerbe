@@ -20,6 +20,7 @@ use App\Models\ClientWallet;
 use App\Models\ClientFeeSlab;
 use App\Models\AgentFee;
 use App\Models\Users;
+use App\Models\Seats;
 use App\Services\ViewSeatsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -51,11 +52,37 @@ class ClientBookingRepository
     
     public function clientBooking($request)
     {  
+       
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
         $defUserId = Config::get('constants.USER_ID');
         $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
+
+        /////////////////////////////////////////////////////////////
+        $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
+       
+        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+
+        $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
+        $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
+        $entry_date = $bookingInfo['journey_dt'];
+        $busId = $bookingInfo['bus_id'];
+        $sourceId = $bookingInfo['source_id'];
+        $destinationId =  $bookingInfo['destination_id'];
+       
+        $data = array(
+            'busId' => $busId,
+            'sourceId' => $sourceId,
+            'destinationId' => $destinationId,
+            'seater' => $seater,
+            'sleeper' => $sleeper,
+            'entry_date' => $entry_date,
+        );
+        $priceDetails = $this->viewSeatsService->getPriceCalculation($data);
+        //$details = $this->viewSeatsService->getPriceOnSeatsSelection($busId,$sourceId,$destinationId,$seater,$sleeper,$entry_date);
+       
+        //$details = $this->viewSeatsService->getPriceOnSeatsSelection(request(),$data);
 
         $clientId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
@@ -83,7 +110,7 @@ class ClientBookingRepository
             $arr['message']="less_balance";
             return $arr;
         } 
-    if($walletBalance >= $bookingInfo['total_fare']){
+    if($walletBalance >= $priceDetails[0]['ownerFare']){
         //Save Booking 
                $booking = new $this->booking;
         do {
@@ -96,7 +123,7 @@ class ClientBookingRepository
         $booking->pnr = $PNR;
         $booking->user_id = $bookingInfo['user_id'];
         $booking->bus_id = $bookingInfo['bus_id'];
-        $busId = $bookingInfo['bus_id'];
+        //$busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
         $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
@@ -108,27 +135,34 @@ class ClientBookingRepository
         $booking->boarding_time = $bookingInfo['boarding_time'];
         $booking->dropping_time =  $bookingInfo['dropping_time'];
         $booking->origin = $bookingInfo['origin'];
-        $booking->app_type = $bookingInfo['app_type'];
-        $booking->typ_id = $bookingInfo['typ_id'];
-        $booking->owner_fare = $bookingInfo['owner_fare'];
-        $booking->total_fare = $bookingInfo['total_fare'];
-        $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        $booking->transactionFee = $bookingInfo['transactionFee'];
+        $booking->app_type = 'CLNTWEB';
+        $booking->owner_fare = $priceDetails[0]['ownerFare'];
+        $booking->total_fare = $priceDetails[0]['totalFare'];
+        $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
+        $booking->transactionFee = $priceDetails[0]['transactionFee'];
+        $booking->additional_special_fare = $priceDetails[0]['specialFare'];
+        $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
+        $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
+       
+        // $booking->owner_fare = $bookingInfo['owner_fare'];
+        // $booking->total_fare = $bookingInfo['total_fare'];
+        // $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        // $booking->transactionFee = $bookingInfo['transactionFee'];
 
         $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
       
         $booking->odbus_gst_charges = $odbusGstPercent;
-        $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
+        $odbusGstAmount = $priceDetails[0]['ownerFare'] * $odbusGstPercent/100;
         $booking->odbus_gst_amount = $odbusGstAmount;
-        
+      
         $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
-            if($busOperator[0]->need_gst_bill == $needGstBill){   
-                $ownerGstPercentage = $busOperator[0]->gst_amount;
-                $booking->owner_gst_charges = $ownerGstPercentage;
-                $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
-                $booking->owner_gst_amount = $ownerGstAmount;
-            }     
+        if($busOperator[0]->need_gst_bill == $needGstBill){   
+            $ownerGstPercentage = $busOperator[0]->gst_amount;
+            $booking->owner_gst_charges = $ownerGstPercentage;
+            $ownerGstAmount = $priceDetails[0]['ownerFare'] * $ownerGstPercentage/100;
+            $booking->owner_gst_amount = $ownerGstAmount;
+        }     
         $clientCommissions = ClientFeeSlab::get(); 
         
         $clientComission = 0;
@@ -136,17 +170,17 @@ class ClientBookingRepository
             foreach($clientCommissions as $clientCom){
                 $startFare = $clientCom->starting_fare;
                 $uptoFare = $clientCom->upto_fare;
-                if($bookingInfo['total_fare'] >= $startFare && $bookingInfo['total_fare']<= $uptoFare){
+                if($priceDetails[0]['ownerFare'] >= $startFare && $priceDetails[0]['ownerFare']<= $uptoFare){
                     $clientComission = $clientCom->commision;
                     break;
                 }  
             }   
         } 
-        $clientComAmount = round($clientComission/100 * $bookingInfo['total_fare'],2);
+        $clientComAmount = round($clientComission/100 * $priceDetails[0]['ownerFare'],2);
         $booking->client_comission = $clientComAmount;
         $booking->client_percentage = $clientComission;
                        
-        $booking->created_by = $bookingInfo['created_by'];
+        $booking->created_by = $bookingInfo['origin'];
         $booking->users_id = $userId;
         $clientId->booking()->save($booking);
         
@@ -163,8 +197,8 @@ class ClientBookingRepository
         //Update Booking Details >>>>>>>>>>
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
-        $bookingDetail = $request['bookingInfo']['bookingDetail'];
-        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
+        //$bookingDetail = $request['bookingInfo']['bookingDetail'];
+        //$seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
                 ->where('bus_id',$busId)
@@ -175,12 +209,15 @@ class ClientBookingRepository
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
             $collection= collect($bDetail);
-            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
+            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i], 'created_by' => $bookingInfo['origin']]))->toArray();
             $bookingDetailModels[] = new BookingDetail($merged);
             $i++;
         }    
-        $booking->bookingDetail()->saveMany($bookingDetailModels);      
-        return $booking; 
+        $passengerDetails = $booking->bookingDetail()->saveMany($bookingDetailModels);      
+        //return $booking; 
+        return collect($booking->toArray())
+                                ->only(['pnr', 'transaction_id'])
+                                ->all();
         }
         else{
             $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";

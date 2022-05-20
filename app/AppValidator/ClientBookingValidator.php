@@ -21,12 +21,6 @@ class ClientBookingValidator
             'bookingInfo.boarding_time' => 'required|date_format:H:i',
             'bookingInfo.dropping_time' => 'required|date_format:H:i',
             'bookingInfo.origin' => 'required',
-            'bookingInfo.app_type' => 'required',
-            'bookingInfo.typ_id' => 'required',
-            'bookingInfo.total_fare' => 'required|numeric',
-            'bookingInfo.owner_fare' => 'required|numeric',
-            'bookingInfo.odbus_service_Charges' => 'required|numeric',
-            'bookingInfo.created_by' => 'required',
             'bookingInfo.bookingDetail' => [
                                             'bus_seats_id' => 'required',
                                             'passenger_name' => 'required',
