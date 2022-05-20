@@ -11,6 +11,8 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\AgentBookingService;
 use App\AppValidator\AgentBookingValidator;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AgentBookingController extends Controller
 {
@@ -264,6 +266,15 @@ class AgentBookingController extends Controller
  * 
  */
     public function agentBooking(Request $request) {
+
+        $token = JWTAuth::getToken();
+
+        $user = JWTAuth::toUser($token);
+
+         $data = $request->all();
+
+         $data['bookingInfo']['origin']=$user->name;
+
          $data = $request->all();
             $bookingValidation = $this->agentBookingValidator->validate($data);
    

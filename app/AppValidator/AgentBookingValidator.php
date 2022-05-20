@@ -20,7 +20,6 @@ class AgentBookingValidator
             'bookingInfo.dropping_point' => 'required',
             'bookingInfo.boarding_time' => 'required|date_format:H:i',
             'bookingInfo.dropping_time' => 'required|date_format:H:i',
-            'bookingInfo.origin' => 'required',
             'bookingInfo.app_type' => 'required',
             'bookingInfo.typ_id' => 'required',
             'bookingInfo.total_fare' => 'required|numeric',
