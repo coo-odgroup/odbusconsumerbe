@@ -298,11 +298,11 @@ class ListingService
                
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
-                    $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+                    $CouponDetails = $selCouponRecords->where('coupon_code',$appliedCoupon)
                                                 ->where('from_date', '<=', $bookingDate)
                                                 ->where('to_date', '>=', $bookingDate)
                                                 ->where('bus_id',$busId)
-                                                ->get(''); 
+                                                ->get(''); // $selCouponRecords[0] (need to check by Swagatika maam 0 index)
                     //return $CouponDetails;
                  }
             }
