@@ -13,6 +13,8 @@ use App\Services\AgentBookingService;
 use App\AppValidator\AgentBookingValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Log;
+
 
 class AgentBookingController extends Controller
 {
@@ -267,6 +269,7 @@ class AgentBookingController extends Controller
  */
     public function agentBooking(Request $request) {
 
+
         $token = JWTAuth::getToken();
 
         $user = JWTAuth::toUser($token);
@@ -275,15 +278,14 @@ class AgentBookingController extends Controller
 
          $data['bookingInfo']['origin']=$user->name;
 
-         $data = $request->all();
-            $bookingValidation = $this->agentBookingValidator->validate($data);
+        $bookingValidation = $this->agentBookingValidator->validate($data);
    
         if ($bookingValidation->fails()) {
          $errors = $bookingValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
          try {
-            $response =  $this->agentBookingService->agentBooking($request);  
+            $response =  $this->agentBookingService->agentBooking($data);  
             if(isset($response['message'])){
              return $this->errorResponse($response['note'],Response::HTTP_OK);
              }
@@ -292,6 +294,7 @@ class AgentBookingController extends Controller
            }
         }
         catch (Exception $e) {
+            Log::info($e->getMessage());
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }      
     } 
