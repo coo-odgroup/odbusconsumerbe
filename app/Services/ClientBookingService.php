@@ -118,12 +118,8 @@ class ClientBookingService
                 });
                 $records = $this->channelRepository->getBookingRecord($transationId);
 
-                if($records[0]->payable_amount == 0.00){
-                    $amount = $records[0]->total_fare;
-                }else{
-                    $amount = $records[0]->payable_amount;
-                }
-
+                $amount = $records[0]->total_fare;
+               
                 /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
 
                 $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
@@ -138,7 +134,7 @@ class ClientBookingService
 
                     $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
 
-                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
+                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) ) *$masterSetting[0]->customer_gst)/100,2);
 
                     $amount = round($amount+$customer_gst_amount,2);
                     $update_customer_gst['payable_amount']=$amount;
@@ -168,18 +164,18 @@ class ClientBookingService
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
                     $data = array(
-                        'name' => $name,
+                        'customer_name' => $name,
                         'amount' => $amount,
                     );
-                        return $data;
+                    return $data;
                         
                 }elseif($records && $records[0]->status == $seatHold){
                     
                     $data = array(
-                        'name' => $records[0]->users->name,
+                        'customer_name' => $records[0]->users->name,
                         'amount' => $amount,  
                     );
-                        return $data;
+                    return $data;
                 }
                 else{
                     return "SEAT UN-AVAIL";
@@ -188,8 +184,7 @@ class ClientBookingService
         } catch (Exception $e) {
             Log::info($e);
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-       
+        }   
     } 
     
     public function ticketConfirmation($request)

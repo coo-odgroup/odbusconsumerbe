@@ -59,7 +59,6 @@ class ClientBookingRepository
         $defUserId = Config::get('constants.USER_ID');
         $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
 
-        /////////////////////////////////////////////////////////////
         $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
        
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
@@ -276,24 +275,50 @@ class ClientBookingRepository
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
         $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                               ->with('users')
+                                ->select('id','pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time')
+                               ->with(['users'=> function($u){
+                                  $u->select('id','name','email','phone');   
+                               }])
                                ->with(["bus" => function($bs){
-                                $bs->with('cancellationslabs.cancellationSlabInfo');
-                                $bs->with('BusType.busClass');
-                                $bs->with('BusSitting');                
-                                $bs->with('busContacts');
+                                $bs->select('id','name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
+                                $bs->with(['cancellationslabs'=> function($c){
+                                    $c->select('id','rule_name','cancellation_policy_desc');
+                                    $c->with(['cancellationSlabInfo' => function($cs){
+                                        $cs->select('cancellation_slab_id','duration','deduction');
+                                        }]);
+                                    }]);
+                                $bs->with(['BusType' => function($bt){
+                                $bt->select('id','name');
+                                 }]);
+                                $bs->with(['BusSitting'=> function($bst){
+                                    $bst->select('id','name');
+                                     }]);                
+                                $bs->with(['busContacts' => function($bc){
+                                    $bc->select('bus_id','phone');
+                                     }]);               
                                 }])
-                              ->with('bookingDetail')
+                                ->with(["bookingDetail" => function($b){
+                                    $b->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender');
+                                    $b->with(["busSeats" => function($bs){
+                                        $bs->select('id','seats_id');
+                                        $bs->with(["seats" => function($s){
+                                            $s->select('id','seatText');  
+                                        }]);
+                                    }]);    
+                                }])
                               ->with(['clientWallet' => function($cw){
+                                $cw->select('booking_id','balance');
                                 $cw->orderBy('id','DESC');
                                 $cw->where("status",1);
                                 $cw->limit(1);
                                 }])
                               ->get();
 
-        return $bookingDetails;
-
-       
+        $srcName = Location::where('id',$bookingDetails[0]->source_id)->first()->name;
+        $destName = Location::where('id',$bookingDetails[0]->destination_id)->first()->name;
+        
+        $bookingDetails[0]['src_name'] = $srcName;
+        $bookingDetails[0]['dest_name'] = $destName;
+        return $bookingDetails;   
     }
-
 }

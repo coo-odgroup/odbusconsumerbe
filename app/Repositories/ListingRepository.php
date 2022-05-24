@@ -591,11 +591,11 @@ class ListingRepository
                 if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
                     $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
                  }
-
-
-                $sl = $sl + $a[0];
-                $st = $st + $a[1];
-                $tot = $tot + $a[2];
+                if(isset($a) || $a != null){
+                    $sl = $sl + $a[0];
+                    $st = $st + $a[1];
+                    $tot = $tot + $a[2];
+                }
             }
         }else{          //no booking on that specific date, so all seats are available
                 //$blockedSeats=array();
