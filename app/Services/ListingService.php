@@ -601,6 +601,8 @@ class ListingService
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
            $ListingRecords[] = array(
+                "srcId" => $sourceID,
+                "destId" => $destinationID,
                 "display" => $flag,
                 "busId" => $busId, 
                 "busName" => $busName,
