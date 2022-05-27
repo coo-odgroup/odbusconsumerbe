@@ -109,6 +109,7 @@ Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 //Route::put('/updateProfile/{userId}/{token}', [UsersController::class, 'updateProfile']);
 Route::post('/updateProfile', [UsersController::class, 'updateProfile']);
 Route::post('/BookingHistory', [UsersController::class, 'BookingHistory']);
+Route::post('/AppBookingHistory', [UsersController::class, 'AppBookingHistory']);
 Route::get('/UserReviews', [UsersController::class, 'userReviews']);
 Route::post('/CommonService', [CommonController::class, 'getAll']);
 Route::post('/GetTestimonial', [TestimonialController::class, 'getAlltestimonial']);

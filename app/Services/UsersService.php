@@ -118,6 +118,89 @@ class UsersService
        }
 
     }
+
+    
+    public function AppBookingHistory($request){
+       
+        $user= $this->userProfile($request);
+      
+        if($user!='Invalid'){
+          
+          $user = $user[0];
+                    
+         $status = $request['status'];
+         $filter = $request['filter'];  
+ 
+         $today=date("Y-m-d");
+ 
+         if($status=='Cancelled'){
+             $list = $this->usersRepository->CancelledBookings($user->id);
+         }
+         
+         else if($status=='Completed'){  
+             $list = $this->usersRepository->CompletedBookings($user->id,$today); 
+         }
+ 
+         else if($status=='Upcoming'){ 
+             $list = $this->usersRepository->UpcomingBookings($user->id,$today); 
+         }
+ 
+       else{
+             $list = $this->usersRepository->AllBookings($user->id);  
+         } 
+       
+       
+ 
+         $list =  $list->get();
+ 
+         if($list){
+             foreach($list as $k => $l){
+                 $l['source']=$this->usersRepository->getLocation($l->source_id);
+                 $l['destination']=$this->usersRepository->getLocation($l->destination_id);
+
+                 $l['created_date'] = date('Y-m-d',strtotime($l['created_at']));  
+               
+                 $l['review']= false;
+                 $l['cancel']= false;
+ 
+                 if($l->status==2){
+                     $l['booking_status']= "Cancelled";
+                     
+                 }
+                 else if($l->status!=2 && $today > $l->journey_dt){
+                   
+                    $review= $this->usersRepository->UserCanReviewStatus($l->users_id,$l->pnr);                   
+               
+                     if(isset($review[0])){
+                     }else{
+                       $l['review']= true;
+                     }
+                   
+                     $l['booking_status']= "Completed";
+                 }elseif($l->status!=2 && $today < $l->journey_dt){
+                     $l['booking_status']= "Upcoming";
+                     $l['cancel']= true;
+                 }elseif($l->status!=2 && $today == $l->journey_dt){
+                     $l['booking_status']= "Ongoing";
+                     $l['cancel']= true;
+                 }
+
+                 if($l->user_id != 0 ){
+                    $l['cancel']= false;
+                 }
+
+
+             }
+         }
+           
+        return $list;
+          
+        }else{
+          return $user;
+        }
+
+    }
+
     public function BookingHistory($request){
         //$result = $this->usersRepository->BookingHistory($request);
         //return $result;

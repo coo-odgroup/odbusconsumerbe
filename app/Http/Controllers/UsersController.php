@@ -501,6 +501,70 @@ public function refreshToken() {
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
       }
   }
+
+/**
+         * @OA\Post(
+         *     path="/api/AppBookingHistory",
+         *     tags={"Booking History of a Customer"},
+         *     description="Get Booking History of a Customer",
+         *     summary="Get Booking History of a Customer",
+         *     @OA\Parameter(
+         *          name="status",
+         *          description="status",
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string",
+         *              enum={"Completed", "Upcoming", "Cancelled"}
+         *          )
+         *      ),         *    
+         *     @OA\Parameter(
+         *          name="userId",
+         *          description="user Id",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="integer",
+         *              example=1
+         *          )
+         *      ),
+         *     @OA\Parameter(
+         *          name="token",
+         *          description="token",
+         *          required=true,
+         *          in="query",
+         *          @OA\Schema(
+         *              type="string",
+         *              example="E7CDunOAhI"
+         *          )
+         *      ),
+         *  @OA\Response(response="200", description="Get Booking History Of a Customer"),
+         *  @OA\Response(response=206, description="validation error"),
+         *  @OA\Response(response=400, description="Bad request"),
+         *  @OA\Response(response=401, description="Unauthorized access"),
+         *  @OA\Response(response=404, description="No record found"),
+         *  @OA\Response(response=500, description="Internal server error"),
+         *  @OA\Response(response=502, description="Bad gateway"),
+         *  @OA\Response(response=503, description="Service unavailable"),
+         *  @OA\Response(response=504, description="Gateway timeout"),
+         *     security={
+         *       {"apiAuth": {}}
+         *     }
+         * )
+         * 
+         */
+  
+  public function AppBookingHistory(Request $request){  
+
+    $data = $request->all();    
+      $response =  $this->usersService->AppBookingHistory($request); 
+      if($response=='Invalid'){
+        return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+      }
+  }
+
   /**
  * @OA\Get(path="/api/UserReviews",
  *   tags={"User Reviews"},
