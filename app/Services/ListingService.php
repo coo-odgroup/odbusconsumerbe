@@ -298,12 +298,15 @@ class ListingService
                
                 if($dateInRange){
                     $appliedCoupon->push($coupon);
-                    $CouponDetails = $selCouponRecords->where('coupon_code',$appliedCoupon)
-                                                ->where('from_date', '<=', $bookingDate)
-                                                ->where('to_date', '>=', $bookingDate)
-                                                ->where('bus_id',$busId)
-                                                ->get(''); // $selCouponRecords[0] (need to check by Swagatika maam 0 index)
-                    //return $CouponDetails;
+                    if(isset($selCouponRecords)){
+                        $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+                        ->where('from_date', '<=', $bookingDate)
+                        ->where('to_date', '>=', $bookingDate)
+                        ->where('bus_id',$busId)
+                        ->get(); // $selCouponRecords[0] (need to check by Swagatika maam 0 index)
+                        //return $appliedCoupon;
+                    }
+
                  }
             }
             $maxSeatBook = $record->max_seat_book;
