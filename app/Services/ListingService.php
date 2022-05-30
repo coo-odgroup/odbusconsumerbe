@@ -303,7 +303,7 @@ class ListingService
                         ->where('from_date', '<=', $bookingDate)
                         ->where('to_date', '>=', $bookingDate)
                         ->where('bus_id',$busId)
-                        ->get(); // $selCouponRecords[0] (need to check by Swagatika maam 0 index)
+                        ->get(); 
                         //return $appliedCoupon;
                     }
 

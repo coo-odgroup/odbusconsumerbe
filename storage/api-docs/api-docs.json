@@ -4021,6 +4021,85 @@
                 ]
             }
         },
+        "/api/AppBookingHistory": {
+            "post": {
+                "tags": [
+                    "Booking History of a Customer"
+                ],
+                "summary": "Get Booking History of a Customer",
+                "description": "Get Booking History of a Customer",
+                "operationId": "6543a00020453311e32fc53e78b20c01",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "status",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Completed",
+                                "Upcoming",
+                                "Cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user Id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "E7CDunOAhI"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get Booking History Of a Customer"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/UserReviews": {
             "get": {
                 "tags": [

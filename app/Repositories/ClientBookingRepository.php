@@ -117,7 +117,7 @@ class ClientBookingRepository
            } while ( $booking ->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
         do {
-            $PNR = 'ODW'.rand(100000,999999);
+            $PNR = 'ODCL'.rand(10000,99999);
             } while ( $booking ->where('pnr', $PNR )->exists()); 
         $booking->pnr = $PNR;
         $booking->user_id = $bookingInfo['user_id'];
