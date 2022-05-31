@@ -428,10 +428,28 @@ class ListingService
                                                     ->where('ticket_price_id',$ticketPriceId)
                                                     ->pluck('seats_id');
 
+                ////////////////////////////seat block check for all dates//////////////////////////////
+                $blockSeatsOnAllDates = BusSeats::where('type',2)
+                                                ->where('bus_id',$busId)
+                                                ->where('status',1)
+                                                ->where('ticket_price_id',$ticketPriceId)
+                                                ->pluck('seats_id');   
+
+                $permanentSeats = BusSeats::whereNull('operation_date')
+                                            ->where('ticket_price_id',$ticketPriceId)
+                                            ->where('bus_id',$busId)
+                                            ->where('status',1)
+                                            ->pluck('seats_id'); 
+
+
+                $noMoreavailableSeats = collect($blockSeatsOnAllDates)->diff(collect($permanentSeats));                   
+
+                /////////////////////////////////////////////////////////////////////                                  
+
             if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
                 $blockSeats = $blockSeats->concat(collect($unavailbleSeats)->diff(collect($moreAddedSeats)));
             }else{
-                $blockSeats = $blockSeats->concat(collect($unavailbleSeats));
+                $blockSeats = $blockSeats->concat(collect($unavailbleSeats))->concat(collect($noMoreavailableSeats));/////need to check for other options if required
             }                    
 
        ////////Hide Extra Seats based on seize time///////////////

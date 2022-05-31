@@ -208,6 +208,7 @@ class ViewSeatsRepository
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
+            
         ////////////////////////seat open on specific date//////////////////////
         $seatsOpenOnDate = BusSeats::where('operation_date', $entry_date)
                                 ->where('type',1)
@@ -215,7 +216,7 @@ class ViewSeatsRepository
                                 ->where('status',1)
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->pluck('seats_id');
-            
+                                 
         /////////////////////////////////////////////////    
 
        $openSeatsHide = BusSeats::where('operation_date','!=', $entry_date)
@@ -224,7 +225,7 @@ class ViewSeatsRepository
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
-
+           
         if(isset($seatsOpenOnDate) && $seatsOpenOnDate->isNotEmpty()){
             $openSeatsHide = collect($openSeatsHide)->diff(collect($seatsOpenOnDate));
         }
@@ -241,7 +242,23 @@ class ViewSeatsRepository
             }else{
                 $seatsHide = $openSeatsHide;
             }
+///////////////////////////////////////////////////////////////////
+        $blockSeatsOnAllDates = BusSeats::where('type',2)
+                                        ->where('bus_id',$busId)
+                                        ->where('status',1)
+                                        ->where('ticket_price_id',$ticketPriceId)
+                                        ->pluck('seats_id');   
 
+        $permanentSeats = BusSeats::whereNull('operation_date')
+                                ->where('ticket_price_id',$ticketPriceId)
+                                ->where('bus_id',$busId)
+                                ->where('status',1)
+                                ->pluck('seats_id'); 
+                       
+                            
+        $noMoreavailableSeats = collect($blockSeatsOnAllDates)->diff(collect($permanentSeats));                   
+        //return $noMoreavailableSeats;
+////////////////////////////seat block check for all dates//////////////////////////////////////////////
         $availableSeats = $this->seats
             ->where('bus_seat_layout_id',$bus_seat_layout_id)
             ->where('berthType', $Berth)
@@ -254,8 +271,8 @@ class ViewSeatsRepository
             }]) 
             ->get();
 
-        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs));
-
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));
+       
         /////////Hide Extra Seats based on seize time/////////
 
         if(!$extraSeats->isEmpty()){
@@ -271,7 +288,7 @@ class ViewSeatsRepository
             $eBlockSeats = collect($extraSeatsBlock)->pluck('seats_id');
             $totalHideSeats = $totalHideSeats->concat(collect($eBlockSeats));
         }
-
+        
         foreach($availableSeats as $seat){ 
             if($totalHideSeats->contains($seat->id)){
                 unset($seat['busSeats']); 
