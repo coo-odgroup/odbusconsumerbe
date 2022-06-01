@@ -260,6 +260,35 @@ class BookingManageService
       //return $booking_detail;
         if(isset($booking_detail[0])){ 
              if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+
+                $ticketPriceRecords = TicketPrice::where('bus_id', $booking_detail[0]->booking[0]->bus_id)
+                ->where('source_id', $booking_detail[0]->booking[0]->source_id)
+                ->where('destination_id', $booking_detail[0]->booking[0]->destination_id)
+                ->get(); 
+
+                $departureTime = $ticketPriceRecords[0]->dep_time;
+                $arrivalTime = $ticketPriceRecords[0]->arr_time;
+                $depTime = date("H:i",strtotime($departureTime));
+                $arrTime = date("H:i",strtotime($arrivalTime)); 
+                $jdays = $ticketPriceRecords[0]->j_day;
+              
+                switch($jdays)
+                {
+                    case(1):
+                        $j_endDate = $booking_detail[0]->booking[0]->journey_dt;
+                        break;
+                    case(2):
+                        $j_endDate = date('Y-m-d', strtotime('+1 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                        break;
+                    case(3):
+                        $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                        break;
+                }
+
+
+                $emailData['journey_end_dt'] =  $j_endDate;   
+
+
  
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
