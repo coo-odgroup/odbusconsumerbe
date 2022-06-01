@@ -531,4 +531,178 @@ public function getPriceCalculation($request)
     return $seatWithPriceRecords;
     
 }
+/////////////for client api use///////////////////
+public function checkSeatStatus($request)
+{
+    $booked = Config::get('constants.BOOKED_STATUS');
+    $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+    $lowerBerth = Config::get('constants.LOWER_BERTH');
+    $upperBerth = Config::get('constants.UPPER_BERTH');
+
+    $sourceId = $request['sourceId'];
+    $destinationId = $request['destinationId'];
+    $busId = $request['busId'];
+    $journeyDate = $request['entry_date'];
+    $journeyDate = date("Y-m-d", strtotime($journeyDate));
+
+    $user_id = Bus::where('id', $busId)->first()->user_id;
+    $miscfares = $this->viewSeatsRepository->miscFares($busId,$journeyDate);
+    $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
+
+    $reqRange = Arr::sort($requestedSeq);
+    $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
+
+    $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+    
+    if (sizeof($bookingIds)){
+        $blockedSeats=array();
+        foreach($bookingIds as $bookingId){
+            $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
+            foreach($bookedSeatIds as $bookedSeatId){
+                $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
+                $gender[] = $this->viewSeatsRepository->bookingGenderDetail($bookingId,$bookedSeatId);     
+            }   
+             $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
+             $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
+             $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
+             $bookedRange = Arr::sort($bookedSequence);
+
+            //seat not available on requested seq so blocked seats are calculated 
+            if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
+                $blockedSeats = array_merge($blockedSeats,$seatsIds);
+             }
+        }
+    }else{          //no booking on that specific date, so all seats are available
+            $blockedSeats=array();
+    }
+
+       $lowerBerth = Config::get('constants.LOWER_BERTH');
+       $upperBerth = Config::get('constants.UPPER_BERTH');
+       $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
+
+
+       // Lower Berth seat Calculation
+       $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
+        //return $viewSeat;
+       if(($viewSeat['lower_berth'])->isEmpty()){
+           unset($viewSeat['lower_berth']);  
+       }else{
+           $rowsColumns = $this->viewSeatsRepository->seatRowColumn($busRecord[0]->bus_seat_layout_id, $lowerBerth);
+
+           $viewSeat['lowerBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+           $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
+       } 
+      // Upper Berth seat Calculation
+       $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
+    
+       if(($viewSeat['upper_berth'])->isEmpty()){
+           unset($viewSeat['upper_berth']); 
+       }else{
+           $rowsColumns = $this->viewSeatsRepository->seatRowColumn($busRecord[0]->bus_seat_layout_id, $upperBerth);
+           
+           $viewSeat['upperBerth_totalRows']=$rowsColumns->max('rowNumber')+1;       
+           $viewSeat['upperBerth_totalColumns']=$rowsColumns->max('colNumber')+1;  
+       }
+            // Add Gender into Booked seat List
+                $i=0; 
+                if(isset($viewSeat['upper_berth'])){  
+                  foreach($viewSeat['upper_berth'] as &$ub){
+                    if(collect($ub)->has(['bus_seats'])){
+                    // if(isset($ub->busSeats)){
+                        $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+
+                        $ub->busSeats->ticket_price->base_sleeper_fare+=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
+                        
+                        $base_sleeper_fare=$ub->busSeats->ticket_price->base_sleeper_fare;
+
+                        /////////// add odbus gst to seat fare
+
+                        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                        $odbusServiceCharges = 0;
+                        foreach($ticketFareSlabs as $ticketFareSlab){
+                            $startingFare = $ticketFareSlab->starting_fare;
+                            $uptoFare = $ticketFareSlab->upto_fare;
+                            if($startingFare <= $base_sleeper_fare && $uptoFare >= $base_sleeper_fare){
+                                $percentage = $ticketFareSlab->odbus_commision;
+                                $odbusServiceCharges = round($base_sleeper_fare * ($percentage/100));
+                                $ub->busSeats->ticket_price->base_sleeper_fare = round($base_sleeper_fare + $odbusServiceCharges);
+                                }     
+                            }
+                        if($ub->busSeats->new_fare > 0){
+                            $ub->busSeats->new_fare +=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
+                            $new_fare=$ub->busSeats->new_fare;
+
+                            /////////// add odbus gst to seat fare
+                        $odbusServiceCharges = 0;
+                        foreach($ticketFareSlabs as $ticketFareSlab){
+                            $startingFare = $ticketFareSlab->starting_fare;
+                            $uptoFare = $ticketFareSlab->upto_fare;
+                            if($startingFare <= $new_fare && $uptoFare >= $new_fare){
+                                $percentage = $ticketFareSlab->odbus_commision;
+                                $odbusServiceCharges = round($new_fare * ($percentage/100));
+                                $ub->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                }     
+                            }
+                        }   
+                    }
+                    if (sizeof($bookingIds)){
+                        if(in_array($ub['id'], $blockedSeats)){
+                            $key = array_search($ub['id'], $seatsIds);
+                            $viewSeat['upper_berth'][$i]['Gender'] =  $gender[$key];
+                        } 
+                    }
+                    $i++;
+                   }     
+                } 
+                $i=0;
+                if(isset($viewSeat['lower_berth'])){          
+                  foreach($viewSeat['lower_berth'] as &$lb){    
+                    if(collect($lb)->has(['bus_seats'])){                                           
+                        $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
+                        $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+
+                        $base_seat_fare=$lb->busSeats->ticket_price->base_seat_fare;
+                        /////////// add odbus gst to seat fare
+                        $odbusServiceCharges = 0;
+                        foreach($ticketFareSlabs as $ticketFareSlab){
+                            $startingFare = $ticketFareSlab->starting_fare;
+                            $uptoFare = $ticketFareSlab->upto_fare;
+                            if($startingFare <= $base_seat_fare && $uptoFare >= $base_seat_fare){
+                                $percentage = $ticketFareSlab->odbus_commision;
+                                $odbusServiceCharges = round($base_seat_fare * ($percentage/100));
+                                $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
+                                }     
+                            }
+                        if($lb->busSeats->new_fare > 0){
+                            $lb->busSeats->new_fare +=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+
+                           $new_fare= $lb->busSeats->new_fare;
+
+                             /////////// add odbus gst to seat fare
+
+                        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                        $odbusServiceCharges = 0;
+                        foreach($ticketFareSlabs as $ticketFareSlab){
+                            $startingFare = $ticketFareSlab->starting_fare;
+                            $uptoFare = $ticketFareSlab->upto_fare;
+                            if($startingFare <= $new_fare && $uptoFare >= $new_fare){
+                                $percentage = $ticketFareSlab->odbus_commision;
+                                $odbusServiceCharges = round($new_fare * ($percentage/100));
+                                $lb->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                }     
+                            }
+                        }   
+                    }
+                    if (sizeof($bookingIds)){    
+                        if(in_array($lb['id'], $blockedSeats)){
+                            $key = array_search($lb['id'], $seatsIds);
+                            $viewSeat['lower_berth'][$i]['Gender'] = $gender[$key];
+                        } 
+                    }
+                    $i++;
+                } 
+              }
+        return $viewSeat;
+}
+
 }

@@ -8,6 +8,7 @@ use App\Repositories\ChannelRepository;
 use App\Repositories\CommonRepository;
 use App\Models\TicketPrice;
 use App\Models\BusCancelled;
+use App\Models\Booking;
 use App\Models\BusSeats;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -46,22 +47,48 @@ class ClientBookingService
     public function seatBlock($request)
     {
         try {
+           
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
-                $busId = $request['busId']; 
-                $sourceId = $request['sourceId'];
-                $destinationId = $request['destinationId'];  
+                //$busId = $request['busId']; 
+                //$sourceId = $request['sourceId'];
+                //$destinationId = $request['destinationId'];  
                 $transationId = $request['transaction_id']; 
-                $seatIds = $request['seatIds'];
-                $entry_date = $request['entry_date'];
-                $entry_date = date("Y-m-d", strtotime($entry_date));
+                //$seatIds = $request['seatIds'];
+                //$entry_date = $request['entry_date'];
+                //$entry_date = date("Y-m-d", strtotime($entry_date));
 
+                $bookingDetails = Booking::where('transaction_id', $transationId)
+                                        ->with(["bookingDetail" => function($b){
+                                            $b->with(["busSeats" => function($bs){
+                                                $bs->with(["seats" => function($s){ 
+                                                }]);
+                                            }]);    
+                                        }])
+                                        ->get();
+                
+                $busId = $bookingDetails[0]->bus_id; 
+                $sourceId = $bookingDetails[0]->source_id;
+                $destinationId = $bookingDetails[0]->destination_id;
+                $entry_date = $bookingDetails[0]->journey_dt;
+               
+                $seatIds = [];
+                foreach($bookingDetails[0]->bookingDetail as $bd){
+                    array_push($seatIds,$bd->busSeats->seats->id);              
+                }  
+                $data = array(
+                    'busId' => $busId,
+                    'sourceId' =>  $sourceId,
+                    'destinationId' => $destinationId,
+                    'entry_date' => $entry_date,
+                    'seatIds' => $seatIds,
+                ); 
             ///////////////////////cancelled bus recheck////////////////////////
             $routeDetails = TicketPrice::where('source_id', $sourceId)
                             ->where('destination_id', $destinationId)
                             ->where('bus_id', $busId)
                             ->where('status','1')
                             ->get(); 
-           
+                        
             $startJDay = $routeDetails[0]->start_j_days;
             $ticketPriceId = $routeDetails[0]->id;
 
@@ -94,13 +121,14 @@ class ClientBookingService
                                     ->where('status',1)
                                     ->where('ticket_price_id',$ticketPriceId)
                                     ->whereIn('seats_id',$seatIds)
-                                    ->get();
-                                                    
+                                    ->get();                        
             if(isset($blockSeats) && $blockSeats->isNotEmpty()){
                 return "SEAT_BLOCKED";
             }
         
-            $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+            //$seatStatus = $this->viewSeatsService->getAllViewSeats($request);  
+            $seatStatus = $this->viewSeatsService->checkSeatStatus($data);
+
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
                     $collection= $lb;
