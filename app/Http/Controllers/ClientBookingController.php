@@ -13,6 +13,7 @@ use App\Services\ClientBookingService;
 use App\AppValidator\ClientBookingValidator;
 use App\AppValidator\SeatBlockValidator;
 use App\AppValidator\TicketConfirmValidator;
+use App\AppValidator\CancelTicketValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -25,14 +26,16 @@ class clientBookingController extends Controller
     protected $clientBookingValidator;
     protected $seatBlockValidator;
     protected $ticketConfirmValidator;
+    protected $cancelTicketValidator;
     
 
-    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator)
+    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,CancelTicketValidator $cancelTicketValidator)
     {
         $this->clientBookingService = $clientBookingService;  
         $this->clientBookingValidator = $clientBookingValidator;
         $this->seatBlockValidator = $seatBlockValidator; 
-        $this->ticketConfirmValidator = $ticketConfirmValidator;     
+        $this->ticketConfirmValidator = $ticketConfirmValidator;   
+        $this->cancelTicketValidator = $cancelTicketValidator;   
     }
 
     public function clientBooking(Request $request) {
@@ -122,4 +125,32 @@ class clientBookingController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
     }
+
+    public function clientCancelTicket(Request $request) {
+        $data = $request->all();
+        $cancelTicketValidator = $this->cancelTicketValidator->validate($data);
+
+        if ($cancelTicketValidator->fails()) {
+        $errors = $cancelTicketValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+        try {
+            $response =  $this->clientBookingService->clientCancelTicket($request);  
+            switch($response){
+              case('PNR_NOT_MATCH'):
+                return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+              case('MOBILE_NOT_MATCH'):
+                return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+              case('CANCEL_NOT_ALLOWED'):
+                return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+            }
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+         }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
 }

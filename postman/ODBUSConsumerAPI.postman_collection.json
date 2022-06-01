@@ -82,6 +82,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0MDAxMTg0LCJleHAiOjE2NTQwMDQ3ODQsIm5iZiI6MTY1NDAwMTE4NCwianRpIjoiMjBnbjRQT3pBVW1ObWY1NSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.xuXz22Kd19mvl6szNplcndZ1HAN5pAe4mCCX-_NTUsA",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -94,14 +104,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/viewSeats?entry_date=25-02-2022&busId=287&sourceId=82&destinationId=53",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/viewSeats?entry_date=06-06-2022&busId=757&sourceId=227&destinationId=82",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"viewSeats"
@@ -109,19 +120,19 @@
 					"query": [
 						{
 							"key": "entry_date",
-							"value": "25-02-2022"
+							"value": "06-06-2022"
 						},
 						{
 							"key": "busId",
-							"value": "287"
+							"value": "757"
 						},
 						{
 							"key": "sourceId",
-							"value": "82"
+							"value": "227"
 						},
 						{
 							"key": "destinationId",
-							"value": "53"
+							"value": "82"
 						}
 					]
 				}
@@ -2425,7 +2436,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"2022053014531184603\",\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220530152921891301\",\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2433,15 +2444,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/SeatBlock",
-					"protocol": "http",
+					"raw": "https://testing.odbus.co.in/api/SeatBlock",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"testing",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"SeatBlock"
@@ -2467,7 +2477,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"2022053014531184603\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220530152921891301\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2475,7 +2485,48 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/TicketConfirmation",
+					"raw": "https://testing.odbus.co.in/api/TicketConfirmation",
+					"protocol": "https",
+					"host": [
+						"testing",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"TicketConfirmation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "client cancel ticket",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0MDc2ODIxLCJleHAiOjE2NTQwODA0MjEsIm5iZiI6MTY1NDA3NjgyMSwianRpIjoiclpwODRkU3RsM1RFTWhJMiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.V7zLK6EyZTCtewe0Z-RtlBPWW5BpOdjlOKrDtVIZxcA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"ODCL89104\",\r\n    \"phone\":\"1234567898\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ClientCancelTicket",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -2486,7 +2537,7 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"TicketConfirmation"
+						"ClientCancelTicket"
 					]
 				}
 			},
