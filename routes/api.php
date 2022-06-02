@@ -57,7 +57,7 @@ use App\Http\Controllers\ClientBookingController;
 
 Route::group(['middleware' => ['jwt.verify']], function() {
 
-    Route::group(['middleware' => ['checkIp', 'log.route']], function() {
+   // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
 //         Route::get('/getLocation', [ListingController::class, 'getLocation']);
 // });    
 
@@ -131,7 +131,7 @@ Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking'])
 Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
 Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);
 
-});
+//});
 });
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);

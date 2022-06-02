@@ -42,14 +42,14 @@ class LogRoute
             //     'RESPONSE' => $response->getContent()
             // ];
 
-            $api_log = new $this->apilog();
-            $api_log->url = $request->getUri();
-            $api_log->method = $request->getMethod();
-            $api_log->request_body = json_encode($request->all());
-            $api_log->response = json_encode($request->getContent());
-            $api_log->user_id = $user->id;
-            $api_log->user_name = $user->name;
-            $api_log->save(); 
+            // $api_log = new $this->apilog();
+            // $api_log->url = $request->getUri();
+            // $api_log->method = $request->getMethod();
+            // $api_log->request_body = json_encode($request->all());
+            // $api_log->response = json_encode($request->getContent());
+            // $api_log->user_id = $user->id;
+            // $api_log->user_name = $user->name;
+            // $api_log->save(); 
 
             //Log::info(json_encode($log));
         //}
