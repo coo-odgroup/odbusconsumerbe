@@ -230,9 +230,11 @@ class ClientBookingRepository
 
     public function ticketConfirmation($request)
     {
+        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $booked = Config::get('constants.BOOKED_STATUS');
         $transactionId = $request['transaction_id'];
         $bookingRecord = $this->booking->where('transaction_id', $transactionId)
+                                        ->where('status', $seatHold)
                                        ->with('bookingDetail')
                                        ->get();
 
@@ -243,7 +245,7 @@ class ClientBookingRepository
         $clientDetails = ClientWallet::where('user_id',$request['client_id'])
                                         ->orderBy('id','DESC')->where("status",1)->limit(1)
                                         ->get(); 
-      
+            
         $clientWallet = new ClientWallet();
         $clientWallet->transaction_id = $transactionId;
         $clientWallet->booking_id = $bookingId;

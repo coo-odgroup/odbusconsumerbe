@@ -151,6 +151,7 @@ class ClientBookingService
             $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
                     return $value == null;
                 });
+            //return $filtered;
                 $records = $this->channelRepository->getBookingRecord($transationId);
 
                 $amount = $records[0]->total_fare;
@@ -193,7 +194,6 @@ class ClientBookingService
     
                     $bookingId = $records[0]->id;   
                     $name = $records[0]->users->name;
-                    $receiptId = 'rcpt_'.$transationId;
                     
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
@@ -202,15 +202,7 @@ class ClientBookingService
                         'customer_name' => $name,
                         'amount' => $amount,
                     );
-                    return $data;
-                        
-                }elseif($records && $records[0]->status == $seatHold){
-                    
-                    $data = array(
-                        'customer_name' => $records[0]->users->name,
-                        'amount' => $amount,  
-                    );
-                    return $data;
+                    return $data;         
                 }
                 else{
                     return "SEAT UN-AVAIL";

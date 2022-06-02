@@ -1466,6 +1466,399 @@
                 ]
             }
         },
+        "/api/PassengerInfo": {
+            "post": {
+                "tags": [
+                    "PassengerInfo API(Client Booking Process)"
+                ],
+                "summary": "Capturing customer details in a booking process by a client",
+                "operationId": "038080c5009ca92638fbfcee9e060bf1",
+                "requestBody": {
+                    "description": "Capturing passenger details in a booking process by a client",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "customerInfo": {
+                                        "properties": {
+                                            "email": {
+                                                "type": "string",
+                                                "default": "abc@gmail.com",
+                                                "example": "abc@gmail.com"
+                                            },
+                                            "phone": {
+                                                "type": "number",
+                                                "default": 9912345678,
+                                                "example": 9912345678
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "default": "Bob",
+                                                "example": "Bob"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "bookingInfo": {
+                                        "properties": {
+                                            "bus_id": {
+                                                "type": "number",
+                                                "default": 1,
+                                                "example": 1
+                                            },
+                                            "source_id": {
+                                                "type": "number",
+                                                "default": 82,
+                                                "example": 82
+                                            },
+                                            "destination_id": {
+                                                "type": "number",
+                                                "default": 434,
+                                                "example": 434
+                                            },
+                                            "journey_dt": {
+                                                "type": "string",
+                                                "default": "2022-06-30",
+                                                "example": "2022-06-30"
+                                            },
+                                            "boarding_point": {
+                                                "type": "string",
+                                                "default": "Bus stand",
+                                                "example": "Bus stand"
+                                            },
+                                            "dropping_point": {
+                                                "type": "string",
+                                                "default": "bus stand",
+                                                "example": "bus stand"
+                                            },
+                                            "boarding_time": {
+                                                "type": "string",
+                                                "default": "21:00",
+                                                "example": "21:00"
+                                            },
+                                            "dropping_time": {
+                                                "type": "string",
+                                                "default": "06:30",
+                                                "example": "06:30"
+                                            },
+                                            "bookingDetail": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "bus_seats_id": {
+                                                            "type": "string",
+                                                            "example": "ST1"
+                                                        },
+                                                        "passenger_name": {
+                                                            "type": "string",
+                                                            "example": "Bob"
+                                                        },
+                                                        "passenger_gender": {
+                                                            "type": "string",
+                                                            "example": "M"
+                                                        },
+                                                        "passenger_age": {
+                                                            "type": "string",
+                                                            "example": "22"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "example": [
+                                                    {
+                                                        "bus_seats_id": "2694",
+                                                        "passenger_name": "Bob",
+                                                        "passenger_gender": "M",
+                                                        "passenger_age": "22"
+                                                    },
+                                                    {
+                                                        "bus_seats_id": "2755",
+                                                        "passenger_name": "Mom",
+                                                        "passenger_gender": "F",
+                                                        "passenger_age": "20"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "records added"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/SeatBlock": {
+            "post": {
+                "tags": [
+                    "SeatBlock API(Client Booking Process)"
+                ],
+                "summary": "Block seats for further payment process",
+                "description": "Block seats for further payment process",
+                "operationId": "5bc8d23206624ce818f56b089d0c8675",
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "20220404141311561229"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_status",
+                        "in": "query",
+                        "description": "customer gst required or not",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": "true"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_number",
+                        "in": "query",
+                        "description": "customer gst number",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2323232323"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_name",
+                        "in": "query",
+                        "description": "customer gst business name",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bob"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_email",
+                        "in": "query",
+                        "description": "customer gst business email",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "example@gmail.com"
+                        }
+                    },
+                    {
+                        "name": "customer_gst_business_address",
+                        "in": "query",
+                        "description": "customer gst business address",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "example"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Seats blocked for payment process"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "406": {
+                        "description": "Seats already booked"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/TicketConfirmation": {
+            "post": {
+                "tags": [
+                    "TicketConfirmation API(Client Booking Process)"
+                ],
+                "summary": "Ticket booking confirmed with seats booked status",
+                "description": "Ticket booking confirmed with seats booked status",
+                "operationId": "9cb5ddf909f6337b93b02dbca4779f4d",
+                "parameters": [
+                    {
+                        "name": "transaction_id",
+                        "in": "query",
+                        "description": "transaction id against booking",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "20220404141311561229"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Tickets booked successfully"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "406": {
+                        "description": "Seats already booked"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ClientCancelTicket": {
+            "post": {
+                "tags": [
+                    "ClientCancelTicket API"
+                ],
+                "summary": "Ticket Cancellation by Client",
+                "description": "Ticket Cancellation by Client",
+                "operationId": "e8c357ae0879c50fcf123e247d483f92",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ODM5163863"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "mobile no",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "9090909090"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client ticket cancellation successful"
+                    },
+                    "206": {
+                        "description": "Validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/CommonService": {
             "post": {
                 "tags": [

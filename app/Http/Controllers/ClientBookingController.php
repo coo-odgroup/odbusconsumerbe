@@ -37,9 +37,144 @@ class clientBookingController extends Controller
         $this->ticketConfirmValidator = $ticketConfirmValidator;   
         $this->cancelTicketValidator = $cancelTicketValidator;   
     }
-
+        /**
+     * @OA\Post(
+     *     path="/api/PassengerInfo",
+     *     tags={"PassengerInfo API(Client Booking Process)"},
+     *     summary="Capturing customer details in a booking process by a client",
+     *     @OA\RequestBody(
+     *        required = true,
+     *     description="Capturing passenger details in a booking process by a client",
+     *        @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                property="customerInfo",
+     *                type="object",
+     *                @OA\Property(
+     *                  property="email",
+     *                  type="string",
+     *                  default="abc@gmail.com",
+     *                  example="abc@gmail.com"
+     *                  ),
+     *                @OA\Property(
+     *                  property="phone",
+     *                  type="number",
+     *                  default=9912345678,
+     *                  example=9912345678
+     *                  ),
+     *                @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  default="Bob",
+     *                  example="Bob"
+     *                  )
+     *                ),
+     *             @OA\Property(
+     *                property="bookingInfo",
+     *                type="object",
+     *                @OA\Property(
+     *                  property="bus_id",
+     *                  type="number",
+     *                  default=1,
+     *                  example=1
+     *                  ),
+     *                @OA\Property(
+     *                  property="source_id",
+     *                  type="number",
+     *                  default=82,
+     *                  example=82
+     *                  ),
+     *                @OA\Property(
+     *                  property="destination_id",
+     *                  type="number",
+     *                  default=434,
+     *                  example=434
+     *                  ),
+     *                @OA\Property(
+     *                  property="journey_dt",
+     *                  type="string",
+     *                  default="2022-06-30",
+     *                  example="2022-06-30" ,
+     *                  ),
+     *                @OA\Property(
+     *                  property="boarding_point",
+     *                  type="string",
+     *                  default="Bus stand",
+     *                  example="Bus stand" ,
+     *                  ),
+     *                @OA\Property(
+     *                  property="dropping_point",
+     *                  type="string",
+     *                  default="bus stand",
+     *                  example="bus stand" ,
+     *                  ),
+     *                @OA\Property(
+     *                  property="boarding_time",
+     *                  type="string",
+     *                  default="21:00",
+     *                  example="21:00" ,
+     *                  ),
+     *                @OA\Property(
+     *                  property="dropping_time",
+     *                  type="string",
+     *                  default="06:30",
+     *                  example="06:30" ,
+     *                  ),
+     *                 @OA\Property(
+     *                  property="bookingDetail",
+     *                  type="array",
+     *                  example={{
+     *                    "bus_seats_id" : "2694",
+     *                    "passenger_name": "Bob",
+     *                    "passenger_gender": "M",
+     *                    "passenger_age": "22"
+     *                  }, {
+     *                    "bus_seats_id" : "2755",
+     *                    "passenger_name": "Mom",
+     *                    "passenger_gender": "F",
+     *                    "passenger_age": "20"
+     *                  }},
+     *                  @OA\Items(
+     *                      @OA\Property(
+     *                         property="bus_seats_id",
+     *                         type="string",
+     *                         example="ST1"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="passenger_name",
+     *                         type="string",
+     *                         example="Bob"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="passenger_gender",
+     *                         type="string",
+     *                         example="M"
+     *                      ),
+     *                      @OA\Property(
+     *                         property="passenger_age",
+     *                         type="string",
+     *                         example="22"
+     *                      ),
+     *                    ),
+     *                  ),
+     *                ),
+     *              ),
+     *  ),
+     *  @OA\Response(response="201", description="records added"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function clientBooking(Request $request) {
-        //$data = $request->all();
+        
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $data = $request->all();
@@ -66,6 +201,87 @@ class clientBookingController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }      
     } 
+
+        /**
+     * @OA\Post(
+     *     path="/api/SeatBlock",
+     *     tags={"SeatBlock API(Client Booking Process)"},
+     *     description="Block seats for further payment process",
+     *     summary="Block seats for further payment process",
+     *     @OA\Parameter(
+     *          name="transaction_id",
+     *          description="transaction id against booking",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="20220404141311561229"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="customer_gst_status",
+     *          description="customer gst required or not",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="boolean",
+     *              example="true"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="customer_gst_number",
+     *          description="customer gst number",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="2323232323"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="customer_gst_business_name",
+     *          description="customer gst business name",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="Bob"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="customer_gst_business_email",
+     *          description="customer gst business email",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="example@gmail.com"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="customer_gst_business_address",
+     *          description="customer gst business address",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="example"
+     *          )
+     *      ),
+     *  @OA\Response(response="201", description="Seats blocked for payment process"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response="406", description="Seats already booked"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function seatBlock(Request $request)
     {   
         $data = $request->all();
@@ -94,6 +310,37 @@ class clientBookingController extends Controller
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }        
     }
+    
+        /**
+     * @OA\Post(
+     *     path="/api/TicketConfirmation",
+     *     tags={"TicketConfirmation API(Client Booking Process)"},
+     *     description="Ticket booking confirmed with seats booked status",
+     *     summary="Ticket booking confirmed with seats booked status",
+     *     @OA\Parameter(
+     *          name="transaction_id",
+     *          description="transaction id against booking",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="20220404141311561229"
+     *          )
+     *      ),
+     *  @OA\Response(response="201", description="Tickets booked successfully"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response="406", description="Seats already booked"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function ticketConfirmation(Request $request){
 
         $data = $request->all();
@@ -114,18 +361,50 @@ class clientBookingController extends Controller
         try{  
             $response = $this->clientBookingService->ticketConfirmation($data); 
             return $this->successResponse($response,Config::get('constants.TICKET_CONFIRMED'),Response::HTTP_OK);
-            //  If($response == 'Payment Done'){
-            //      return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
-            //  }
-            //  else{
-            //     return $this->errorResponse(Config::get('constants.PAYMENT_FAILED'),Response::HTTP_PAYMENT_REQUIRED);
-            // }  
          }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
     }
-
+    /**
+     * @OA\Post(
+     *     path="/api/ClientCancelTicket",
+     *     tags={"ClientCancelTicket API"},
+     *     description="Ticket Cancellation by Client",
+     *     summary="Ticket Cancellation by Client",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="ODM5163863"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="phone",
+     *          description="mobile no",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer",
+     *              example="9090909090"
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Client ticket cancellation successful"),
+     *  @OA\Response(response=206, description="Validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function clientCancelTicket(Request $request) {
         $data = $request->all();
         $cancelTicketValidator = $this->cancelTicketValidator->validate($data);
@@ -147,7 +426,7 @@ class clientBookingController extends Controller
                 return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
                 break;
             }
-          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+          return $this->successResponse($response,Config::get('constants.TICKET_CANCELLED'),Response::HTTP_OK);  
          }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
