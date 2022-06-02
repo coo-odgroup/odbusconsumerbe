@@ -58,8 +58,7 @@ use App\Http\Controllers\ClientBookingController;
 Route::group(['middleware' => ['jwt.verify']], function() {
 
    // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
-//         Route::get('/getLocation', [ListingController::class, 'getLocation']);
-// });    
+  
 
 Route::post('/countries', [SoapController::class, 'getCountries']);
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
