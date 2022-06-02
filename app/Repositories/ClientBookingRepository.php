@@ -240,21 +240,25 @@ class ClientBookingRepository
         $comissionAmount = $bookingRecord[0]->client_comission;             
         $amount = $bookingRecord[0]->total_fare;
                               
-        $walletBalance = ClientWallet::where('user_id',$request['client_id'])->where('status',1)->latest()->first()->balance;
+        $clientDetails = ClientWallet::where('user_id',$request['client_id'])
+                                        ->orderBy('id','DESC')->where("status",1)->limit(1)
+                                        ->get(); 
       
         $clientWallet = new ClientWallet();
         $clientWallet->transaction_id = $transactionId;
         $clientWallet->booking_id = $bookingId;
         $clientWallet->amount = $amount;
         $clientWallet->transaction_type = 'd';
-        $clientWallet->balance = $walletBalance - $amount;
+        $clientWallet->balance = $clientDetails[0]->balance - $amount;
         $clientWallet->user_id = $request['client_id'];
         $clientWallet->created_by = $request['client_name'];
         $clientWallet->status = 1;
         $clientWallet->save();
-        //return $clientWallet;
+        
+        $clientDetails = ClientWallet::where('user_id',$request['client_id'])
+                                        ->orderBy('id','DESC')->where("status",1)->limit(1)
+                                        ->get(); 
 
-        $walletBalance = ClientWallet::where('user_id',$request['client_id'])->latest()->first()->balance;
         $tranId = date('YmdHis') . gettimeofday()['usec'];
         $clientWallet = new ClientWallet();
         $clientWallet->transaction_id = $tranId;
@@ -262,7 +266,7 @@ class ClientBookingRepository
         $clientWallet->type = 'Commission';
         $clientWallet->booking_id = $bookingId;
         $clientWallet->transaction_type = 'c';
-        $clientWallet->balance = $walletBalance + $comissionAmount;
+        $clientWallet->balance = $clientDetails[0]->balance + $comissionAmount;
         $clientWallet->user_id = $request['client_id'];
         $clientWallet->created_by = $request['client_name'];
         $clientWallet->status = 1;
@@ -321,4 +325,82 @@ class ClientBookingRepository
         $bookingDetails[0]['dest_name'] = $destName;
         return $bookingDetails;   
     }
+
+    public function clientCancelTicket($phone,$pnr,$booked)
+    { 
+
+        return Users::where('phone',$phone)
+                        ->select('id','name','email','phone')
+                        ->with(["booking" => function($u) use($pnr,$booked){
+                            $u->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare');  
+                            $u->where([
+                                ['booking.pnr', '=', $pnr],
+                                ['status', '=', $booked],   
+                              ]);                           
+                            $u->with(["bus" => function($bs){
+                                $bs->select('id','name','bus_number','cancellationslabs_id');
+                                //$bs->with('cancellationslabs.cancellationSlabInfo');
+                                $bs->select('id','name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
+                                $bs->with(['cancellationslabs'=> function($c){
+                                    $c->select('id','rule_name','cancellation_policy_desc');
+                                    $c->with(['cancellationSlabInfo' => function($cs){
+                                        $cs->select('cancellation_slab_id','duration','deduction');
+                                        }]);
+                                    }]);
+                                }]);         
+                            $u->with(["bookingDetail" => function($b){
+                                $b->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender');  
+                                $b->with(["busSeats" => function($bs){
+                                    $bs->select('id','seats_id');
+                                    $bs->with(["seats" => function($s){
+                                        $s->select('id','seatText');
+                                    }]); 
+                                }]);
+                            }]);  
+                        }])
+                ->get();
+    }
+
+    public function updateClientCancelTicket($bookingId,$userId,$refundAmt,$percentage,$deductAmt){
+        $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
+       
+        $clientDetails = ClientWallet::where('user_id',$userId)
+                                        ->orderBy('id','DESC')->where("status",1)->limit(1)
+                                        ->get(); 
+                                       
+        $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        $clientWallet = new ClientWallet();
+        $clientWallet->transaction_id = $transactionId;
+        $clientWallet->amount = $refundAmt;
+        $clientWallet->type = 'Refund';
+        $clientWallet->booking_id = $bookingId;
+        $clientWallet->transaction_type = 'c';
+        $clientWallet->balance = $clientDetails[0]->balance + $refundAmt;
+        $clientWallet->user_id = $userId;
+        $clientWallet->created_by = $clientDetails[0]->created_by;
+        $clientWallet->status = 1;
+        
+        $clientWallet->save();
+        
+        $clientDetails =  ClientWallet::where('user_id',$userId)->orderBy('id','DESC')->where("status",1)->limit(1)->get(); 
+   
+        $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        $clientWallet = new ClientWallet();
+        $clientWallet->transaction_id = $transactionId;
+        $clientWallet->amount = $deductAmt/2;
+        $clientWallet->type = 'CancelCommission';
+        $clientWallet->booking_id = $bookingId;
+        $clientWallet->transaction_type = 'c';
+        $clientWallet->balance = $clientDetails[0]->balance + ($deductAmt/2);
+        $clientWallet->user_id = $userId;
+       
+        $clientWallet->created_by = $clientDetails[0]->created_by;
+        $clientWallet->status = 1;
+        $clientWallet->save();
+      
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);             
+        
+        return $clientWallet;
+    }
+
 }
