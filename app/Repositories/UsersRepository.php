@@ -242,7 +242,7 @@ class UsersRepository
                     $b->with(["busSeats" => function($s){
                         $s->with("seats");
                       } ]);
-                } ])->orderBy('journey_dt','desc');
+                } ])->orderBy('journey_dt','asc');
     }
 
     public function AllBookings($user_id){
