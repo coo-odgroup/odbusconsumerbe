@@ -434,7 +434,7 @@ public function refreshToken() {
 /**
          * @OA\Post(
          *     path="/api/BookingHistory",
-         *     tags={"Booking History of a Customer"},
+         *     tags={"Booking History of a Customer(Web use with pagination)"},
          *     description="Get Booking History of a Customer",
          *     summary="Get Booking History of a Customer",
          *     @OA\Parameter(
@@ -505,7 +505,7 @@ public function refreshToken() {
 /**
          * @OA\Post(
          *     path="/api/AppBookingHistory",
-         *     tags={"Booking History of a Customer"},
+         *     tags={"Booking History of a Customer(App use without pagination)"},
          *     description="Get Booking History of a Customer",
          *     summary="Get Booking History of a Customer",
          *     @OA\Parameter(
