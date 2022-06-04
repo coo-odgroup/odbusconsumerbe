@@ -1755,7 +1755,7 @@
                     }
                 ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Tickets booked successfully"
                     },
                     "206": {
@@ -1825,7 +1825,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client ticket cancellation successful"
+                        "description": "Ticket cancellation successful"
                     },
                     "206": {
                         "description": "Validation error"
@@ -4329,7 +4329,7 @@
         "/api/BookingHistory": {
             "post": {
                 "tags": [
-                    "Booking History of a Customer"
+                    "Booking History of a Customer(Web use with pagination)"
                 ],
                 "summary": "Get Booking History of a Customer",
                 "description": "Get Booking History of a Customer",
@@ -4417,7 +4417,7 @@
         "/api/AppBookingHistory": {
             "post": {
                 "tags": [
-                    "Booking History of a Customer"
+                    "Booking History of a Customer(App use only without pagination)"
                 ],
                 "summary": "Get Booking History of a Customer",
                 "description": "Get Booking History of a Customer",

@@ -327,7 +327,7 @@ class clientBookingController extends Controller
      *              example="20220404141311561229"
      *          )
      *      ),
-     *  @OA\Response(response="201", description="Tickets booked successfully"),
+     *  @OA\Response(response="200", description="Tickets booked successfully"),
      *  @OA\Response(response=206, description="validation error"),
      *  @OA\Response(response=400, description="Bad request"),
      *  @OA\Response(response=401, description="Unauthorized access"),
@@ -392,7 +392,7 @@ class clientBookingController extends Controller
      *              example="9090909090"
      *          )
      *      ),
-     *  @OA\Response(response="200", description="Client ticket cancellation successful"),
+     *  @OA\Response(response="200", description="Ticket cancellation successful"),
      *  @OA\Response(response=206, description="Validation error"),
      *  @OA\Response(response=400, description="Bad request"),
      *  @OA\Response(response=401, description="Unauthorized access"),
