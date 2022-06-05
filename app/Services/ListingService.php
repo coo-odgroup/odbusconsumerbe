@@ -277,7 +277,7 @@ class ListingService
             $CouponDetails = [];
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
-           
+            //$bookingDate = "2022-06-06";
             foreach($CouponRecords as $key => $coupon){
                 
                 $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
@@ -285,29 +285,36 @@ class ListingService
                     case(1):    //Coupon available on journey date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                                                         ->where('from_date', '<=', $entry_date)
-                                                        ->where('to_date', '>=', $entry_date)->all();      
-                                                    
+                                                        ->where('to_date', '>=', $entry_date)->all();
+                        if(isset($selCouponRecords)){  
+                                    $CouponDetails = $selCouponRecords[0]
+                                                    ->where('coupon_code',$coupon)->get();
+                        } 
+                        $appliedCoupon->push($coupon);                             
                         break;
                     case(2):    //Coupon available on booking date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                                                         ->where('from_date', '<=', $bookingDate)
                                                         ->where('to_date', '>=', $bookingDate)->all();
-                                                    
+                         if(isset($selCouponRecords)){  
+                                    $CouponDetails = $selCouponRecords[0]
+                                                    ->where('coupon_code',$coupon)->get();
+                        } 
+                        $appliedCoupon->push($coupon);                                                               
                         break;      
                 }
                
-                if($dateInRange){
-                    $appliedCoupon->push($coupon);
-                    if(isset($selCouponRecords)){
-                        $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
-                        ->where('from_date', '<=', $bookingDate)
-                        ->where('to_date', '>=', $bookingDate)
-                        ->where('bus_id',$busId)
-                        ->get(); 
-                        //return $appliedCoupon;
-                    }
+                // if($dateInRange){
+                //     $appliedCoupon->push($coupon);
+                //     if(isset($selCouponRecords)){
+                //         $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+                //         ->where('from_date', '<=', $bookingDate)
+                //         ->where('to_date', '>=', $bookingDate)
+                //         ->get(); 
+                //         //return $appliedCoupon;
+                //     }
 
-                 }
+                //  }
             }
             $maxSeatBook = $record->max_seat_book;
             $conductor_number ='';
