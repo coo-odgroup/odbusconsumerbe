@@ -585,8 +585,7 @@ class ListingRepository
                 //     $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
                 // } 
 
-
-                
+ 
                 //seat not available on requested seq so blocked seats are calculated 
                 if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
                     $a = $this->verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingId);
@@ -602,8 +601,6 @@ class ListingRepository
                 return [$sl,$st,$tot];
         }
         return [$sl,$st,$tot];
-
-
     }  
     
     public function verifySeat($busId,$sourceID,$destinationID,$entry_date,$bookingID)
@@ -611,6 +608,7 @@ class ListingRepository
         
         $seaterRecords = 0;
         $sleeperRecords = 0;
+        $totalBookedCount = 0;
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $booked_seats = BookingDetail::where('booking_id',$bookingID) 
@@ -629,7 +627,7 @@ class ListingRepository
                 $i++;
             }
            
-        $totalBookedCount= $sleeperRecords+$seaterRecords;
+        $totalBookedCount = $sleeperRecords+$seaterRecords;
         return [$sleeperRecords,$seaterRecords,$totalBookedCount];
     }
 
