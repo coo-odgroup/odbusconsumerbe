@@ -13,7 +13,7 @@ use App\Services\ClientBookingService;
 use App\AppValidator\ClientBookingValidator;
 use App\AppValidator\SeatBlockValidator;
 use App\AppValidator\TicketConfirmValidator;
-use App\AppValidator\CancelTicketValidator;
+use App\AppValidator\ClientCancelTicketValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -26,16 +26,16 @@ class clientBookingController extends Controller
     protected $clientBookingValidator;
     protected $seatBlockValidator;
     protected $ticketConfirmValidator;
-    protected $cancelTicketValidator;
+    protected $clientCancelTicketValidator;
     
 
-    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,CancelTicketValidator $cancelTicketValidator)
+    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,ClientCancelTicketValidator $clientCancelTicketValidator)
     {
         $this->clientBookingService = $clientBookingService;  
         $this->clientBookingValidator = $clientBookingValidator;
         $this->seatBlockValidator = $seatBlockValidator; 
         $this->ticketConfirmValidator = $ticketConfirmValidator;   
-        $this->cancelTicketValidator = $cancelTicketValidator;   
+        $this->clientCancelTicketValidator = $clientCancelTicketValidator;   
     }
         /**
      * @OA\Post(
@@ -383,13 +383,13 @@ class clientBookingController extends Controller
      *          )
      *      ),
      *     @OA\Parameter(
-     *          name="phone",
-     *          description="mobile no",
+     *          name="user_id",
+     *          description="client Id",
      *          required=true,
      *          in="query",
      *          @OA\Schema(
      *              type="integer",
-     *              example="9090909090"
+     *              example="9"
      *          )
      *      ),
      *  @OA\Response(response="200", description="Ticket cancellation successful"),
@@ -406,21 +406,22 @@ class clientBookingController extends Controller
      * 
      */
     public function clientCancelTicket(Request $request) {
+
         $data = $request->all();
-        $cancelTicketValidator = $this->cancelTicketValidator->validate($data);
+        $cancelTicketValidator = $this->clientCancelTicketValidator->validate($data);
 
         if ($cancelTicketValidator->fails()) {
         $errors = $cancelTicketValidator->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
-            $response =  $this->clientBookingService->clientCancelTicket($request);  
+            $response = $this->clientBookingService->clientCancelTicket($data);  
             switch($response){
-              case('PNR_NOT_MATCH'):
-                return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
-                break;
-              case('MOBILE_NOT_MATCH'):
-                return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+            //   case('PNR_NOT_MATCH'):
+            //     return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+            //     break;
+              case('INV_CLIENT'):
+                return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
                 break;
               case('CANCEL_NOT_ALLOWED'):
                 return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);

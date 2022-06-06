@@ -129,7 +129,7 @@ Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail'])
 Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
 Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
 Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);
-Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
+
 
 //});
 });
@@ -141,4 +141,5 @@ Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
 Route::get('/testing', [ChannelController::class, 'testing']);
 
+Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
 

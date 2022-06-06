@@ -1813,13 +1813,13 @@
                         }
                     },
                     {
-                        "name": "phone",
+                        "name": "user_id",
                         "in": "query",
-                        "description": "mobile no",
+                        "description": "client Id",
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "example": "9090909090"
+                            "example": "9"
                         }
                     }
                 ],
@@ -4417,7 +4417,7 @@
         "/api/AppBookingHistory": {
             "post": {
                 "tags": [
-                    "Booking History of a Customer(App use only without pagination)"
+                    "Booking History of a Customer(App use without pagination)"
                 ],
                 "summary": "Get Booking History of a Customer",
                 "description": "Get Booking History of a Customer",

@@ -234,10 +234,10 @@ class ClientBookingRepository
         $booked = Config::get('constants.BOOKED_STATUS');
         $transactionId = $request['transaction_id'];
         $bookingRecord = $this->booking->where('transaction_id', $transactionId)
-                                        ->where('status', $seatHold)
+                                        //->where('status', $seatHold)
                                        ->with('bookingDetail')
                                        ->get();
-
+                                   
         $bookingId = $bookingRecord[0]->id; 
         $comissionAmount = $bookingRecord[0]->client_comission;             
         $amount = $bookingRecord[0]->total_fare;
@@ -328,39 +328,44 @@ class ClientBookingRepository
         return $bookingDetails;   
     }
 
-    public function clientCancelTicket($phone,$pnr,$booked)
+    public function clientCancelTicket($clientId,$pnr,$booked)
     { 
+        return $this->booking->where([
+                                    ['pnr', '=', $pnr],
+                                    ['status', '=', $booked], 
+                                    ['user_id', '=', $clientId],  
+                                    ])
+                ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare')
+               ->with(['users'=> function($u){
+                  $u->select('id','name','email','phone');   
+               }])
+               ->with(["bus" => function($bs){
+                $bs->select('id','name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
+                $bs->with(['cancellationslabs'=> function($c){
+                    $c->select('id','rule_name','cancellation_policy_desc');
+                    $c->with(['cancellationSlabInfo' => function($cs){
+                        $cs->select('cancellation_slab_id','duration','deduction');
+                        }]);
+                    }]);              
+                }])
+                ->with(["bookingDetail" => function($b){
+                    $b->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender');
+                    $b->with(["busSeats" => function($bs){
+                        $bs->select('id','seats_id');
+                        $bs->with(["seats" => function($s){
+                            $s->select('id','seatText');  
+                        }]);
+                    }]);    
+                }])
+            //   ->with(['clientWallet' => function($cw){
+            //     $cw->select('booking_id','balance');
+            //     $cw->orderBy('id','DESC');
+            //     $cw->where("status",1);
+            //     $cw->limit(1);
+            //     }])
+              ->get();
 
-        return Users::where('phone',$phone)
-                        ->select('id','name','email','phone')
-                        ->with(["booking" => function($u) use($pnr,$booked){
-                            $u->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare');  
-                            $u->where([
-                                ['booking.pnr', '=', $pnr],
-                                ['status', '=', $booked],   
-                              ]);                           
-                            $u->with(["bus" => function($bs){
-                                $bs->select('id','name','bus_number','cancellationslabs_id');
-                                //$bs->with('cancellationslabs.cancellationSlabInfo');
-                                $bs->select('id','name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
-                                $bs->with(['cancellationslabs'=> function($c){
-                                    $c->select('id','rule_name','cancellation_policy_desc');
-                                    $c->with(['cancellationSlabInfo' => function($cs){
-                                        $cs->select('cancellation_slab_id','duration','deduction');
-                                        }]);
-                                    }]);
-                                }]);         
-                            $u->with(["bookingDetail" => function($b){
-                                $b->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender');  
-                                $b->with(["busSeats" => function($bs){
-                                    $bs->select('id','seats_id');
-                                    $bs->with(["seats" => function($s){
-                                        $s->select('id','seatText');
-                                    }]); 
-                                }]);
-                            }]);  
-                        }])
-                ->get();
+
     }
 
     public function updateClientCancelTicket($bookingId,$userId,$refundAmt,$percentage,$deductAmt){
@@ -369,6 +374,7 @@ class ClientBookingRepository
         $clientDetails = ClientWallet::where('user_id',$userId)
                                         ->orderBy('id','DESC')->where("status",1)->limit(1)
                                         ->get(); 
+        $OdbusCancelProfit = $deductAmt/2;                               
                                        
         $transactionId = date('YmdHis') . gettimeofday()['usec'];
         $clientWallet = new ClientWallet();
@@ -400,7 +406,7 @@ class ClientBookingRepository
         $clientWallet->status = 1;
         $clientWallet->save();
       
-        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);             
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'odbus_cancel_profit' => $OdbusCancelProfit]);             
         
         return $clientWallet;
     }

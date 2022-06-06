@@ -28,7 +28,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY1Mzg5NTMxMiwiZXhwIjoxNjUzODk4OTEyLCJuYmYiOjE2NTM4OTUzMTIsImp0aSI6IjhWQW1Xd1RBSGtpekdoNlAiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.w2P-KTLRWINWB43kW6zOYq9ipjzcMdTNTSvVm-8lPak",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDQ0NDYyLCJleHAiOjE2NTQ0NDgwNjIsIm5iZiI6MTY1NDQ0NDQ2MiwianRpIjoiR1laSlZVSUpIZDZmR3lBRSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jYvu0_KjyH59-NW0U5PETrAQXtC6Z9u84MFq16NCVSc",
 							"type": "string"
 						}
 					]
@@ -45,7 +45,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=baripada&entry_date=30-05-2022",
+					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=kolkata&entry_date=06-06-2022",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -65,11 +65,11 @@
 						},
 						{
 							"key": "destination",
-							"value": "baripada"
+							"value": "kolkata"
 						},
 						{
 							"key": "entry_date",
-							"value": "30-05-2022"
+							"value": "06-06-2022"
 						}
 					]
 				}
@@ -2386,7 +2386,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUzMzg1OTY1LCJleHAiOjE2NTMzODk1NjUsIm5iZiI6MTY1MzM4NTk2NSwianRpIjoiTTJCOTk2b2VWMFJEQVZrRSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.UjCwJQkF4Iy9kUVVhmd_SbqmyGF70jwvd1AsI1Jk1wM",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
 							"type": "string"
 						}
 					]
@@ -2403,14 +2403,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/PassengerInfo",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/PassengerInfo",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"PassengerInfo"
@@ -2427,7 +2428,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUzOTAyNTYwLCJleHAiOjE2NTM5MDYxNjAsIm5iZiI6MTY1MzkwMjU2MCwianRpIjoiZmw3cHB4WUl0bzNhY09oQSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zTbj7ua2i5eOXciEobNut5rXEfyMdiz58ZspGT1I3UY",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
 							"type": "string"
 						}
 					]
@@ -2436,7 +2437,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220530152921891301\",\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220606114301686946\",\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2444,14 +2445,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/SeatBlock",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/SeatBlock",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"SeatBlock"
@@ -2468,7 +2470,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUzOTAyNTYwLCJleHAiOjE2NTM5MDYxNjAsIm5iZiI6MTY1MzkwMjU2MCwianRpIjoiZmw3cHB4WUl0bzNhY09oQSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zTbj7ua2i5eOXciEobNut5rXEfyMdiz58ZspGT1I3UY",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
 							"type": "string"
 						}
 					]
@@ -2477,7 +2479,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220530152921891301\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220606114301686946\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2485,14 +2487,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/TicketConfirmation",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/TicketConfirmation",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"TicketConfirmation"
@@ -2505,20 +2508,13 @@
 			"name": "client cancel ticket",
 			"request": {
 				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0MDc2ODIxLCJleHAiOjE2NTQwODA0MjEsIm5iZiI6MTY1NDA3NjgyMSwianRpIjoiclpwODRkU3RsM1RFTWhJMiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.V7zLK6EyZTCtewe0Z-RtlBPWW5BpOdjlOKrDtVIZxcA",
-							"type": "string"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\":\"ODCL89104\",\r\n    \"phone\":\"1234567898\"\r\n}",
+					"raw": "{\r\n    \"pnr\":\"ODCL68294\",\r\n    \"user_id\":\"124\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

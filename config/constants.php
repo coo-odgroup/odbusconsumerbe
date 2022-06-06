@@ -84,5 +84,5 @@ return [
     'SEAT_BLOCKED_FOR_PAYMENT' => 'Seats are blocked for further payment process',
     'TICKET_CONFIRMED' => 'Tickets booked successfully',
     'TICKET_CANCELLED' => 'Ticket cancellation successful',
-
+    'INVALID_CLIENT'=> "Not a valid Client Booking or pnr mismatch",
 ];
