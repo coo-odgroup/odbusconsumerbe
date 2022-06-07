@@ -142,4 +142,5 @@ Route::get('/Appversion', [CommonController::class, 'Appversion']);
 Route::get('/testing', [ChannelController::class, 'testing']);
 
 Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
+Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientCancelTicketInfo']);
 

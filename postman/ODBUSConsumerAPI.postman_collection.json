@@ -2514,7 +2514,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\":\"ODCL68294\",\r\n    \"user_id\":\"124\"\r\n}",
+					"raw": "{\r\n    \"pnr\":\"ODCL35719\",\r\n    \"user_id\":\"124\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2522,7 +2522,38 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/ClientCancelTicket",
+					"raw": "https://testing.odbus.co.in/api/ClientCancelTicket",
+					"protocol": "https",
+					"host": [
+						"testing",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"ClientCancelTicket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client Cancel TicketInfo api",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"ODCL35719\",\r\n    \"user_id\":\"124\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ClientCancelTicketInfo",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -2533,7 +2564,7 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"ClientCancelTicket"
+						"ClientCancelTicketInfo"
 					]
 				}
 			},

@@ -364,8 +364,6 @@ class ClientBookingRepository
             //     $cw->limit(1);
             //     }])
               ->get();
-
-
     }
 
     public function updateClientCancelTicket($bookingId,$userId,$refundAmt,$percentage,$deductAmt){

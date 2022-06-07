@@ -366,45 +366,7 @@ class clientBookingController extends Controller
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
     }
-    /**
-     * @OA\Post(
-     *     path="/api/ClientCancelTicket",
-     *     tags={"ClientCancelTicket API"},
-     *     description="Ticket Cancellation by Client",
-     *     summary="Ticket Cancellation by Client",
-     *     @OA\Parameter(
-     *          name="pnr",
-     *          description="pnr",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(
-     *              type="string",
-     *              example="ODM5163863"
-     *          )
-     *      ),
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          description="client Id",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(
-     *              type="integer",
-     *              example="9"
-     *          )
-     *      ),
-     *  @OA\Response(response="200", description="Ticket cancellation successful"),
-     *  @OA\Response(response=206, description="Validation error"),
-     *  @OA\Response(response=400, description="Bad request"),
-     *  @OA\Response(response=401, description="Unauthorized access"),
-     *  @OA\Response(response=404, description="No record found"),
-     *  @OA\Response(response=500, description="Internal server error"),
-     *  @OA\Response(response=502, description="Bad gateway"),
-     *  @OA\Response(response=503, description="Service unavailable"),
-     *  @OA\Response(response=504, description="Gateway timeout"),
-     *     security={{ "apiAuth": {} }}
-     * )
-     * 
-     */
+    /////////////admin client panel use/////////////////////
     public function clientCancelTicket(Request $request) {
 
         $data = $request->all();
@@ -428,6 +390,32 @@ class clientBookingController extends Controller
                 break;
             }
           return $this->successResponse($response,Config::get('constants.TICKET_CANCELLED'),Response::HTTP_OK);  
+         }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+
+    public function clientCancelTicketInfo(Request $request) {
+
+        $data = $request->all();
+        $cancelTicketValidator = $this->clientCancelTicketValidator->validate($data);
+
+        if ($cancelTicketValidator->fails()) {
+        $errors = $cancelTicketValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+        try {
+            $response = $this->clientBookingService->clientCancelTicketInfo($data);  
+            switch($response){
+              case('INV_CLIENT'):
+                return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+              case('CANCEL_NOT_ALLOWED'):
+                return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+            }
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
          }
      catch (Exception $e) {
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
