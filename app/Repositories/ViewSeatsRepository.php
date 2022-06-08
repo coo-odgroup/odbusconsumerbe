@@ -267,7 +267,8 @@ class ViewSeatsRepository
                     $query->where('status',1)
                             ->where('bus_id',$busId)
                             ->where('ticket_price_id',$ticketPriceId)
-                            ->whereNotIn('seats_id',$bookedSeatIDs);
+                            ->whereNotIn('seats_id',$bookedSeatIDs)
+                            ->select('ticket_price_id','seats_id');
             }]) 
             ->get();
 
@@ -312,6 +313,7 @@ class ViewSeatsRepository
         ->where('destination_id', $destinationId)
         ->where('bus_id', $busId)
         ->where('status','1') 
+        ->select('id','base_seat_fare','base_sleeper_fare')
         ->first();
     }
 
