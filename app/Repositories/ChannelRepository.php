@@ -786,10 +786,10 @@ class ChannelRepository
 
         $api = new Api($key, $secretKey);
 
-        $payment = $api->payment->fetch($razorpay_payment_id);
-        $paymentStatus = $payment->status;
+       // $payment = $api->payment->fetch($razorpay_payment_id);
+       // $paymentStatus = $payment->status;
 
-        if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
+       // if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,
@@ -873,13 +873,13 @@ class ChannelRepository
             //return $sms;
         }
             return "Payment Done";
-        }
-        else{ 
-            $this->booking->where('id', $bookingId)
-                        ->where('transaction_id', $transationId)
-                        ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
-            return "Payment Failed"; 
-        }
+        // }
+        // else{ 
+        //     $this->booking->where('id', $bookingId)
+        //                 ->where('transaction_id', $transationId)
+        //                 ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
+        //     return "Payment Failed"; 
+        // }
       }
 
       public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId){
