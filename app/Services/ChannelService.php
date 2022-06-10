@@ -248,7 +248,7 @@ class ChannelService
                     $name = $records[0]->users->name;
                     $receiptId = 'rcpt_'.$transationId;
 
-                    $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    $GetOrderId=$this->channelRepository->UpdateCustomPayment($receiptId, $amount ,$name, $bookingId);
                     
 
                     //$orderId = CustomerPayment::where('booking_id',$records[0]->id)->first()->order_id;

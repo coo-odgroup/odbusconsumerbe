@@ -737,6 +737,25 @@ class ChannelRepository
         return $this->credentials->first()->razorpay_secret;
     }
 
+    
+
+    public function UpdateCustomPayment($receiptId, $amount ,$name, $bookingId){
+
+      $key = $this->getRazorpayKey();
+      $secretKey = $this->getRazorpaySecret();
+      
+      $api = new Api($key, $secretKey);   
+      $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+
+      // Creates customer payment 
+      $orderId = $order['id']; 
+
+      $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId,'amount' =>$amount ,'name'=>$name]);
+
+       return $orderId;
+
+    }
+
 
       public function CreateCustomPayment($receiptId, $amount ,$name, $bookingId){
 
