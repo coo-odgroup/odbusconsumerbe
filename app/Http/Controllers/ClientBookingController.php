@@ -220,12 +220,12 @@ class clientBookingController extends Controller
      *      ),
      *     @OA\Parameter(
      *          name="customer_gst_status",
-     *          description="customer gst required or not",
+     *          description="customer gst required or not(0:not required,1:required)",
      *          required=false,
      *          in="query",
      *          @OA\Schema(
-     *              type="boolean",
-     *              example="true"
+     *              type="integer",
+    *              enum={"0", "1"}
      *          )
      *      ),
      *     @OA\Parameter(

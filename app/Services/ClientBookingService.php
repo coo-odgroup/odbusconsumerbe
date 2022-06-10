@@ -178,6 +178,7 @@ class ClientBookingService
                     $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
 
                 }else{
+                    $amount = round($amount - $records[0]->customer_gst_amount,2);
                     $update_customer_gst['customer_gst_status']=0;
                     $update_customer_gst['customer_gst_number']=null;
                     $update_customer_gst['customer_gst_business_name']=null;

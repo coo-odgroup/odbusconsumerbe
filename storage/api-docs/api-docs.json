@@ -1647,11 +1647,14 @@
                     {
                         "name": "customer_gst_status",
                         "in": "query",
-                        "description": "customer gst required or not",
+                        "description": "customer gst required or not(0:not required,1:required)",
                         "required": false,
                         "schema": {
-                            "type": "boolean",
-                            "example": "true"
+                            "type": "integer",
+                            "enum": [
+                                "0",
+                                "1"
+                            ]
                         }
                     },
                     {
