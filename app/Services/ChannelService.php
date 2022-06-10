@@ -243,12 +243,20 @@ class ChannelService
                         //return "SEAT AVAIL";
                 }elseif($records && $records[0]->status == $seatHold){
                     $key= $this->channelRepository->getRazorpayKey();
-                    $orderId = CustomerPayment::where('booking_id',$records[0]->id)->first()->order_id;
+
+                    $bookingId = $records[0]->id;   
+                    $name = $records[0]->users->name;
+                    $receiptId = 'rcpt_'.$transationId;
+
+                    $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    
+
+                    //$orderId = CustomerPayment::where('booking_id',$records[0]->id)->first()->order_id;
                     $data = array(
                         'name' => $records[0]->users->name,
                         'amount' => $amount,
                         'key' => $key,
-                        'razorpay_order_id' => $orderId   
+                        'razorpay_order_id' => $GetOrderId   
                     );
                         return $data;
                 }
