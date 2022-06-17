@@ -1852,6 +1852,50 @@
                 ]
             }
         },
+        "/api/Appversion": {
+            "get": {
+                "tags": [
+                    "App Version"
+                ],
+                "summary": "Get App Version",
+                "description": "Get App Version",
+                "operationId": "7927a6919098a03cceb3eff23165b294",
+                "responses": {
+                    "200": {
+                        "description": "Get app version details"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/saveContacts": {
             "post": {
                 "tags": [
