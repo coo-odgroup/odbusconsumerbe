@@ -14,6 +14,7 @@ use App\AppValidator\ClientBookingValidator;
 use App\AppValidator\SeatBlockValidator;
 use App\AppValidator\TicketConfirmValidator;
 use App\AppValidator\ClientCancelTicketValidator;
+use App\AppValidator\ClientCancelTktValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -27,15 +28,17 @@ class clientBookingController extends Controller
     protected $seatBlockValidator;
     protected $ticketConfirmValidator;
     protected $clientCancelTicketValidator;
+    protected $clientCancelTktValidator;
     
 
-    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,ClientCancelTicketValidator $clientCancelTicketValidator)
+    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,ClientCancelTicketValidator $clientCancelTicketValidator,ClientCancelTktValidator $clientCancelTktValidator)
     {
         $this->clientBookingService = $clientBookingService;  
         $this->clientBookingValidator = $clientBookingValidator;
         $this->seatBlockValidator = $seatBlockValidator; 
         $this->ticketConfirmValidator = $ticketConfirmValidator;   
-        $this->clientCancelTicketValidator = $clientCancelTicketValidator;   
+        $this->clientCancelTicketValidator = $clientCancelTicketValidator;  
+        $this->clientCancelTktValidator = $clientCancelTktValidator;   
     }
         /**
      * @OA\Post(
@@ -407,6 +410,37 @@ class clientBookingController extends Controller
         } 
         try {
             $response = $this->clientBookingService->clientCancelTicketInfo($data);  
+            switch($response){
+              case('INV_CLIENT'):
+                return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+              case('CANCEL_NOT_ALLOWED'):
+                return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+            }
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);  
+         }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+
+    /////////client panel use//////////////
+    public function clientCancelTicketInfos(Request $request) {
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $data = $request->all();
+        
+        $data['user_id'] = $user->id;
+       
+        $cancelTicketValidator = $this->clientCancelTktValidator->validate($data);
+
+        if ($cancelTicketValidator->fails()) {
+        $errors = $cancelTicketValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+        try {
+            $response = $this->clientBookingService->clientCancelTicketInfos($data);  
             switch($response){
               case('INV_CLIENT'):
                 return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);

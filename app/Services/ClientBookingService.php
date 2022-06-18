@@ -227,7 +227,7 @@ class ClientBookingService
        
     }  
     
-    public function clientCancelTicket($request)
+    public function clientCancelTicket($request)////////admin panel use
     {
         try {        
             $pnr = $request['pnr'];
@@ -378,7 +378,87 @@ class ClientBookingService
         }    
     }   
 
-    public function clientCancelTicketInfo($request)
+    public function clientCancelTicketInfo($request)////admin panel use
+    {
+        try {        
+            $pnr = $request['pnr'];
+            $clientId = $request['user_id'];
+            $booked = Config::get('constants.BOOKED_STATUS');
+
+            $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
+            if(isset($booking_detail[0])){ 
+               
+                       $jDate =$booking_detail[0]->journey_dt;
+                       $jDate = date("d-m-Y", strtotime($jDate));
+                       $boardTime =$booking_detail[0]->boarding_time; 
+                    
+                       $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                       $current_date_time = Carbon::now()->toDateTimeString(); 
+                       $bookingDate = new DateTime($combinedDT);
+                       $cancelDate = new DateTime($current_date_time);
+                       $interval = $bookingDate->diff($cancelDate);
+                       $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                      
+                       if($cancelDate >= $bookingDate || $interval < 12)
+                       {
+                       return "CANCEL_NOT_ALLOWED";
+                       }
+                      
+                       $paidAmount = $booking_detail[0]->total_fare;
+   
+                       if($booking_detail[0]->status==2){
+                           $data['cancel_status'] = false;
+                       }else{
+                           $data['cancel_status'] = true;
+                       }
+                       
+                       $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
+                      
+                       foreach($cancelPolicies as $cancelPolicy){
+                          $duration = $cancelPolicy->duration;
+                          $deduction = $cancelPolicy->deduction;
+                          $duration = explode("-", $duration, 2);
+                          $max= $duration[1];
+                          $min= $duration[0];
+       
+                          if( $interval > 240){
+                            
+                              $deduction = 10;//minimum deduction 
+                              $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
+                              $data['refundAmount'] = $refundAmt;
+                              $data['deductionPercentage'] = $deduction."%"; 
+                              $deductAmt = round($paidAmount-$refundAmt,2);
+                              $data['deductAmount'] = $deductAmt;
+                              $data['totalfare'] = $paidAmount;
+                              $data['clientCancelCommission'] = $deductAmt/2; 
+                              $data['odbusCancelCommission'] = $deductAmt/2;    
+                            
+                              return $data;
+          
+                          }elseif($min <= $interval && $interval <= $max){ 
+                           
+                              $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
+                              $data['refundAmount'] = $refundAmt;
+                              $data['deductionPercentage'] = $deduction."%";
+                              $deductAmt = round($paidAmount-$refundAmt,2);
+                              $data['deductAmount'] = $deductAmt;
+                              $data['totalfare'] = $paidAmount;
+                              $data['clientCancelCommission'] = $deductAmt/2; 
+                              $data['odbusCancelCommission'] = $deductAmt/2;            
+                           
+                              return $data;   
+                          }
+                      }                          
+          }else{         
+              return "INV_CLIENT";            
+          }
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }    
+    }  
+    
+    public function clientCancelTicketInfos($request)////admin panel use
     {
         try {        
             $pnr = $request['pnr'];
