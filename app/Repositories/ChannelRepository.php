@@ -1080,39 +1080,40 @@ class ChannelRepository
 
 
       $bookingId = $request['booking_id'];
+      $razorpay_payment_id = $request['razorpay_payment_id'];
       $createdBy = $request['created_by'];
 
       $customerPaymentDatas = $this->customerPayment->where('booking_id', $bookingId)->get();
     
-      $key = $this->getRazorpayKey();
-      $secretKey = $this->getRazorpaySecret();
+      // $key = $this->getRazorpayKey();
+      // $secretKey = $this->getRazorpaySecret();
       $SmsGW = config('services.sms.otpservice');
       $booked = Config::get('constants.BOOKED_STATUS');
       $paymentDone = Config::get('constants.PAYMENT_DONE');
       $bookingType = Config::get('constants.BOOKING_TYPE');
 
-      $api = new Api($key, $secretKey); 
+      // $api = new Api($key, $secretKey); 
      
-      $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
+      // $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
 
-      $flag=false;
-      $razorpay_payment_id ='';
+      // $flag=false;
+      // $razorpay_payment_id ='';
 
-      if($res->items){
-          foreach ($res->items as $value){               
-            if($value->status == 'captured'){ //captured(Live), authorized(testing)
-              $flag=true;
-              $razorpay_payment_id = $value->id;
-              break;
-            } 
-          }                  
-      }
+      // if($res->items){
+      //     foreach ($res->items as $value){               
+      //       if($value->status == 'captured'){ //captured(Live), authorized(testing)
+      //         $flag=true;
+      //         $razorpay_payment_id = $value->id;
+      //         break;
+      //       } 
+      //     }                  
+      // }
 
-      if($flag == false){
+      // if($flag == false){
 
-        return "payment_not_done";
+      //   return "payment_not_done";
 
-      }else{
+      // }else{
       
       $bookingDetails = $this->booking->where('id', $bookingId)
                                       ->with('users')
@@ -1301,7 +1302,7 @@ class ChannelRepository
 
           return "ticket regenerated";
         
-      }
+     // }
     
 
     }
