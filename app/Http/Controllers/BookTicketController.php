@@ -255,22 +255,27 @@ class BookTicketController extends Controller
 
         
         $token = JWTAuth::getToken();
-
         $user = JWTAuth::toUser($token);
-
-         $data = $request->all();
-
-         $data['bookingInfo']['origin']=$user->name;
+        $data = $request->all();
+        $data['bookingInfo']['origin']=$user->name;
 
         $bookTicketValidation = $this->bookTicketValidator->validate($data);
-   
+
+        $todayDate = Date('Y-m-d');
+        $validTillDate = Date('Y-m-d', strtotime('+15 days'));
+
         if ($bookTicketValidation->fails()) {
         $errors = $bookTicketValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-          try {
+          try { 
            $response =  $this->bookTicketService->bookTicket($data);  
+           if($todayDate <= $data['bookingInfo']['journey_date'] && $data['bookingInfo']['journey_date'] <= $validTillDate){
             return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+            }else{
+                return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_date'],Response::HTTP_OK);
+            }
+            //  return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
