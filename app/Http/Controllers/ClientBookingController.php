@@ -426,6 +426,36 @@ class clientBookingController extends Controller
     } 
 
     /////////client panel use//////////////
+     /**
+     * @OA\Post(
+     *     path="/api/ClientCancelTicketinfo",
+     *     tags={"ClientCancelTicketinfo API(Ticket cancellation detail information)"},
+     *     description="Ticket cancellation detail information",
+     *     summary="Ticket cancellation detail information",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr of booked ticket",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="ODCL60276"
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Record Fetched Successfully"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response="406", description="Seats already booked"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function clientCancelTicketInfos(Request $request) {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
@@ -455,4 +485,64 @@ class clientBookingController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
+    /**
+     * @OA\Post(
+     *     path="/api/ClientTicketCancellation",
+     *     tags={"ClientTicketCancellation API(Ticket cancellation)"},
+     *     description="Ticket cancellation",
+     *     summary="Ticket cancellation",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr of booked ticket",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="ODCL60276"
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="Record Fetched Successfully"),
+     *  @OA\Response(response=206, description="validation error"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response="406", description="Seats already booked"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
+    public function clientTicketCancel(Request $request) {
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $data = $request->all();  
+        $data['user_id'] = $user->id;
+
+        $cancelTicketValidator = $this->clientCancelTktValidator->validate($data);
+
+        if ($cancelTicketValidator->fails()) {
+        $errors = $cancelTicketValidator->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+        } 
+        try {
+            $response = $this->clientBookingService->clientTicketCancel($data);  
+            switch($response){
+              case('INV_CLIENT'):
+                return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+              case('CANCEL_NOT_ALLOWED'):
+                return $this->errorResponse(Config::get('constants.CANCEL_NOT_ALLOWED'),Response::HTTP_PARTIAL_CONTENT);
+                break;
+            }
+          return $this->successResponse($response,Config::get('constants.TICKET_CANCELLED'),Response::HTTP_OK);  
+         }
+     catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+       }      
+    } 
+
 }

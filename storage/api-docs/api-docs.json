@@ -1796,6 +1796,124 @@
                 ]
             }
         },
+        "/api/ClientCancelTicketinfo": {
+            "post": {
+                "tags": [
+                    "ClientCancelTicketinfo API(Ticket cancellation detail information)"
+                ],
+                "summary": "Ticket cancellation detail information",
+                "description": "Ticket cancellation detail information",
+                "operationId": "918eb7e7a2ab0741e7d9c5b17330dd9b",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr of booked ticket",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ODCL60276"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "406": {
+                        "description": "Seats already booked"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ClientTicketCancellation": {
+            "post": {
+                "tags": [
+                    "ClientTicketCancellation API(Ticket cancellation)"
+                ],
+                "summary": "Ticket cancellation",
+                "description": "Ticket cancellation",
+                "operationId": "eec050d8f89d94aba0b5b5ffce5e617c",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr of booked ticket",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ODCL60276"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Record Fetched Successfully"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "406": {
+                        "description": "Seats already booked"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/CommonService": {
             "post": {
                 "tags": [
