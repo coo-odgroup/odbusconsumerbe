@@ -315,7 +315,7 @@ class ClientBookingService
                           $max= $duration[1];
                           $min= $duration[0];
        
-                          if( $interval > 240){
+                          if( $interval > 999){
                             
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
@@ -421,7 +421,7 @@ class ClientBookingService
                           $max= $duration[1];
                           $min= $duration[0];
        
-                          if( $interval > 240){
+                          if( $interval > 999){
                             
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
@@ -501,7 +501,7 @@ class ClientBookingService
                           $max= $duration[1];
                           $min= $duration[0];
        
-                          if( $interval > 240){
+                          if( $interval > 999){
                             
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
@@ -618,7 +618,7 @@ class ClientBookingService
                           $max= $duration[1];
                           $min= $duration[0];
        
-                          if( $interval > 240){
+                          if( $interval > 999){
                             
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);

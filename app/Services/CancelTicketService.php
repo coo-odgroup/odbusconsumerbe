@@ -48,13 +48,10 @@ class CancelTicketService
                     $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
                      $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
                       $route = $sourceName .'-'. $destinationName;
-                       $userMailId =$booking_detail[0]->email;
-                     $bookingId =$booking_detail[0]->booking[0]->id;
-                      $booking = $this->cancelTicketRepository->GetBooking($bookingId);
+                    $userMailId =$booking_detail[0]->email;
+                    $bookingId =$booking_detail[0]->booking[0]->id;
+                    $booking = $this->cancelTicketRepository->GetBooking($bookingId);
                     
-                    
-                
-    
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                     $current_date_time = Carbon::now()->toDateTimeString(); 
                     $bookingDate = new DateTime($combinedDT);
@@ -98,8 +95,9 @@ class CancelTicketService
                         $duration = explode("-", $duration, 2);
                         $max= $duration[1];
                         $min= $duration[0];
-        
-                        if( $interval > 240){
+
+                        if( $interval > 999){
+                        //if( $interval > 240){
                             $deduction = 10;//minimum deduction
                             $refund =  $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId);
                             $refundAmt =  $refund['refundAmount'];
@@ -139,15 +137,10 @@ class CancelTicketService
                         }
                     } 
                  } else{
-
-                 
-
                     $refund = $this->cancelTicketRepository->cancel($bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
                     return $refund;  
-
                  }  
-
              } 
                 else{                
                      return "PNR_NOT_MATCH";                
@@ -156,13 +149,9 @@ class CancelTicketService
             else{            
                 return "MOBILE_NOT_MATCH";            
             }
-
-
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-        
-    }   
-   
+        }    
+    }     
 }
