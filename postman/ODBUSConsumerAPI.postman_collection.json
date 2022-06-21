@@ -87,7 +87,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0MDAxMTg0LCJleHAiOjE2NTQwMDQ3ODQsIm5iZiI6MTY1NDAwMTE4NCwianRpIjoiMjBnbjRQT3pBVW1ObWY1NSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.xuXz22Kd19mvl6szNplcndZ1HAN5pAe4mCCX-_NTUsA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NjcwMzQ2LCJleHAiOjE2NTQ2NzM5NDYsIm5iZiI6MTY1NDY3MDM0NiwianRpIjoicGFNWGJlV25TVFlIcnl4WiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Kmw9gY3M1b5yhwSzUljRYlzlzerkdgujLmKHFCDZK0c",
 							"type": "string"
 						}
 					]
@@ -104,7 +104,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/viewSeats?entry_date=06-06-2022&busId=757&sourceId=227&destinationId=82",
+					"raw": "http://127.0.0.1:8000/api/viewSeats?entry_date=06-06-2022&busId=817&sourceId=232&destinationId=144",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -124,15 +124,15 @@
 						},
 						{
 							"key": "busId",
-							"value": "757"
+							"value": "817"
 						},
 						{
 							"key": "sourceId",
-							"value": "227"
+							"value": "232"
 						},
 						{
 							"key": "destinationId",
-							"value": "82"
+							"value": "144"
 						}
 					]
 				}
@@ -213,7 +213,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUyNzgwNDQ1LCJleHAiOjE2NTI3ODQwNDUsIm5iZiI6MTY1Mjc4MDQ0NSwianRpIjoiSGdlbUNQSHJMTjcyOXI0dSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.chUEMYUAmLiK6bRAMjJXJ2urjyRz-UHJzdRglTe_m4E",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzEwMzI2LCJleHAiOjE2NTU3MTM5MjYsIm5iZiI6MTY1NTcxMDMyNiwianRpIjoiUlptZ1JxV0VTY3BUT3FQOSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.tP6Xl11JzVsaD_vkdAf51SPzp8hrr6DGApY9jyB-AjQ",
 							"type": "string"
 						}
 					]
@@ -222,7 +222,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n        \"user_id\": \"1\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2021-12-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"MOB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n        \"user_id\": \"1\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2022-07-07\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"MOB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -302,7 +302,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY0NjY1MTIxMywiZXhwIjoxNjQ2NjU0ODEzLCJuYmYiOjE2NDY2NTEyMTMsImp0aSI6IjZrZzcwakhpQVdnR2dYOUkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.mV5zm34WDSnfG5uz4b_X2JW7UHlFFW7-g5ZzYjuIxZQ",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1Nzg4NzY0LCJleHAiOjE2NTU3OTIzNjQsIm5iZiI6MTY1NTc4ODc2NCwianRpIjoiaWRqdkJzMzVCMGNwS1FISiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.6TO2GpNQCpTdVg5Gr4tuJt7uE1fzVxNn-JjwFwxor-k",
 							"type": "string"
 						}
 					]
@@ -311,7 +311,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"price\":0,\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"entry_date\":\"21-12-2021\",\r\n    \"busType\":[],\r\n    \"seatType\":[],\r\n    \"boardingPointId\":[],\r\n    \"dropingingPointId\":[],\r\n    \"operatorId\":[],\r\n    \"amenityId\":[]\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -319,14 +319,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=434&entry_date=15-01-2022",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Filter?price=0&sourceID=82&destinationID=53&entry_date=22-06-2022",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Filter"
@@ -342,11 +343,11 @@
 						},
 						{
 							"key": "destinationID",
-							"value": "434"
+							"value": "53"
 						},
 						{
 							"key": "entry_date",
-							"value": "15-01-2022"
+							"value": "22-06-2022"
 						}
 					]
 				}
@@ -2386,7 +2387,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0ODM4NTk3LCJleHAiOjE2NTQ4NDIxOTcsIm5iZiI6MTY1NDgzODU5NywianRpIjoienRieGFQbnFrQXN2U1FTUSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.iYUrRa25nsCvFkv5f6Z8JDY-wMSmPx5jfQ6NA9cobDI",
 							"type": "string"
 						}
 					]
@@ -2428,7 +2429,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0ODM5NDc3LCJleHAiOjE2NTQ4NDMwNzcsIm5iZiI6MTY1NDgzOTQ3NywianRpIjoiemhwVGJQVXgyZFM1N09GTyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.c6nfyMdZXf9F51gEYEz3qcYdL5gF8p1vKiMwZ-Mt_6M",
 							"type": "string"
 						}
 					]
@@ -2437,7 +2438,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220606114301686946\",\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220610111710403970\",\r\n    \"customer_gst_status\": false,\r\n\t\"customer_gst_number\": null,\r\n\t\"customer_gst_business_name\": null,\r\n\t\"customer_gst_business_email\": null,\r\n\t\"customer_gst_business_address\": null\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2470,7 +2471,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDk1NTU4LCJleHAiOjE2NTQ0OTkxNTgsIm5iZiI6MTY1NDQ5NTU1OCwianRpIjoiaTFQWDFyTU5GcnNmbzIwNCIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zW9onORmdP6dPKtUwaRPsmNtMjYMdcjFZhVTzwyBSao",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NTEwNzc3LCJleHAiOjE2NTQ1MTQzNzcsIm5iZiI6MTY1NDUxMDc3NywianRpIjoibWlwdk1MYkZMR09KdjNkMSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.IqqDO1jWH38LryLvKSviolrpfNbVuPCXAHjyPa4-2Mc",
 							"type": "string"
 						}
 					]
@@ -2479,7 +2480,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220606114301686946\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220606155007916906\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2487,15 +2488,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/TicketConfirmation",
-					"protocol": "http",
+					"raw": "https://testing.odbus.co.in/api/TicketConfirmation",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"testing",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"TicketConfirmation"
@@ -2553,7 +2553,29 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/ClientCancelTicketInfo",
+					"raw": "https://testing.odbus.co.in/api/ClientCancelTicketInfo",
+					"protocol": "https",
+					"host": [
+						"testing",
+						"odbus",
+						"co",
+						"in"
+					],
+					"path": [
+						"api",
+						"ClientCancelTicketInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "App Version",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/Appversion",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -2564,7 +2586,91 @@
 					"port": "8000",
 					"path": [
 						"api",
-						"ClientCancelTicketInfo"
+						"Appversion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cacnel ticket info to show customer in client panel",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NTQyNDYyLCJleHAiOjE2NTU1NDYwNjIsIm5iZiI6MTY1NTU0MjQ2MiwianRpIjoiVjBLdlRNSjg5aDN4MGFzViIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.aMMVDamQQp_QOOwFBjIMJj1HTav2CzIIwnda2vvjPh8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"ODCL60276\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ClientCancelTicketinfo",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ClientCancelTicketinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzAyOTYxLCJleHAiOjE2NTU3MDY1NjEsIm5iZiI6MTY1NTcwMjk2MSwianRpIjoiRkQ4TjBkeUZnTnN6VzFhUyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zCF2VQbM3vrYRT-XrArup_5zudCo5CXmfE_PWfk4l2c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\":\"ODCL60276\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ClientTicketCancellation",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ClientTicketCancellation"
 					]
 				}
 			},

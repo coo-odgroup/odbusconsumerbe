@@ -31,7 +31,7 @@ class ListingService
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
     }
-    public function getAll(Request $request)
+    public function getAll(Request $request,$clientRole)
     {  
         $source = $request['source'];
         $destination = $request['destination'];
@@ -39,7 +39,7 @@ class ListingService
         $busOperatorId = $request['bus_operator_id'];
         $userId = $request['user_id'];
         $entry_date = date("Y-m-d", strtotime($entry_date));
-
+        
         $path= $this->commonRepository->getPathurls();
         $path= $path[0];
 
@@ -196,10 +196,10 @@ class ListingService
             $showBusRecords = Arr::flatten($records);
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
-            $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show');
+            $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
    
             if(count($hideBusRecords) > 0){
-               $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide');
+               $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
                $showRecords = collect($showRecords)->sortBy([
                    ['departureTime', 'asc']]);
@@ -215,9 +215,11 @@ class ListingService
             return $ListingRecords;      
          }    
     }
-    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag){
+    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole){
        
         $ListingRecords = array();
+        $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
         foreach($records as $record){
             //return $record;
             $unavailbleSeats = 0;
@@ -238,8 +240,7 @@ class ListingService
             {
                $routeCouponCode =[];
             }  
-
-            
+ 
             $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId,$busId,$entry_date);
             if(isset($operatorCoupon[0]))
             {                           
@@ -337,7 +338,7 @@ class ListingService
                     ->where('destination_id', $destinationID)
                     ->first(); 
             $ticketPriceId = $ticketPriceRecords->id;
-////////////owner/special/festive fare with service charges added to base fare////////////
+            ////owner/special/festive fare with service charges added to base fare////////////
            
             $baseFare = $ticketPriceRecords->base_seat_fare; 
             $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
@@ -628,48 +629,83 @@ class ListingService
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
-           $ListingRecords[] = array(
-                "srcId" => $sourceID,
-                "destId" => $destinationID,
-                "display" => $flag,
-                "busId" => $busId, 
-                "busName" => $busName,
-                "via" => $via,
-                "popularity" => $popularity,
-                "busNumber" => $busNumber,
-                "maxSeatBook" => $maxSeatBook,
-                "conductor_number" => $conductor_number,
-                "couponCode" => $appliedCoupon->all(),
-                "couponDetails" => $CouponDetails,
-                "operatorId" => $operatorId,
-                "operatorUrl" => $operatorUrl,
-                "operatorName" => $operatorName,
-                "sittingType" => $sittingType,
-                "bus_description" => $bus_description,
-                "busType" => $busType,
-                "busTypeName" => $busTypeName,
-                "totalSeats" => $totalSeats,
-                "seaters" => $seatClassRecords,
-                "sleepers" => $sleeperClassRecords,
-                "startingFromPrice" => $startingFromPrice,
-                "departureTime" =>$depTime,
-                "arrivalTime" =>$arrTime,
-                "totalJourneyTime" =>$totalJourneyTime, 
-                "amenity" =>$amenityDatas,
-                "safety" => $safetyDatas,
-                "busPhotos" => $busPhotoDatas,
-                "cancellationDuration" => $cSlabDuration,
-                "cancellationDuduction" => $cSlabDeduction,
-                "cancellationPolicyContent" => $cancellationPolicyContent,
-                "TravelPolicyContent" => $TravelPolicyContent,
-                "Totalrating" => $Totalrating,
-                "Totalrating_5star" => $Totalrating_5star,
-                "Totalrating_4star" => $Totalrating_4star,
-                "Totalrating_3star" => $Totalrating_3star,
-                "Totalrating_2star" => $Totalrating_2star,
-                "Totalrating_1star" => $Totalrating_1star,
-                "reviews" => $reviews
-            );             
+            if($clientRole == $clientRoleId){
+                $ListingRecords[] = array(
+                    "srcId" => $sourceID,
+                    "destId" => $destinationID,
+                    "display" => $flag,
+                    "busId" => $busId, 
+                    "busName" => $busName,
+                    "via" => $via,
+                    "popularity" => $popularity,
+                    "busNumber" => $busNumber,
+                    "maxSeatBook" => $maxSeatBook,
+                    "conductor_number" => $conductor_number,
+                    "operatorId" => $operatorId,
+                    "operatorUrl" => $operatorUrl,
+                    "operatorName" => $operatorName,
+                    "sittingType" => $sittingType,
+                    "bus_description" => $bus_description,
+                    "busType" => $busType,
+                    "busTypeName" => $busTypeName,
+                    "totalSeats" => $totalSeats,
+                    "seaters" => $seatClassRecords,
+                    "sleepers" => $sleeperClassRecords,
+                    "startingFromPrice" => $startingFromPrice,
+                    "departureTime" =>$depTime,
+                    "arrivalTime" =>$arrTime,
+                    "totalJourneyTime" =>$totalJourneyTime, 
+                    "amenity" =>$amenityDatas,
+                    "safety" => $safetyDatas,
+                    "cancellationDuration" => $cSlabDuration,
+                    "cancellationDuduction" => $cSlabDeduction,
+                    "cancellationPolicyContent" => $cancellationPolicyContent,
+                    "TravelPolicyContent" => $TravelPolicyContent,
+                    ); 
+            }else{
+                $ListingRecords[] = array(
+                    "srcId" => $sourceID,
+                    "destId" => $destinationID,
+                    "display" => $flag,
+                    "busId" => $busId, 
+                    "busName" => $busName,
+                    "via" => $via,
+                    "popularity" => $popularity,
+                    "busNumber" => $busNumber,
+                    "maxSeatBook" => $maxSeatBook,
+                    "conductor_number" => $conductor_number,
+                    "couponCode" => $appliedCoupon->all(),
+                    "couponDetails" => $CouponDetails,
+                    "operatorId" => $operatorId,
+                    "operatorUrl" => $operatorUrl,
+                    "operatorName" => $operatorName,
+                    "sittingType" => $sittingType,
+                    "bus_description" => $bus_description,
+                    "busType" => $busType,
+                    "busTypeName" => $busTypeName,
+                    "totalSeats" => $totalSeats,
+                    "seaters" => $seatClassRecords,
+                    "sleepers" => $sleeperClassRecords,
+                    "startingFromPrice" => $startingFromPrice,
+                    "departureTime" =>$depTime,
+                    "arrivalTime" =>$arrTime,
+                    "totalJourneyTime" =>$totalJourneyTime, 
+                    "amenity" =>$amenityDatas,
+                    "safety" => $safetyDatas,
+                    "busPhotos" => $busPhotoDatas,
+                    "cancellationDuration" => $cSlabDuration,
+                    "cancellationDuduction" => $cSlabDeduction,
+                    "cancellationPolicyContent" => $cancellationPolicyContent,
+                    "TravelPolicyContent" => $TravelPolicyContent,
+                    "Totalrating" => $Totalrating,
+                    "Totalrating_5star" => $Totalrating_5star,
+                    "Totalrating_4star" => $Totalrating_4star,
+                    "Totalrating_3star" => $Totalrating_3star,
+                    "Totalrating_2star" => $Totalrating_2star,
+                    "Totalrating_1star" => $Totalrating_1star,
+                    "reviews" => $reviews
+                ); 
+            }           
         }
         return $ListingRecords;
     }
@@ -679,7 +715,7 @@ class ListingService
         return $this->listingRepository->getLocation($request['locationName']);
     }
 
-    public function filter(Request $request)
+    public function filter(Request $request,$clientRole)
     {
         $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
@@ -831,11 +867,10 @@ class ListingService
         }
         $showBusRecords = Arr::flatten($records);
         $hideBusRecords = Arr::flatten($hideBusRecords);
-     
-        $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show');
-
+        $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+       
         if(count($hideBusRecords) > 0){
-           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide');
+           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
           // $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
         } 
         // else{

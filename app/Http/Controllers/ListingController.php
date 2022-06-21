@@ -180,22 +180,26 @@ class ListingController extends Controller
  */
     public function getAllListing(Request $request) {
 
-
         $data = $request->only([
             'source',
             'destination',
             'entry_date',
             'bus_operator_id',
           ]);
-          $listingValidation = $this->listingValidator->validate($data);
+        //$data = $request->all();
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+        
+        $listingValidation = $this->listingValidator->validate($data);
           
-          if ($listingValidation->fails()) {
+        if ($listingValidation->fails()) {
             $errors = $listingValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-          }
+        }
           Debugbar::info("Geting all Listing");
           Debugbar::startMeasure('Start Geting Listing Data');
-        $listingData = $this->listingService->getAll($request);
+        $listingData = $this->listingService->getAll($request,$clientRole);
         Debugbar::stopMeasure('Stop Measuring Listing Data');  
         Debugbar::info($listingData);      
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
@@ -372,13 +376,17 @@ class ListingController extends Controller
             'entry_date',
             'bus_operator_id',
         ]);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+
         $filterValidation = $this->filterValidator->validate($data);
         
         if ($filterValidation->fails()) {
             $errors = $filterValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-        $filterData = $this->listingService->filter($request);
+        $filterData = $this->listingService->filter($request,$clientRole);
         return $this->successResponse($filterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**

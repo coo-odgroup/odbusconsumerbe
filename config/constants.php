@@ -45,6 +45,7 @@ return [
     'PAYMENT_DONE' => 1,
     'REFUNDED' => 2,
     'NEED_GST_BILL' => 1,
+    'CLIENT_ROLE_ID'=> 6,
     'Bus_Offers' => 'Bus Offers',
     'Festive_Offers' => 'Festive Offers',
     'REVIEW_ADDED'=>'Review is added',
@@ -85,4 +86,5 @@ return [
     'TICKET_CONFIRMED' => 'Tickets booked successfully',
     'TICKET_CANCELLED' => 'Ticket cancellation successful',
     'INVALID_CLIENT'=> "Not a valid Client Booking or pnr mismatch",
+    
 ];
