@@ -284,15 +284,15 @@ class BookingManageService
                         $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
                         break;
                 }
+                $emailData['journey_end_dt'] = $j_endDate;   
 
-
-                $emailData['journey_end_dt'] =  $j_endDate;   
-
-
- 
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
                 $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+
+                $ownerFare = $booking_detail[0]->booking[0]->owner_fare;
+                $odbusCharges = $booking_detail[0]->booking[0]->odbus_charges;
+                $baseFare = $ownerFare + $odbusCharges;
 
                 $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                 $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -330,9 +330,7 @@ class BookingManageService
                     $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
                     $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-               
-                
-               
+
                     foreach($cancelPolicies as $cancelPolicy){
                        $duration = $cancelPolicy->duration;
                        $deduction = $cancelPolicy->deduction;
@@ -341,10 +339,11 @@ class BookingManageService
                        $min= $duration[0];
    
        
-                       if( $interval > 240){
+                       if( $interval > 999){
                            $deduction = 10;//minimum deduction
-                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
-                           $refundAmt =  round($refund['refundAmount']/100,2);
+                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
+                           //$refundAmt =  round($refund['refundAmount']/100,2);
+                           $refundAmt =  round($refund['refundAmount'],2);
                            $paidAmt =  ($refund['paidAmount']/100);
    
                            $emailData['refundAmount'] = $refundAmt;
@@ -356,9 +355,10 @@ class BookingManageService
        
                        }elseif($min <= $interval && $interval <= $max){ 
    
-                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id);
+                           $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
    
-                           $refundAmt =  round(($refund['refundAmount']/100),2);
+                           //$refundAmt =  round(($refund['refundAmount']/100),2);
+                           $refundAmt =  round($refund['refundAmount'],2);
                            $paidAmt =  ($refund['paidAmount']/100);
    
                            $emailData['refundAmount'] = $refundAmt;
@@ -436,7 +436,7 @@ class BookingManageService
                    $max= $duration[1];
                    $min= $duration[0];
 
-                   if( $interval > 240){
+                   if( $interval > 999){
                        $deduction = 10;//minimum deduction
                        $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                        $emailData['refundAmount'] = $refundAmt;
@@ -557,7 +557,7 @@ class BookingManageService
                        $max= $duration[1];
                        $min= $duration[0];
    
-                       if( $interval > 240){
+                       if( $interval > 999){
                            
                            $deduction = 10;//minimum deduction
                            $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);

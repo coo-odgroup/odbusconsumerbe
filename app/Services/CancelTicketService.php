@@ -30,10 +30,9 @@ class CancelTicketService
             $booked = Config::get('constants.BOOKED_STATUS');
     
             $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
-            if(isset($booking_detail[0])){          
-    
+            if(isset($booking_detail[0])){  
+                       
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
                     $jDate = date("d-m-Y", strtotime($jDate));
                     $boardTime =$booking_detail[0]->booking[0]->boarding_time;
@@ -86,7 +85,6 @@ class CancelTicketService
                     $paidAmount = $booking_detail[0]->booking[0]->payable_amount ;
 
                  if($booking_detail[0]->booking[0]->customerPayment != null){
-
                     $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;   
                     $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
                     foreach($cancelPolicies as $cancelPolicy){
@@ -107,19 +105,20 @@ class CancelTicketService
                             $emailData['refundAmount'] = $refundAmt;
                             $emailData['totalfare'] = $paidAmount;
                             
-                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                           $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
 
                                 $emailData['deductionPercentage'] = $deduction;
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                             } 
                             return $refund;
-    
                         }
                         elseif($min <= $interval && $interval <= $max){ 
+                            
                             $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ; 
                             $refundAmt =  $refund['refundAmount'];
+                            
                             $smsData['refundAmount'] = $refundAmt;
 
                             $emailData['deductionPercentage'] = $deduction;

@@ -156,13 +156,18 @@ class CancelTicketRepository
         $paymentStatus = $payment->status;
         //$refundStatus = $payment['refund_status'];
         $refundStatus = $payment->refund_status;
-
+        $ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
+        $odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
+        $baseFare = $ownerFare + $odbusCharges; 
+        
        // if($paymentStatus == 'captured'){
             if($refundStatus != null){
                 return 'refunded';
             }
             else{
-                $refundAmount = round($paidAmount * ((100-$percentage) / 100),2);
+
+                $refundAmount = round($baseFare * ((100-$percentage) / 100),2);
+                //$refundAmount = round($paidAmount * ((100-$percentage) / 100),2);
 
                 //$refund = $api->refund->create(array('payment_id' => $razorpay_payment_id, 'amount'=> $refundAmount));
                 
@@ -175,10 +180,11 @@ class CancelTicketRepository
                 $data = array(
                     //  'refundStatus' => $refundStatus,
                     //  'refund_id' => $refundId,
-                     'refundAmount' => $refundAmount/100,
+                     'refundAmount' => $refundAmount,
                      'paidAmount' => $paidAmount/100,
                 );
-                $refundAmt = round(($refundAmount/100),2);
+                //$refundAmt = round(($refundAmount),2);
+                $refundAmt = $refundAmount;
                 $paidAmount = $paidAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
   
