@@ -197,25 +197,69 @@ class ListingService
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
             $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+
+            $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
+            $showRecords = (isset($showRecords['regular'])) ? $showRecords['regular'] : [];
+
+
+            $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
+
+            $sortar=[];
+
+            if($common[0]->bus_list_sequence==1){
+
+              $sortar= ['startingFromPrice', 'asc'];
+            }
+
+            else if($common[0]->bus_list_sequence==2){
+
+               $sortar=['departureTime', 'asc'];   
+
+            }
+
+            else if($common[0]->bus_list_sequence==3){
+
+               $sortar=['totalSeats', 'desc'];
+
+            } 
+            
+            else{
+
+                $sortar=['departureTime', 'asc'];   
+
+            } 
    
             if(count($hideBusRecords) > 0){
                $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
-               $showRecords = collect($showRecords)->sortBy([
-                   ['departureTime', 'asc']]);
-   
-               $hideRecords = collect($hideRecords)->sortBy([
-                   ['departureTime', 'asc']]);
-               $ListingRecords = $showRecords->concat($hideRecords);
+               $HideSoldoutRecords = (isset($hideRecords['soldout'])) ? $hideRecords['soldout'] : [];
+               $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
+
+               // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
+                $showRecords = collect($showRecords)->sortBy([ $sortar]);
+
+                $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+
+                $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
+
+                $ListingRecords = $showRecords->concat($soldoutRecords);
+                $ListingRecords = $ListingRecords->concat($hideRecords);
             }else{
-               $ListingRecords = collect($showRecords)->sortBy([
-                       ['departureTime', 'asc']
-                   ]);
+                $ListingRecords = collect($showRecords)->sortBy([
+                    $sortar
+                 ]);
+
+            $ListingRecords = $ListingRecords->concat(collect($ShowSoldoutRecords));
             } 
             return $ListingRecords;      
          }    
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole){
+
+
+        $ListingRecords['regular'] = [];
+        $ListingRecords['soldout'] = [];
+
        
         $ListingRecords = array();
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
@@ -630,7 +674,7 @@ class ListingService
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
             if($clientRole == $clientRoleId){
-                $ListingRecords[] = array(
+                $arr= array(
                     "srcId" => $sourceID,
                     "destId" => $destinationID,
                     "display" => $flag,
@@ -662,8 +706,19 @@ class ListingService
                     "cancellationPolicyContent" => $cancellationPolicyContent,
                     "TravelPolicyContent" => $TravelPolicyContent,
                     ); 
+
+
+            if($totalSeats>0){
+
+            $ListingRecords['regular'][] = $arr;
+
             }else{
-                $ListingRecords[] = array(
+            $ListingRecords['soldout'][] = $arr;
+            }
+
+
+            }else{
+                $arr= array(
                     "srcId" => $sourceID,
                     "destId" => $destinationID,
                     "display" => $flag,
@@ -705,6 +760,15 @@ class ListingService
                     "Totalrating_1star" => $Totalrating_1star,
                     "reviews" => $reviews
                 ); 
+
+                if($totalSeats>0){
+
+                    $ListingRecords['regular'][] = $arr;
+      
+                  }else{
+                    $ListingRecords['soldout'][] = $arr;
+                  }
+
             }           
         }
         return $ListingRecords;
@@ -867,27 +931,73 @@ class ListingService
         }
         $showBusRecords = Arr::flatten($records);
         $hideBusRecords = Arr::flatten($hideBusRecords);
-        $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+        $showRecord = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+
+        $showRecords=[];
+        $HideSoldoutRecords =[];
+        $hideRecords =[];
+        
+        $showRecords = (isset($showRecord['regular'])) ? $showRecord['regular'] : [];
+        $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
        
+
+
+        $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
+
+        $sortar=[];
+        
+
+        if($common[0]->bus_list_sequence==1){
+        $sortar= ['startingFromPrice', 'asc'];
+        }
+
+        else if($common[0]->bus_list_sequence==2){
+        $sortar=['departureTime', 'asc'];   
+        }
+        else if($common[0]->bus_list_sequence==3){
+        $sortar=['totalSeats', 'desc'];
+        } 
+
+        else{
+            $sortar=['departureTime', 'asc']; 
+        } 
+
         if(count($hideBusRecords) > 0){
-           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
+           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide');
+
+           $HideSoldoutRecords = (isset($hideRecords['soldout'])) ? $hideRecords['soldout'] : [];
+           $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
+
           // $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
         } 
         // else{
         //     $FilterRecords = $showRecords;
         // } 
         //return $FilterRecords;
-        if($price == 0){
-            $showRecords = collect($showRecords)->sortBy(['departureTime', 'asc']);
-            $hideRecords = collect($hideRecords)->sortBy(['departureTime', 'asc']);
-            return $showRecords->concat($hideRecords);
+
+       if($price == 0){
+           
+            $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+            $showRecords = collect($showRecords)->sortBy([$sortar]);
+           // return $showRecords->concat($hideRecords);
             //return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
-        }elseif($price == 1){
-            $showRecords = collect($showRecords)->sortBy(['startingFromPrice', 'asc']);
-            $hideRecords = collect($hideRecords)->sortBy(['startingFromPrice', 'asc']);
-            return $showRecords->concat($hideRecords);
+        }
+        else if($price == 1){
+
+          $sortar= ['startingFromPrice', 'asc'];
+            $showRecords = collect($showRecords)->sortBy([$sortar]);
+            $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+
+
+            //return $showRecords->concat($hideRecords);
             //return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
        }
+
+        $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
+
+        $ListingRecords = $showRecords->concat($soldoutRecords);
+        return $ListingRecords->concat($hideRecords);
+
      }  
     }
 
