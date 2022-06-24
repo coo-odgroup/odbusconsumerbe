@@ -976,6 +976,8 @@ class ListingService
         //return $FilterRecords;
 
        if($price == 0){
+
+           $sortar= ['startingFromPrice', 'desc'];
            
             $hideRecords = collect($hideRecords)->sortBy([$sortar]);
             $showRecords = collect($showRecords)->sortBy([$sortar]);
