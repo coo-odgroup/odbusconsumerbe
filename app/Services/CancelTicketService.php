@@ -12,15 +12,20 @@ use DateTime;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
+use App\Repositories\ChannelRepository;
+
 
 
 class CancelTicketService
 {
     
-    protected $cancelTicketRepository;    
-    public function __construct(CancelTicketRepository $cancelTicketRepository)
+    protected $cancelTicketRepository;  
+    protected $channelRepository;
+
+    public function __construct(CancelTicketRepository $cancelTicketRepository,ChannelRepository $channelRepository)
     {
         $this->cancelTicketRepository = $cancelTicketRepository;
+        $this->channelRepository = $channelRepository;
     }
     public function cancelTicket($request)
     {
@@ -107,10 +112,22 @@ class CancelTicketService
                             
                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
-
-                                $emailData['deductionPercentage'] = $deduction;
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                             } 
+
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                             ->where('status','1')
+                             ->where('cancel_sms_send','1')
+                             ->get('phone');
+                             if($busContactDetails->isNotEmpty()){
+                                 $contact_number = collect($busContactDetails)->implode('phone',',');
+                                 $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                             }
+
+
                             return $refund;
                         }
                         elseif($min <= $interval && $interval <= $max){ 
@@ -131,6 +148,17 @@ class CancelTicketService
                             } 
 
                             $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);  
+
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                             ->where('status','1')
+                             ->where('cancel_sms_send','1')
+                             ->get('phone');
+                             if($busContactDetails->isNotEmpty()){
+                                 $contact_number = collect($busContactDetails)->implode('phone',',');
+                                 $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                             }
+
 
                             return $refund;    
                         }

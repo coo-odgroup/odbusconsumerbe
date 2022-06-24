@@ -17,17 +17,21 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Arr;
 use App\Models\User;
+use App\Repositories\ChannelRepository;
 
 
 class BookingManageService
 {
     
     protected $bookingManageRepository;    
-    protected $user;    
-    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository,User $user)
+    protected $user;  
+    protected $channelRepository; 
+
+    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository,User $user,ChannelRepository $channelRepository)
     {
         $this->bookingManageRepository = $bookingManageRepository;
         $this->cancelTicketRepository = $cancelTicketRepository;
+        $this->channelRepository = $channelRepository;
         $this->user = $user;
     }
     public function getJourneyDetails($request)
@@ -493,6 +497,7 @@ class BookingManageService
                        $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
                     }
                     $busName = $booking_detail[0]->booking[0]->bus->name;
+                    $busId = $booking_detail[0]->booking[0]->bus_id;
                     $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
                     $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
                     $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
@@ -575,7 +580,22 @@ class BookingManageService
                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                            }   
+                            } 
+
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
+
+
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+                            $busContactDetails = BusContacts::where('bus_id',$busId)
+                            ->where('status','1')
+                            ->where('cancel_sms_send','1')
+                            ->get('phone');
+                            if($busContactDetails->isNotEmpty()){
+                                $contact_number = collect($busContactDetails)->implode('phone',',');
+                                $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            }
+
+
                            return $data;
        
                        }elseif($min <= $interval && $interval <= $max){ 
@@ -596,7 +616,22 @@ class BookingManageService
                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if($emailData['email'] != ''){
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                            }    
+                            }  
+                            
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+
+
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                             ->where('status','1')
+                             ->where('cancel_sms_send','1')
+                             ->get('phone');
+                             if($busContactDetails->isNotEmpty()){
+                                 $contact_number = collect($busContactDetails)->implode('phone',',');
+                                 $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                             }
+                             
+
                            return $data;   
                        }
                    } 
