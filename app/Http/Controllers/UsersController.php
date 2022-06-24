@@ -68,6 +68,15 @@ class UsersController extends Controller
  *          )
  *      ),
  *     @OA\Parameter(
+ *          name="fcmId",
+ *          description="fcm Id(for APP use to store device Id)",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
  *          name="created_by",
  *          description="created by",
  *          required=true,
@@ -186,6 +195,15 @@ class UsersController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="fcmId",
+ *          description="fcm Id(for APP use to store device Id)",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
  *          )
  *      ),
  *     @OA\Parameter(

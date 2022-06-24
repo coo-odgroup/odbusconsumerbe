@@ -28,7 +28,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NDQ0NDYyLCJleHAiOjE2NTQ0NDgwNjIsIm5iZiI6MTY1NDQ0NDQ2MiwianRpIjoiR1laSlZVSUpIZDZmR3lBRSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jYvu0_KjyH59-NW0U5PETrAQXtC6Z9u84MFq16NCVSc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzkyNDk2LCJleHAiOjE2NTU3OTYwOTYsIm5iZiI6MTY1NTc5MjQ5NiwianRpIjoiNm1lM0w1YXdnZzFGeE1TMiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.91-MSXjB3PAekC9YFGETHXZ9if66IMXAzbwu-PV1-Bg",
 							"type": "string"
 						}
 					]
@@ -45,7 +45,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=kolkata&entry_date=06-06-2022",
+					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=baripada&entry_date=22-06-2022",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -65,11 +65,11 @@
 						},
 						{
 							"key": "destination",
-							"value": "kolkata"
+							"value": "baripada"
 						},
 						{
 							"key": "entry_date",
-							"value": "06-06-2022"
+							"value": "22-06-2022"
 						}
 					]
 				}
@@ -302,7 +302,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1Nzg4NzY0LCJleHAiOjE2NTU3OTIzNjQsIm5iZiI6MTY1NTc4ODc2NCwianRpIjoiaWRqdkJzMzVCMGNwS1FISiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.6TO2GpNQCpTdVg5Gr4tuJt7uE1fzVxNn-JjwFwxor-k",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzkxMzg3LCJleHAiOjE2NTU3OTQ5ODcsIm5iZiI6MTY1NTc5MTM4NywianRpIjoicVNGR1Zva29odEpqNmtlSyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.y0q-RynEhqJSzZJj-9pZ4MAVSbpWhP0YZdsAJ_orUj4",
 							"type": "string"
 						}
 					]
@@ -565,11 +565,21 @@
 		{
 			"name": "User Login",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2MDUyODcwLCJleHAiOjE2NTYwNTY0NzAsIm5iZiI6MTY1NjA1Mjg3MCwianRpIjoiS3NzcWNGWlEySjY5ZGdCeCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.vJniXI1jmHHpkecLGTVDL-sxhNCjUCP--CFM1rso2Cw",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"sahu.swagatika@gmail.com\"\r\n}   ",
+					"raw": "{\r\n    \"phone\":\"9916457575\",\r\n    \"fcmId\":\"12345\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -577,14 +587,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Login",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Login",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Login"
@@ -596,11 +607,21 @@
 		{
 			"name": "User Registration",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2MDUyODcwLCJleHAiOjE2NTYwNTY0NzAsIm5iZiI6MTY1NjA1Mjg3MCwianRpIjoiS3NzcWNGWlEySjY5ZGdCeCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.vJniXI1jmHHpkecLGTVDL-sxhNCjUCP--CFM1rso2Cw",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"created_by\":\"Swagatika\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"created_by\":\"Swagatika\",\r\n    \"fcmId\":\"1234\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -608,14 +629,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/Register",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Register",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Register"
@@ -893,36 +915,6 @@
 			"response": []
 		},
 		{
-			"name": "VerifyOtp Login",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"18\",\r\n    \"otp\":\"43031\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://consumer.neoflix.in/api/VerifyOtpLogin",
-					"protocol": "https",
-					"host": [
-						"consumer",
-						"neoflix",
-						"in"
-					],
-					"path": [
-						"api",
-						"VerifyOtpLogin"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "SendSmsTicket",
 			"request": {
 				"method": "POST",
@@ -1066,11 +1058,21 @@
 		{
 			"name": "Cancel Ticket",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1ODgwNDc0LCJleHAiOjE2NTU4ODQwNzQsIm5iZiI6MTY1NTg4MDQ3NCwianRpIjoiOGVEQzBDSTRRVW9JUEdJcyIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.v153m98lsCxmrej4ZmErSTaH3erpu9QI0BTfv7HvkVU",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\":\"14602975\",\r\n    \"phone\":\"9916457575\"\r\n}",
+					"raw": "{\r\n    \"pnr\":\"ODW9117183\",\r\n    \"phone\":\"9916457575\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1078,14 +1080,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/CancelTicket",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/CancelTicket",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"CancelTicket"
@@ -2387,7 +2390,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0ODM4NTk3LCJleHAiOjE2NTQ4NDIxOTcsIm5iZiI6MTY1NDgzODU5NywianRpIjoienRieGFQbnFrQXN2U1FTUSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.iYUrRa25nsCvFkv5f6Z8JDY-wMSmPx5jfQ6NA9cobDI",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0ODM5NDc3LCJleHAiOjE2NTQ4NDMwNzcsIm5iZiI6MTY1NDgzOTQ3NywianRpIjoiemhwVGJQVXgyZFM1N09GTyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.c6nfyMdZXf9F51gEYEz3qcYdL5gF8p1vKiMwZ-Mt_6M",
 							"type": "string"
 						}
 					]
@@ -2505,7 +2508,7 @@
 			"response": []
 		},
 		{
-			"name": "client cancel ticket",
+			"name": "client cancel ticket(admin use)",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -2539,7 +2542,7 @@
 			"response": []
 		},
 		{
-			"name": "Client Cancel TicketInfo api",
+			"name": "Client Cancel TicketInfo api(admin use)",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -2635,7 +2638,7 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "ClientTicketCancellation api",
 			"request": {
 				"auth": {
 					"type": "bearer",

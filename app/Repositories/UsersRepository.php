@@ -85,6 +85,9 @@ class UsersRepository
         $otp = $this->sendOtp($request);
         $user->phone = $request['phone'];
         $user->email = $request['email'];
+        if(isset($request['fcmId'])){
+          $user->fcm_id = $request['fcmId'];
+        }
         $user->otp = $otp;
         $user->save();
         return  $user;
@@ -136,10 +139,13 @@ class UsersRepository
      ));
     }
 
-    public function createOtp($query,$otp){
+    public function createOtp($query,$otp,$request){
 
       $query->update(array('otp' => $otp));
       $query->update(array('password' => bcrypt('odbus123')));
+      if(isset($request['fcmId'])){
+        $query->update(array('fcm_id' => $request['fcmId']));
+      }
       return  $query->latest()->first(); 
            
     }

@@ -91,8 +91,7 @@ class UsersService
             $name = $query->latest()->first()->name;        
             $request->request->add(['name' => $name]);
             $otp = $this->usersRepository->sendOtp($request);
-
-            return $this->usersRepository->createOtp($query,$otp);
+            return $this->usersRepository->createOtp($query,$otp,$request);
 
         } else{
             return "un_registered";

@@ -4056,6 +4056,15 @@
                         }
                     },
                     {
+                        "name": "fcmId",
+                        "in": "query",
+                        "description": "fcm Id(for APP use to store device Id)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "created_by",
                         "in": "query",
                         "description": "created by",
@@ -4184,6 +4193,15 @@
                         "required": false,
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "fcmId",
+                        "in": "query",
+                        "description": "fcm Id(for APP use to store device Id)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     {
