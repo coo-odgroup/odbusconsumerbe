@@ -19,7 +19,7 @@ use App\AppValidator\BusDetailsValidator;
 use App\AppValidator\LocationValidator;
 //use Debugbar;
 use Illuminate\Support\Facades\Log;
-use Barryvdh\Debugbar\Facades\Debugbar;
+//use Barryvdh\Debugbar\Facades\Debugbar;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -197,11 +197,11 @@ class ListingController extends Controller
             $errors = $listingValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
-          Debugbar::info("Geting all Listing");
-          Debugbar::startMeasure('Start Geting Listing Data');
+          //Debugbar::info("Geting all Listing");
+         // Debugbar::startMeasure('Start Geting Listing Data');
         $listingData = $this->listingService->getAll($request,$clientRole);
-        Debugbar::stopMeasure('Stop Measuring Listing Data');  
-        Debugbar::info($listingData);      
+       // Debugbar::stopMeasure('Stop Measuring Listing Data');  
+        //Debugbar::info($listingData);      
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
