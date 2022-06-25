@@ -56,7 +56,7 @@ use App\Http\Controllers\NotificationController;
 
 //Route::middleware(['checkIp'])->group(function () {});
 
-Route::group(['middleware' => ['jwt.verify']], function() {
+//Route::group(['middleware' => ['jwt.verify']], function() {
 
    // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
   
@@ -136,7 +136,7 @@ Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clien
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 //});
-});
+//});
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
