@@ -86,5 +86,6 @@ return [
     'TICKET_CONFIRMED' => 'Tickets booked successfully',
     'TICKET_CANCELLED' => 'Ticket cancellation successful',
     'INVALID_CLIENT'=> "Not a valid Client Booking or pnr mismatch",
-    
+    'NOTIFICATION_SENT' => "Notification sent successfully",
+    'PUSH_NTFY_FAILED' => "Push Notofication Failed"
 ];

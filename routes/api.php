@@ -29,6 +29,7 @@ use App\Http\Controllers\BotManController;
 use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\AuthClientsController;
 use App\Http\Controllers\ClientBookingController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,6 +134,7 @@ Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCance
 Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
 
+Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 //});
 });
 
@@ -145,4 +147,6 @@ Route::get('/testing', [ChannelController::class, 'testing']);
 
 Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
 Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientCancelTicketInfo']);
+
+
 

@@ -16,6 +16,8 @@ use App\AppValidator\UserProfileValidator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
 use App\Services\UsersService;
+use App\Services\NotificationService;
+use App\AppValidator\NotificationValidator;
 //use JWTAuth;
 //use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -26,13 +28,17 @@ class UsersController extends Controller
     protected $usersValidator;
     protected $loginValidator;
     protected $userProfileValidator;
+    protected $notificationService;
+    protected $notificationValidator;
 
-    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator,UserProfileValidator $userProfileValidator)
+    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator,UserProfileValidator $userProfileValidator,NotificationService $notificationService,NotificationValidator $notificationValidator)
     {
         $this->usersService = $usersService; 
         $this->usersValidator = $usersValidator; 
         $this->loginValidator = $loginValidator;
         $this->userProfileValidator = $userProfileValidator; 
+        $this->notificationService = $notificationService;
+        $this->notificationValidator = $notificationValidator;
     }
 /**
  * @OA\Post(
@@ -103,7 +109,8 @@ class UsersController extends Controller
     public function Register(Request $request) {
       $data = $request->only([
         'name','email','phone','password','created_by'
-       ]);   
+       ]);  
+      
        $usersValidation = $this->usersValidator->validate($data);
      
        if ($usersValidation->fails()) {
@@ -234,7 +241,7 @@ class UsersController extends Controller
 
     $data = $request->all();  
     $LoginValidation = $this->loginValidator->validate($data);
-     
+    
     if ($LoginValidation->fails()) {
       return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
     
@@ -644,4 +651,65 @@ public function refreshToken() {
       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
     } 
   }
+/**
+ * @OA\Post(
+ *     path="/api/SendNotification",
+ *     tags={"SendNotification API"},
+ *     summary="SendNotification(App use)",
+ *     @OA\RequestBody(
+ *        required = true,
+ *     description="Send Notification",
+ *        @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                property="notification",
+ *                type="object",
+ *                @OA\Property(
+ *                  property="title",
+ *                  type="string",
+ *                  example="OFFER"
+ *                  ),
+ *                @OA\Property(
+ *                  property="body",
+ *                  type="string",
+ *                  example="SUMMER SPL DISCOUNT"
+ *                  )
+ *                ),
+ *              ),
+ *  ),
+ *  @OA\Response(response="200", description="Notification sent successfully"),
+ *  @OA\Response(response=206, description="Validation error"),
+ *  @OA\Response(response=400, description="Bad request"),
+ *  @OA\Response(response=401, description="Unauthorized access"),
+ *  @OA\Response(response=404, description="No record found"),
+ *  @OA\Response(response=500, description="Internal server error"),
+ *  @OA\Response(response=502, description="Bad gateway"),
+ *  @OA\Response(response=503, description="Service unavailable"),
+ *  @OA\Response(response=504, description="Gateway timeout"),
+ *     security={{ "apiAuth": {} }}
+ * )
+ * 
+ */
+  public function sendNotification(Request $request) {
+     
+      $data = $request->all();
+      $notificationValidation = $this->notificationValidator->validate($data);
+     
+      if ($notificationValidation->fails()) {
+        $errors = $notificationValidation->errors();
+        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      }
+      try{
+        $response =  $this->notificationService->sendNotification($request); 
+        if($response=='failed'){
+          return $this->errorResponse(Config::get('constants.PUSH_NTFY_FAILED'),Response::HTTP_OK);
+        }else{
+          return $this->successResponse($response,Config::get('constants.NOTIFICATION_SENT'),Response::HTTP_OK);
+        }
+
+      }
+      catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+    }
 }

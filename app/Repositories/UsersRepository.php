@@ -86,6 +86,7 @@ class UsersRepository
         $user->phone = $request['phone'];
         $user->email = $request['email'];
         if(isset($request['fcmId'])){
+          return $request['fcmId'];
           $user->fcm_id = $request['fcmId'];
         }
         $user->otp = $otp;
@@ -93,12 +94,15 @@ class UsersRepository
         return  $user;
    }
 
-   public function updateUser($query,$name,$otp){
+   public function updateUser($query,$name,$otp,$request){
         $query->update([
         'name' => $name,
         'otp' => $otp,
         'password' => bcrypt('odbus123')
     ]);
+    if(isset($request['fcmId'])){
+      $query->update(array('fcm_id' => $request['fcmId']));
+    }
 
     return $query->latest()->first();
 

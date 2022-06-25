@@ -4676,6 +4676,75 @@
                 ]
             }
         },
+        "/api/SendNotification": {
+            "post": {
+                "tags": [
+                    "SendNotification API"
+                ],
+                "summary": "SendNotification(App use)",
+                "operationId": "3cfebaf1a1df78c6ed934d198bfa99dd",
+                "requestBody": {
+                    "description": "Send Notification",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "notification": {
+                                        "properties": {
+                                            "title": {
+                                                "type": "string",
+                                                "example": "OFFER"
+                                            },
+                                            "body": {
+                                                "type": "string",
+                                                "example": "SUMMER SPL DISCOUNT"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notification sent successfully"
+                    },
+                    "206": {
+                        "description": "Validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/viewSeats": {
             "get": {
                 "tags": [

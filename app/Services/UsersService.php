@@ -39,7 +39,7 @@ class UsersService
 
                 if($verifiedUser==0){
                     $otp = $this->usersRepository->sendOtp($request);
-                    return $this->usersRepository->updateUser($query,$request['name'],$otp);
+                    return $this->usersRepository->updateUser($query,$request['name'],$otp,$request);
                 }
                 else{
                         return "Existing User";
