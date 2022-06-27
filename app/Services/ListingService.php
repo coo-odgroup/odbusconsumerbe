@@ -10,6 +10,7 @@ use App\Models\BusCancelledDate;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use App\Repositories\ViewSeatsRepository;
+use App\Services\DolphinService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,12 +25,14 @@ class ListingService
     
     protected $listingRepository; 
     protected $commonRepository;  
+    protected $DolphinService;
     
-    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository, DolphinService $DolphinService)
     {
         $this->listingRepository = $listingRepository;
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
+        $this->DolphinService = $DolphinService;
     }
     public function getAll(Request $request,$clientRole)
     {  
@@ -776,7 +779,21 @@ class ListingService
 
     public function getLocation(Request $request)
     {
-        return $this->listingRepository->getLocation($request['locationName']);
+        //return $this->DolphinService->GetDestination(9299);
+      return  $data= $this->listingRepository->getLocation($request['locationName']);
+          $dolphinSourcedata= $this->DolphinService->GetSource();
+
+          $new_ar=[];
+
+          foreach($dolphinSourcedata as $f){
+            $new_ar2= $this->DolphinService->GetDestination($f['id']);
+            $new_ar = collect($new_ar)->concat(collect($new_ar2));
+          } 
+          
+          $input = array_map("unserialize", array_unique(array_map("serialize", collect($new_ar))));
+
+
+        return collect($data)->concat(collect($dolphinSourcedata))->concat(collect($input));
     }
 
     public function filter(Request $request,$clientRole)
