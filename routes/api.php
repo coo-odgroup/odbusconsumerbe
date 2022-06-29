@@ -61,7 +61,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
    // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
   
 
-Route::post('/countries', [SoapController::class, 'getCountries']);
+
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
@@ -148,6 +148,7 @@ Route::get('/testing', [ChannelController::class, 'testing']);
 Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
 Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientCancelTicketInfo']);
 Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExternalApiLocation']);
+Route::get('/countries', [SoapController::class, 'getCountries']);
 
 
 

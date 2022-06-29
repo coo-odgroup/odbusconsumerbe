@@ -1163,7 +1163,7 @@ class ListingRepository
 
     Log::info(($fadded+$tadded)." added & ".($fupdated+$tadded)." updated");
 
-    //return ($fadded+$tadded)." added & ".($fupdated+$tadded)." updated";
+    return ($fadded+$tadded)." added & ".($fupdated+$tadded)." updated";
 
   }  
 
