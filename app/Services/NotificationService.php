@@ -19,18 +19,30 @@ class NotificationService
     
     }
     public function sendNotification($request)
-    {      
-       $firebaseToken = Users::whereNotNull('fcm_id')->pluck('fcm_id')->all();
-       //$firebaseToken = "cNNOEI4SRJCHW_6Eerdaej:APA91bEV6lpnxD3RBI86r6f9Ggd"; 
-       $SERVER_API_KEY = env('FCM_SERVER_KEY');
-   
-       $data = [
-           "registration_ids" => $firebaseToken,
-           "notification" => [
+    {   
+       $SERVER_API_KEY = env('FCM_SERVER_KEY');   
+       $allFirebaseTokens = Users::whereNotNull('fcm_id')->pluck('fcm_id')->all();
+       $userIds = $request['userIds'];
+       if(isset($userIds)){
+       $reqFirebaseTokens = Users::whereIn('id', $userIds)->pluck('fcm_id')->all();
+       }
+       if(isset($reqFirebaseTokens) && count($reqFirebaseTokens)>0){ 
+        $data = [
+            "registration_ids" => $reqFirebaseTokens,
+            "notification" => [
+                "title" => $request['notification.title'],
+                "body" => $request['notification.body'],  
+            ]
+        ];
+       }else{
+        $data = [
+            "registration_ids" => $allFirebaseTokens,
+            "notification" => [
                "title" => $request['notification.title'],
                "body" => $request['notification.body'],  
-           ]
-       ];
+            ]
+        ];
+       }
       
        $dataString = json_encode($data);
        
@@ -63,7 +75,7 @@ class NotificationService
  
         //curl_close($crl);
         //print_r($result_noti);die;
-        return $result_noti;
+        //return $result_noti;
        //return $data['notification'];
        //return back()->with('success', 'Notification send successfully.');
    }
