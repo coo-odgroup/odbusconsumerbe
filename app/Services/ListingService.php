@@ -779,21 +779,8 @@ class ListingService
 
     public function getLocation(Request $request)
     {
-        //return $this->DolphinService->GetDestination(9299);
       return  $data= $this->listingRepository->getLocation($request['locationName']);
-          $dolphinSourcedata= $this->DolphinService->GetSource();
-
-          $new_ar=[];
-
-          foreach($dolphinSourcedata as $f){
-            $new_ar2= $this->DolphinService->GetDestination($f['id']);
-            $new_ar = collect($new_ar)->concat(collect($new_ar2));
-          } 
           
-          $input = array_map("unserialize", array_unique(array_map("serialize", collect($new_ar))));
-
-
-        return collect($data)->concat(collect($dolphinSourcedata))->concat(collect($input));
     }
 
     public function filter(Request $request,$clientRole)
@@ -1046,6 +1033,10 @@ class ListingService
     public function busDetails(Request $request)
     {
         return $this->listingRepository->busDetails($request);
+    }
+
+    public function UpdateExternalApiLocation(){
+        return $this->listingRepository->UpdateExternalApiLocation();
     }
    
 }

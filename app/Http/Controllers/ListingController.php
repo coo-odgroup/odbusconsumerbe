@@ -521,4 +521,10 @@ class ListingController extends Controller
         $details = $this->listingService->busDetails($request);
         return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function UpdateExternalApiLocation(){
+        $details = $this->listingService->UpdateExternalApiLocation();
+        return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    }
 }
