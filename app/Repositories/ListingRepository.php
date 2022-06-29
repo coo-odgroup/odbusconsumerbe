@@ -33,6 +33,8 @@ use App\Models\BusLocationSequence;
 use App\Repositories\ViewSeatsRepository;
 use App\Models\BookingDetail;
 use Illuminate\Support\Str;
+use App\Services\DolphinService;
+
 
 use DateTime;
 use Time;
@@ -59,8 +61,10 @@ class ListingRepository
     protected $commonRepository;
     protected $viewSeatsRepository;
     protected $busLocationSequence;
+    protected $dolphinService;
+    
 
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence, DolphinService $dolphinService)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -78,6 +82,7 @@ class ListingRepository
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
         $this->busLocationSequence=$busLocationSequence;
+        $this->dolphinService=$dolphinService;
      }   
 
      public function getLocation($searchValue)
@@ -1077,6 +1082,106 @@ class ListingRepository
                                               ->where('status','1')
                                               ->get();                                     
         return $result;
+    }
+
+  public function UpdateExternalApiLocation(){
+
+     $dolphindata= $this->dolphinService->GetCityPair();
+
+     $fupdated=0;
+     $tupdated=0;
+     $fadded=0;
+     $tadded=0;
+
+    if($dolphindata){
+        foreach($dolphindata as $data){
+
+            $fromLocation = $this->location
+            ->where('name',$data['FromCity'])
+            ->where('status','!=',2)
+            ->get();
+
+            $toLocation = $this->location
+            ->where('name',$data['ToCity'])
+            ->where('status','!=',2)
+            ->get();
+    
+                if(count($fromLocation) == 0)
+                {
+                    $location = new $this->location;
+                    $insertData['name']=$data['FromCity'];  
+                    $insertData['synonym']=$data['FromCity'];  
+                    $insertData['is_dolphin']=1;
+                    $insertData['dolphin_id']=$data['FromCityID'];
+                    $location=$this->LocationModel($insertData,$location);
+                    $location->save();
+
+                    $fadded++;
+
+                    
+                }else{
+                    $location = $this->location->find($fromLocation[0]->id);
+                    $updateData['name']=$data['FromCity'];    
+                    $updateData['synonym']=$data['FromCity']; 
+                    $updateData['is_dolphin']=1;
+                    $updateData['dolphin_id']=$data['FromCityID'];
+                    $location=$this->LocationModel($updateData,$location);
+                    $location->update();
+
+                    $fupdated++;
+
+                    
+                }  
+
+
+                if(count($toLocation) == 0)
+                {
+                    $location = new $this->location;
+                    $insertData['name']=$data['ToCity'];
+                    $insertData['synonym']=$data['ToCity'];                    
+                    $insertData['is_dolphin']=1;
+                    $insertData['dolphin_id']=$data['ToCityID'];
+                    $location=$this->LocationModel($insertData,$location);
+                    $location->save();
+                    $tadded++;
+                    
+                }else{
+                    $location = $this->location->find($toLocation[0]->id);
+                    $updateData['name']=$data['ToCity'];
+                    $updateData['synonym']=$data['ToCity'];
+                    $updateData['is_dolphin']=1;
+                    $updateData['dolphin_id']=$data['ToCityID'];
+                    $location=$this->LocationModel($updateData,$location);
+                    $location->update();
+                    $tupdated++;
+                    
+                }  
+
+
+        }
+    }
+
+    Log::info(($fadded+$tadded)." added & ".($fupdated+$tadded)." updated");
+
+    //return ($fadded+$tadded)." added & ".($fupdated+$tadded)." updated";
+
+  }  
+
+  public function LocationModel($data, Location $location)
+    { 
+        $trim = trim( $data['name']);
+        $remove_space= str_replace(' ', '-', $trim);  
+        $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space);             
+        $url = strtolower($remove_special_char);
+
+
+      $location->name = $data['name'];
+      $location->url = $url;
+      $location->synonym = $data['synonym'];
+      $location->is_dolphin = $data['is_dolphin'];
+      $location->dolphin_id = $data['dolphin_id'];
+      $location->created_by = 'CRON JOB';
+      return $location;
     }
 
 }

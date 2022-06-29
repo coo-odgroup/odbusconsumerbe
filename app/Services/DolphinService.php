@@ -24,6 +24,37 @@ class DolphinService
     
   }
 
+  
+
+  public function GetCityPair() 
+  {
+
+    $result=[];
+
+    $this->soapWrapper->add('GetCityPair', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+       $response = $this->soapWrapper->call('GetCityPair.GetCityPair', [$this->option]);
+            
+       $data=$this->xmlToArray($response->GetCityPairResult->any);
+
+      if(isset($data['DocumentElement'])){
+      
+        $data=$data['DocumentElement']['ITSCityPair'];
+
+       if($data){
+        foreach($data as $v){            
+                $result[]=$v;
+        }
+       }
+    }
+
+      return $result;
+  
+  }
 
   public function GetAvailableRoutes($s,$d,$dt) 
   {
@@ -79,13 +110,12 @@ class DolphinService
       });
   
       $response = $this->soapWrapper->call('GetSources.GetSources', [$this->option]);
-       $data=$this->xmlToArray($response->GetSourcesResult->any);
+      
+      $data=$this->xmlToArray($response->GetSourcesResult->any);
       
        if(isset($data['DocumentElement'])){
 
-         $data=$data['DocumentElement']['ITSSources'];
-
-      
+         $data=$data['DocumentElement']['ITSSources'];      
 
        if($data){
         foreach($data as $v){
