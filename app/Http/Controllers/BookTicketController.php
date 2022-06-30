@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Exception;
+use App\Models\OdbusCharges;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
@@ -253,6 +254,7 @@ class BookTicketController extends Controller
  */
     public function bookTicket(Request $request) {
 
+        $advDays = OdbusCharges::where('user_id', '1')->first()->advance_days_show;
         
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
@@ -262,8 +264,9 @@ class BookTicketController extends Controller
         $bookTicketValidation = $this->bookTicketValidator->validate($data);
 
         $todayDate = Date('Y-m-d');
-        $validTillDate = Date('Y-m-d', strtotime('+15 days'));
-
+        //$validTillDate = Date('Y-m-d', strtotime('+15 days'));
+        $validTillDate = Date('Y-m-d', strtotime($todayDate. " + $advDays days"));
+        
         if ($bookTicketValidation->fails()) {
         $errors = $bookTicketValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
