@@ -134,13 +134,25 @@ class UsersRepository
       return $this->users->where('id', $userId)->get();
     }
 
-
     public function updateOTP($userId){
-      $this->users->where('id', $userId)->update(array(
-        'is_verified' => '1',
-        'token' => Str::random('10'),
-        'otp' => Null
-     ));
+      $token = $this->users->where('id', $userId)->first()->token;
+      if($token != Null){
+          $this->users->where('id', $userId)->update(array(
+            'is_verified' => '1',
+            'otp' => Null
+        ));
+      }else{
+          $this->users->where('id', $userId)->update(array(
+            'is_verified' => '1',
+            'token' => Str::random('10'),
+            'otp' => Null
+        ));
+      }
+    //   $this->users->where('id', $userId)->update(array(
+    //     'is_verified' => '1',
+    //     'token' => Str::random('10'),
+    //     'otp' => Null
+    //  ));
     }
 
     public function createOtp($query,$otp,$request){
