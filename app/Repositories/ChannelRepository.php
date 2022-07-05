@@ -901,7 +901,7 @@ class ChannelRepository
         // }
       }
 
-      public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId){
+      public function CreateAgentPayment($agentId,$agentName,$amount ,$name,$bookingId,$transactionId,$pnr){
         $walletBalance =  $walletBalance = AgentWallet::where('user_id',$agentId)->orderBy('id','DESC')->where("status",1)->limit(1)->get();
         //AgentWallet::where('user_id',$agentId)->where('status',1)->latest()->first()->balance;
         $agetWallet = new AgentWallet();
@@ -917,8 +917,9 @@ class ChannelRepository
 
         $newBalance = $walletBalance [0]->balance - $amount;
         $notification = new Notification;
-        $notification->notification_heading = "New Balance is Rs.$newBalance after booking for Rs.$amount";
-        $notification->notification_details = "New Balance is Rs.$newBalance after booking for Rs.$amount";
+        $notification->notification_heading = "New Balance is Rs.$newBalance After deduction of Amount of Rs.$amount for PNR.$pnr";
+        $notification->notification_details = "New Balance is Rs.$newBalance After deduction of Amount of Rs.$amount for PNR.$pnr";
+        //$notification->notification_details = "New Balance is Rs.$newBalance after booking for Rs.$amount";
         $notification->created_by = 'Agent';
         $notification->save();
        
@@ -929,7 +930,7 @@ class ChannelRepository
 
       }
 
-      public function FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$seatHold,$appliedComission){
+      public function FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$seatHold,$appliedComission,$pnr){
         $seatRecords =  Booking::with('bookingDetail')->where('user_id',$agentId)
                                                       ->where('status', '1')->get();
         $collection = collect($seatRecords);
@@ -976,8 +977,11 @@ class ChannelRepository
 
         $newBalance = $walletBalance + $afterTdsComission;
         $notification = new Notification;
-        $notification->notification_heading = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
-        $notification->notification_details = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
+        //New Balance is Rs.00.00 after receive of Comission of Rs.0.00 for PNR 00000000
+        $notification->notification_heading = "New Balance is Rs.$newBalance after receive of Comission of Rs.$afterTdsComission for PNR.$pnr";
+        $notification->notification_details = "New Balance is Rs.$newBalance after receive Comission of Rs.$afterTdsComission for PNR.$pnr";
+        //$notification->notification_heading = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
+        //$notification->notification_details = "New Balance is Rs.$newBalance after getting Comission of Rs.$afterTdsComission";
         $notification->created_by = 'Agent';
         $notification->save();
        

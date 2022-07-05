@@ -567,7 +567,8 @@ class ChannelService
                 if(sizeof($filtered->all())==0){
                
                     $records = $this->channelRepository->getBookingRecord($transactionId);
-                    $bookingId = $records[0]->id;  
+                    $bookingId = $records[0]->id;
+                    $pnr = $records[0]->pnr;  
                     
                     $name = $records[0]->users->name;
                     if($records[0]->payable_amount == 0.00){
@@ -576,9 +577,9 @@ class ChannelService
                         $amount = $records[0]->payable_amount;
                     }
 
-                    $details=$this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId);   
+                    $details=$this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId,$pnr);   
 
-                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission);
+                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission,$pnr);
                     
                     $data = array(
                     

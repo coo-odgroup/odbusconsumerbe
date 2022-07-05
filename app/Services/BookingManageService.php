@@ -571,7 +571,7 @@ class BookingManageService
                            $data['deductionPercentage'] = $deduction."%";
                            $data['deductAmount'] =round($paidAmount-$refundAmt,2);
                            $data['totalfare'] = $paidAmount + $customer_comission;
-                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction); 
+                           $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction,$pnr); 
 
                            $smsData['refundAmount'] = $refundAmt;     
                            $emailData['deductionPercentage'] = $deduction;

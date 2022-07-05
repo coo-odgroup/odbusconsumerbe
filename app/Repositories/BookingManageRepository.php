@@ -259,7 +259,7 @@ class BookingManageRepository
         }
     }
 
-    public function updateCancelTicket($bookingId,$userId,$refundAmt,$percentage){
+    public function updateCancelTicket($bookingId,$userId,$refundAmt,$percentage,$pnr){
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $agentDetails =  AgentWallet::where('user_id',$userId)->orderBy('id','DESC')->where("status",1)->limit(1)->get(); //AgentWallet::where('user_id', $userId)->latest()->first();
         $agentDetails = $agentDetails[0];
@@ -279,8 +279,9 @@ class BookingManageRepository
 
         $newBalance = $agentDetails->balance + $refundAmt;
         $notification = new Notification;
-        $notification->notification_heading = "New Balance is Rs.$newBalance after cancellation for Rs.$refundAmt";
-        $notification->notification_details = "New Balance is Rs.$newBalance after cancellation for Rs.$refundAmt";
+        $notification->notification_heading = "New Balance is Rs.$newBalance after recive of Refund amount of Rs.$refundAmt for PNR.$pnr";
+        $notification->notification_details = "New Balance is Rs.$newBalance after recive of Refund amount of Rs.$refundAmt for PNR.$pnr";
+        //$notification->notification_details = "New Balance is Rs.$newBalance after cancellation for Rs.$refundAmt";
         $notification->created_by = 'Agent';
         $notification->save();
        
