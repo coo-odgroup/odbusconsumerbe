@@ -14,6 +14,7 @@ use App\Services\ViewSeatsService;
 use App\AppValidator\ViewSeatsValidator;
 use App\AppValidator\PriceOnSeatSelectionValidator;
 use App\AppValidator\BoardingDroppingValidator;
+use JWTAuth;
 
 class ViewSeatsController extends Controller
 {
@@ -218,13 +219,17 @@ class ViewSeatsController extends Controller
             'sleeper',
             'entry_date'
         ]);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+
         $priveValidation = $this->priceOnSeatSelectionValidator->validate($data);
         
         if ($priveValidation->fails()) {
             $errors = $priveValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
-        $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request);
+        $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request,$clientRole);
         return $this->successResponse($priceOnSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

@@ -231,8 +231,9 @@ class ViewSeatsService
             return $viewSeat;
     }
 
-    public function getPriceOnSeatsSelection(Request $request)
+    public function getPriceOnSeatsSelection(Request $request,$clientRole)
     {
+        $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
         $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
         $busId = $request['busId'];
@@ -343,6 +344,18 @@ class ViewSeatsService
         $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
         $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
 
+        if($clientRole == $clientRoleId){
+            $seatWithPriceRecords[] = array(
+                "PriceDetail" => $PriceDetail,
+                "ownerFare" => $ownerFare,
+                "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
+                "specialFare" => $totalSplFare,
+                "addOwnerFare" => $totalOwnFare,
+                "festiveFare" => $totalFestiveFare,
+                "odbusServiceCharges" => $service_charges,
+                "totalFare" => $totalFare
+                ); 
+        }else{
             $seatWithPriceRecords[] = array(
                 "PriceDetail" => $PriceDetail,
                 "ownerFare" => $ownerFare,
@@ -353,8 +366,8 @@ class ViewSeatsService
                 "odbusServiceCharges" => $service_charges,
                 "transactionFee" => $transactionFee,
                 "totalFare" => $totalFare
-                ); 
-
+                );    
+        }
         return $seatWithPriceRecords;
         
     }
