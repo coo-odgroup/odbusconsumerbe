@@ -133,6 +133,7 @@ Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfi
 Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket']);
 Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
+Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 //});

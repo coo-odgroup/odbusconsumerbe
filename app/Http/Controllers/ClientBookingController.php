@@ -15,6 +15,7 @@ use App\AppValidator\SeatBlockValidator;
 use App\AppValidator\TicketConfirmValidator;
 use App\AppValidator\ClientCancelTicketValidator;
 use App\AppValidator\ClientCancelTktValidator;
+use App\AppValidator\BookingManageValidator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -29,16 +30,18 @@ class clientBookingController extends Controller
     protected $ticketConfirmValidator;
     protected $clientCancelTicketValidator;
     protected $clientCancelTktValidator;
+    protected $bookingManageService;
     
 
-    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,ClientCancelTicketValidator $clientCancelTicketValidator,ClientCancelTktValidator $clientCancelTktValidator)
+    public function __construct(ClientBookingService $clientBookingService,ClientBookingValidator $clientBookingValidator,SeatBlockValidator $seatBlockValidator,TicketConfirmValidator $ticketConfirmValidator,ClientCancelTicketValidator $clientCancelTicketValidator,ClientCancelTktValidator $clientCancelTktValidator,BookingManageValidator $bookingManageValidator)
     {
         $this->clientBookingService = $clientBookingService;  
         $this->clientBookingValidator = $clientBookingValidator;
         $this->seatBlockValidator = $seatBlockValidator; 
         $this->ticketConfirmValidator = $ticketConfirmValidator;   
         $this->clientCancelTicketValidator = $clientCancelTicketValidator;  
-        $this->clientCancelTktValidator = $clientCancelTktValidator;   
+        $this->clientCancelTktValidator = $clientCancelTktValidator; 
+        $this->bookingManageValidator = $bookingManageValidator;   
     }
         /**
      * @OA\Post(
@@ -544,5 +547,29 @@ class clientBookingController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
+    ///////////Ticket details(client use)////////////
+    public function ticketDetails(Request $request) {     
 
+      $data = $request->all();
+      $bookingManageValidator = $this->bookingManageValidator->validate($data);
+
+      if ($bookingManageValidator->fails()) {
+      $errors = $bookingManageValidator->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+      try {
+        $response =  $this->clientBookingService->ticketDetails($request);  
+        if($response == 'PNR_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+        }elseif($response == 'MOBILE_NOT_MATCH'){
+          return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+        }         
+        else{
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }   
+      }
+      catch (Exception $e) {    
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }      
+    } 
 }
