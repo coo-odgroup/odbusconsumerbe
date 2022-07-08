@@ -13,6 +13,7 @@ use App\Models\BusCancelled;
 use App\Models\Booking;
 use App\Models\BusSeats;
 use App\Models\Location;
+use App\Models\BusContacts;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
@@ -558,6 +559,7 @@ class ClientBookingService
                        
                           $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
                        }
+                       $busId = $booking_detail[0]->bus_id;
                        $busName = $booking_detail[0]->bus->name;
                        $busNumber = $booking_detail[0]->bus->bus_number;
                        $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->source_id);                   
@@ -622,7 +624,6 @@ class ClientBookingService
                           $min= $duration[0];
        
                           if( $interval > 999){
-                            
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
@@ -640,9 +641,20 @@ class ClientBookingService
                               $emailData['totalfare'] = $paidAmount;
                             
                               //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                               if($emailData['email'] != ''){
+                              if($emailData['email'] != ''){
                               // $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               }   
+                               }
+                              $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+
+                              ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                             ->where('status','1')
+                             ->where('cancel_sms_send','1')
+                             ->get('phone');
+                            if($busContactDetails->isNotEmpty()){
+                            $contact_number = collect($busContactDetails)->implode('phone',',');
+                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            }  
                               return $data;
           
                           }elseif($min <= $interval && $interval <= $max){ 
@@ -665,7 +677,19 @@ class ClientBookingService
                               //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                                if($emailData['email'] != ''){
                               //$sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               }    
+                               } 
+
+                               $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+
+                              ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                                                                ->where('status','1')
+                                                                ->where('cancel_sms_send','1')
+                                                                ->get('phone');
+                             if($busContactDetails->isNotEmpty()){
+                              $contact_number = collect($busContactDetails)->implode('phone',',');
+                              $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                             }  
                               return $data;   
                           }
                       }                          
