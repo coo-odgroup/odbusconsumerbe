@@ -13,6 +13,7 @@ use App\Models\TicketPrice;
 use App\Models\BusLocationSequence;
 use App\Models\BookingSequence;
 use App\Repositories\ChannelRepository;
+use App\Services\ListingService;
 use App\Models\OdbusCharges;
 use App\Models\BusOperator;
 use App\Models\AgentWallet;
@@ -38,8 +39,9 @@ class ClientBookingRepository
     protected $busLocationSequence;
     protected $viewSeatsService; 
     protected $channelRepository; 
+    protected $listingService; 
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,ListingService $listingService)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -49,12 +51,12 @@ class ClientBookingRepository
         $this->booking = $booking;
         $this->channelRepository = $channelRepository;
         $this->busLocationSequence = $busLocationSequence;
-        $this->viewSeatsService = $viewSeatsService;    
+        $this->viewSeatsService = $viewSeatsService;
+        $this->listingService = $listingService;    
     }   
     
-    public function clientBooking($request)
+    public function clientBooking($request,$clientRole)
     {  
-       
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
@@ -62,15 +64,38 @@ class ClientBookingRepository
         $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
 
         $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
-       
+        
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
-
+       
         $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
         $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
         $entry_date = $bookingInfo['journey_dt'];
         $busId = $bookingInfo['bus_id'];
         $sourceId = $bookingInfo['source_id'];
         $destinationId =  $bookingInfo['destination_id'];
+        
+        ////////////////////////busId validation////////////////////////////////////
+        $source = Location::where('id',$sourceId)->first()->name;
+        $destination = Location::where('id',$destinationId)->first()->name;
+       
+        $reqInfo= array(
+            "source" => $source,
+            "destination" => $destination,
+            "entry_date" => $entry_date,
+            "bus_operator_id" => Null,
+            "user_id" => Null
+        ); 
+       
+        $busRecords = $this->listingService->getAll($reqInfo,$clientRole);
+    
+        if($busRecords){
+        $busId = $bookingInfo['bus_id'];
+        $busRecords->pluck('busId');
+        $validBus = $busRecords->pluck('busId')->contains($busId);
+        }
+            if(!$validBus){
+                return "Bus_not_running";
+            }
        
         $data = array(
             'busId' => $busId,

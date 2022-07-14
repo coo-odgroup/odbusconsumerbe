@@ -43,10 +43,10 @@ class ClientBookingService
         $this->cancelTicketRepository = $cancelTicketRepository;
         $this->bookingManageRepository = $bookingManageRepository;
     }
-    public function clientBooking($request)
+    public function clientBooking($request,$clientRole)
     {
         try {
-            $bookTicket = $this->clientBookingRepository->clientBooking($request);
+            $bookTicket = $this->clientBookingRepository->clientBooking($request,$clientRole);
             return $bookTicket;
 
         } catch (Exception $e) {

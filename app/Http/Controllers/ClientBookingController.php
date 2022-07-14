@@ -16,6 +16,7 @@ use App\AppValidator\TicketConfirmValidator;
 use App\AppValidator\ClientCancelTicketValidator;
 use App\AppValidator\ClientCancelTktValidator;
 use App\AppValidator\BookingManageValidator;
+use App\Models\OdbusCharges;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -181,10 +182,13 @@ class clientBookingController extends Controller
      */
     public function clientBooking(Request $request) {
         
+        $advDays = OdbusCharges::where('user_id', '1')->first()->advance_days_show;
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $data = $request->all();
-        
+        $clientRole = $user->role_id;
+        $todayDate = Date('Y-m-d');
+        $validTillDate = Date('Y-m-d', strtotime($todayDate. " + $advDays days"));
         $data['bookingInfo']['user_id']=$user->id;
         $data['bookingInfo']['origin']=$user->name;
         $bookingValidation = $this->clientBookingValidator->validate($data);
@@ -193,16 +197,32 @@ class clientBookingController extends Controller
          $errors = $bookingValidation->errors();
          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-         try {
-            $response =  $this->clientBookingService->clientBooking($data);  
+        try { 
+          $response = $this->clientBookingService->clientBooking($data,$clientRole); 
+        
+          if( $data['bookingInfo']['journey_dt'] > $validTillDate ||  $data['bookingInfo']['journey_dt'] < $todayDate ){
+          
+          return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_dt'],Response::HTTP_OK);
+      
+          }elseif($response=='Bus_not_running'){
+              return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
+          }elseif(isset($response['message'])){
+            return $this->errorResponse($response['note'],Response::HTTP_OK);
+          }
+          else{
+              return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+          }
+      }
+        //  try {
+        //     $response =  $this->clientBookingService->clientBooking($data);  
             
-            if(isset($response['message'])){
-             return $this->errorResponse($response['note'],Response::HTTP_OK);
-             }
-           else{
-            return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
-           }
-        }
+        //     if(isset($response['message'])){
+        //      return $this->errorResponse($response['note'],Response::HTTP_OK);
+        //      }
+        //    else{
+        //     return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        //    }
+        // }
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }      
