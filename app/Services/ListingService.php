@@ -10,7 +10,7 @@ use App\Models\BusCancelledDate;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use App\Repositories\ViewSeatsRepository;
-use App\Services\DolphinService;
+//use App\Services\DolphinService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -25,16 +25,16 @@ class ListingService
     
     protected $listingRepository; 
     protected $commonRepository;  
-    protected $DolphinService;
+    //protected $DolphinService;
     
-    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository, DolphinService $DolphinService)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository)
     {
         $this->listingRepository = $listingRepository;
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
-        $this->DolphinService = $DolphinService;
+        //$this->DolphinService = $DolphinService;
     }
-    public function getAll(Request $request,$clientRole)
+    public function getAll($request,$clientRole)
     {  
         $source = $request['source'];
         $destination = $request['destination'];

@@ -260,25 +260,29 @@ class BookTicketController extends Controller
         $user = JWTAuth::toUser($token);
         $data = $request->all();
         $data['bookingInfo']['origin']=$user->name;
-
+        $clientRole = $user->role_id;
         $bookTicketValidation = $this->bookTicketValidator->validate($data);
 
         $todayDate = Date('Y-m-d');
+        
         //$validTillDate = Date('Y-m-d', strtotime('+15 days'));
         $validTillDate = Date('Y-m-d', strtotime($todayDate. " + $advDays days"));
         
         if ($bookTicketValidation->fails()) {
-        $errors = $bookTicketValidation->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+            $errors = $bookTicketValidation->errors();
+            return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-          try { 
-           $response =  $this->bookTicketService->bookTicket($data);  
-           if($todayDate <= $data['bookingInfo']['journey_date'] && $data['bookingInfo']['journey_date'] <= $validTillDate){
-            return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+        try { 
+            $response =  $this->bookTicketService->bookTicket($data,$clientRole); 
+            
+            if( $data['bookingInfo']['journey_date'] > $validTillDate ||  $data['bookingInfo']['journey_date'] < $todayDate ){
+            return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_date'],Response::HTTP_OK);
+        
+            }elseif($response=='Bus_not_running'){
+                return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
             }else{
-                return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_date'],Response::HTTP_OK);
+                return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
             }
-            //  return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
         }
         catch (Exception $e) {
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

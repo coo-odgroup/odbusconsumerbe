@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\Coupon;
 use App\Repositories\BookTicketRepository;
 use App\Repositories\OfferRepository;
+use App\Services\ListingService;
+use App\Models\Location;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
@@ -15,13 +17,15 @@ use Illuminate\Support\Arr;
 class BookTicketService
 {
     
-    protected $bookTicketRepository;  
-    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository)
+    protected $bookTicketRepository; 
+    protected $listingService; 
+    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService)
     {
         $this->bookTicketRepository = $bookTicketRepository;
         $this->offerRepository = $offerRepository;
+        $this->listingService = $listingService;
     }
-    public function bookTicket($request)
+    public function bookTicket($request,$clientRole)
     {
         try {
             
@@ -39,8 +43,33 @@ class BookTicketService
                 }
                 
                 $bookingInfo = $request['bookingInfo'];
+                ////////////////////////busId validation////////////////////////////////////
+                $sourceID = $bookingInfo['source_id'];
+                $destinationID = $bookingInfo['destination_id'];
+                $source = Location::where('id',$sourceID)->first()->name;
+                $destination = Location::where('id',$destinationID)->first()->name;
+                $reqInfo= array(
+                    "source" => $source,
+                    "destination" => $destination,
+                    "entry_date" => $bookingInfo['journey_date'],
+                    "bus_operator_id" => Null,
+                    "user_id" => Null
+                ); 
+                $busRecords = $this->listingService->getAll($reqInfo,$clientRole);
+            
+                if($busRecords){
+                $busId = $bookingInfo['bus_id'];
+                $busRecords->pluck('busId');
+                $validBus = $busRecords->pluck('busId')->contains($busId);
+                }
+                    if(!$validBus){
+                        return "Bus_not_running";
+                    }
+               
+                ///////////////////////////////////////////////////////////////
                 //Save Booking 
-                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill);    
+                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill);   
+                
                 /////////////auto apply coupon//////////
                 $bcollection = collect($bookingInfo);
                 $bcollection->put('transaction_id', $booking['transaction_id']);
