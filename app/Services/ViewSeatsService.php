@@ -346,13 +346,6 @@ class ViewSeatsService
 
         if($clientRole == $clientRoleId){
             $seatWithPriceRecords[] = array(
-                "PriceDetail" => $PriceDetail,
-                "ownerFare" => $ownerFare,
-                "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
-                "specialFare" => $totalSplFare,
-                "addOwnerFare" => $totalOwnFare,
-                "festiveFare" => $totalFestiveFare,
-                "odbusServiceCharges" => $service_charges,
                 "totalFare" => $totalFare
                 ); 
         }else{
