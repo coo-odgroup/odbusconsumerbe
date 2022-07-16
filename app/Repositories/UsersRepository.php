@@ -210,6 +210,97 @@ class UsersRepository
       return $post;
     }
 
+     //$image contain base64 encoded string
+    public function saveBase64ToImage($image) 
+    {
+        $path = public_path('uploads/profile/');
+
+        //$base = $_REQUEST['image'];
+        $base = $image;
+        $binary = base64_decode($base);
+        //$binary = base64_decode(urldecode($base));
+        header('Content-Type: bitmap; charset=utf-8');
+
+        $f = finfo_open();
+        $mime_type = finfo_buffer($f, $binary, FILEINFO_MIME_TYPE);        
+        $mime_type = str_ireplace('image/', '', $mime_type);
+
+        $filename = md5(\Carbon\Carbon::now()) . '.' . $mime_type;
+
+        $file = fopen($path . $filename, 'wb');
+
+        if (fwrite($file, $binary)) {
+            return $filename;
+        } else {
+            return FALSE;
+        }
+        fclose($file);
+    }
+
+
+    public function updateProfileImage($request)
+    {     
+        $userId = $request['id'];
+        $token = $request['token'];
+
+        $userDetails = $this->GetuserByToken($userId,$token);  
+        $post = $this->users->where('id', $userId)->where('token', $token)->find($userId);
+        
+        //log::info($request);exit;
+
+        if ($request['image'] != '')
+        {
+            $imagefile = $this->saveBase64ToImage($request['image']);          
+            $post->profile_image = $imagefile;                
+        } 
+        
+        // if(isset($_FILES['image']['name']))
+        // {
+        //     //getting file info from the request 
+        //     $fileinfo = pathinfo($_FILES['image']['name']);
+            
+        //     //getting the file extension 
+        //     $extension = $fileinfo['extension'];
+        //     $path_url = public_path('uploads/profile');
+        //     $picture   = date('His').'-'.$fileinfo['filename'].'.'. $extension;
+        //     $file_path = $path_url . date('His').'-'.$fileinfo['filename'].'.'. $extension; 
+        //     move_uploaded_file($_FILES['image']['tmp_name'],$file_path);   
+
+        //     // if($userDetails[0]->profile_image!='')
+        //     // {
+        //     //     $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
+                
+        //     //     if (File::exists($image_path)) {
+        //     //       unlink($image_path);
+        //     //     }              
+        //     // }   
+
+        //     $post->profile_image = $picture;  
+        //     //log::info($d);exit;
+        // }     
+     
+  
+      // if ($request->hasFile('image'))
+      // {
+      //       $file      = $request->file('image');
+      //       $filename  = $file->getClientOriginalName();
+      //       $extension = $file->getClientOriginalExtension();
+      //       $picture   = date('His').'-'.$filename;
+      //       $post->profile_image = $picture;
+      //       $file->move(public_path('uploads/profile'), $picture);
+
+      //       if($userDetails[0]->profile_image!=''){
+      //         $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
+              
+      //         if (File::exists($image_path)) {
+      //           unlink($image_path);
+      //         }              
+      //       }     
+      // } 
+       $post->update(); 
+       return $post;
+    }
+
     public function CancelledBookings($user_id){
 
       return Booking::where('users_id',$user_id)

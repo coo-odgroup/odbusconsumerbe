@@ -312,6 +312,31 @@ class UsersService
            return 'Invalid';
          }
     }   
+
+    public function updateProfileImage($request)
+    {
+        $userId = $request['id'];
+        $token = $request['token']; 
+
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
+        $userDetails=$this->usersRepository->GetuserByToken($userId,$token);
+
+        //log::info($userDetails);exit;
+
+        if(isset($userDetails[0]))
+        {
+            $uinfo= $this->usersRepository->updateProfileImage($request);
+
+            if($uinfo->profile_image!=null && $uinfo->profile_image!=''){ 
+                $uinfo->profile_image = $path->profile_url.$uinfo->profile_image;      
+            }
+            return $uinfo;            
+         }else{
+           return 'Invalid';
+         }
+    }   
     public function userReviews($request)
     { 
        $user= $this->userProfile($request); 

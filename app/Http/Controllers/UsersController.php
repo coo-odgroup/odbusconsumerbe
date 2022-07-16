@@ -443,6 +443,31 @@ public function userProfile(Request $request) {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       }  
 }
+
+public function updateProfileImage(Request $request) 
+{     
+      $data = $request->all();
+    
+      // $userProfileValidation = $this->userProfileValidator->validate($data);
+    
+      // if ($userProfileValidation->fails()) {
+      //   $errors = $userProfileValidation->errors();
+      //   return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      // }
+      try{
+          $response = $this->usersService->updateProfileImage($request); 
+          if($response=='Invalid'){
+               return $this->errorResponse(Config::get('constants.INVALID_TOKEN'),Response::HTTP_OK);
+          }
+          else{
+            return $this->successResponse($response,Config::get('constants.PROFILE_UPDATED'),Response::HTTP_CREATED);
+          }
+    }
+    catch (Exception $e) 
+    {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    }  
+}
   
 
 public function refreshToken() {
