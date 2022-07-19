@@ -2270,13 +2270,13 @@
             }
         },
         "/api/Filter": {
-            "get": {
+            "post": {
                 "tags": [
                     "Filter API"
                 ],
                 "summary": "Get List of Buses with Filter Params",
                 "description": "Get List of Buses with Filter Params",
-                "operationId": "f097df7de11c7b717e6236d2354c2a2a",
+                "operationId": "762ad93379c894d7ab5456fcfc5c1f36",
                 "parameters": [
                     {
                         "name": "price",
@@ -2458,13 +2458,13 @@
             }
         },
         "/api/FilterOptions": {
-            "get": {
+            "post": {
                 "tags": [
                     "FilterOptions API"
                 ],
                 "summary": "Get all Filter options",
                 "description": "get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities",
-                "operationId": "ec62577c446daf5059f3abcac35c557c",
+                "operationId": "59f8a9c10364006378638c8b0950dcc0",
                 "parameters": [
                     {
                         "name": "sourceID",
@@ -2483,7 +2483,7 @@
                         "required": true,
                         "schema": {
                             "type": "integer",
-                            "example": "434"
+                            "example": "53"
                         }
                     },
                     {
@@ -2496,7 +2496,7 @@
                             "items": {
                                 "type": "integer",
                                 "format": "int64",
-                                "example": 483
+                                "example": 254
                             }
                         }
                     }
@@ -4746,13 +4746,13 @@
             }
         },
         "/api/viewSeats": {
-            "get": {
+            "post": {
                 "tags": [
                     "viewSeats API"
                 ],
                 "summary": "Get seat information for a Bus with seat layout",
                 "description": "get all seat Information  for a Bus",
-                "operationId": "0c9995b0077c02a25a48623dc5b60a63",
+                "operationId": "a84d47bceaf63c30c1ec19558c1eed6b",
                 "parameters": [
                     {
                         "name": "entry_date",
@@ -4832,13 +4832,13 @@
             }
         },
         "/api/PriceOnSeatsSelection": {
-            "get": {
+            "post": {
                 "tags": [
                     "PriceOnSeatsSelection API"
                 ],
                 "summary": "get total price on seat selection",
                 "description": "get total price on seat selection",
-                "operationId": "994f9f867d14cad854e9c46507cb07ef",
+                "operationId": "08451198ec2f35385742e1a88b1543bd",
                 "parameters": [
                     {
                         "name": "busId",
@@ -4946,13 +4946,13 @@
             }
         },
         "/api/BoardingDroppingPoints": {
-            "get": {
+            "post": {
                 "tags": [
                     "BoardingDroppingPoints API"
                 ],
                 "summary": "get all Boarding Dropping Points",
                 "description": "get all Boarding Dropping Points for source and destination",
-                "operationId": "c161aa0a7ac1222a30670c76f006f7ea",
+                "operationId": "aeae946be63192a8233613d3862d5775",
                 "parameters": [
                     {
                         "name": "busId",

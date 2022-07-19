@@ -201,7 +201,7 @@ class ListingController extends Controller
     }
 
 /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/Filter",
  *     tags={"Filter API"},
  *     description="Get List of Buses with Filter Params",
@@ -385,7 +385,7 @@ class ListingController extends Controller
         return $this->successResponse($filterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/FilterOptions",
  *     tags={"FilterOptions API"},
  *     description="get all Filter options for BusType,SeatType,BoardingPoints,DroppingPoints,Operators,Amenities",
@@ -407,7 +407,7 @@ class ListingController extends Controller
  *          in="query",
  *          @OA\Schema(
  *              type="integer",
- *              example="434"
+ *              example="53"
  *          )
  *      ),
  *     @OA\Parameter(
@@ -420,7 +420,7 @@ class ListingController extends Controller
  *          @OA\Items(
  *              type="integer",
  *              format="int64",
- *              example=483,
+ *              example=254,
  *              )
  *          )
  *      ),

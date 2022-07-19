@@ -28,7 +28,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzkyNDk2LCJleHAiOjE2NTU3OTYwOTYsIm5iZiI6MTY1NTc5MjQ5NiwianRpIjoiNm1lM0w1YXdnZzFGeE1TMiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.91-MSXjB3PAekC9YFGETHXZ9if66IMXAzbwu-PV1-Bg",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MTQ0MzM2LCJleHAiOjE2NTgxNDc5MzYsIm5iZiI6MTY1ODE0NDMzNiwianRpIjoieXdFb3VYSGJYOE8zZ0VsVSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.XhsvA1IXXQGOEKTLDzAtZgCL3nDhhVWc1WodcZCZdZg",
 							"type": "string"
 						}
 					]
@@ -45,15 +45,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Listing?source=Bhubaneswar&destination=baripada&entry_date=22-06-2022",
-					"protocol": "http",
+					"raw": "https://testing.odbus.co.in/api/Listing?source=Bhubaneswar&destination=rourkela&entry_date=13-07-2022",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"testing",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"Listing"
@@ -65,11 +64,11 @@
 						},
 						{
 							"key": "destination",
-							"value": "baripada"
+							"value": "rourkela"
 						},
 						{
 							"key": "entry_date",
-							"value": "22-06-2022"
+							"value": "13-07-2022"
 						}
 					]
 				}
@@ -78,25 +77,22 @@
 		},
 		{
 			"name": "View Seats",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NjcwMzQ2LCJleHAiOjE2NTQ2NzM5NDYsIm5iZiI6MTY1NDY3MDM0NiwianRpIjoicGFNWGJlV25TVFlIcnl4WiIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Kmw9gY3M1b5yhwSzUljRYlzlzerkdgujLmKHFCDZK0c",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MjMxMTI5LCJleHAiOjE2NTgyMzQ3MjksIm5iZiI6MTY1ODIzMTEyOSwianRpIjoiYnpNeThrbThUbmlBRmMzciIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CnYNOFRlq2beRDljozbPmHeqSwAiAfhsz0HTe1leHps",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": " {\r\n    \"entry_date\":\"06-06-2022\", \r\n    \"busId\":\"817\", \r\n    \"sourceId\":\"232\", \r\n    \"destinationId\":\"144\"\r\n }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -104,7 +100,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/viewSeats?entry_date=06-06-2022&busId=817&sourceId=232&destinationId=144",
+					"raw": "http://127.0.0.1:8000/api/viewSeats",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -116,24 +112,6 @@
 					"path": [
 						"api",
 						"viewSeats"
-					],
-					"query": [
-						{
-							"key": "entry_date",
-							"value": "06-06-2022"
-						},
-						{
-							"key": "busId",
-							"value": "817"
-						},
-						{
-							"key": "sourceId",
-							"value": "232"
-						},
-						{
-							"key": "destinationId",
-							"value": "144"
-						}
 					]
 				}
 			},
@@ -141,28 +119,30 @@
 		},
 		{
 			"name": "getPriceOn seatsSelection",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjUzMDE4NDk5LCJleHAiOjE2NTMwMjIwOTksIm5iZiI6MTY1MzAxODQ5OSwianRpIjoiUGF4ZDdSMlhBZWhnbGJxMyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.PWFBW5ekJB0M7qdBHFyk0sg_VXvjT4ZUTORTlPy0Wr8",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MjMxMTI5LCJleHAiOjE2NTgyMzQ3MjksIm5iZiI6MTY1ODIzMTEyOSwianRpIjoiYnpNeThrbThUbmlBRmMzciIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CnYNOFRlq2beRDljozbPmHeqSwAiAfhsz0HTe1leHps",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": []
+					"mode": "raw",
+					"raw": " {\r\n    \"busId\":\"1\", \r\n    \"sourceId\":\"82\", \r\n    \"destinationId\":\"434\",\r\n    \"seater\": [2694],\r\n    \"sleeper\": [2755],\r\n    \"entry_date\":\"15-01-2022\"\r\n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/PriceOnSeatsSelection?busId=1&sourceId=82&destinationId=434&seater[]=2694&sleeper[]=2755&entry_date=15-01-2022",
+					"raw": "http://127.0.0.1:8000/api/PriceOnSeatsSelection",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -174,32 +154,6 @@
 					"path": [
 						"api",
 						"PriceOnSeatsSelection"
-					],
-					"query": [
-						{
-							"key": "busId",
-							"value": "1"
-						},
-						{
-							"key": "sourceId",
-							"value": "82"
-						},
-						{
-							"key": "destinationId",
-							"value": "434"
-						},
-						{
-							"key": "seater[]",
-							"value": "2694"
-						},
-						{
-							"key": "sleeper[]",
-							"value": "2755"
-						},
-						{
-							"key": "entry_date",
-							"value": "15-01-2022"
-						}
 					]
 				}
 			},
@@ -213,7 +167,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzEwMzI2LCJleHAiOjE2NTU3MTM5MjYsIm5iZiI6MTY1NTcxMDMyNiwianRpIjoiUlptZ1JxV0VTY3BUT3FQOSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.tP6Xl11JzVsaD_vkdAf51SPzp8hrr6DGApY9jyB-AjQ",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3Nzk2NTY3LCJleHAiOjE2NTc4MDAxNjcsIm5iZiI6MTY1Nzc5NjU2NywianRpIjoiNjM2Y1VraURQQ1pXb2g5QSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.U5VyHxTMGQrJ2R4nISmPx4_JDmAgji7NFxi3rOM670c",
 							"type": "string"
 						}
 					]
@@ -222,7 +176,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n        \"user_id\": \"1\",\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_date\": \"2022-07-07\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"MOB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\": \"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"ssssss\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n        \"coupon_code\": \"ODTEST3\",\r\n        \"user_id\": \"1\",\r\n\t\t\"bus_id\": \"285\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"53\",\r\n\t\t\"journey_date\": \"2022-07-15\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"origin\": \"ODBUS\",\r\n\t\t\"app_type\": \"MOB\",\r\n\t\t\"typ_id\": \"1\",\r\n        \"total_fare\": 1200,\r\n        \"specialFare\": 0,\r\n        \"addOwnerFare\": 0,\r\n        \"festiveFare\": 0,\r\n\t\t\"owner_fare\": 1098,\r\n        \"odbus_service_Charges\": 77,\r\n        \"transactionFee\": 10,\r\n\t\t\"created_by\": \"Customer\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"3156\",\r\n\t\t\t\t\"passenger_name\": \"Dency\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\",\r\n\t\t\t\t\"created_by\": \"customer\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -293,25 +247,22 @@
 		},
 		{
 			"name": "Filter",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzkxMzg3LCJleHAiOjE2NTU3OTQ5ODcsIm5iZiI6MTY1NTc5MTM4NywianRpIjoicVNGR1Zva29odEpqNmtlSyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.y0q-RynEhqJSzZJj-9pZ4MAVSbpWhP0YZdsAJ_orUj4",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MjMxMTI5LCJleHAiOjE2NTgyMzQ3MjksIm5iZiI6MTY1ODIzMTEyOSwianRpIjoiYnpNeThrbThUbmlBRmMzciIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CnYNOFRlq2beRDljozbPmHeqSwAiAfhsz0HTe1leHps",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\r\n    \"price\":\"0\", \r\n    \"sourceID\":\"82\", \r\n    \"destinationID\":\"53\", \r\n    \"entry_date\":\"22-06-2022\"\r\n }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -356,15 +307,22 @@
 		},
 		{
 			"name": "Get All BoardingDroping Points",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
-				"method": "GET",
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MjMxMTI5LCJleHAiOjE2NTgyMzQ3MjksIm5iZiI6MTY1ODIzMTEyOSwianRpIjoiYnpNeThrbThUbmlBRmMzciIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CnYNOFRlq2beRDljozbPmHeqSwAiAfhsz0HTe1leHps",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": " {\r\n    \"busId\":\"1\", \r\n    \"sourceId\":\"82\", \r\n    \"destinationId\":\"434\"\r\n }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -372,14 +330,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/BoardingDroppingPoints?busId=1&sourceId=82&destinationId=434",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/BoardingDroppingPoints?busId=1&sourceId=82&destinationId=434",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"BoardingDroppingPoints"
@@ -516,7 +475,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"busIds\"\r\n}",
+					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"busIDs\":[254,251,258]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -612,7 +571,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2MDUyODcwLCJleHAiOjE2NTYwNTY0NzAsIm5iZiI6MTY1NjA1Mjg3MCwianRpIjoiS3NzcWNGWlEySjY5ZGdCeCIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.vJniXI1jmHHpkecLGTVDL-sxhNCjUCP--CFM1rso2Cw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2MTM5ODc3LCJleHAiOjE2NTYxNDM0NzcsIm5iZiI6MTY1NjEzOTg3NywianRpIjoiaTI2SlA0UWRIbWFoaElYbSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CchSqes3PaeXCWYSAwfuM6wawtAYXYfNbLhkIhBILfw",
 							"type": "string"
 						}
 					]
@@ -629,15 +588,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/Register",
-					"protocol": "http",
+					"raw": "https://testing.odbus.co.in/api/Register",
+					"protocol": "https",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"testing",
+						"odbus",
+						"co",
+						"in"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"Register"
@@ -2174,11 +2132,21 @@
 		{
 			"name": "BookingDetails",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3MDg4MDMwLCJleHAiOjE2NTcwOTE2MzAsIm5iZiI6MTY1NzA4ODAzMCwianRpIjoiV3F1aXRwaUprTGRFUnl4TSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.S2Rc9RkF9mclDCVahvMtFADv_e4RrWsJr2mCGP-7q9Y",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\" : \"32987654\",\r\n    \"mobile\" : \"7978817539\"\r\n}",
+					"raw": "{\r\n    \"pnr\" : \"09378142\",\r\n    \"mobile\" : \"9916457575\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2186,14 +2154,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/BookingDetails",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/BookingDetails",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"BookingDetails"
@@ -2383,14 +2352,14 @@
 			"response": []
 		},
 		{
-			"name": "PassengerInfoOnBooking",
+			"name": "PassengerInfoOnBooking(client booking flow)",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0ODM5NDc3LCJleHAiOjE2NTQ4NDMwNzcsIm5iZiI6MTY1NDgzOTQ3NywianRpIjoiemhwVGJQVXgyZFM1N09GTyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.c6nfyMdZXf9F51gEYEz3qcYdL5gF8p1vKiMwZ-Mt_6M",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3ODAwNDI2LCJleHAiOjE2NTc4MDQwMjYsIm5iZiI6MTY1NzgwMDQyNiwianRpIjoiR3FMMGpkdnJZWTZmZHZEZyIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.hEU4eGPDIAKm0BWtVMlxbLVB1d-NZRu4iVA8SB2JqlY",
 							"type": "string"
 						}
 					]
@@ -2399,7 +2368,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\" :\"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"nancy\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"1\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"434\",\r\n\t\t\"journey_dt\": \"2022-05-30\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"2694\",\r\n\t\t\t\t\"passenger_name\": \"nancy\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\"\r\n\t\t\t},\r\n            {\r\n\t\t\t\t\"bus_seats_id\": \"2755\",\r\n\t\t\t\t\"passenger_name\": \"nancy1\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
+					"raw": "{\r\n\t\"customerInfo\": {\r\n\t\t\"email\" :\"\",\r\n\t\t\"phone\": \"1234567898\",\r\n\t\t\"name\": \"nancy\"\r\n\t},\r\n\t\"bookingInfo\": {\r\n\t\t\"bus_id\": \"285\",\r\n\t\t\"source_id\": \"82\",\r\n\t\t\"destination_id\": \"53\",\r\n\t\t\"journey_dt\": \"2022-07-15\",\r\n\t\t\"boarding_point\": \"Bermunda\",\r\n\t\t\"dropping_point\": \"sector\",\r\n\t\t\"boarding_time\": \"21:20\",\r\n\t\t\"dropping_time\": \"00:06\",\r\n\t\t\"bookingDetail\": [\r\n\t\t\t{\r\n\t\t\t\t\"bus_seats_id\": \"3156\",\r\n\t\t\t\t\"passenger_name\": \"nancy\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\"\r\n\t\t\t},\r\n            {\r\n\t\t\t\t\"bus_seats_id\": \"3162\",\r\n\t\t\t\t\"passenger_name\": \"nancy1\",\r\n\t\t\t\t\"passenger_gender\": \"M\",\r\n\t\t\t\t\"passenger_age\": \"33\"\r\n\t\t\t}\t\r\n\t   ]\r\n\t}\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2474,7 +2443,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU0NTEwNzc3LCJleHAiOjE2NTQ1MTQzNzcsIm5iZiI6MTY1NDUxMDc3NywianRpIjoibWlwdk1MYkZMR09KdjNkMSIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.IqqDO1jWH38LryLvKSviolrpfNbVuPCXAHjyPa4-2Mc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3MTk0Njg3LCJleHAiOjE2NTcxOTgyODcsIm5iZiI6MTY1NzE5NDY4NywianRpIjoiRlVTT3FFMUloSkRMTWZZUiIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Q2k5a1HDYH4wR90oCpj9NmVKk_XzWGbA9p8jgLcWAOk",
 							"type": "string"
 						}
 					]
@@ -2483,7 +2452,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"transaction_id\": \"20220606155007916906\"\r\n}",
+					"raw": "{\r\n\t\"transaction_id\": \"20220706124506289714\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2491,14 +2460,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/TicketConfirmation",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/TicketConfirmation",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"TicketConfirmation"
@@ -2638,14 +2608,14 @@
 			"response": []
 		},
 		{
-			"name": "ClientTicketCancellation api",
+			"name": "ClientTicketCancellation api(client use)",
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU1NzAyOTYxLCJleHAiOjE2NTU3MDY1NjEsIm5iZiI6MTY1NTcwMjk2MSwianRpIjoiRkQ4TjBkeUZnTnN6VzFhUyIsInN1YiI6MTI0LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.zCF2VQbM3vrYRT-XrArup_5zudCo5CXmfE_PWfk4l2c",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3MjYyMTExLCJleHAiOjE2NTcyNjU3MTEsIm5iZiI6MTY1NzI2MjExMSwianRpIjoiTkFLeE5Pa0hmMUhlVVVhdSIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.LEM4e6vRB9imcQPRe_64UgdC8SgS0hgT1mKeCPOxphs",
 							"type": "string"
 						}
 					]
@@ -2654,7 +2624,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\":\"ODCL60276\"\r\n}",
+					"raw": "{\r\n    \"pnr\":\"ODCL24747\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2674,6 +2644,132 @@
 					"path": [
 						"api",
 						"ClientTicketCancellation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send push notification",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2NDk3OTkyLCJleHAiOjE2NTY1MDE1OTIsIm5iZiI6MTY1NjQ5Nzk5MiwianRpIjoiSVk2OHY1NDFFdVd0SmJUYiIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.1kXjLoLYrBp3x0BCWwqv2LlQl7RbJG8MrYDrOpzXbG8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userIds\":[8,45],\r\n\t\"notification\": {\r\n\t\t\"title\": \"ALT App Testing\",\r\n\t\t\"body\": \"First Notification\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/SendNotification",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"SendNotification"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TicketDetails(client use)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU3MDkxNjIzLCJleHAiOjE2NTcwOTUyMjMsIm5iZiI6MTY1NzA5MTYyMywianRpIjoiZTFuSHNDVWRETGV6OVllMCIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.XwU-Esh-RndEJqsAowvoXskHGOxOpmQ4tOFTqsLXf6E",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pnr\" : \"09378142\",\r\n    \"mobile\" : \"9916457575\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/TicketDetails",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"TicketDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get FilterOptions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4MjMxMTI5LCJleHAiOjE2NTgyMzQ3MjksIm5iZiI6MTY1ODIzMTEyOSwianRpIjoiYnpNeThrbThUbmlBRmMzciIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CnYNOFRlq2beRDljozbPmHeqSwAiAfhsz0HTe1leHps",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"53\",\r\n    \"busIDs\":[254,251,258]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/FilterOptions",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"FilterOptions"
 					]
 				}
 			},

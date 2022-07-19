@@ -44,7 +44,7 @@ class ViewSeatsController extends Controller
     }
  
 /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/viewSeats",
  *     tags={"viewSeats API"},
  *     description="get all seat Information  for a Bus",
@@ -122,7 +122,7 @@ class ViewSeatsController extends Controller
         return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/PriceOnSeatsSelection",
  *     tags={"PriceOnSeatsSelection API"},
  *     description="get total price on seat selection",
@@ -234,7 +234,7 @@ class ViewSeatsController extends Controller
     }
 
       /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/BoardingDroppingPoints",
  *     tags={"BoardingDroppingPoints API"},
  *     description="get all Boarding Dropping Points for source and destination",
