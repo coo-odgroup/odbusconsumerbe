@@ -63,13 +63,13 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
-Route::get('/FilterOptions', [ListingController::class, 'getFilterOptions']);
+Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
-Route::get('/Filter', [ListingController::class, 'filter']);    
+Route::post('/Filter', [ListingController::class, 'filter']);    
 Route::get('/BusDetails', [ListingController::class, 'busDetails']);
-Route::get('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
-Route::get('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
-Route::get('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
+Route::post('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
+Route::post('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
+Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);   
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
