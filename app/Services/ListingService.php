@@ -7,6 +7,7 @@ use App\Models\BusSeats;
 use App\Models\BookingSeized;
 use App\Models\BusCancelled;
 use App\Models\BusCancelledDate;
+use App\Models\ClientFeeSlab;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use App\Repositories\ViewSeatsRepository;
@@ -677,6 +678,24 @@ class ListingService
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
             if($clientRole == $clientRoleId){
+
+            /////client extra service charge added to seatfare////////////////
+            $clientCommissions = ClientFeeSlab::get(); 
+                    
+            $clientComission = 0;
+            if($clientCommissions){
+                foreach($clientCommissions as $clientCom){
+                    $startFare = $clientCom->starting_fare;
+                    $uptoFare = $clientCom->upto_fare;
+                    if($startingFromPrice >= $startFare && $startingFromPrice <= $uptoFare){
+                        $addCharge = $clientCom->addationalcharges;
+                        break;
+                    }  
+                }   
+            } 
+            $client_service_charges = round($addCharge/100 * $startingFromPrice);
+            $newSeatFare = $startingFromPrice + $client_service_charges;
+           
                 $arr= array(
                     "srcId" => $sourceID,
                     "destId" => $destinationID,
@@ -698,7 +717,7 @@ class ListingService
                     "totalSeats" => $totalSeats,
                     "seaters" => $seatClassRecords,
                     "sleepers" => $sleeperClassRecords,
-                    "startingFromPrice" => $startingFromPrice,
+                    "startingFromPrice" => $newSeatFare,
                     "departureTime" =>$depTime,
                     "arrivalTime" =>$arrTime,
                     "totalJourneyTime" =>$totalJourneyTime, 
@@ -709,17 +728,11 @@ class ListingService
                     "cancellationPolicyContent" => $cancellationPolicyContent,
                     "TravelPolicyContent" => $TravelPolicyContent,
                     ); 
-
-
             if($totalSeats>0){
-
             $ListingRecords['regular'][] = $arr;
-
             }else{
             $ListingRecords['soldout'][] = $arr;
             }
-
-
             }else{
                 $arr= array(
                     "srcId" => $sourceID,
@@ -763,15 +776,11 @@ class ListingService
                     "Totalrating_1star" => $Totalrating_1star,
                     "reviews" => $reviews
                 ); 
-
                 if($totalSeats>0){
-
                     $ListingRecords['regular'][] = $arr;
-      
                   }else{
                     $ListingRecords['soldout'][] = $arr;
                   }
-
             }           
         }
         return $ListingRecords;
