@@ -164,9 +164,10 @@ class ClientBookingRepository
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = 'CLNTWEB';
         $booking->owner_fare = $priceDetails[0]['ownerFare'];
-        $booking->total_fare = $priceDetails[0]['totalFare'];
+        //$booking->total_fare = $priceDetails[0]['totalFare'];
+        $booking->total_fare = $priceDetails[0]['odbus_charges_ownerFare'];
         $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
-        $booking->transactionFee = $priceDetails[0]['transactionFee'];
+        //$booking->transactionFee = $priceDetails[0]['transactionFee'];
         $booking->additional_special_fare = $priceDetails[0]['specialFare'];
         $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
         $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
