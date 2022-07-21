@@ -261,7 +261,7 @@ class UsersRepository
             
             //getting the file extension 
             $extension = $fileinfo['extension'];
-            $path_url = public_path('uploads/profile');
+            $path_url = public_path('uploads/profile/');
             $picture   = date('His').'-'.$fileinfo['filename'].'.'. $extension;
             $file_path = $path_url . date('His').'-'.$fileinfo['filename'].'.'. $extension; 
             move_uploaded_file($_FILES['image']['tmp_name'],$file_path);   
