@@ -106,6 +106,7 @@ class ClientBookingRepository
             'entry_date' => $entry_date,
         );
         $priceDetails = $this->viewSeatsService->getPriceCalculation($data);
+        
         //$details = $this->viewSeatsService->getPriceOnSeatsSelection($busId,$sourceId,$destinationId,$seater,$sleeper,$entry_date);
        
         //$details = $this->viewSeatsService->getPriceOnSeatsSelection(request(),$data);
@@ -136,7 +137,7 @@ class ClientBookingRepository
             $arr['message']="less_balance";
             return $arr;
         } 
-        if($walletBalance >= $priceDetails[0]['totalFare']){
+        if($walletBalance >= $priceDetails[0]['odbus_charges_ownerFare']){
         //Save Booking 
                $booking = new $this->booking;
         do {
@@ -196,13 +197,13 @@ class ClientBookingRepository
             foreach($clientCommissions as $clientCom){
                 $startFare = $clientCom->starting_fare;
                 $uptoFare = $clientCom->upto_fare;
-                if($priceDetails[0]['ownerFare'] >= $startFare && $priceDetails[0]['ownerFare']<= $uptoFare){
+                if($priceDetails[0]['odbus_charges_ownerFare'] >= $startFare && $priceDetails[0]['odbus_charges_ownerFare']<= $uptoFare){
                     $clientComission = $clientCom->commision;
                     break;
                 }  
             }   
         } 
-        $clientComAmount = round($clientComission/100 * $priceDetails[0]['ownerFare'],2);
+        $clientComAmount = round($clientComission/100 * $priceDetails[0]['odbus_charges_ownerFare'],2);
         $booking->client_comission = $clientComAmount;
         $booking->client_percentage = $clientComission;
                        

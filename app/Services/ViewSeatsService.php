@@ -269,16 +269,13 @@ class ViewSeatsService
         
         if(count($ticket_new_fare) > 0){
             foreach($ticket_new_fare as $tktprc){
-
                 foreach($tktprc as $tkt){
-
                     if( $tkt->type==2 || ($tkt->type==null && $tkt->operation_date != null )){
                         // do nothing (this logic is to avoid extra seat block , seat block seats )
                     }  else{
                         if($tkt->operation_date== $entry_date || $tkt->operation_date==null ){
                            
                             if($tkt->new_fare == 0 ){
-
                                 if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
                                     $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
                                 }
@@ -299,12 +296,8 @@ class ViewSeatsService
                                 $totalFestiveFare +=$miscfares[5];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
-    
                             $seat_fare=$tkt->new_fare;
-    
                             $ownerFare +=$tkt->new_fare;
-    
-    
                             ////////// add odbus service chanrges to seat fare
     
                             $odbusServiceCharges = 0;
@@ -319,22 +312,12 @@ class ViewSeatsService
                                     $service_charges += $odbusServiceCharges;
                                     }     
                                 } 
-    
-    
-                                ////////////////////////////////////////////////
-    
                             $odbus_charges_ownerFare +=$tkt->new_fare; 
-
-
-                        }
-                                              
-
+                        }                         
                     }       
                 }  
             }
         }
-             
-       
         $odbusServiceCharges = 0;
         $transactionFee = 0;
         $totalFare = $odbus_charges_ownerFare; 
@@ -346,7 +329,7 @@ class ViewSeatsService
 
         if($clientRole == $clientRoleId){
             $seatWithPriceRecords[] = array(
-                "totalFare" => $totalFare
+                "totalFare" => $odbus_charges_ownerFare
                 ); 
         }else{
             $seatWithPriceRecords[] = array(
