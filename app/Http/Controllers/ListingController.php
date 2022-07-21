@@ -188,6 +188,7 @@ class ListingController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
+        $clientId = $user->id;
         
         $listingValidation = $this->listingValidator->validate($data);
           
@@ -196,7 +197,7 @@ class ListingController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         
-        $listingData = $this->listingService->getAll($request,$clientRole);
+        $listingData = $this->listingService->getAll($request,$clientRole,$clientId);
         return $this->successResponse($listingData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 
@@ -374,6 +375,7 @@ class ListingController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
+        $clientId = $user->id;
 
         $filterValidation = $this->filterValidator->validate($data);
         
@@ -381,7 +383,7 @@ class ListingController extends Controller
             $errors = $filterValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-        $filterData = $this->listingService->filter($request,$clientRole);
+        $filterData = $this->listingService->filter($request,$clientRole, $clientId);
         return $this->successResponse($filterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**

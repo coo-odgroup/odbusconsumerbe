@@ -35,7 +35,7 @@ class ListingService
         $this->viewSeatsRepository = $viewSeatsRepository;
         //$this->DolphinService = $DolphinService;
     }
-    public function getAll($request,$clientRole)
+    public function getAll($request,$clientRole,$clientId)
     {  
         $source = $request['source'];
         $destination = $request['destination'];
@@ -200,7 +200,7 @@ class ListingService
             $showBusRecords = Arr::flatten($records);
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
-            $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+            $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole,$clientId);
 
             $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
             $showRecords = (isset($showRecords['regular'])) ? $showRecords['regular'] : [];
@@ -234,7 +234,7 @@ class ListingService
             } 
    
             if(count($hideBusRecords) > 0){
-               $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
+               $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole,$clientId);
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
                $HideSoldoutRecords = (isset($hideRecords['soldout'])) ? $hideRecords['soldout'] : [];
                $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
@@ -258,7 +258,7 @@ class ListingService
             return $ListingRecords;      
          }    
     }
-    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole){
+    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
 
 
         $ListingRecords['regular'] = [];
@@ -680,7 +680,9 @@ class ListingService
             if($clientRole == $clientRoleId){
 
             /////client extra service charge added to seatfare////////////////
-            $clientCommissions = ClientFeeSlab::get(); 
+            $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                ->where('status', '1')
+                                                ->get(); 
                     
             $clientComission = 0;
             if($clientCommissions){
@@ -792,7 +794,7 @@ class ListingService
           
     }
 
-    public function filter(Request $request,$clientRole)
+    public function filter(Request $request,$clientRole,$clientId)
     {
         $booked = Config::get('constants.BOOKED_STATUS');   
         $price = $request['price'];
@@ -944,7 +946,7 @@ class ListingService
         }
         $showBusRecords = Arr::flatten($records);
         $hideBusRecords = Arr::flatten($hideBusRecords);
-        $showRecord = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole);
+        $showRecord = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole,$clientId);
 
         $showRecords=[];
         $HideSoldoutRecords =[];
@@ -976,7 +978,7 @@ class ListingService
         } 
 
         if(count($hideBusRecords) > 0){
-           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole);
+           $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole,$clientId);
 
            $HideSoldoutRecords = (isset($hideRecords['soldout'])) ? $hideRecords['soldout'] : [];
            $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
