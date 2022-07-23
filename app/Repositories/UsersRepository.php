@@ -248,36 +248,36 @@ class UsersRepository
         
         //log::info($request);exit;
 
-        // if ($request['image'] != '')
-        // {
-        //     $imagefile = $this->saveBase64ToImage($request['image']);          
-        //     $post->profile_image = $imagefile;                
-        // } 
-        
-        if(isset($_FILES['image']['name']))
+        if ($request['image'] != '')
         {
-            //getting file info from the request 
-            $fileinfo = pathinfo($_FILES['image']['name']);
+            $imagefile = $this->saveBase64ToImage($request['image']);          
+            $post->profile_image = $imagefile;                
+        } 
+        
+        // if(isset($_FILES['image']['name']))
+        // {
+        //     //getting file info from the request 
+        //     $fileinfo = pathinfo($_FILES['image']['name']);
             
-            //getting the file extension 
-            $extension = $fileinfo['extension'];
-            $path_url = public_path('uploads/profile/');
-            $picture   = date('His').'-'.$fileinfo['filename'].'.'. $extension;
-            $file_path = $path_url . date('His').'-'.$fileinfo['filename'].'.'. $extension; 
-            move_uploaded_file($_FILES['image']['tmp_name'],$file_path);   
+        //     //getting the file extension 
+        //     $extension = $fileinfo['extension'];
+        //     $path_url = public_path('uploads/profile/');
+        //     $picture   = date('His').'-'.$fileinfo['filename'].'.'. $extension;
+        //     $file_path = $path_url . date('His').'-'.$fileinfo['filename'].'.'. $extension; 
+        //     move_uploaded_file($_FILES['image']['tmp_name'],$file_path);   
 
-            // if($userDetails[0]->profile_image!='')
-            // {
-            //     $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
+        //     // if($userDetails[0]->profile_image!='')
+        //     // {
+        //     //     $image_path = public_path('uploads/profile/').$userDetails[0]->profile_image;
                 
-            //     if (File::exists($image_path)) {
-            //       unlink($image_path);
-            //     }              
-            // }   
+        //     //     if (File::exists($image_path)) {
+        //     //       unlink($image_path);
+        //     //     }              
+        //     // }   
 
-            $post->profile_image = $picture;  
-            //log::info($d);exit;
-        }     
+        //     $post->profile_image = $picture;  
+        //     //log::info($d);exit;
+        // }     
      
   
       // if ($request->hasFile('image'))
