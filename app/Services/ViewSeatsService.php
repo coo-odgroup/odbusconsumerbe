@@ -85,7 +85,9 @@ class ViewSeatsService
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
-
+            //////////////////////
+            $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+            /////////////////////
 
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId);
@@ -134,16 +136,11 @@ class ViewSeatsService
                                     $ub->busSeats->ticket_price->base_sleeper_fare = round($base_sleeper_fare + $odbusServiceCharges);
                                     }     
                                 }
-
-                           //////////////////////////////////////////////////////////////
-
                             if($ub->busSeats->new_fare > 0){
                                 $ub->busSeats->new_fare +=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
                                 $new_fare=$ub->busSeats->new_fare;
 
                                 /////////// add odbus gst to seat fare
-
-                         
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -154,10 +151,11 @@ class ViewSeatsService
                                     $ub->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
                                     }     
                                 }
-
-                           //////////////////////////////////////////////////////////////
-
-                            }   
+                            } 
+                            if($clientRole == $clientRoleId){
+                                unset($ub->busSeats->ticket_price);
+                                unset($ub->busSeats->new_fare);
+                            } 
                         }
                         if (sizeof($bookingIds)){
                             if(in_array($ub['id'], $blockedSeats)){
@@ -208,6 +206,10 @@ class ViewSeatsService
                                     $lb->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
                                     }     
                                 }           
+                            } 
+                            if($clientRole == $clientRoleId){
+                                unset($lb->busSeats->ticket_price);
+                                unset($lb->busSeats->new_fare);
                             }   
                         }
                         if (sizeof($bookingIds)){    
@@ -220,19 +222,6 @@ class ViewSeatsService
                     } 
                   }
                   return $viewSeat;    
-             //$viewSeat = collect($viewSeat);
-        //////////////////////////////////////////////////////////////////////////////////////
-            $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
-            if($clientRole == $clientRoleId){
-                $viewSeat->forget('ticket_price');
-                return $viewSeat;
-            }else{
-                return $viewSeat;
-            }
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////
-
     }
 
     public function getPriceOnSeatsSelection(Request $request,$clientRole)
