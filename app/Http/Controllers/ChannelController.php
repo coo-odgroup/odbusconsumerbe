@@ -22,6 +22,7 @@ use App\Jobs\TestingEmailJob;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 Use hash_hmac;
+use JWTAuth;
 
 class ChannelController extends Controller
 {
@@ -257,6 +258,10 @@ class ChannelController extends Controller
       public function makePayment(Request $request)
     {   
         $data = $request->all();
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+
         $makePaymentValidation = $this->makePaymentValidator->validate($data);
   
         if ($makePaymentValidation->fails()) {
@@ -264,7 +269,7 @@ class ChannelController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
-            $response = $this->channelService->makePayment($request);
+            $response = $this->channelService->makePayment($request,$clientRole);
             switch($response){
                 case('SEAT UN-AVAIL'):  
                     return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
@@ -285,8 +290,11 @@ class ChannelController extends Controller
 
     public function checkSeatStatus(Request $request)
     {   
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
         try {
-            $response = $this->channelService->checkSeatStatus($request); 
+            $response = $this->channelService->checkSeatStatus($request,$clientRole); 
             if($response == 'SEAT UN-AVAIL'){
                 return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
             }
@@ -539,6 +547,9 @@ public function pay(Request $request){
   public function walletPayment(Request $request)
   {   
       $data = $request->all();
+      $token = JWTAuth::getToken();
+      $user = JWTAuth::toUser($token); 
+      $clientRole = $user->role_id;
       $walletPaymentValidation = $this->agentWalletPaymentValidator->validate($data);
 
       if ($walletPaymentValidation->fails()) {
@@ -546,7 +557,7 @@ public function pay(Request $request){
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }  
       try {
-          $response = $this->channelService->walletPayment($request); 
+          $response = $this->channelService->walletPayment($request,$clientRole); 
             switch($response){
                 case('SEAT UN-AVAIL'):  
                     return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);

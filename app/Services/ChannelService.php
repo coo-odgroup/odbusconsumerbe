@@ -97,11 +97,11 @@ class ChannelService
         }
         return $sendEmail;
     }   
-    public function makePayment($request)
+    public function makePayment($request,$clientRole)
     {
         try {
-
             //$payment = $this->channelRepository->makePayment($data);
+                //$clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
                 $busId = $request['busId']; 
                 $sourceId = $request['sourceId'];
@@ -156,7 +156,7 @@ class ChannelService
                 return "SEAT_BLOCKED";
             }
           ////////////////////////////////////////////////////////////
-                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request,$clientRole); 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
                     $collection= $lb;
@@ -273,7 +273,7 @@ class ChannelService
     } 
     
     
-    public function checkSeatStatus($request) // this method is for Admin API usage (adjust ticket)
+    public function checkSeatStatus($request,$clientRole) // this method is for Admin API usage (adjust ticket)
     {
         try {
 
@@ -332,7 +332,7 @@ class ChannelService
             }
 
 
-                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request,$clientRole); 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
                     $collection= $lb;
@@ -484,9 +484,10 @@ class ChannelService
     
     
 
-    public function walletPayment($request)
+    public function walletPayment($request,$clientRole)
     {
         try {
+
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
                 $busId = $request['busId']; 
                 $sourceId = $request['sourceId'];
@@ -545,7 +546,7 @@ class ChannelService
                     return "SEAT_BLOCKED";
                 }
          
-                $seatStatus = $this->viewSeatsService->getAllViewSeats($request); 
+                $seatStatus = $this->viewSeatsService->getAllViewSeats($request,$clientRole); 
 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
