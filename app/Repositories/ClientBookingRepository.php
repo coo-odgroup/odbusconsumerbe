@@ -265,11 +265,46 @@ class ClientBookingRepository
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $booked = Config::get('constants.BOOKED_STATUS');
         $transactionId = $request['transaction_id'];
+        
         $bookingRecord = $this->booking->where('transaction_id', $transactionId)
                                         //->where('status', $seatHold)
                                        ->with('bookingDetail')
-                                       ->get();                          
-        $bookingId = $bookingRecord[0]->id; 
+                                       ->get();     
+                                                       
+        $busId = $bookingRecord[0]->bus_id;  
+        $sourceId = $bookingRecord[0]->source_id;
+        $destinationId = $bookingRecord[0]->destination_id;
+        $entry_date = $bookingRecord[0]->journey_dt;    
+        $seatIds = [];
+            foreach($bookingRecord[0]->bookingDetail as $bd){
+                    array_push($seatIds,$bd->busSeats->seats->id);              
+            } 
+            $data = array(
+                'busId' => $busId,
+                'sourceId' =>  $sourceId,
+                'destinationId' => $destinationId,
+                'entry_date' => $entry_date,
+                'seatIds' => $seatIds,
+            ); 
+                                        
+        $seatStatus = $this->viewSeatsService->checkSeatStatus($data);                               
+        if(isset($seatStatus['lower_berth'])){
+            $lb = collect($seatStatus['lower_berth']);
+            $collection= $lb;
+        }
+        if(isset($seatStatus['upper_berth'])){
+            $ub = collect($seatStatus['upper_berth']);
+            $collection= $ub;
+        }
+        if(isset($lb) && isset($ub)){
+            $collection= $lb->merge($ub);
+        } 
+        $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+        $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
+            return $value == null;
+        });
+        if(sizeof($filtered->all())==0){
+            $bookingId = $bookingRecord[0]->id; 
         $busId = $bookingRecord[0]->bus_id;
         $pnr = $bookingRecord[0]->pnr;
         $comissionAmount = $bookingRecord[0]->client_comission;             
@@ -474,8 +509,12 @@ class ClientBookingRepository
             $sms->save();
             }  
         }
-        ////////////////////////////////////////////////////////////////////////////////
-        return $bookingDetails;   
+        return $bookingDetails;               
+        }
+        else{
+            return "SEAT UN-AVAIL";
+        }     
+        
     }
 
     public function clientCancelTicket($clientId,$pnr,$booked)
