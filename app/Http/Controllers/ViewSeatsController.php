@@ -225,14 +225,14 @@ class ViewSeatsController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
-
+        $clientId = $user->id;
         $priveValidation = $this->priceOnSeatSelectionValidator->validate($data);
         
         if ($priveValidation->fails()) {
             $errors = $priveValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
-        $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request,$clientRole);
+        $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request,$clientRole,$clientId);
         return $this->successResponse($priceOnSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 

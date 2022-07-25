@@ -187,6 +187,8 @@ class clientBookingController extends Controller
         $user = JWTAuth::toUser($token);
         $data = $request->all();
         $clientRole = $user->role_id;
+        $clientId = $user->id;
+
         $todayDate = Date('Y-m-d');
         $validTillDate = Date('Y-m-d', strtotime($todayDate. " + $advDays days"));
         $data['bookingInfo']['user_id']=$user->id;
@@ -198,7 +200,7 @@ class clientBookingController extends Controller
          return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try { 
-          $response = $this->clientBookingService->clientBooking($data,$clientRole); 
+          $response = $this->clientBookingService->clientBooking($data,$clientRole,$clientId); 
         
           if( $data['bookingInfo']['journey_dt'] > $validTillDate ||  $data['bookingInfo']['journey_dt'] < $todayDate ){
           

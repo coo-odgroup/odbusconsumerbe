@@ -55,7 +55,7 @@ class ClientBookingRepository
         $this->listingService = $listingService;    
     }   
     
-    public function clientBooking($request,$clientRole)
+    public function clientBooking($request,$clientRole,$clientId)
     {  
         $needGstBill = Config::get('constants.NEED_GST_BILL');
         $customerInfo = $request['customerInfo'];
@@ -86,7 +86,7 @@ class ClientBookingRepository
             "user_id" => Null
         ); 
        
-        $busRecords = $this->listingService->getAll($reqInfo,$clientRole);
+        $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
     
         if($busRecords){
         $busId = $bookingInfo['bus_id'];
@@ -105,16 +105,16 @@ class ClientBookingRepository
             'sleeper' => $sleeper,
             'entry_date' => $entry_date,
         );
-        $priceDetails = $this->viewSeatsService->getPriceCalculation($data);
-        
+        $priceDetails = $this->viewSeatsService->getPriceCalculation($data,$clientId);
+        //return $priceDetails;
         //$details = $this->viewSeatsService->getPriceOnSeatsSelection($busId,$sourceId,$destinationId,$seater,$sleeper,$entry_date);
        
         //$details = $this->viewSeatsService->getPriceOnSeatsSelection(request(),$data);
 
-        $clientId = $this->user->where('id',$bookingInfo['user_id'])
+        $cId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
                                 ->first('id');
-
+                              
         $existingUser = Users::where('phone',$customerInfo['phone'])
                                     ->exists(); 
         if($existingUser==true){
@@ -137,7 +137,7 @@ class ClientBookingRepository
             $arr['message']="less_balance";
             return $arr;
         } 
-        if($walletBalance >= $priceDetails[0]['odbus_charges_ownerFare']){
+        if($walletBalance >= $priceDetails[0]['totalFare']){
         //Save Booking 
                $booking = new $this->booking;
         do {
@@ -165,7 +165,7 @@ class ClientBookingRepository
         $booking->app_type = 'CLNTWEB';
         $booking->owner_fare = $priceDetails[0]['ownerFare'];
         //$booking->total_fare = $priceDetails[0]['totalFare'];
-        $booking->total_fare = $priceDetails[0]['odbus_charges_ownerFare'];
+        $booking->total_fare = $priceDetails[0]['totalFare'];
         $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
         //$booking->transactionFee = $priceDetails[0]['transactionFee'];
         $booking->additional_special_fare = $priceDetails[0]['specialFare'];
@@ -190,9 +190,11 @@ class ClientBookingRepository
             $booking->owner_gst_charges = $ownerGstPercentage;
             $ownerGstAmount = $priceDetails[0]['ownerFare'] * $ownerGstPercentage/100;
             $booking->owner_gst_amount = $ownerGstAmount;
-        }     
-        $clientCommissions = ClientFeeSlab::get(); 
-        
+        } 
+          
+        $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                            ->where('status', '1')
+                                            ->get(); 
         $clientComission = 0;
         if($clientCommissions){
             foreach($clientCommissions as $clientCom){
@@ -204,13 +206,13 @@ class ClientBookingRepository
                 }  
             }   
         } 
-        $clientComAmount = round($clientComission/100 * $priceDetails[0]['odbus_charges_ownerFare'],2);
+        $clientComAmount = round($clientComission/100 * $priceDetails[0]['totalFare'],2);
         $booking->client_comission = $clientComAmount;
         $booking->client_percentage = $clientComission;
                        
         $booking->created_by = $bookingInfo['origin'];
         $booking->users_id = $userId;
-        $clientId->booking()->save($booking);
+        $cId->booking()->save($booking);
         
         //fetch the sequence from bus_locaton_sequence
         $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;

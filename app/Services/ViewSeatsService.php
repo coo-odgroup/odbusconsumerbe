@@ -13,6 +13,7 @@ use Illuminate\Support\Arr;
 use App\Models\TicketPrice;
 use App\Models\BusSeats;
 use App\Models\SpecialFare;
+use App\Models\ClientFeeSlab;
 use App\Models\BusSpecialFare;
 use App\Models\OwnerFare;
 use App\Models\BusOwnerFare;
@@ -224,7 +225,7 @@ class ViewSeatsService
                   return $viewSeat;    
     }
 
-    public function getPriceOnSeatsSelection(Request $request,$clientRole)
+    public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     {
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
@@ -319,8 +320,26 @@ class ViewSeatsService
         $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
 
         if($clientRole == $clientRoleId){
+             /////client extra service charge added to seatfare////////////////
+            $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                ->where('status', '1')
+                                                ->get(); 
+                    
+            $client_service_charges = 0;
+            if($clientCommissions){
+                foreach($clientCommissions as $clientCom){
+                    $startFare = $clientCom->starting_fare;
+                    $uptoFare = $clientCom->upto_fare;
+                    if($odbus_charges_ownerFare >= $startFare && $odbus_charges_ownerFare <= $uptoFare){
+                        $addCharge = $clientCom->addationalcharges;
+                        break;
+                    }  
+                }   
+            } 
+            $client_service_charges = round($addCharge/100 * $odbus_charges_ownerFare);
+            $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
             $seatWithPriceRecords[] = array(
-                "totalFare" => $odbus_charges_ownerFare
+                "totalFare" => $newSeatFare
                 ); 
         }else{
             $seatWithPriceRecords[] = array(
@@ -389,7 +408,7 @@ class ViewSeatsService
 
     //////////////////used for client API booking///////////////
 
-public function getPriceCalculation($request)
+public function getPriceCalculation($request,$clientId)
 {
    
     $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
@@ -489,23 +508,41 @@ public function getPriceCalculation($request)
             }  
     }
     $transactionFee = 0;
-    $totalFare = $odbus_charges_ownerFare; 
+    
+    /////client extra service charge added to seatfare////////////////
+    $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                        ->where('status', '1')
+                                        ->get(); 
 
-    $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
-    $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
-    $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
-    $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
+    $client_service_charges = 0;
+        if($clientCommissions){
+            foreach($clientCommissions as $clientCom){
+            $startFare = $clientCom->starting_fare;
+            $uptoFare = $clientCom->upto_fare;
+                if($odbus_charges_ownerFare >= $startFare && $odbus_charges_ownerFare <= $uptoFare){
+                $addCharge = $clientCom->addationalcharges;
+                break;
+                }  
+            }   
+        } 
+    $client_service_charges = round($addCharge/100 * $odbus_charges_ownerFare);
+    $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
+
+    //$odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
+    //$gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
+    //$transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
+    //$totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
 
     $seatWithPriceRecords[] = array(
-            "PriceDetail" => $PriceDetail,
+            //"PriceDetail" => $PriceDetail,
             "ownerFare" => $ownerFare,
             "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
             "specialFare" => $totalSplFare,
             "addOwnerFare" => $totalOwnFare,
             "festiveFare" => $totalFestiveFare,
-            "odbusServiceCharges" => $service_charges,
-            "transactionFee" => $transactionFee,
-            "totalFare" => $totalFare
+            "odbusServiceCharges" => $service_charges + $client_service_charges,
+            //"transactionFee" => $transactionFee,
+            "totalFare" => $newSeatFare
             ); 
 
     return $seatWithPriceRecords;
