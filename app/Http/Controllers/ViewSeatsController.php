@@ -111,6 +111,9 @@ class ViewSeatsController extends Controller
             'entry_date',
             'destinationId',
         ]);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
         $viewSeatsValidation = $this->viewSeatsValidator->validate($data);
         
         if ($viewSeatsValidation->fails()) {
@@ -118,7 +121,7 @@ class ViewSeatsController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         
-        $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request);
+        $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request, $clientRole);
         return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
 /**

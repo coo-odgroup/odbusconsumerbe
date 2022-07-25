@@ -261,6 +261,7 @@ class BookTicketController extends Controller
         $data = $request->all();
         $data['bookingInfo']['origin']=$user->name;
         $clientRole = $user->role_id;
+        $clientId = $user->id;
         $bookTicketValidation = $this->bookTicketValidator->validate($data);
 
         $todayDate = Date('Y-m-d');
@@ -273,7 +274,7 @@ class BookTicketController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try { 
-            $response =  $this->bookTicketService->bookTicket($data,$clientRole); 
+            $response =  $this->bookTicketService->bookTicket($data,$clientRole,$clientId); 
             
             if( $data['bookingInfo']['journey_date'] > $validTillDate ||  $data['bookingInfo']['journey_date'] < $todayDate ){
             return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_date'],Response::HTTP_OK);
