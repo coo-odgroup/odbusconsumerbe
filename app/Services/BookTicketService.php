@@ -25,7 +25,7 @@ class BookTicketService
         $this->offerRepository = $offerRepository;
         $this->listingService = $listingService;
     }
-    public function bookTicket($request,$clientRole)
+    public function bookTicket($request,$clientRole,$clientId)
     {
         try {
             
@@ -55,7 +55,7 @@ class BookTicketService
                     "bus_operator_id" => Null,
                     "user_id" => Null
                 ); 
-                $busRecords = $this->listingService->getAll($reqInfo,$clientRole);
+                $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
             
                 if($busRecords){
                 $busId = $bookingInfo['bus_id'];

@@ -25,7 +25,7 @@ class ViewSeatsService
     {
         $this->viewSeatsRepository = $viewSeatsRepository;
     }
-    public function getAllViewSeats(Request $request)
+    public function getAllViewSeats($request,$clientRole)
     {
 
         $booked = Config::get('constants.BOOKED_STATUS');
@@ -178,10 +178,7 @@ class ViewSeatsService
                             $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
 
                             $base_seat_fare=$lb->busSeats->ticket_price->base_seat_fare;
-
                             /////////// add odbus gst to seat fare
-
-                           
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -192,9 +189,6 @@ class ViewSeatsService
                                     $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
                                     }     
                                 }
-
-                           //////////////////////////////////////////////////////////////
-
 
                             if($lb->busSeats->new_fare > 0){
                                 $lb->busSeats->new_fare +=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
@@ -213,10 +207,7 @@ class ViewSeatsService
                                     $odbusServiceCharges = round($new_fare * ($percentage/100));
                                     $lb->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
                                     }     
-                                }
-
-                           //////////////////////////////////////////////////////////////
-
+                                }           
                             }   
                         }
                         if (sizeof($bookingIds)){    
@@ -228,7 +219,20 @@ class ViewSeatsService
                         $i++;
                     } 
                   }
-            return $viewSeat;
+                  return $viewSeat;    
+             //$viewSeat = collect($viewSeat);
+        //////////////////////////////////////////////////////////////////////////////////////
+            $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+            if($clientRole == $clientRoleId){
+                $viewSeat->forget('ticket_price');
+                return $viewSeat;
+            }else{
+                return $viewSeat;
+            }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////
+
     }
 
     public function getPriceOnSeatsSelection(Request $request,$clientRole)
@@ -264,9 +268,7 @@ class ViewSeatsService
         $totalFestiveFare =0;
         $PriceDetail=[];
         $service_charges=0;
-
-        
-        
+ 
         if(count($ticket_new_fare) > 0){
             foreach($ticket_new_fare as $tktprc){
                 foreach($tktprc as $tkt){
