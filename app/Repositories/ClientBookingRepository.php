@@ -200,7 +200,7 @@ class ClientBookingRepository
             foreach($clientCommissions as $clientCom){
                 $startFare = $clientCom->starting_fare;
                 $uptoFare = $clientCom->upto_fare;
-                if($priceDetails[0]['odbus_charges_ownerFare'] >= $startFare && $priceDetails[0]['odbus_charges_ownerFare']<= $uptoFare){
+                if($priceDetails[0]['totalFare'] >= $startFare && $priceDetails[0]['totalFare']<= $uptoFare){
                     $clientComission = $clientCom->commision;
                     break;
                 }  

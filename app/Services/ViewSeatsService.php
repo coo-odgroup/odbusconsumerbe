@@ -336,7 +336,7 @@ class ViewSeatsService
                     }  
                 }   
             } 
-            $client_service_charges = round($addCharge/100 * $odbus_charges_ownerFare);
+            $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
             $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
             $seatWithPriceRecords[] = array(
                 "totalFare" => $newSeatFare
@@ -525,7 +525,7 @@ public function getPriceCalculation($request,$clientId)
                 }  
             }   
         } 
-    $client_service_charges = round($addCharge/100 * $odbus_charges_ownerFare);
+    $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
     $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
 
     //$odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);

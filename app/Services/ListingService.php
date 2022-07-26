@@ -222,17 +222,12 @@ class ListingService
             }
 
             else if($common[0]->bus_list_sequence==3){
-
                $sortar=['totalSeats', 'desc'];
-
             } 
             
             else{
-
                 $sortar=['departureTime', 'asc'];   
-
             } 
-   
             if(count($hideBusRecords) > 0){
                $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole,$clientId);
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
@@ -241,11 +236,8 @@ class ListingService
 
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
                 $showRecords = collect($showRecords)->sortBy([ $sortar]);
-
                 $hideRecords = collect($hideRecords)->sortBy([$sortar]);
-
                 $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
-
                 $ListingRecords = $showRecords->concat($soldoutRecords);
                 $ListingRecords = $ListingRecords->concat($hideRecords);
             }else{
@@ -695,7 +687,7 @@ class ListingService
                     }  
                 }   
             } 
-            $client_service_charges = round($addCharge/100 * $startingFromPrice);
+            $client_service_charges = ($addCharge/100 * $startingFromPrice);
             $newSeatFare = $startingFromPrice + $client_service_charges;
            
                 $arr= array(
