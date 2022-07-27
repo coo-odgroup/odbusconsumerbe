@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\TicketPrice;
+use App\Models\BusCancelled;
 use App\Models\BusLocationSequence;
 use App\Models\BookingSequence;
 use App\Repositories\ChannelRepository;
@@ -274,11 +275,65 @@ class ClientBookingRepository
         $busId = $bookingRecord[0]->bus_id;  
         $sourceId = $bookingRecord[0]->source_id;
         $destinationId = $bookingRecord[0]->destination_id;
-        $entry_date = $bookingRecord[0]->journey_dt;    
+        $entry_date = $bookingRecord[0]->journey_dt;
+
+
         $seatIds = [];
-            foreach($bookingRecord[0]->bookingDetail as $bd){
-                    array_push($seatIds,$bd->busSeats->seats->id);              
-            } 
+        foreach($bookingRecord[0]->bookingDetail as $bd){
+                array_push($seatIds,$bd->busSeats->seats->id);              
+        } 
+        
+        
+              ///////////////////////cancelled bus recheck////////////////////////
+              $routeDetails = TicketPrice::where('source_id', $sourceId)
+              ->where('destination_id', $destinationId)
+              ->where('bus_id', $busId)
+              ->where('status','1')
+              ->get(); 
+
+                $startJDay = $routeDetails[0]->start_j_days;
+                $ticketPriceId = $routeDetails[0]->id;
+
+                switch($startJDay){
+                    case(1):
+                        $new_date = $entry_date;
+                        break;
+                    case(2):
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                        break;
+                    case(3):
+                        $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                        break;
+                }   
+                $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                            ->where('status', '1')
+                                            ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                            $bcd->where('cancelled_date',$new_date);
+                                            }])->get(); 
+
+                $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+
+                if(isset($busCancel) && $busCancel->isNotEmpty()){
+                    return "BUS_CANCELLED";
+                }
+                /////////////////seat block recheck////////////////////////
+                $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                        ->where('type',2)
+                                        ->where('bus_id',$busId)
+                                        ->where('status',1)
+                                        ->where('ticket_price_id',$ticketPriceId)
+                                        ->whereIn('seats_id',$seatIds)
+                                        ->get();
+                                                    
+                if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                    return "SEAT_BLOCKED";
+                }
+        
+        
+                ////////////////////////////
+
+
+       
             $data = array(
                 'busId' => $busId,
                 'sourceId' =>  $sourceId,
@@ -303,6 +358,8 @@ class ClientBookingRepository
         $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
             return $value == null;
         });
+
+
         if(sizeof($filtered->all())==0){
             $bookingId = $bookingRecord[0]->id; 
         $busId = $bookingRecord[0]->bus_id;
