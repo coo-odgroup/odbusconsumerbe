@@ -388,6 +388,19 @@ class clientBookingController extends Controller
         }  
         try{  
             $response = $this->clientBookingService->ticketConfirmation($data); 
+
+            switch($response){
+              case('SEAT UN-AVAIL'):  
+                  return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+              break;
+              case('BUS_CANCELLED'):    
+                  return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
+              break;
+              case('SEAT_BLOCKED'):    
+                  return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
+              break;
+          }
+   
             return $this->successResponse($response,Config::get('constants.TICKET_CONFIRMED'),Response::HTTP_OK);
          }
         catch (Exception $e) {
