@@ -326,6 +326,7 @@ class ViewSeatsService
                                                 ->get(); 
                     
             $client_service_charges = 0;
+            $addCharge = 0;
             if($clientCommissions){
                 foreach($clientCommissions as $clientCom){
                     $startFare = $clientCom->starting_fare;
@@ -515,6 +516,7 @@ public function getPriceCalculation($request,$clientId)
                                         ->get(); 
 
     $client_service_charges = 0;
+    $addCharge = 0;
         if($clientCommissions){
             foreach($clientCommissions as $clientCom){
             $startFare = $clientCom->starting_fare;
