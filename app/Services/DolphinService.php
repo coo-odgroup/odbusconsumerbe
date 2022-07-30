@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use DateTime;
 
 
 class DolphinService
@@ -76,26 +78,177 @@ class DolphinService
 
        $response = $this->soapWrapper->call('GetAvailableRoutes.GetAvailableRoutes', [$option]);
 
+         $data=$this->xmlToArray($response->GetAvailableRoutesResult->any);
+
       if(isset($data['DocumentElement'])){
       
-        $data=$data['DocumentElement']['AllRouteBusLists'];
+      $data=$data['DocumentElement']['AllRouteBusLists'];
 
-       if($data){
-        foreach($data as $v){
-            
-                $result[]=[
-                    "id"=> $v['CM_CityID'],
-                    "name"=> $v['CM_CityName'],
-                    "synonym"=> '',
-                    "url"=> '',
-                ];
+      
+      if (count($data) == count($data, COUNT_RECURSIVE)){
+
+       // return $data;
+       
+        if(strpos('AM',$data['ArrivalTime']) == 0 && strpos('PM',$data['RouteTime']) ==0){
+         $booking_date= date('Y-m-d',strtotime($data['BookingDate']));        
+         $arrival_date= date('Y-m-d',strtotime($data['BookingDate']. ' +1 day'));         
+
+        }else{
+
+          $arrival_date=$booking_date= date('Y-m-d',strtotime($data['BookingDate']));  
+
         }
-       }
-    }
 
-      return $result;
-  
+        $booking_date_time= $booking_date.' '.$data['RouteTime'];
+        $arrival_date_time= $arrival_date.' '.$data['ArrivalTime'];
+
+        
+
+        $d1 = new DateTime($booking_date_time);
+        $d2 = new DateTime($arrival_date_time);
+        $interval = $d2->diff($d1);
+
+        $duration= $interval->format('%hh %im');
+
+
+
+        // $duration=  $arrival_date_time - $booking_date_time;
+
+        $result[]=[
+            "origin"=> "DOLPHIN",
+            "srcId"=> $data['FromCityId'],
+            "destId"=> $data['ToCityId'],
+            "display"=> "show",
+            "CompanyID"=> $data['CompanyID'],
+            "ReferenceNumber"=>$data['ReferenceNumber'],
+            "BoardingPoints"=>$data['BoardingPoints'],
+            "DroppingPoints"=>$data['DroppingPoints'],
+            "busId"=> $data['RouteID'],
+            "RouteTimeID"=> $data['RouteTimeID'],
+            "busName"=> $data['CompanyName'],
+            "via"=> "",
+            "popularity"=> null,
+            "busNumber"=> "",
+            "maxSeatBook"=> 6,
+            "conductor_number"=> "",
+            "couponCode"=> [],
+            "couponDetails"=> [],
+            "operatorId"=> '',
+            "operatorUrl"=> "",
+            "operatorName"=> $data['CompanyName'],
+            "sittingType"=> "",
+            "bus_description"=> "Luxury A/C Sleeper+Seater",
+            "busType"=> ($data['BusType'] == 0) ? 'AC' : 'NON AC', //1 - non ac
+            "busTypeName"=> $data['ArrangementName'],
+            "totalSeats"=> $data['EmptySeats'],
+            "seaters"=> '',
+            "sleepers"=> '',
+            "startingFromPrice"=> ($data['BusType'] == 0) ? $data['AcSeatRate'] : $data['NonAcSeatRate'] ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
+            "departureTime"=> $data['CityTime'],
+            "arrivalTime"=> $data['ArrivalTime'],
+            "totalJourneyTime"=> $duration, 
+            "amenity"=> [],
+            "safety"=> [],
+            "busPhotos"=> [],
+            "cancellationDuration"=> [],
+            "cancellationDuduction"=> [],
+            "cancellationPolicyContent"=> null,
+            "TravelPolicyContent"=> null,
+            "Totalrating"=> 0,
+            "Totalrating_5star"=> 0,
+            "Totalrating_4star"=> 0,
+            "Totalrating_3star"=> 0,
+            "Totalrating_2star"=> 0,
+            "Totalrating_1star"=> 0,
+            "reviews"=> []
+
+            
+        ];
+
+      } else{
+
+        foreach($data as $v){
+
+          if(strpos('AM',$v['ArrivalTime']) == 0 && strpos('PM',$v['RouteTime']) ==0){
+            $booking_date= date('Y-m-d',strtotime($v['BookingDate']));        
+            $arrival_date= date('Y-m-d',strtotime($v['BookingDate']. ' +1 day'));         
+   
+           }else{
+   
+             $arrival_date=$booking_date= date('Y-m-d',strtotime($v['BookingDate']));  
+   
+           }
+   
+           $booking_date_time= $booking_date.' '.$v['RouteTime'];
+           $arrival_date_time= $arrival_date.' '.$v['ArrivalTime'];
+   
+           
+   
+           $d1 = new DateTime($booking_date_time);
+           $d2 = new DateTime($arrival_date_time);
+           $interval = $d2->diff($d1);
+   
+           $duration= $interval->format('%hh %im');
+          
+          $result[]=[
+            "origin"=> "DOLPHIN",
+            "srcId"=> $v['FromCityId'],
+            "destId"=> $v['ToCityId'],
+            "display"=> "show",
+            "CompanyID"=> $v['CompanyID'],
+            "ReferenceNumber"=>$v['ReferenceNumber'],
+            "BoardingPoints"=>$v['BoardingPoints'],
+            "DroppingPoints"=>$v['DroppingPoints'],
+            "busId"=> $v['RouteID'],
+            "RouteTimeID"=> $v['RouteTimeID'],
+            "busName"=> $v['CompanyName'],
+            "via"=> "",
+            "popularity"=> null,
+            "busNumber"=> "",
+            "maxSeatBook"=> 6,
+            "conductor_number"=> "",
+            "couponCode"=> [],
+            "couponDetails"=> [],
+            "operatorId"=> '',
+            "operatorUrl"=> "",
+            "operatorName"=> $v['CompanyName'],
+            "sittingType"=> "",
+            "bus_description"=> "Luxury A/C Sleeper+Seater",
+            "busType"=> ($v['BusType'] == 0) ? 'AC' : 'NON AC', //1 - non ac
+            "busTypeName"=> $v['ArrangementName'],
+            "totalSeats"=> $v['EmptySeats'],
+            "seaters"=> '',
+            "sleepers"=> '',
+            "startingFromPrice"=> ($v['BusType'] == 0) ? $v['AcSeatRate'] : $v['NonAcSeatRate'] ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
+            "departureTime"=> $v['CityTime'],
+            "arrivalTime"=> $v['ArrivalTime'],
+            "totalJourneyTime"=> $duration, 
+            "amenity"=> [],
+            "safety"=> [],
+            "busPhotos"=> [],
+            "cancellationDuration"=> [],
+            "cancellationDuduction"=> [],
+            "cancellationPolicyContent"=> null,
+            "TravelPolicyContent"=> null,
+            "Totalrating"=> 0,
+            "Totalrating_5star"=> 0,
+            "Totalrating_4star"=> 0,
+            "Totalrating_3star"=> 0,
+            "Totalrating_2star"=> 0,
+            "Totalrating_1star"=> 0,
+            "reviews"=> []
+            
+        ];
+
+
+        }
+      }
+      
   }
+
+  return $result;  
+
+}
 
   
   public function GetSource() 
@@ -127,14 +280,6 @@ class DolphinService
                     "url"=> '',
                 ];
 
-                //get destination on basis of each source
-
-
-                // $DestResult= $this->GetDestination($v['CM_CityID']);
-
-                // if($DestResult){
-                //   $result[]= $DestResult;
-                // }
         }
        }
 
@@ -188,7 +333,7 @@ class DolphinService
                 "synonym"=> '',
                 "url"=> '',
             ];
-    }
+          }
 
         }
 
@@ -198,6 +343,277 @@ class DolphinService
       return $result;
   
   }
+
+
+  public function GetCancellationPolicy() 
+  {
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetCancellationPolicy', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['CompanyID']='251';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+       $response = $this->soapWrapper->call('GetCancellationPolicy.GetCancellationPolicy', [$option]);
+
+       return  $response->GetCancellationPolicyResult->CancellationPolicy;
+  
+  }
+
+  public function BlockSeatV2(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('BlockSeatV2', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['ReferenceNumber']='251#1669#1645#22991#59534#3189#05072022#4:00 PM#10:00 PM';
+      $option['PassengerName']='Lima Mohanty';
+      $option['SeatNames']='22,M'; // 15,F|16,M  (This should be the format )
+      $option['Email']='banashri.seofied@gmail.com';
+      $option['Phone']='8763447921';
+      $option['PickupID']='25802';
+      $option['PayableAmount']='896';
+      $option['TotalPassengers']=1;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+       $response = $this->soapWrapper->call('BlockSeatV2.BlockSeatV2', [$option]);
+
+       $data=$this->xmlToArray($response->BlockSeatV2Result->any);
+
+        // 0 then Failed 
+        // 1 then Success 
+        // 2 then Already Booked 
+        // 3 then Already On Hold by Other 
+        // 4 then Route/Time Is Inactive 
+        // 5 then Arrangement Changed 
+        // 6 then Route Time Changed 
+        // 7 then Out Of Maximum Advanced Booking Date 
+        // 8 then Fare Variations, Insufficient Balance 
+        // 9 then Stop booking is active in this route 
+        // 10 then Verify call is unauthorized – contact ITS – info@itspl.ne
+       
+
+       if(isset($data['DocumentElement'])){
+      
+        return $data=$data['DocumentElement']['ITSBlockSeatV2'];
+       }
+
+       
+
+  }
+
+  
+  
+
+  public function GetBoardingDropLocationsByCity(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetBoardingDropLocationsByCity', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['CompanyID']='251';
+      $option['CityID']='1689';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+      $response = $this->soapWrapper->call('GetBoardingDropLocationsByCity.GetBoardingDropLocationsByCity', [$option]);
+
+
+      $data=$this->xmlToArray($response->GetBoardingDropLocationsByCityResult->any);     
+
+     if(isset($data['DocumentElement'])){
+    
+      return $data=$data['DocumentElement']['GetBoardingDropLocationsByCity'];
+     }
+
+
+
+  }
+
+  public function FetchTicketPrintData(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('FetchTicketPrintData', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']='';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+     return $response = $this->soapWrapper->call('FetchTicketPrintData.FetchTicketPrintData', [$option]);
+
+
+  }
+
+  
+
+  public function GetAmenities(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetAmenities', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['CompanyID']='251';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('GetAmenities.GetAmenities', [$option]);
+     
+
+     $data=$this->xmlToArray($response->GetAmenitiesResult->any);
+
+     if(isset($data['DocumentElement'])){
+     
+       return $data=$data['DocumentElement']['GetAmenities'];
+
+
+     
+   }
+
+
+  }
+
+  public function GetBusNo(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetBusNo', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']='';
+      $option['CompanyID']='';
+      $option['RouteID']='';
+      $option['RouteTimeID']='';
+      $option['FromID']='';
+      $option['JourneyDate']=''; //dd-mm-yyyy
+      
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('GetBusNo.GetBusNo', [$option]);
+
+
+  }
+
+  public function TicketStatus(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('TicketStatus', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']='';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('TicketStatus.TicketStatus', [$option]);
+
+
+  }
+
+  public function GetSeatArrangementDetails($ref) 
+  {
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetSeatArrangementDetails', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['ReferenceNumber']=$ref;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('GetSeatArrangementDetails.GetSeatArrangementDetails', [$option]);
+
+        $data=$this->xmlToArray($response->GetSeatArrangementDetailsResult->any);
+
+      if(isset($data['DocumentElement'])){
+      
+        return $data=$data['DocumentElement']['ITSSeatDetails'];
+
+
+      
+    }
+
+  
+  }
+
+  public function GetBoardingPointDetails() 
+  {
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetBoardingPointDetails', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['ReferenceNumber']='251#1669#1604#15885#43072#3190#05072022#7:00 PM#11:25 PM';
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('GetBoardingPointDetails.GetBoardingPointDetails', [$option]);
+
+         $data=$this->xmlToArray($response->GetBoardingPointDetailsResult->any);
+
+      if(isset($data['DocumentElement'])){
+      
+        return $data=$data['DocumentElement']['ITSBoardingPoint'];
+
+    }
+
+      return $result;
+  
+  }
+
 
   public function xmlToArray($xmlstring){
     
