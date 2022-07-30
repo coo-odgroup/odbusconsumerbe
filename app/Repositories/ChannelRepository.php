@@ -32,6 +32,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
+use Illuminate\Support\Facades\DB;
 
 class ChannelRepository
 {
@@ -780,7 +781,10 @@ class ChannelRepository
 
   
       public function UpdateStatus($bookingId,$seatHold){
-        $this->booking->where('id', $bookingId)->update(['status' => $seatHold]);
+        DB::transaction(function () use ($bookingId,$seatHold){
+          $this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
+      }, 5);
+
       }
 
       public function GetCustomerPaymentId($razorpay_order_id)

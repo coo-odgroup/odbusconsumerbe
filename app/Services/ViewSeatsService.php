@@ -225,6 +225,47 @@ class ViewSeatsService
                   return $viewSeat;    
     }
 
+////////////////////////////////////////////////
+public function checkBlockedSeats($request)
+{
+    $booked = Config::get('constants.BOOKED_STATUS');
+    $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+
+    $sourceId = $request['sourceId'];
+    $destinationId = $request['destinationId'];
+    $busId = $request['busId'];
+    $journeyDate = $request['entry_date'];
+    $journeyDate = date("Y-m-d", strtotime($journeyDate));
+
+    $user_id = Bus::where('id', $busId)->first()->user_id;
+    $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
+    $reqRange = Arr::sort($requestedSeq);
+    $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
+    
+    if (sizeof($bookingIds)){
+        $blockedSeats=array();
+        foreach($bookingIds as $bookingId){
+            $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
+            foreach($bookedSeatIds as $bookedSeatId){
+                $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);   
+            }   
+             $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
+             $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
+             $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
+             $bookedRange = Arr::sort($bookedSequence);
+            //seat not available on requested seq so blocked seats are calculated 
+            if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
+                $blockedSeats = array_merge($blockedSeats,$seatsIds);
+             }
+        }
+    }else{          //no booking on that specific date, so all seats are available
+            $blockedSeats=array();
+    }
+    return  $blockedSeats;
+}
+////////////////////////////////////////////
+
+
     public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     {
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
@@ -550,7 +591,7 @@ public function getPriceCalculation($request,$clientId)
     return $seatWithPriceRecords;
     
 }
-/////////////for client api use///////////////////
+/////////////for client api use(not in use)///////////////////
 public function checkSeatStatus($request)
 {
     $booked = Config::get('constants.BOOKED_STATUS');

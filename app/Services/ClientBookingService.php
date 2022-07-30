@@ -55,7 +55,7 @@ class ClientBookingService
        
     }   
 
-    public function seatBlock($request)
+    public function seatBlock($request,$clientRole)
     {
         try {
            
@@ -137,8 +137,9 @@ class ClientBookingService
                 return "SEAT_BLOCKED";
             }
         
-            //$seatStatus = $this->viewSeatsService->getAllViewSeats($request);  
-            $seatStatus = $this->viewSeatsService->checkSeatStatus($data);
+            $seatStatus = $this->viewSeatsService->getAllViewSeats($data,$clientRole);  
+           
+            //$seatStatus = $this->viewSeatsService->checkSeatStatus($data);
 
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
