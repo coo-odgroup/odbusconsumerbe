@@ -692,6 +692,12 @@ class ListingService
             $newSeatFare = $startingFromPrice + $client_service_charges;
            
                 $arr= array(
+                    "origin" => 'ODBUS',
+                    "CompanyID" => '',
+                    "ReferenceNumber" => '',
+                    "BoardingPoints" => '',
+                    "DroppingPoints" => '',
+                    "RouteTimeID" => '',
                     "srcId" => $sourceID,
                     "destId" => $destinationID,
                     "display" => $flag,
@@ -730,6 +736,12 @@ class ListingService
             }
             }else{
                 $arr= array(
+                    "origin" => 'ODBUS',
+                    "CompanyID" => '',
+                    "ReferenceNumber" => '',
+                    "BoardingPoints" => '',
+                    "DroppingPoints" => '',
+                    "RouteTimeID" => '',
                     "srcId" => $sourceID,
                     "destId" => $destinationID,
                     "display" => $flag,
