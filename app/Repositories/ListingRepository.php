@@ -99,8 +99,14 @@ class ListingRepository
 
      public function getLocationID($name)
      {
-         return $this->location->where("name", $name)->where("status", 1)->get('id');
+         return $this->location->where("name", $name)->where("status", 1)->get();
      }
+
+     public function getLocationResult($id)
+     {
+         return $this->location->where("id", $id)->where("status", 1)->get();
+     }
+
      public function getBusCoupon($busId)
      {
          return Coupon::where('bus_id', $busId)
@@ -1179,6 +1185,7 @@ class ListingRepository
       $location->url = $url;
       $location->synonym = $data['synonym'];
       $location->is_dolphin = $data['is_dolphin'];
+      $location->status = 1;
       $location->dolphin_id = $data['dolphin_id'];
       $location->created_by = 'CRON JOB';
       return $location;
