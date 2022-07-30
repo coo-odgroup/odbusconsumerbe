@@ -313,6 +313,9 @@ class clientBookingController extends Controller
     public function seatBlock(Request $request)
     {   
         $data = $request->all();
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
         $seatBlockValidation = $this->seatBlockValidator->validate($data);
   
         if ($seatBlockValidation->fails()) {
@@ -320,7 +323,7 @@ class clientBookingController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
-            $response = $this->clientBookingService->seatBlock($request);
+            $response = $this->clientBookingService->seatBlock($request,$clientRole);
             switch($response){
                 case('SEAT UN-AVAIL'):  
                     return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);

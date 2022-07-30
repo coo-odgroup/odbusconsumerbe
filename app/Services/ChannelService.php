@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use App\Services\ViewSeatsService;
 use InvalidArgumentException;
 use App\Repositories\CommonRepository;
-
+use Illuminate\Support\Arr;
 
 class ChannelService
 {
@@ -96,8 +96,170 @@ class ChannelService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
         return $sendEmail;
-    }   
-    public function makePayment($request,$clientRole)
+    } 
+    
+    ///////////////////////////////////////////////////////////////////
+    public function makePayment($request)
+    {
+        try {
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+                $busId = $request['busId']; 
+                $sourceId = $request['sourceId'];
+                $destinationId = $request['destinationId'];  
+                $transationId = $request['transaction_id']; 
+                $seatIds = $request['seatIds'];
+                $entry_date = $request['entry_date'];
+                $entry_date = date("Y-m-d", strtotime($entry_date));
+
+            ///////////////////////cancelled bus recheck////////////////////////
+            $routeDetails = TicketPrice::where('source_id', $sourceId)
+                            ->where('destination_id', $destinationId)
+                            ->where('bus_id', $busId)
+                            ->where('status','1')
+                            ->get(); 
+           
+            $startJDay = $routeDetails[0]->start_j_days;
+            $ticketPriceId = $routeDetails[0]->id;
+
+            switch($startJDay){
+                case(1):
+                    $new_date = $entry_date;
+                    break;
+                case(2):
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    break;
+                case(3):
+                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                    break;
+            }   
+            $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                        ->where('status', '1')
+                                        ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                        $bcd->where('cancelled_date',$new_date);
+                                        }])->get(); 
+           
+            $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+
+            if(isset($busCancel) && $busCancel->isNotEmpty()){
+                return "BUS_CANCELLED";
+            }
+            /////////////////seat block recheck////////////////////////
+            $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                    ->where('type',2)
+                                    ->where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->whereIn('seats_id',$seatIds)
+                                    ->get();
+                                                    
+            if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                return "SEAT_BLOCKED";
+            }
+            $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($request);
+            ////////////
+            
+            $intersect = collect($bookedHoldSeats)->intersect($seatIds);
+            // if(count($intersect)){
+            //      return "SEAT UN-AVAIL";
+            // }
+
+            ///////////
+
+            $records = $this->channelRepository->getBookingRecord($transationId);
+
+            if($records[0]->payable_amount == 0.00){
+                    $amount = $records[0]->total_fare;
+            }else{
+                    $amount = $records[0]->payable_amount;
+            }
+
+            /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
+
+            $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
+
+            if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
+
+            $update_customer_gst['customer_gst_status']=1;
+            $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
+            $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
+            $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
+            $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
+
+            $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
+
+            $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
+
+            $amount = round($amount+$customer_gst_amount,2);
+            $update_customer_gst['payable_amount']=$amount;
+                    
+            $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
+
+            }else{
+
+            $amount = round($amount - $records[0]->customer_gst_amount,2);
+
+            $update_customer_gst['customer_gst_status']=0;
+            $update_customer_gst['customer_gst_number']=null;
+            $update_customer_gst['customer_gst_business_name']=null;
+            $update_customer_gst['customer_gst_business_email']=null;
+            $update_customer_gst['customer_gst_business_address']=null;
+            $update_customer_gst['customer_gst_percent']=0;                    
+            $update_customer_gst['customer_gst_amount']=0;
+            $update_customer_gst['payable_amount']=$amount;    
+            }
+
+            $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
+
+
+            if($records && $records[0]->status == $seatHold){
+                $key= $this->channelRepository->getRazorpayKey();
+
+                $bookingId = $records[0]->id;   
+                $name = $records[0]->users->name;
+                $receiptId = 'rcpt_'.$transationId;
+
+                $GetOrderId=$this->channelRepository->UpdateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    
+                $data = array(
+                    'name' => $records[0]->users->name,
+                    'amount' => $amount,
+                    'key' => $key,
+                    'razorpay_order_id' => $GetOrderId   
+                );
+                    return $data;
+            }elseif(count($intersect)){
+                return "SEAT UN-AVAIL";
+            }else{
+                //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
+                $bookingId = $records[0]->id;    
+                $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+                $name = $records[0]->users->name;
+                $receiptId = 'rcpt_'.$transationId;
+
+                $key= $this->channelRepository->getRazorpayKey();
+
+                $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    
+
+                $data = array(
+                    'name' => $name,
+                    'amount' => $amount,
+                    'key' => $key,
+                    'razorpay_order_id' => $GetOrderId   
+                );
+                return $data;
+            }
+        } catch (Exception $e) {
+            Log::info($e);
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }   
+    }
+
+
+
+
+    ///////////////////////////////////////////////////////////////////
+    public function makePayment_original($request,$clientRole)
     {
         try {
             //$payment = $this->channelRepository->makePayment($data);
@@ -157,6 +319,7 @@ class ChannelService
             }
           ////////////////////////////////////////////////////////////
                 $seatStatus = $this->viewSeatsService->getAllViewSeats($request,$clientRole); 
+               
                 if(isset($seatStatus['lower_berth'])){
                     $lb = collect($seatStatus['lower_berth']);
                     $collection= $lb;
@@ -168,7 +331,7 @@ class ChannelService
                 if(isset($lb) && isset($ub)){
                     $collection= $lb->merge($ub);
                 } 
-                $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where bus_id matches
+                $checkBookedSeat = $collection->whereIn('id', $seatIds)->pluck('Gender');     //Select the Gender where seat_id matches
                 $filtered = $checkBookedSeat->reject(function ($value, $key) {    //remove the null value
                     return $value == null;
                 });
