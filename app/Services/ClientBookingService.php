@@ -59,6 +59,143 @@ class ClientBookingService
     {
         try {
            
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');  
+                $transationId = $request['transaction_id']; 
+
+                $bookingDetails = Booking::where('transaction_id', $transationId)
+                                        ->with(["bookingDetail" => function($b){
+                                            $b->with(["busSeats" => function($bs){
+                                                $bs->with(["seats" => function($s){ 
+                                                }]);
+                                            }]);    
+                                        }])
+                                        ->get();
+                
+                $busId = $bookingDetails[0]->bus_id; 
+                $sourceId = $bookingDetails[0]->source_id;
+                $destinationId = $bookingDetails[0]->destination_id;
+                $entry_date = $bookingDetails[0]->journey_dt;
+                
+                $seatIds = [];
+                foreach($bookingDetails[0]->bookingDetail as $bd){
+                    array_push($seatIds,$bd->busSeats->seats->id);              
+                }  
+                $data = array(
+                    'busId' => $busId,
+                    'sourceId' =>  $sourceId,
+                    'destinationId' => $destinationId,
+                    'entry_date' => $entry_date,
+                    'seatIds' => $seatIds,
+                ); 
+            ///////////////////////cancelled bus recheck////////////////////////
+            $routeDetails = TicketPrice::where('source_id', $sourceId)
+                            ->where('destination_id', $destinationId)
+                            ->where('bus_id', $busId)
+                            ->where('status','1')
+                            ->get(); 
+                        
+            $startJDay = $routeDetails[0]->start_j_days;
+            $ticketPriceId = $routeDetails[0]->id;
+
+            switch($startJDay){
+                case(1):
+                    $new_date = $entry_date;
+                    break;
+                case(2):
+                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    break;
+                case(3):
+                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                    break;
+            }   
+            $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                        ->where('status', '1')
+                                        ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                        $bcd->where('cancelled_date',$new_date);
+                                        }])->get(); 
+           
+            $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+
+            if(isset($busCancel) && $busCancel->isNotEmpty()){
+                return "BUS_CANCELLED";
+            }
+          /////////////////seat block recheck////////////////////////
+            $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                    ->where('type',2)
+                                    ->where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->whereIn('seats_id',$seatIds)
+                                    ->get();                        
+            if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                return "SEAT_BLOCKED";
+            }
+        
+            $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($data);
+            
+            $intersect = collect($bookedHoldSeats)->intersect($seatIds);
+            
+            $records = $this->channelRepository->getBookingRecord($transationId);
+
+            $amount = $records[0]->total_fare;
+               
+            /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
+
+            $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
+
+            if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
+
+                    $update_customer_gst['customer_gst_status']=1;
+                    $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
+                    $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
+                    $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
+                    $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
+
+                    $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
+
+                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) ) *$masterSetting[0]->customer_gst)/100,2);
+
+                    $amount = round($amount+$customer_gst_amount,2);
+                    $update_customer_gst['payable_amount']=$amount;
+                    
+                    $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
+
+                }else{
+                    $amount = round($amount - $records[0]->customer_gst_amount,2);
+                    $update_customer_gst['customer_gst_status']=0;
+                    $update_customer_gst['customer_gst_number']=null;
+                    $update_customer_gst['customer_gst_business_name']=null;
+                    $update_customer_gst['customer_gst_business_email']=null;
+                    $update_customer_gst['customer_gst_business_address']=null;
+                    $update_customer_gst['customer_gst_percent']=0;                    
+                    $update_customer_gst['customer_gst_amount']=0;
+                    $update_customer_gst['payable_amount']=$amount;    
+                }
+                $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
+
+                if(count($intersect)){
+                    return "SEAT UN-AVAIL";
+                }else{
+                    $bookingId = $records[0]->id;   
+                    $name = $records[0]->users->name; 
+                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
+                    $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+
+                    $data = array(
+                        'customer_name' => $name,
+                        'amount' => $amount,
+                    );
+                    return $data;         
+                }             
+        } catch (Exception $e) {
+            Log::info($e);
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }   
+    } 
+    public function seatBlock_original($request,$clientRole)
+    {
+        try {
+           
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
                 //$busId = $request['busId']; 
                 //$sourceId = $request['sourceId'];
@@ -138,7 +275,6 @@ class ClientBookingService
             }
         
             $seatStatus = $this->viewSeatsService->getAllViewSeats($data,$clientRole);  
-           
             //$seatStatus = $this->viewSeatsService->checkSeatStatus($data);
 
                 if(isset($seatStatus['lower_berth'])){
@@ -625,6 +761,7 @@ class ClientBookingService
                           $min= $duration[0];
        
                           if( $interval > 999){
+                            
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
@@ -632,6 +769,7 @@ class ClientBookingService
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
+                              //$data['cancelCommission'] = $deductAmt/2;
                               $data['cancelCommission'] = $deductAmt/2;
                               
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
@@ -669,7 +807,7 @@ class ClientBookingService
                               $data['cancelCommission'] = $deductAmt/2;            
                             
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
-
+                            return $clientWallet;
                               $smsData['refundAmount'] = $refundAmt; 
                               $emailData['deductionPercentage'] = $deduction;
                               $emailData['refundAmount'] = $refundAmt;

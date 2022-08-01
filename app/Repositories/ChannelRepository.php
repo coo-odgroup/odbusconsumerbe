@@ -782,8 +782,9 @@ class ChannelRepository
   
       public function UpdateStatus($bookingId,$seatHold){
         DB::transaction(function () use ($bookingId,$seatHold){
-          $this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
-      }, 5);
+          //$this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
+          $this->booking->lockForUpdate()->where('id', $bookingId)->update(['status' => $seatHold]);
+      });
 
       }
 
@@ -961,8 +962,13 @@ class ChannelRepository
         $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
         $afterTdsComission = $totalAgentComission - $tds;
 
-        $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,
-        'status' => $seatHold, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
+        DB::transaction(function () use ($bookingId,$seatHold,$appliedComission,$totalAgentComission,$tds,$afterTdsComission){
+          
+        $this->booking->lockForUpdate()->where('id', $bookingId)->update(['customer_comission' => $appliedComission,'status' => $seatHold, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
+        });
+        
+        // $this->booking->where('id', $bookingId)->update(['customer_comission' => $appliedComission,
+        // 'status' => $seatHold, 'agent_commission' => $totalAgentComission, 'tds' => $tds,'with_tds_commission' => $afterTdsComission]);
 
         $walletBalance = AgentWallet::where('user_id',$agentId)->latest()->first()->balance;
         $transactionId = date('YmdHis') . gettimeofday()['usec'];

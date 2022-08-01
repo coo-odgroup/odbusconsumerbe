@@ -156,14 +156,8 @@ class ChannelService
                 return "SEAT_BLOCKED";
             }
             $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($request);
-            ////////////
             
             $intersect = collect($bookedHoldSeats)->intersect($seatIds);
-            // if(count($intersect)){
-            //      return "SEAT UN-AVAIL";
-            // }
-
-            ///////////
 
             $records = $this->channelRepository->getBookingRecord($transationId);
 
@@ -254,8 +248,6 @@ class ChannelService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }   
     }
-
-
 
 
     ///////////////////////////////////////////////////////////////////
@@ -645,9 +637,106 @@ class ChannelService
         }    
     } 
     
+    public function walletPayment($request,$clientRole)
+    {
+        try {
+
+                $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
+                $busId = $request['busId']; 
+                $sourceId = $request['sourceId'];
+                $destinationId = $request['destinationId'];  
+                $transactionId = $request['transaction_id']; 
+                $seatIds = $request['seatIds'];
+                $entry_date = $request['entry_date'];
+                $entry_date = date("Y-m-d", strtotime($entry_date));
+                $agentId = $request['user_id'];
+                $agentName = $request['user_name'];
+                $appliedComission = $request['applied_comission'];
+                $booked = Config::get('constants.BOOKED_STATUS');
+
+                 ///////////////////////cancelled bus recheck////////////////////////
+                $routeDetails = TicketPrice::where('source_id', $sourceId)
+                            ->where('destination_id', $destinationId)
+                            ->where('bus_id', $busId)
+                            ->where('status','1')
+                            ->get(); 
+           
+                $startJDay = $routeDetails[0]->start_j_days;
+                $ticketPriceId = $routeDetails[0]->id;
+
+                switch($startJDay){
+                    case(1):
+                        $new_date = $entry_date;
+                        break;
+                    case(2):
+                        $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                        break;
+                    case(3):
+                        $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                        break;
+                }   
+                $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                            ->where('status', '1')
+                                            ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                            $bcd->where('cancelled_date',$new_date);
+                                            }])->get(); 
+           
+                $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+
+                if(isset($busCancel) && $busCancel->isNotEmpty()){
+                    return "BUS_CANCELLED";
+                }
+            /////////////////seat block recheck////////////////////////
+                $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                        ->where('type',2)
+                                        ->where('bus_id',$busId)
+                                        ->where('status',1)
+                                        ->where('ticket_price_id',$ticketPriceId)
+                                        ->whereIn('seats_id',$seatIds)
+                                        ->get();
+                                                    
+                if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                    return "SEAT_BLOCKED";
+                }
+         
+                //$seatStatus = $this->viewSeatsService->getAllViewSeats($request,$clientRole); 
+                $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($request);
+            
+                $intersect = collect($bookedHoldSeats)->intersect($seatIds);
+
+                if(count($intersect)){
+                    return "SEAT UN-AVAIL";
+                }else{
+               
+                    $records = $this->channelRepository->getBookingRecord($transactionId);
+                    $bookingId = $records[0]->id;
+                    $pnr = $records[0]->pnr;  
+                    
+                    $name = $records[0]->users->name;
+                    if($records[0]->payable_amount == 0.00){
+                        $amount = $records[0]->total_fare;
+                    }else{
+                        $amount = $records[0]->payable_amount;
+                    }
+
+                    $details=$this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId,$pnr);   
+
+                    $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission,$pnr);
+                    
+                    $data = array(
+                        'notifications' => $totalSeatsBookedByAgent->notification_heading,
+                    );
+                    return $data;
+                }
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }  
+    }
     
 
-    public function walletPayment($request,$clientRole)
+    public function walletPayment_original($request,$clientRole)
     {
         try {
 
