@@ -524,22 +524,22 @@ class ClientBookingRepository
               ->get();
     }
 
-    public function updateClientCancelTicket($bookingId,$userId,$refundAmt,$percentage,$deductAmt){
+    public function updateClientCancelTicket($bookingId,$userId,$data){
+       
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
        
         $clientDetails = ClientWallet::where('user_id',$userId)
                                         ->orderBy('id','DESC')->where("status",1)->limit(1)
-                                        ->get(); 
-        //$OdbusCancelProfit = $deductAmt/2;                               
+                                        ->get();                               
         
         $transactionId = date('YmdHis') . gettimeofday()['usec'];
         $clientWallet = new ClientWallet();
         $clientWallet->transaction_id = $transactionId;
-        $clientWallet->amount = $refundAmt;
+        $clientWallet->amount = $data['refundAmount'];
         $clientWallet->type = 'Refund';
         $clientWallet->booking_id = $bookingId;
         $clientWallet->transaction_type = 'c';
-        $clientWallet->balance = $clientDetails[0]->balance + $refundAmt;
+        $clientWallet->balance = $clientDetails[0]->balance + $data['refundAmount'];
         $clientWallet->user_id = $userId;
         $clientWallet->created_by = $clientDetails[0]->created_by;
         $clientWallet->status = 1;
@@ -547,35 +547,26 @@ class ClientBookingRepository
         $clientWallet->save();
 
         $clientDetails =  ClientWallet::where('user_id',$userId)->orderBy('id','DESC')->where("status",1)->limit(1)->get(); 
-        /////////////////////////////////////
-        $clientCancelComPer = 0;
-        $OdbusCancelProfit = 0;
-        $clientCancelComPer = ClientFeeSlab::where('user_id',$userId)->first()->cancellation_commission;
-        if($clientCancelComPer == 0){
-            $OdbusCancelProfit = $deductAmt; 
-        }else{
-            $OdbusCancelProfit = $deductAmt * ((100 - $clientCancelComPer))/100; 
-            $clientCancelProfit = $deductAmt - $OdbusCancelProfit;
-
+    
+        if($data['ClientCancelCommission'] != 0){
+            
             $transactionId = date('YmdHis') . gettimeofday()['usec'];
             $clientWallet = new ClientWallet();
             $clientWallet->transaction_id = $transactionId;
             //$clientWallet->amount = $deductAmt/2;
-            $clientWallet->amount = $clientCancelProfit;
+            $clientWallet->amount = $data['ClientCancelCommission'];
             $clientWallet->type = 'CancelCommission';
             $clientWallet->booking_id = $bookingId;
             $clientWallet->transaction_type = 'c';
             //$clientWallet->balance = $clientDetails[0]->balance + ($deductAmt/2);
-            $clientWallet->balance = $clientDetails[0]->balance + $clientCancelProfit;
+            $clientWallet->balance = $clientDetails[0]->balance + $data['ClientCancelCommission'];
             $clientWallet->user_id = $userId;
-        
             $clientWallet->created_by = $clientDetails[0]->created_by;
             $clientWallet->status = 1;
-            $clientWallet->save();
-      
+            $clientWallet->save(); 
         }
-   
-        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'odbus_cancel_profit' => $OdbusCancelProfit]);             
+        
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $data['refundAmount'], 'deduction_percent' => $data['Percentage'], 'odbus_cancel_profit' => $data['OdbusCancelCommission']]);             
         
         return $clientWallet;
     }

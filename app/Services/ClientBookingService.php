@@ -12,6 +12,7 @@ use App\Models\TicketPrice;
 use App\Models\BusCancelled;
 use App\Models\Booking;
 use App\Models\BusSeats;
+use App\Models\ClientFeeSlab;
 use App\Models\Location;
 use App\Models\BusContacts;
 use Carbon\Carbon;
@@ -461,14 +462,16 @@ class ClientBookingService
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
+                              $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%"; 
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              //$data['totalfare'] = $paidAmount + $customer_comission;
-                              $data['cancelCommission'] = $deductAmt/2;
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
                               
-                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
+                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
                              
                               $smsData['refundAmount'] = $refundAmt;     
                               $emailData['deductionPercentage'] = $deduction;
@@ -485,13 +488,16 @@ class ClientBookingService
                            
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
+                              $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%";
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['cancelCommission'] = $deductAmt/2;            
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];            
                             
-                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
+                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
 
                               $smsData['refundAmount'] = $refundAmt; 
                               $emailData['deductionPercentage'] = $deduction;
@@ -505,10 +511,6 @@ class ClientBookingService
                               return $data;   
                           }
                       }                          
-              // } 
-            //    else{                
-            //        return "PNR_NOT_MATCH";                
-            //   }
           } 
           else{            
               return "INV_CLIENT";            
@@ -544,7 +546,8 @@ class ClientBookingService
                        {
                        return "CANCEL_NOT_ALLOWED";
                        }
-                      
+
+                       $userId = $booking_detail[0]->user_id;
                        $paidAmount = $booking_detail[0]->total_fare;
    
                        if($booking_detail[0]->status==2){
@@ -571,8 +574,9 @@ class ClientBookingService
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['clientCancelCommission'] = $deductAmt/2; 
-                              $data['odbusCancelCommission'] = $deductAmt/2;    
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
                             
                               return $data;
           
@@ -584,8 +588,9 @@ class ClientBookingService
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['clientCancelCommission'] = $deductAmt/2; 
-                              $data['odbusCancelCommission'] = $deductAmt/2;            
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
                            
                               return $data;   
                           }
@@ -626,6 +631,7 @@ class ClientBookingService
                        }
                       
                        $paidAmount = $booking_detail[0]->total_fare;
+                       $userId = $booking_detail[0]->user_id;
    
                        if($booking_detail[0]->status==2){
                            $data['cancel_status'] = false;
@@ -651,8 +657,11 @@ class ClientBookingService
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['clientCancelCommission'] = $deductAmt/2; 
-                              $data['odbusCancelCommission'] = $deductAmt/2;    
+                              //$data['clientCancelCommission'] = $deductAmt/2; 
+                              //$data['odbusCancelCommission'] = $deductAmt/2; 
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
                             
                               return $data;
           
@@ -664,8 +673,9 @@ class ClientBookingService
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['clientCancelCommission'] = $deductAmt/2; 
-                              $data['odbusCancelCommission'] = $deductAmt/2;            
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
                            
                               return $data;   
                           }
@@ -679,6 +689,23 @@ class ClientBookingService
         }    
     }   
     
+    public function cancelCommission($userId,$deductAmt){
+        $clientCancelComPer =0;
+        $clientCancelComPer = ClientFeeSlab::where('user_id',$userId)->first()->cancellation_commission;
+        if($clientCancelComPer == 0){
+            $OdbusCancelProfit = $deductAmt;
+            $clientCancelProfit = 0; 
+        }else{
+          $OdbusCancelProfit = round($deductAmt * ((100 - $clientCancelComPer))/100,2); 
+          $clientCancelProfit = round($deductAmt - $OdbusCancelProfit,2);
+        }
+        $cancelCom = array(
+                            "OdbusCancelProfit" => $OdbusCancelProfit, 
+                            "clientCancelProfit" => $clientCancelProfit
+                    );
+        return $cancelCom;
+    }
+
     public function clientTicketCancel($request)////////client panel use
     {
         try {        
@@ -752,7 +779,6 @@ class ClientBookingService
                        }
                        
                        $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
-                      
                        foreach($cancelPolicies as $cancelPolicy){
                           $duration = $cancelPolicy->duration;
                           $deduction = $cancelPolicy->deduction;
@@ -765,14 +791,16 @@ class ClientBookingService
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
+                              $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%"; 
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              //$data['cancelCommission'] = $deductAmt/2;
-                              $data['cancelCommission'] = $deductAmt/2;
-                              
-                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
+
+                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
                              
                               $smsData['refundAmount'] = $refundAmt;     
                               $emailData['deductionPercentage'] = $deduction;
@@ -800,14 +828,19 @@ class ClientBookingService
                            
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
+                              $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%";
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
-                              $data['cancelCommission'] = $deductAmt/2;            
+                              //$data['cancelCommission'] = $deductAmt/2;   
+                                     
+                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
                             
-                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$refundAmt,$deduction,$deductAmt); 
-                            return $clientWallet;
+                              $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
+                              
                               $smsData['refundAmount'] = $refundAmt; 
                               $emailData['deductionPercentage'] = $deduction;
                               $emailData['refundAmount'] = $refundAmt;
