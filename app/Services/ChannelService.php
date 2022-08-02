@@ -637,7 +637,7 @@ class ChannelService
         }    
     } 
     
-    public function walletPayment($request,$clientRole)
+    public function walletPayment($request)
     {
         try {
 

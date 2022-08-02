@@ -547,9 +547,9 @@ public function pay(Request $request){
   public function walletPayment(Request $request)
   {   
       $data = $request->all();
-      $token = JWTAuth::getToken();
-      $user = JWTAuth::toUser($token); 
-      $clientRole = $user->role_id;
+    //   $token = JWTAuth::getToken();
+    //   $user = JWTAuth::toUser($token); 
+    //   $clientRole = $user->role_id;
       $walletPaymentValidation = $this->agentWalletPaymentValidator->validate($data);
 
       if ($walletPaymentValidation->fails()) {
@@ -557,7 +557,8 @@ public function pay(Request $request){
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }  
       try {
-          $response = $this->channelService->walletPayment($request,$clientRole); 
+         // $response = $this->channelService->walletPayment($request,$clientRole); 
+         $response = $this->channelService->walletPayment($request); 
             switch($response){
                 case('SEAT UN-AVAIL'):  
                     return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
