@@ -549,7 +549,8 @@ class ClientBookingService
 
                        $userId = $booking_detail[0]->user_id;
                        $paidAmount = $booking_detail[0]->total_fare;
-   
+                       $data['bookingDetails'] = $booking_detail;
+                       
                        if($booking_detail[0]->status==2){
                            $data['cancel_status'] = false;
                        }else{
