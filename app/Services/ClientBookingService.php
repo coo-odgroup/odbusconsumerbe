@@ -854,7 +854,7 @@ class ClientBookingService
                               //$sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                                } 
 
-                               $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+                               //$this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
 
                               ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -863,10 +863,11 @@ class ClientBookingService
                                                                 ->get('phone');
                              if($busContactDetails->isNotEmpty()){
                               $contact_number = collect($busContactDetails)->implode('phone',',');
-                              $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                              //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                              }
                               unset($data['bookingDetails'][0]->bus->cancellationslabs); 
-                              unset($data['bookingDetails'][0]->bus->cancellationslabs_id);   
+                              unset($data['bookingDetails'][0]->bus->cancellationslabs_id);  
+                              unset($data['Percentage']);  
                               return $data;   
                           }
                       }                          
