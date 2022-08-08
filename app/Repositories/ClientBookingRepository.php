@@ -341,7 +341,9 @@ class ClientBookingRepository
                                     }]);
                                 $bs->with(['BusType' => function($bt){
                                 $bt->select('id','bus_class_id','name');
-                                $bt->with(['busClass']);
+                                $bt->with(['busClass' => function($bc){
+                                   $bc->select('id','class_name');
+                                   }]);
                                  }]);
                                 $bs->with(['BusSitting'=> function($bst){
                                     $bst->select('id','name');
@@ -482,8 +484,9 @@ class ClientBookingRepository
             $sms->save();
             }  
         }
-        return $bookingDetails;                     
-        
+        unset($bookingDetails[0]->bus->cancellationslabs); 
+        unset($bookingDetails[0]->bus->cancellationslabs_id); 
+        return $bookingDetails;             
     }
 
     public function clientCancelTicket($clientId,$pnr,$booked)
