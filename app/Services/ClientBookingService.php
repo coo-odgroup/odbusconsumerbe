@@ -823,6 +823,8 @@ class ClientBookingService
                             $contact_number = collect($busContactDetails)->implode('phone',',');
                             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                             }  
+                            unset($data['bookingDetails'][0]->bus->cancellationslabs); 
+                            unset($data['bookingDetails'][0]->bus->cancellationslabs_id);   
                               return $data;
           
                           }elseif($min <= $interval && $interval <= $max){ 
@@ -862,7 +864,9 @@ class ClientBookingService
                              if($busContactDetails->isNotEmpty()){
                               $contact_number = collect($busContactDetails)->implode('phone',',');
                               $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
-                             }  
+                             }
+                              unset($data['bookingDetails'][0]->bus->cancellationslabs); 
+                              unset($data['bookingDetails'][0]->bus->cancellationslabs_id);   
                               return $data;   
                           }
                       }                          
