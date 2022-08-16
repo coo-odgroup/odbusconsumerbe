@@ -138,7 +138,7 @@ Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clien
 Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
-Route::post('/HomePage', [HomepageController::class, 'homePage']);
+Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 //});
 });
 
