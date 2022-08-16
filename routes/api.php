@@ -30,6 +30,7 @@ use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\AuthClientsController;
 use App\Http\Controllers\ClientBookingController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\HomepageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +138,7 @@ Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clien
 Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
+Route::post('/HomePage', [HomepageController::class, 'homePage']);
 //});
 });
 
