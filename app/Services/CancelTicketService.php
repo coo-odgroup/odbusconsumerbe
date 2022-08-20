@@ -36,8 +36,7 @@ class CancelTicketService
             $booked = Config::get('constants.BOOKED_STATUS');
     
             $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
-            if(isset($booking_detail[0])){  
-                       
+            if(isset($booking_detail[0])){         
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
                     $jDate = date("d-m-Y", strtotime($jDate));
@@ -61,6 +60,7 @@ class CancelTicketService
                     $current_date_time = Carbon::now()->toDateTimeString(); 
                     $bookingDate = new DateTime($combinedDT);
                     $cancelDate = new DateTime($current_date_time);
+ 
                     $interval = $bookingDate->diff($cancelDate);
                     $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
                     $smsData = array(
@@ -80,13 +80,21 @@ class CancelTicketService
                         'seat_no' => $seat_arr,
                         'cancellationDateTime' => $current_date_time
                     );
+
+                    /////// 30 mins before booking time no deduction//////////
+                    $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
+                    $difference = $bookingInitiatedDate->diff($current_date_time);
+                    $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
+                
+                    if($difference < 30){
+                        $refund = $this->cancelTicketRepository->cancelBfrThirtyMinutes($bookingId,$booking,$smsData,$emailData,$busId);
+                        return $refund;        
+                    }
+                    //////////
                     if($cancelDate >= $bookingDate || $interval < 12)
                     {
                         return 'Cancellation is not allowed'; 
                     }
-                    //  if($interval < 12) {
-                    //     return 'Cancellation is not allowed';                    
-                    // }
 
                     $paidAmount = $booking_detail[0]->booking[0]->payable_amount ;
 
@@ -101,42 +109,9 @@ class CancelTicketService
                         $min= $duration[0];
 
                         if( $interval > 999){
-                        //if( $interval > 240){
                             $deduction = 10;//minimum deduction
                             $refund =  $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId);
                             $refundAmt =  $refund['refundAmount'];
-                            $smsData['refundAmount'] = $refundAmt;
-
-                            $emailData['deductionPercentage'] = $deduction;
-                            $emailData['refundAmount'] = $refundAmt;
-                            $emailData['totalfare'] = $paidAmount;
-                            
-                           $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                            if($emailData['email'] != ''){
-                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                            } 
-
-                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
-
-                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
-                             $busContactDetails = BusContacts::where('bus_id',$busId)
-                             ->where('status','1')
-                             ->where('cancel_sms_send','1')
-                             ->get('phone');
-                             if($busContactDetails->isNotEmpty()){
-                                 $contact_number = collect($busContactDetails)->implode('phone',',');
-                                 $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
-                             }
-
-
-                            return $refund;
-                        }
-                        elseif($min <= $interval && $interval <= $max){ 
-                            
-                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
-                            ; 
-                            $refundAmt =  $refund['refundAmount'];
-                            
                             $smsData['refundAmount'] = $refundAmt;
 
                             $emailData['deductionPercentage'] = $deduction;
@@ -148,9 +123,9 @@ class CancelTicketService
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                             } 
 
-                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);  
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
 
-                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL//////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
                              ->where('status','1')
                              ->where('cancel_sms_send','1')
@@ -159,8 +134,36 @@ class CancelTicketService
                                  $contact_number = collect($busContactDetails)->implode('phone',',');
                                  $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                              }
+                            return $refund;
+                        }
+                        elseif($min <= $interval && $interval <= $max){ 
+                           
+                            $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
+                            ;
+                            return $refund; 
+                            $refundAmt =  $refund['refundAmount'];
+                            $smsData['refundAmount'] = $refundAmt;
 
+                            $emailData['deductionPercentage'] = $deduction;
+                            $emailData['refundAmount'] = $refundAmt;
+                            $emailData['totalfare'] = $paidAmount;
+                           
+                            $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                            if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            } 
 
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);  
+
+                             ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////
+                             $busContactDetails = BusContacts::where('bus_id',$busId)
+                             ->where('status','1')
+                             ->where('cancel_sms_send','1')
+                             ->get('phone');
+                             if($busContactDetails->isNotEmpty()){
+                                 $contact_number = collect($busContactDetails)->implode('phone',',');
+                                 $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                             }
                             return $refund;    
                         }
                     } 

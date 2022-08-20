@@ -294,7 +294,6 @@ class BookingManageService
                 $jDate =$booking_detail[0]->booking[0]->journey_dt;
                 $jDate = date("d-m-Y", strtotime($jDate));
                 $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
-
                 $ownerFare = $booking_detail[0]->booking[0]->owner_fare;
                 $odbusCharges = $booking_detail[0]->booking[0]->odbus_charges;
                 $baseFare = $ownerFare + $odbusCharges;
@@ -304,7 +303,19 @@ class BookingManageService
 
                 $bookingDate = new DateTime($combinedDT);
                 $cancelDate = new DateTime($current_date_time);
-
+                /////// 30 mins before booking time no deduction//////////
+                $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
+                $difference = $bookingInitiatedDate->diff($current_date_time);
+                $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
+                
+                if($difference < 30){
+                    $emailData['refundAmount'] = $booking_detail[0]->booking[0]->total_fare;
+                    $emailData['deductionPercentage'] = "0%";
+                    $emailData['deductAmount'] = 0;
+                    $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
+                    return $emailData;
+                }
+                //////////
                 $interval = $bookingDate->diff($cancelDate);
                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
                  
@@ -312,9 +323,6 @@ class BookingManageService
                 {
                     return "CANCEL_NOT_ALLOWED";
                 }
-                //  if($interval < 12) {
-                //     return 'CANCEL_NOT_ALLOWED';                    
-                // }
 
                 $srcId = $booking_detail[0]->booking[0]->source_id;
                 $desId = $booking_detail[0]->booking[0]->destination_id;

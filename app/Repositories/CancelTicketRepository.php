@@ -137,21 +137,58 @@ class CancelTicketRepository
              'refundAmount' => 0,
              'paidAmount' => $booking->total_fare,
         );
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////
         return $data;
     }
+    public function cancelBfrThirtyMinutes($bookingId,$booking,$smsData,$emailData,$busId){
 
+        $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
+
+        $emailData['refundAmount'] = $booking->total_fare;
+        $emailData['deductionPercentage'] = 0;
+        $emailData['totalfare'] = $booking->total_fare;
+ 
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $booking->total_fare, 'deduction_percent' => 0]);      
+                
+        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));   
+        
+        $smsData['refundAmount'] = $booking->total_fare;
+
+        $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
+              
+        if($emailData['email'] != ''){
+            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+        } 
+        ////////////// send to admin /////////////
+
+        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+
+        ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
+        $busContactDetails = BusContacts::where('bus_id',$busId)
+                                        ->where('status','1')
+                                        ->where('cancel_sms_send','1')
+                                        ->get('phone');
+        if($busContactDetails->isNotEmpty()){
+            $contact_number = collect($busContactDetails)->implode('phone',',');
+            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+        }
+
+        $data = array(
+             'refundAmount' => $booking->total_fare,
+             'paidAmount' => $booking->total_fare,
+        );
+        return $data;
+    }
     public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
-
+       
         $key = $this->credentials->first()->razorpay_key;
         $secretKey = $this->credentials->first()->razorpay_secret;
- 
+       
         $api = new Api($key, $secretKey);
         $payment = $api->payment->fetch($razorpay_payment_id);
+       
         $paidAmount = $payment->amount;
         $paymentStatus = $payment->status;
         //$refundStatus = $payment['refund_status'];
@@ -159,7 +196,7 @@ class CancelTicketRepository
         $ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
         $odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
         $baseFare = $ownerFare + $odbusCharges; 
-        
+      
        // if($paymentStatus == 'captured'){
             if($refundStatus != null){
                 return 'refunded';
