@@ -86,7 +86,7 @@ class UsersRepository
         $user->phone = $request['phone'];
         $user->email = $request['email'];
         if(isset($request['fcmId'])){
-          return $request['fcmId'];
+          //return $request['fcmId'];
           $user->fcm_id = $request['fcmId'];
         }
         $user->otp = $otp;
@@ -131,7 +131,7 @@ class UsersRepository
     }
 
     public function GetUserDataAfterUpdate($userId){
-      return $this->users->where('id', $userId)->get();
+      return $this->users->where('id', $userId)->first();
     }
 
     public function updateOTP($userId){
