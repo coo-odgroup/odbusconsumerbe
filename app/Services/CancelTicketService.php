@@ -82,21 +82,21 @@ class CancelTicketService
                     );
 
                     /////// 30 mins before booking time no deduction//////////
-                    $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
-                    $difference = $bookingInitiatedDate->diff($current_date_time);
-                    $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
+                    // $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
+                    // $difference = $bookingInitiatedDate->diff($current_date_time);
+                    // $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
                 
-                    if($difference < 30){
-                        $refund = $this->cancelTicketRepository->cancelBfrThirtyMinutes($bookingId,$booking,$smsData,$emailData,$busId);
-                        return $refund;        
-                    }
+                    // if($difference < 30){
+                    //     $refund = $this->cancelTicketRepository->cancelBfrThirtyMinutes($bookingId,$booking,$smsData,$emailData,$busId);
+                    //     return $refund;        
+                    // }
                     //////////
                     if($cancelDate >= $bookingDate || $interval < 12)
                     {
                         return 'Cancellation is not allowed'; 
                     }
 
-                    $paidAmount = $booking_detail[0]->booking[0]->payable_amount ;
+                    $paidAmount = $booking_detail[0]->booking[0]->payable_amount;
 
                  if($booking_detail[0]->booking[0]->customerPayment != null){
                     $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;   

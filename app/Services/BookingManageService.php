@@ -304,17 +304,17 @@ class BookingManageService
                 $bookingDate = new DateTime($combinedDT);
                 $cancelDate = new DateTime($current_date_time);
                 /////// 30 mins before booking time no deduction//////////
-                $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
-                $difference = $bookingInitiatedDate->diff($current_date_time);
-                $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
+                // $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
+                // $difference = $bookingInitiatedDate->diff($current_date_time);
+                // $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
                 
-                if($difference < 30){
-                    $emailData['refundAmount'] = $booking_detail[0]->booking[0]->total_fare;
-                    $emailData['deductionPercentage'] = "0%";
-                    $emailData['deductAmount'] = 0;
-                    $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
-                    return $emailData;
-                }
+                // if($difference < 30){
+                //     $emailData['refundAmount'] = $booking_detail[0]->booking[0]->total_fare;
+                //     $emailData['deductionPercentage'] = "0%";
+                //     $emailData['deductAmount'] = 0;
+                //     $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
+                //     return $emailData;
+                // }
                 //////////
                 $interval = $bookingDate->diff($cancelDate);
                 $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
@@ -337,13 +337,13 @@ class BookingManageService
                 }else{
                     $emailData['cancel_status'] = true;
                 }
-
+               
                 if($booking_detail[0]->booking[0]->customerPayment != null){
 
                     $razorpay_payment_id=$booking_detail[0]->booking[0]->customerPayment->razorpay_id;
 
                     $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
-
+                   
                     foreach($cancelPolicies as $cancelPolicy){
                        $duration = $cancelPolicy->duration;
                        $deduction = $cancelPolicy->deduction;
@@ -351,8 +351,8 @@ class BookingManageService
                        $max= $duration[1];
                        $min= $duration[0];
    
-       
                        if( $interval > 999){
+                        
                            $deduction = 10;//minimum deduction
                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
                            //$refundAmt =  round($refund['refundAmount']/100,2);
@@ -369,7 +369,7 @@ class BookingManageService
                        }elseif($min <= $interval && $interval <= $max){ 
    
                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
-   
+                          
                            //$refundAmt =  round(($refund['refundAmount']/100),2);
                            $refundAmt =  round($refund['refundAmount'],2);
                            $paidAmt =  ($refund['paidAmount']/100);
@@ -377,7 +377,7 @@ class BookingManageService
                            $emailData['refundAmount'] = $refundAmt;
                            $emailData['deductionPercentage'] = $deduction."%";
                            $emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
-                           $emailData['totalfare'] = $paidAmt;                          
+                           $emailData['totalfare'] = $paidAmt;                         
                            return $emailData;   
                        }
                    } 
