@@ -571,7 +571,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU2MTM5ODc3LCJleHAiOjE2NTYxNDM0NzcsIm5iZiI6MTY1NjEzOTg3NywianRpIjoiaTI2SlA0UWRIbWFoaElYbSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.CchSqes3PaeXCWYSAwfuM6wawtAYXYfNbLhkIhBILfw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYxMTQ4MTAzLCJleHAiOjE2NjExNTE3MDMsIm5iZiI6MTY2MTE0ODEwMywianRpIjoiVGlYQXVwRWxZVVpzWTNKdSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.1CqJM9C-59UMOCfq83gXn4f36Z8qTZFuu1aFAb5bX0A",
 							"type": "string"
 						}
 					]
@@ -580,7 +580,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\":\"Swagatika\",\r\n    \"phone\":\"9916457575\",\r\n    \"created_by\":\"Swagatika\",\r\n    \"fcmId\":\"1234\"\r\n}   ",
+					"raw": "{\r\n    \"name\":\"rama\",\r\n    \"email\":\"sahu.swagatika@gmail.com\",\r\n    \"created_by\":\"rama\",\r\n    \"fcmId\":\"123456\"\r\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -588,14 +588,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/Register",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Register",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Register"
@@ -659,11 +660,21 @@
 		{
 			"name": "Verify OTP",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYxMTQ4MTAzLCJleHAiOjE2NjExNTE3MDMsIm5iZiI6MTY2MTE0ODEwMywianRpIjoiVGlYQXVwRWxZVVpzWTNKdSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.1CqJM9C-59UMOCfq83gXn4f36Z8qTZFuu1aFAb5bX0A",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"userId\":\"1\",\r\n    \"otp\":\"22016\"\r\n}",
+					"raw": "{\r\n    \"userId\":\"8336\",\r\n    \"otp\":\"32123\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -671,14 +682,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/VerifyOtp",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/VerifyOtp",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"VerifyOtp"
@@ -2572,7 +2584,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU5NDM0NjAzLCJleHAiOjE2NTk0MzgyMDMsIm5iZiI6MTY1OTQzNDYwMywianRpIjoiZTNYTW1ycGRpc0hjSjlEMyIsInN1YiI6MjEwLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.xEmbAoqbE-CnYuhMM2sa5WxMwcrBlPUeJVIlYfKRiZ4",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU5OTM5ODcxLCJleHAiOjE2NTk5NDM0NzEsIm5iZiI6MTY1OTkzOTg3MSwianRpIjoiOWZmQ0xCYktSZWxldkNQZCIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.BqNCE_7No3Bu6k9aIpBobUFN4F2eeDffqOmMf9j7UFM",
 							"type": "string"
 						}
 					]
@@ -2581,7 +2593,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pnr\":\"ODCL58720\"\r\n}",
+					"raw": "{\r\n    \"pnr\":\"ODCL65057\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -2589,14 +2601,15 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/ClientCancelTicketinfo",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/ClientCancelTicketinfo",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"ClientCancelTicketinfo"
@@ -2613,7 +2626,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU5OTM5ODcxLCJleHAiOjE2NTk5NDM0NzEsIm5iZiI6MTY1OTkzOTg3MSwianRpIjoiOWZmQ0xCYktSZWxldkNQZCIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.BqNCE_7No3Bu6k9aIpBobUFN4F2eeDffqOmMf9j7UFM",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU5OTQ3NTU4LCJleHAiOjE2NTk5NTExNTgsIm5iZiI6MTY1OTk0NzU1OCwianRpIjoiUnd6UXphamlXMGdlMjVnNSIsInN1YiI6MjA1LCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.Q1FzNOUpb5BX47auYlqczTzxcKOLJCT5gfT7jjUp9kU",
 							"type": "string"
 						}
 					]
@@ -2781,7 +2794,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYwNzE4ODE2LCJleHAiOjE2NjA3MjI0MTYsIm5iZiI6MTY2MDcxODgxNiwianRpIjoiWVRMVFZmbHVjOUtlSThYcSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jdMTxnVb63WCdzq20gQL8mUt1hlLZJ_1PdPm0y-Nn9A",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY2MDcyMDU5MiwiZXhwIjoxNjYwNzI0MTkyLCJuYmYiOjE2NjA3MjA1OTIsImp0aSI6IlFmOU9HdWdoZ1lZclB2M1MiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.uXNtfI35pRSbJxrkComVqNByJanYUSIVyEOWzNZKVdY",
 							"type": "string"
 						}
 					]
@@ -2798,10 +2811,10 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/PopularInfo",
+					"raw": "https://consumer.odbus.co.in/api/PopularInfo",
 					"protocol": "https",
 					"host": [
-						"testing",
+						"consumer",
 						"odbus",
 						"co",
 						"in"
@@ -2809,6 +2822,48 @@
 					"path": [
 						"api",
 						"PopularInfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "resendotp(android use)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYxMjM1OTQ0LCJleHAiOjE2NjEyMzk1NDQsIm5iZiI6MTY2MTIzNTk0NCwianRpIjoiV0htSFllbTdaM2JpcWlkOSIsInN1YiI6MSwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.MwdpjunbJLu-gfRt-U2Ebhtc2Xcxup11xevbgveQbTE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"isMobile\":\"true\",\r\n    \"source\":\"abcd@gmail.com\",\r\n    \"isLogin\":\"true\"\r\n}  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/ResendOTP",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ResendOTP"
 					]
 				}
 			},

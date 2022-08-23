@@ -4745,6 +4745,81 @@
                 ]
             }
         },
+        "/api/ResendOTP": {
+            "post": {
+                "tags": [
+                    "ResendOTP API"
+                ],
+                "summary": "Resend otp during registration and Login",
+                "description": "Resend otp during registration and Login",
+                "operationId": "f6a363b4905467a6e8f8a8fa60ed37ab",
+                "parameters": [
+                    {
+                        "name": "isMobile",
+                        "in": "query",
+                        "description": "flag to check App user or not",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "true"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "email or mobile no",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "isLogin",
+                        "in": "query",
+                        "description": "flag to check during registration(false) or Login(true) need to resend otp",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "true"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "otp generated"
+                    },
+                    "206": {
+                        "description": "not a valid credential"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/viewSeats": {
             "post": {
                 "tags": [
