@@ -8,6 +8,7 @@ use App\Models\BookingSeized;
 use App\Models\BusCancelled;
 use App\Models\BusCancelledDate;
 use App\Models\ClientFeeSlab;
+use App\Models\ManageClientOperator;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use App\Repositories\ViewSeatsRepository;
@@ -174,7 +175,7 @@ class ListingService
                     {
                         
                         $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
-                       // return $records;
+                       //return $records;
                     } 
                 }
                    else
@@ -201,7 +202,7 @@ class ListingService
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
             $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole,$clientId);
-
+           
             $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
             $showRecords = (isset($showRecords['regular'])) ? $showRecords['regular'] : [];
 
@@ -252,14 +253,11 @@ class ListingService
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
 
-
         $ListingRecords['regular'] = [];
         $ListingRecords['soldout'] = [];
 
-       
         $ListingRecords = array();
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
-
         foreach($records as $record){
             //return $record;
             $unavailbleSeats = 0;
@@ -270,7 +268,6 @@ class ListingService
             $busNumber = $record->bus_number;
             $via = $record->via;
             $busOperatorId = $record->bus_operator_id;
-
 
             $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
             if(isset($routeCoupon[0]))
@@ -669,8 +666,9 @@ class ListingService
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
-            if($clientRole == $clientRoleId){
-
+           
+           if($clientRole == $clientRoleId){
+            
             /////client extra service charge added to seatfare////////////////
             $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                                 ->where('status', '1')
@@ -690,8 +688,14 @@ class ListingService
             } 
             $client_service_charges = ($addCharge/100 * $startingFromPrice);
             $newSeatFare = $startingFromPrice + $client_service_charges;
-           
-                $arr= array(
+            /////////hide buses wrt operator block////////////
+            $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
+            $Contains=0;
+            if(isset($operatorBlockId)){
+                $Contains = $operatorBlockId->contains($operatorId);
+            }
+            if($Contains==0){
+                $arr = array(
                     "origin" => 'ODBUS',
                     "CompanyID" => '',
                     "ReferenceNumber" => '',
@@ -729,13 +733,15 @@ class ListingService
                     "cancellationPolicyContent" => $cancellationPolicyContent,
                     "TravelPolicyContent" => $TravelPolicyContent,
                     ); 
-            if($totalSeats>0){
-            $ListingRecords['regular'][] = $arr;
-            }else{
-            $ListingRecords['soldout'][] = $arr;
+           
+                if($totalSeats>0){
+                    $ListingRecords['regular'][] = $arr;
+                }else{
+                    $ListingRecords['soldout'][] = $arr;
+                }
             }
             }else{
-                $arr= array(
+                $arr = array(
                     "origin" => 'ODBUS',
                     "CompanyID" => '',
                     "ReferenceNumber" => '',
@@ -1023,28 +1029,45 @@ class ListingService
      }  
     }
 
-    public function getFilterOptions(Request $request)
+    public function getFilterOptions(Request $request,$clientRole,$clientId)
     {
         $sourceID = $request['sourceID'];
         $destinationID = $request['destinationID']; 
         $busIds = $request['busIDs']; 
+        $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
 
         $busTypes =  $this->listingRepository->getbusTypes();
         $seatTypes = $this->listingRepository->getseatTypes();
         $boardingPoints = $this->listingRepository->getboardingPoints($sourceID,$busIds);
         $dropingPoints = $this->listingRepository->getdropingPoints($destinationID,$busIds);
         $busOperator = $this->listingRepository->getbusOperator($busIds);
+        $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
         $amenities = $this->listingRepository->getamenities($busIds);
-
-        $filterOptions[] = array(
-           "busTypes" => $busTypes,
-           "seatTypes" => $seatTypes,  
-           "boardingPoints" => $boardingPoints,
-           "dropingPoints"=> $dropingPoints,
-           "busOperator"=>$busOperator,
-           "amenities"=>$amenities   
-        );
-        return  $filterOptions;
+        
+        /////////hide busOperators wrt operator block for clients////////////
+        if($clientRole == $clientRoleId){
+            if(isset($operatorBlockId)){
+            $filteredOperators = ($busOperator->whereNotIn('id',$operatorBlockId))->flatten();
+            }
+            $filterOptions[] = array(
+            "busTypes" => $busTypes,
+            "seatTypes" => $seatTypes,  
+            "boardingPoints" => $boardingPoints,
+            "dropingPoints"=> $dropingPoints,
+            "busOperator"=> $filteredOperators,
+            "amenities"=> $amenities   
+            );
+        }else{
+            $filterOptions[] = array(
+            "busTypes" => $busTypes,
+            "seatTypes" => $seatTypes,  
+            "boardingPoints" => $boardingPoints,
+            "dropingPoints"=> $dropingPoints,
+            "busOperator"=> $busOperator,
+            "amenities"=> $amenities   
+            );
+        }
+        return $filterOptions;
     }
     public function busDetails(Request $request)
     {

@@ -254,7 +254,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rlc3Rpbmcub2RidXMuY28uaW4vYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjU4NDA5MTMzLCJleHAiOjE2NTg0MTI3MzMsIm5iZiI6MTY1ODQwOTEzMywianRpIjoid0FhaXRneVk0SEI4cWVUdCIsInN1YiI6MjEwLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.ZbtWkBTaYk_fWjdMdLntZFN3xC3epDF71YTAofkImbc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYxNzYxMjUzLCJleHAiOjE2NjE3NjQ4NTMsIm5iZiI6MTY2MTc2MTI1MywianRpIjoicTdGcjVYV09LSTZabXo1RCIsInN1YiI6MjEwLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.erHQv6jzKKCzJ_Sc7TZ5Knpa-ndXa2NcEZo_AsVU-qI",
 							"type": "string"
 						}
 					]
@@ -263,7 +263,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"price\":\"0\", \r\n    \"sourceID\":\"82\", \r\n    \"destinationID\":\"53\", \r\n    \"entry_date\":\"22-06-2022\"\r\n }",
+					"raw": "{\r\n    \"price\":\"0\", \r\n    \"sourceID\":\"82\", \r\n    \"destinationID\":\"32\", \r\n    \"entry_date\":\"29-08-2022\"\r\n }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -271,35 +271,18 @@
 					}
 				},
 				"url": {
-					"raw": "https://testing.odbus.co.in/api/Filter?price=0&sourceID=82&destinationID=53&entry_date=22-06-2022",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/Filter",
+					"protocol": "http",
 					"host": [
-						"testing",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"Filter"
-					],
-					"query": [
-						{
-							"key": "price",
-							"value": "0"
-						},
-						{
-							"key": "sourceID",
-							"value": "82"
-						},
-						{
-							"key": "destinationID",
-							"value": "53"
-						},
-						{
-							"key": "entry_date",
-							"value": "22-06-2022"
-						}
 					]
 				}
 			},
@@ -457,25 +440,22 @@
 		},
 		{
 			"name": "Get FilterOptions",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvbnN1bWVyLm9kYnVzLmNvLmluL2FwaS9DbGllbnRMb2dpbiIsImlhdCI6MTY1MjI2NTk0NiwiZXhwIjoxNjUyMjY5NTQ2LCJuYmYiOjE2NTIyNjU5NDYsImp0aSI6IjcxRnQ4T0J5a1d1SGRkMGsiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.PbJXx0wNd8Fg4h-T5y2qb_NWkeH2hVo5SBTdLy-IX18",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL0NsaWVudExvZ2luIiwiaWF0IjoxNjYxNzc3MTE4LCJleHAiOjE2NjE3ODA3MTgsIm5iZiI6MTY2MTc3NzExOCwianRpIjoiSk1UMjI1YWJTWVhnTHNvTiIsInN1YiI6MjEwLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.XNeby5BgvLstFwfmtz8WI_eestLd7xvAEbrvp-M2pDc",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"434\",\r\n    \"busIDs\":[254,251,258]\r\n}",
+					"raw": "{\r\n    \"sourceID\":\"82\",\r\n    \"destinationID\":\"32\",\r\n    \"busIDs\":[416,420,258]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -483,39 +463,18 @@
 					}
 				},
 				"url": {
-					"raw": "https://consumer.odbus.co.in/api/FilterOptions?sourceID=82&destinationID=434&busIDs[]=254&busIDs[]=251&busIDs[]=258",
-					"protocol": "https",
+					"raw": "http://127.0.0.1:8000/api/FilterOptions",
+					"protocol": "http",
 					"host": [
-						"consumer",
-						"odbus",
-						"co",
-						"in"
+						"127",
+						"0",
+						"0",
+						"1"
 					],
+					"port": "8000",
 					"path": [
 						"api",
 						"FilterOptions"
-					],
-					"query": [
-						{
-							"key": "sourceID",
-							"value": "82"
-						},
-						{
-							"key": "destinationID",
-							"value": "434"
-						},
-						{
-							"key": "busIDs[]",
-							"value": "254"
-						},
-						{
-							"key": "busIDs[]",
-							"value": "251"
-						},
-						{
-							"key": "busIDs[]",
-							"value": "258"
-						}
 					]
 				}
 			},

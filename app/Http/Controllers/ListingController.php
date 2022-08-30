@@ -446,12 +446,18 @@ class ListingController extends Controller
             'sourceID',
             'destinationID'
         ]);
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+        $clientId = $user->id;
+
         $filterOptionsValidation = $this->filterOptionsValidator->validate($data);
         if ($filterOptionsValidation->fails()) {
             $errors = $filterOptionsValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-        $FilterData = $this->listingService->getFilterOptions($request);
+        $FilterData = $this->listingService->getFilterOptions($request,$clientRole,$clientId);
         return $this->successResponse($FilterData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
    

@@ -4750,8 +4750,8 @@
                 "tags": [
                     "ResendOTP API"
                 ],
-                "summary": "Resend otp during registration and Login",
-                "description": "Resend otp during registration and Login",
+                "summary": "Resend otp during registration or Login",
+                "description": "Resend otp during registration or Login",
                 "operationId": "f6a363b4905467a6e8f8a8fa60ed37ab",
                 "parameters": [
                     {
