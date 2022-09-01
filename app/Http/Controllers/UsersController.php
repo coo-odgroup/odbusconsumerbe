@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\UsersValidator;
 use App\AppValidator\LoginValidator;
+use App\AppValidator\ResendotpValidator;
 use App\AppValidator\UserProfileValidator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Users;
@@ -30,8 +31,9 @@ class UsersController extends Controller
     protected $userProfileValidator;
     protected $notificationService;
     protected $notificationValidator;
+    protected $resendotpValidator;
 
-    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator,UserProfileValidator $userProfileValidator,NotificationService $notificationService,NotificationValidator $notificationValidator)
+    public function __construct(UsersService $usersService,UsersValidator $usersValidator,loginValidator $loginValidator,UserProfileValidator $userProfileValidator,NotificationService $notificationService,NotificationValidator $notificationValidator,ResendotpValidator $resendotpValidator)
     {
         $this->usersService = $usersService; 
         $this->usersValidator = $usersValidator; 
@@ -39,6 +41,7 @@ class UsersController extends Controller
         $this->userProfileValidator = $userProfileValidator; 
         $this->notificationService = $notificationService;
         $this->notificationValidator = $notificationValidator;
+        $this->resendotpValidator = $resendotpValidator;
     }
 /**
  * @OA\Post(
@@ -737,4 +740,80 @@ public function refreshToken() {
         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
       } 
     }
+    /**
+ * @OA\Post(
+ *     path="/api/ResendOTP",
+ *     tags={"ResendOTP API"},
+ *     description="Resend otp during registration or Login",
+ *     summary="Resend otp during registration or Login",
+ *     @OA\Parameter(
+ *          name="isMobile",
+ *          description="flag to check App user or not",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              default="true",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="source",
+ *          description="email or mobile no",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="isLogin",
+ *          description="flag to check during registration(false) or Login(true) need to resend otp",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="true",
+ *          )
+ *      ),
+ *     @OA\Response(response="200", description="otp generated"),
+ *     @OA\Response(response="206", description="not a valid credential"),
+ *     @OA\Response(response=400, description="Bad request"),
+ *     @OA\Response(response=401, description="Unauthorized access"),
+ *     @OA\Response(response=404, description="No record found"),
+ *     @OA\Response(response=500, description="Internal server error"),
+ *     @OA\Response(response=502, description="Bad gateway"),
+ *     @OA\Response(response=503, description="Service unavailable"),
+ *     @OA\Response(response=504, description="Gateway timeout"),
+ *     security={
+ *       {"apiAuth": {}}
+ *     }
+ * )
+ * 
+ */
+   /////////ANDROID USE///////////////////
+   public function resendOTP(Request $request) {
+     
+    $data = $request->all();
+    $resendotpValidation = $this->resendotpValidator->validate($data);
+   
+    if ($resendotpValidation->fails()) {
+      $errors = $resendotpValidation->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }
+    try {
+      $response = $this->usersService->resendOTP($request);
+      if($response == 'un_registered')
+      {
+        return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+      }elseif($response == 'record_not_found'){
+        return $this->errorResponse(Config::get('constants.NO_RECORD_FOUND'),Response::HTTP_OK);
+      }
+      else{
+        return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+      }
+    }
+    catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+    }        
+  }  
 }

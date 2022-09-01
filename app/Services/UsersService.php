@@ -25,6 +25,74 @@ class UsersService
         $this->commonRepository = $commonRepository;
     }
 
+    public function resendOTP($request)
+    {   
+        $source = $request['source'];
+        $isMobile = $request['isMobile'];
+        $isLogin = $request['isLogin'];
+
+        if($isLogin == 'true'){
+            if(is_numeric($source)){
+                $query = $userDetail = Users::where('phone', $source);
+                $userDetail = $query->first();
+                if(isset($userDetail)){
+                    $verifiedStatus =  $userDetail->is_verified; 
+                    if($verifiedStatus == 1){
+                        $request->request->add(['phone' => $source]);       
+                        $request->request->add(['name' => $userDetail->name]);
+                        $otp = $this->usersRepository->sendOtp($request);
+                        return $this->usersRepository->createOtp($query,$otp,$request);
+                    } else{
+                        return "un_registered";
+                    } 
+                }else{
+                    return "record_not_found";
+                }   
+            }else{
+                $query = Users::where('email', $source);
+                $userDetail = $query->first();
+                if(isset($userDetail)){
+                    $verifiedStatus =  $userDetail->is_verified; 
+                    if($verifiedStatus == 1){
+                        $request->request->add(['email' => $source]);       
+                        $request->request->add(['name' => $userDetail->name]);
+                        $otp = $this->usersRepository->sendOtp($request);
+                        return $this->usersRepository->createOtp($query,$otp,$request);
+                    } else{
+                        return "un_registered";
+                    } 
+                } else{
+                    return "record_not_found";
+                }  
+            }
+        }else{
+            if(is_numeric($source)){
+                $query = $userDetail = Users::where('phone', $source);
+                $userDetail = $query->first();
+                if(isset($userDetail)){
+                    $request->request->add(['phone' => $source]);       
+                    $request->request->add(['name' => $userDetail->name]);
+                    $otp = $this->usersRepository->sendOtp($request);
+                    return $this->usersRepository->createOtp($query,$otp,$request);
+                }
+                else{
+                    return "record_not_found";
+                } 
+            }else{
+                $query = Users::where('email', $source);
+                $userDetail = $query->first();
+                if(isset($userDetail)){
+                    $request->request->add(['email' => $source]);       
+                    $request->request->add(['name' => $userDetail->name]);
+                    $otp = $this->usersRepository->sendOtp($request);
+                    return $this->usersRepository->createOtp($query,$otp,$request);
+                }else{
+                    return "record_not_found";
+                } 
+            }   
+        }
+    }
+
     public function Register($request)
     {   
         
@@ -85,7 +153,7 @@ class UsersService
     }
     public function login($request)
     {   
-      
+
         $query = $this->usersRepository->GetUserData($request['phone'],$request['email']);
       
         $verifiedStatus = $query->latest()->first()->is_verified; 

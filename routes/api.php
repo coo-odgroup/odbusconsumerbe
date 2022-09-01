@@ -139,6 +139,7 @@ Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails'])
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
+Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
 //});
 });
 
