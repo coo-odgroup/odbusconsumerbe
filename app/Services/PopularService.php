@@ -56,7 +56,9 @@ class PopularService
                    $bus_id = $busId->bus_id;
                    $count = $busId->count;
                     $opDetail = $this->popularRepository->getOperator($bus_id);
-                    $opDetail=$opDetail[0];
+                    if(isset($opDetail[0])){
+
+                        $opDetail=$opDetail[0];
                    $topOperators[] = array(
                        "id" => $opDetail->busOperator->id, 
                        "operatorName" => $opDetail->busOperator->operator_name, 
@@ -64,6 +66,9 @@ class PopularService
                        "operator_url" => $opDetail->busOperator->operator_url, 
                        "count" => $count
                        );
+
+                    }
+                    
                } 
            }
            //return collect($topOperators)->unique('operatorName')->values();

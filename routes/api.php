@@ -154,6 +154,7 @@ Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCance
 Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientCancelTicketInfo']);
 Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExternalApiLocation']);
 Route::get('/countries', [SoapController::class, 'getCountries']);
+Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
 
 
 
