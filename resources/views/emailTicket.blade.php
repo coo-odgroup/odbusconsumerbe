@@ -828,19 +828,19 @@ border: 0;
                       </tr>
                     </tbody>
                   </table>
-                  <h3>CANCELATION POLICY</h3>
+                  <h3>Cancellation Policy</h3>
                    <table class="table table-bordered">
                     <thead>
                       <tr>
-                        <th scope="col">Cancellation Cut Off Time</th>
-                        <th scope="col">Cancellation Return Amount</th>
+                        <th scope="col">Cancellation Time</th>
+                        <th scope="col">Cancellation Charges</th>
                        
                       </tr>
                     </thead>
                     <tbody>
                     @foreach($cancelation_policy as $can) 
                         <tr>
-                            <td>{{ $can->duration }} hr</td>
+                            <td>Before {{ $can->duration }} Hour of Bus Departure Time</td>
                             <td>{{ $can->deduction }}%</td>
                         </tr>
                     @endforeach  
