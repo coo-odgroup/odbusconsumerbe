@@ -77,6 +77,7 @@ return [
     'INVALID_PNR' => 'Invalid PNR',
     'BUS_CANCELLED' => 'The Bus Chosen By You Currently Unavailable, Please Choose Another Bus.',
     'SEAT_BLOCKED' => 'Your Selected Seat Is Not Available Now, Please Select Another Seat',
+    'BUS_SEIZED' => 'We are Sorry!!! Booking time has been exceed. Please contact ODBUS - 9583918888 ',
     'PAYMENT_NOT_DONE' => 'payment not done',
     'TICKET_REGENERATED' => 'Ticket regenerated Successfully',
     'BOOKING_TYPE' => 'Failled Ticket Generated',

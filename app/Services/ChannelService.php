@@ -16,6 +16,7 @@ use App\Services\ViewSeatsService;
 use InvalidArgumentException;
 use App\Repositories\CommonRepository;
 use Illuminate\Support\Arr;
+use Carbon\Carbon;
 
 class ChannelService
 {
@@ -111,16 +112,33 @@ class ChannelService
                 $entry_date = $request['entry_date'];
                 $entry_date = date("Y-m-d", strtotime($entry_date));
 
-            ///////////////////////cancelled bus recheck////////////////////////
             $routeDetails = TicketPrice::where('source_id', $sourceId)
                             ->where('destination_id', $destinationId)
                             ->where('bus_id', $busId)
                             ->where('status','1')
                             ->get(); 
-           
+            /////////////seize time recheck////////////////////////
+            
+            //$CurrentDateTime = "2022-09-09 07:46:35";
+            $CurrentDateTime = Carbon::now();//->toDateTimeString();
+            if(isset($routeDetails[0])){
+            $seizedTime = $routeDetails[0]->seize_booking_minute;
+            $depTime = date("H:i:s", strtotime($routeDetails[0]->dep_time)); 
+            
+            $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+                if($depDateTime>=$CurrentDateTime){
+                    $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+                }else{
+                    $diff_in_minutes = 0;
+                }
+                if($seizedTime > $diff_in_minutes){
+                    return "BUS_SEIZED";
+                }
+            }
+           ///////////////////////cancelled bus recheck////////////////////////
             $startJDay = $routeDetails[0]->start_j_days;
             $ticketPriceId = $routeDetails[0]->id;
-
             switch($startJDay){
                 case(1):
                     $new_date = $entry_date;
