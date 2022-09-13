@@ -325,6 +325,9 @@ class clientBookingController extends Controller
         try {
             $response = $this->clientBookingService->seatBlock($request,$clientRole);
             switch($response){
+                case('BUS_SEIZED'):  
+                return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
+                break;
                 case('SEAT UN-AVAIL'):  
                     return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
                 break;
