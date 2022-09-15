@@ -78,6 +78,8 @@ Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/CheckSeatStatus', [ChannelController::class, 'checkSeatStatus']);
 Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/UpdateAdjustStatus', [ChannelController::class, 'UpdateAdjustStatus']);
+Route::post('/BlockDolphinSeat', [ChannelController::class, 'BlockDolphinSeat']);
+Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphinSeat']);
 Route::post('/TestingEmail', [ChannelController::class, 'testingEmail']);   
 //Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);

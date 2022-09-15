@@ -55,8 +55,8 @@ class AgentBookingRepository
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
         $defUserId = Config::get('constants.USER_ID');
-        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
-        $user_id = Bus::where('id',$bookingInfo['bus_id'])->first()->user_id;
+
+        
 
         $existingUser = Users::where('phone',$customerInfo['phone'])
                                     ->exists(); 
@@ -96,18 +96,28 @@ class AgentBookingRepository
            } while ( $booking ->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
         do {
-            //$PNR = substr(str_shuffle("0123456789"), 0, 8);
-           // $PNR = 'ODAG'."".substr(str_shuffle("0123456789"), 0, 6);
             $PNR = 'ODAG'.rand(100000,999999);
-            } while ( $booking ->where('pnr', $PNR )->exists()); 
+        } while ( $booking ->where('pnr', $PNR )->exists()); 
         $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
         $busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
-                                                ->where('destination_id',$bookingInfo['destination_id'])->get();
-        $booking->j_day = $ticketPriceDetails[0]->j_day;
+
+        $j_day=1;
+
+        if($bookingInfo['origin']== 'ODBUS'){
+
+            $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
+            ->where('destination_id',$bookingInfo['destination_id'])
+            ->where('status','1')
+            ->get();
+
+           $j_day= $ticketPriceDetails[0]->j_day  ; 
+
+        }
+
+        $booking->j_day = $j_day;
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
@@ -134,17 +144,26 @@ class AgentBookingRepository
         }
 
 
+       
+        
+        $odbusGstPercent=0;
+        $odbusGstAmount=0;
+
+    if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+        
+        $user_id = Bus::where('id',$bookingInfo['bus_id'])->first()->user_id;
+        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
+
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
             $odbusGstPercent = OdbusCharges::where('user_id',$user_id)->first()->odbus_gst_charges;
         }else{
             $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
         }
-        $booking->odbus_gst_charges = $odbusGstPercent;
+
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
-        $booking->odbus_gst_amount = $odbusGstAmount;
         
-        
+
         $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
             if($busOperator[0]->need_gst_bill == $needGstBill){   
@@ -152,9 +171,22 @@ class AgentBookingRepository
                 $booking->owner_gst_charges = $ownerGstPercentage;
                 $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
                 $booking->owner_gst_amount = $ownerGstAmount;
-            }     
+            }  
+    }
+            
+            $booking->odbus_gst_charges = $odbusGstPercent;           
+            $booking->odbus_gst_amount = $odbusGstAmount; 
+
+            $booking->CompanyID = $bookingInfo['CompanyID'];
+            $booking->ReferenceNumber = $bookingInfo['ReferenceNumber'];
+            $booking->RouteTimeID = $bookingInfo['RouteTimeID'];
+            $booking->PickupID = $bookingInfo['PickupID'];
+            $booking->DropID = $bookingInfo['DropID'];
+
+
         $agentCommissionByCustomer = AgentFee::get(); 
 
+      
         $comissionByCustomer = 0;
         if($agentCommissionByCustomer){
             foreach($agentCommissionByCustomer as $agentCom){
@@ -162,21 +194,35 @@ class AgentBookingRepository
                 $priceTo = $agentCom->price_to;
                 if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
                     $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
+
+                    Log::info($comissionByCustomer);
                                      
                     break;
                 }  
             }   
 
         }
-                       
+                
         $booking->created_by = $bookingInfo['created_by'];
-        $booking->users_id = $userId;
-        $agentId->booking()->save($booking);
-        $booking->customer_comission = $comissionByCustomer;
+        $booking->users_id = $userId;  
+        if(isset($bookingInfo['booking_type'])=='Adjust'){           
+        }else{
+            $booking->customer_comission = $comissionByCustomer;
+        }      
         
-        //fetch the sequence from bus_locaton_sequence
-        $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
-        $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+        $agentId->booking()->save($booking);
+
+        $seq_no_start=0;
+        $seq_no_end=0;
+
+        if($bookingInfo['origin']=='ODBUS'){
+
+            //fetch the sequence from bus_locaton_sequence
+                $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
+                $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+
+        }
+       
         
         $bookingSequence = new BookingSequence;
         $bookingSequence->sequence_start_no = $seq_no_start;
@@ -185,6 +231,8 @@ class AgentBookingRepository
         $booking->bookingSequence()->save($bookingSequence);
 
         //Update Booking Details >>>>>>>>>>
+
+    if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
@@ -195,21 +243,38 @@ class AgentBookingRepository
                 ->where('ticket_price_id',$ticketPriceId)
                 ->where('seats_id',$seatId)->first()->id;
         }  
+    }
         $bookingDetailModels = [];  
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
+
+        $bDetail['seat_name']=$bDetail['bus_seats_id'];
+
+        unset($bDetail['bus_seats_id']);
+        
             $collection= collect($bDetail);
-            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
-            $bookingDetailModels[] = new BookingDetail($merged);
+
+            if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+
+                $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
+
+                $bookingDetailModels[] = new BookingDetail($merged);
+
+            }else{
+
+                $bookingDetailModels[] = new BookingDetail($collection->toArray());
+
+            }
+           
             $i++;
         }    
-        $booking->bookingDetail()->saveMany($bookingDetailModels);      
-        return $booking; 
+            $booking->bookingDetail()->saveMany($bookingDetailModels);      
+            return $booking; 
         }
         else{
-            $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
-            $arr['message']="less_balance";
-            return $arr;
+                $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
+                $arr['message']="less_balance";
+                return $arr;
             } 
      }else{
          return 'AGENT_INVALID';

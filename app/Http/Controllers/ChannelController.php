@@ -270,25 +270,73 @@ class ChannelController extends Controller
         } 
         try {
             $response = $this->channelService->makePayment($request,$clientRole);
-            switch($response){
-                case('BUS_SEIZED'):  
-                    return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
-                break;
-                case('SEAT UN-AVAIL'):  
-                    return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
-                break;
-                case('BUS_CANCELLED'):    
-                    return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
-                break;
-                case('SEAT_BLOCKED'):    
-                    return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
-                break;
-            }
-            return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);    
+            Log::info($response);
+
+            if(isset($response['razorpay_order_id'])){
+
+                return $this->successResponse($response,Config::get('constants.ORDERID_CREATED'),Response::HTTP_CREATED);  
+    
+             }elseif($response=='BUS_SEIZED'){
+    
+                return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
+    
+             }elseif($response=='SEAT UN-AVAIL'){
+    
+                return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+                
+             }elseif($response=='BUS_CANCELLED'){
+    
+                return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK); 
+                
+            }elseif($response=='SEAT_BLOCKED'){
+    
+                return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK); 
+                
+            }else{
+                return $this->errorResponse($response,Response::HTTP_OK); 
+            }          
         }
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }        
+    }
+
+    
+
+    public function BookDolphinSeat(Request $request){
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+
+        try {
+            $response = $this->channelService->BookDolphinSeat($request,$clientRole); 
+           
+            return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+           
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }  
+
+    }
+
+    public function BlockDolphinSeat(Request $request){
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+
+        try {
+            $response = $this->channelService->BlockDolphinSeat($request,$clientRole); 
+           
+            return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+           
+         }
+         catch (Exception $e) {
+             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+           }  
+
     }
 
     public function checkSeatStatus(Request $request)
@@ -306,6 +354,7 @@ class ChannelController extends Controller
             }
          }
          catch (Exception $e) {
+            Log::info($e->getMessage());
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
            }  
     }
@@ -562,21 +611,32 @@ public function pay(Request $request){
       try {
          // $response = $this->channelService->walletPayment($request,$clientRole); 
          $response = $this->channelService->walletPayment($request); 
-            switch($response){
-                case('BUS_SEIZED'):  
-                    return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
-                break;
-                case('SEAT UN-AVAIL'):  
-                    return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
-                break;
-                case('BUS_CANCELLED'):    
-                    return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
-                break;
-                case('SEAT_BLOCKED'):    
-                    return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
-                break;
-            }
-            return $this->successResponse($response,Config::get('constants.WALLET_PAYMENT_SUCESS'),Response::HTTP_CREATED);    
+
+         if(isset($response['notifications'])){
+
+            return $this->successResponse($response,Config::get('constants.WALLET_PAYMENT_SUCESS'),Response::HTTP_CREATED);  
+
+         }elseif($response=='BUS_SEIZED'){
+
+            return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
+
+         }elseif($response=='SEAT UN-AVAIL'){
+
+            return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+            
+         }elseif($response=='BUS_CANCELLED'){
+
+            return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK); 
+            
+        }elseif($response=='SEAT_BLOCKED'){
+
+            return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK); 
+            
+        }else{
+            return $this->errorResponse($response,Response::HTTP_OK); 
+        }
+          
+             
         }
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

@@ -259,7 +259,7 @@ class BookTicketController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $data = $request->all();
-        $data['bookingInfo']['origin']=$user->name;
+       // $data['bookingInfo']['origin']=$user->name;
         $clientRole = $user->role_id;
         $clientId = $user->id;
         $bookTicketValidation = $this->bookTicketValidator->validate($data);
@@ -274,14 +274,23 @@ class BookTicketController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try { 
-            $response =  $this->bookTicketService->bookTicket($data,$clientRole,$clientId); 
+             $response =  $this->bookTicketService->bookTicket($request,$clientRole,$clientId); 
             
             if( $data['bookingInfo']['journey_date'] > $validTillDate ||  $data['bookingInfo']['journey_date'] < $todayDate ){
             return $this->errorResponse('wrong date format or not in range - '.$data['bookingInfo']['journey_date'],Response::HTTP_OK);
         
             }elseif($response=='Bus_not_running'){
                 return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
-            }else{
+            }
+            elseif($response =='Invalid Param'){
+    
+                return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+        
+            }elseif($response =='ReferenceNumber_empty'){
+                return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+            }
+            
+            else{
                 return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
             }
         }

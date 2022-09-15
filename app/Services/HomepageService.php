@@ -107,6 +107,9 @@ class HomepageService
                    $bus_id = $busId->bus_id;
                    $count = $busId->count;
                     $opDetail = $this->popularRepository->getOperator($bus_id);
+
+                    if($opDetail && isset($opDetail[0])){
+
                     $opDetail=$opDetail[0];
                    $topOperators[] = array(
                        "id" => $opDetail->busOperator->id, 
@@ -115,6 +118,7 @@ class HomepageService
                        "operator_url" => $opDetail->busOperator->operator_url, 
                        "count" => $count
                        );
+                    }
                 } 
             }
             $topOperators = collect($topOperators)->unique('operatorName')->values()->skip(0)->take(20);
@@ -131,6 +135,7 @@ class HomepageService
             return $data;
 
         } catch (Exception $e) {
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }   
     }   

@@ -12,7 +12,6 @@ use App\Models\ManageClientOperator;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
 use App\Repositories\ViewSeatsRepository;
-//use App\Services\DolphinService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,20 +20,21 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use DateTime;
+use App\Transformers\DolphinTransformer;
 
 class ListingService
 {
     
     protected $listingRepository; 
     protected $commonRepository;  
-    //protected $DolphinService;
+    protected $dolphinTransformer;
     
-    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer)
     {
         $this->listingRepository = $listingRepository;
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
-        //$this->DolphinService = $DolphinService;
+        $this->dolphinTransformer = $dolphinTransformer;
     }
     public function getAll($request,$clientRole,$clientId)
     {  
@@ -61,11 +61,40 @@ class ListingService
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
          //return $busDetails;
 
+        $dolphinresult= $this->dolphinTransformer->BusList($request); // getting dolphin buslist
+
+        $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
+        $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
+
         //$CurrentDateTime = "2022-01-11 14:48:35";
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
+
+
+        $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
+
+        $sortar=[];
+        
+
+        if($common[0]->bus_list_sequence==1){
+        $sortar= ['startingFromPrice', 'asc'];
+        }
+
+        else if($common[0]->bus_list_sequence==2){
+        $sortar=['departureTime', 'asc'];   
+        }
+        else if($common[0]->bus_list_sequence==3){
+        $sortar=['totalSeats', 'desc'];
+        } 
+
+        else{
+            $sortar=['departureTime', 'asc']; 
+        } 
+
+        
+        $ListingRecords = array();
+
         if(isset($busDetails[0])){
             $records = array();
-            $ListingRecords = array();
             $showBusRecords = [];
             $hideBusRecords = [];
      
@@ -175,7 +204,7 @@ class ListingService
                     {
                         
                         $records[] = $this->listingRepository->getBusData($busOperatorId,$busId,$userId,$entry_date);
-                       //return $records;
+                       // return $records;
                     } 
                 }
                    else
@@ -202,33 +231,11 @@ class ListingService
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
             $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole,$clientId);
-           
+
             $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
             $showRecords = (isset($showRecords['regular'])) ? $showRecords['regular'] : [];
+           
 
-
-            $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
-
-            $sortar=[];
-
-            if($common[0]->bus_list_sequence==1){
-
-              $sortar= ['startingFromPrice', 'asc'];
-            }
-
-            else if($common[0]->bus_list_sequence==2){
-
-               $sortar=['departureTime', 'asc'];   
-
-            }
-
-            else if($common[0]->bus_list_sequence==3){
-               $sortar=['totalSeats', 'desc'];
-            } 
-            
-            else{
-                $sortar=['departureTime', 'asc'];   
-            } 
             if(count($hideBusRecords) > 0){
                $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole,$clientId);
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
@@ -236,28 +243,41 @@ class ListingService
                $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
 
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
-                $showRecords = collect($showRecords)->sortBy([ $sortar]);
+               // $showRecords = collect($showRecords)->sortBy([ $sortar]);
+                $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([ $sortar]);
                 $hideRecords = collect($hideRecords)->sortBy([$sortar]);
                 $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
-                $ListingRecords = $showRecords->concat($soldoutRecords);
+                $ListingRecords = $showRecords->concat($soldoutRecords)->concat(collect($DolPhinShowSoldoutRecords));
                 $ListingRecords = $ListingRecords->concat($hideRecords);
             }else{
-                $ListingRecords = collect($showRecords)->sortBy([
+                $ListingRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([
                     $sortar
                  ]);
 
-            $ListingRecords = $ListingRecords->concat(collect($ShowSoldoutRecords));
+               $ListingRecords = $ListingRecords->concat(collect($ShowSoldoutRecords))->concat(collect($DolPhinShowSoldoutRecords));
             } 
-            return $ListingRecords;      
-         }    
+         }
+         
+         else{
+            $ListingRecords= collect($ListingRecords)->concat(collect($DolPhinshowRecords))->sortBy([
+                $sortar
+                ]);
+
+             $ListingRecords = $ListingRecords->concat(collect($DolPhinShowSoldoutRecords));
+        }
+        return $ListingRecords;  
+
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
+
 
         $ListingRecords['regular'] = [];
         $ListingRecords['soldout'] = [];
 
+       
         $ListingRecords = array();
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
         foreach($records as $record){
             //return $record;
             $unavailbleSeats = 0;
@@ -268,6 +288,7 @@ class ListingService
             $busNumber = $record->bus_number;
             $via = $record->via;
             $busOperatorId = $record->bus_operator_id;
+
 
             $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
             if(isset($routeCoupon[0]))
@@ -666,9 +687,8 @@ class ListingService
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
-           
-           if($clientRole == $clientRoleId){
-            
+            if($clientRole == $clientRoleId){
+
             /////client extra service charge added to seatfare////////////////
             $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                                 ->where('status', '1')
@@ -688,14 +708,17 @@ class ListingService
             } 
             $client_service_charges = ($addCharge/100 * $startingFromPrice);
             $newSeatFare = $startingFromPrice + $client_service_charges;
-            /////////hide buses wrt operator block////////////
-            $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
-            $Contains=0;
-            if(isset($operatorBlockId)){
-                $Contains = $operatorBlockId->contains($operatorId);
-            }
-            if($Contains==0){
-                $arr = array(
+
+              /////////hide buses wrt operator block////////////
+              $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
+              $Contains=0;
+              if(isset($operatorBlockId)){
+                  $Contains = $operatorBlockId->contains($operatorId);
+              }
+
+              if($Contains==0){
+           
+                $arr= array(
                     "origin" => 'ODBUS',
                     "CompanyID" => '',
                     "ReferenceNumber" => '',
@@ -733,15 +756,14 @@ class ListingService
                     "cancellationPolicyContent" => $cancellationPolicyContent,
                     "TravelPolicyContent" => $TravelPolicyContent,
                     ); 
-           
-                if($totalSeats>0){
-                    $ListingRecords['regular'][] = $arr;
-                }else{
-                    $ListingRecords['soldout'][] = $arr;
-                }
-            }
+            if($totalSeats>0){
+            $ListingRecords['regular'][] = $arr;
             }else{
-                $arr = array(
+            $ListingRecords['soldout'][] = $arr;
+            }
+        }
+      }else{
+                $arr= array(
                     "origin" => 'ODBUS',
                     "CompanyID" => '',
                     "ReferenceNumber" => '',
@@ -828,7 +850,40 @@ class ListingService
         $amenityId = $request['amenityId'];
         
         $selCouponRecords = $this->listingRepository->getAllCoupon();
-        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);    
+        $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);  
+
+
+        $dolphinresult=[];
+
+
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('Dolphin',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
+            $dolphinresult= $this->dolphinTransformer->Filter($request); // getting dolphin buslist
+        }
+
+        
+        $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
+        $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
+
+        $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
+
+        $sortar=[];
+        
+
+        if($common[0]->bus_list_sequence==1){
+        $sortar= ['startingFromPrice', 'asc'];
+        }
+
+        else if($common[0]->bus_list_sequence==2){
+        $sortar=['departureTime', 'asc'];   
+        }
+        else if($common[0]->bus_list_sequence==3){
+        $sortar=['totalSeats', 'desc'];
+        } 
+
+        else{
+            $sortar=['departureTime', 'asc']; 
+        } 
+
         
         //return $busDetails;
         if(isset($busDetails[0])){
@@ -966,28 +1021,6 @@ class ListingService
         $showRecords = (isset($showRecord['regular'])) ? $showRecord['regular'] : [];
         $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
        
-
-
-        $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
-
-        $sortar=[];
-        
-
-        if($common[0]->bus_list_sequence==1){
-        $sortar= ['startingFromPrice', 'asc'];
-        }
-
-        else if($common[0]->bus_list_sequence==2){
-        $sortar=['departureTime', 'asc'];   
-        }
-        else if($common[0]->bus_list_sequence==3){
-        $sortar=['totalSeats', 'desc'];
-        } 
-
-        else{
-            $sortar=['departureTime', 'asc']; 
-        } 
-
         if(count($hideBusRecords) > 0){
            $hideRecords =  $this->processBusRecords($hideBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'hide',$clientRole,$clientId);
 
@@ -1006,14 +1039,14 @@ class ListingService
            $sortar= ['startingFromPrice', 'desc'];
            
             $hideRecords = collect($hideRecords)->sortBy([$sortar]);
-            $showRecords = collect($showRecords)->sortBy([$sortar]);
+            $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
            // return $showRecords->concat($hideRecords);
             //return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
         }
         else if($price == 1){
 
           $sortar= ['startingFromPrice', 'asc'];
-            $showRecords = collect($showRecords)->sortBy([$sortar]);
+          $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
             $hideRecords = collect($hideRecords)->sortBy([$sortar]);
 
 
@@ -1021,12 +1054,18 @@ class ListingService
             //return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
        }
 
-        $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
+        $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($HideSoldoutRecords));
 
         $ListingRecords = $showRecords->concat($soldoutRecords);
         return $ListingRecords->concat($hideRecords);
 
      }  
+
+     else{
+        $ListingRecords =  collect($DolPhinshowRecords)->sortBy([$sortar]);
+        return $ListingRecords->concat(collect($DolPhinShowSoldoutRecords));
+    } 
+    
     }
 
     public function getFilterOptions(Request $request,$clientRole,$clientId)
@@ -1035,17 +1074,48 @@ class ListingService
         $destinationID = $request['destinationID']; 
         $busIds = $request['busIDs']; 
         $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+        $journey_date = $request['entry_date']; 
 
         $busTypes =  $this->listingRepository->getbusTypes();
         $seatTypes = $this->listingRepository->getseatTypes();
         $boardingPoints = $this->listingRepository->getboardingPoints($sourceID,$busIds);
         $dropingPoints = $this->listingRepository->getdropingPoints($destinationID,$busIds);
         $busOperator = $this->listingRepository->getbusOperator($busIds);
+
         $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
         $amenities = $this->listingRepository->getamenities($busIds);
+
+        /////// to get dolphin operator , calling buslist function again
+
+        //Log::info($request);
+       
+         $DolphinBusList = $this->dolphinTransformer->Filter($request);
+
+         //Log::info($DolphinBusList);
+
+         $regular=(isset($DolphinBusList['regular'])) ? $DolphinBusList['regular'] : [];
+         $soldout=(isset($DolphinBusList['soldout'])) ? $DolphinBusList['soldout'] : [];
+
         
-        /////////hide busOperators wrt operator block for clients////////////
-        if($clientRole == $clientRoleId){
+
+        if(count($regular)==0 && count($soldout)==0 ){
+
+            $DolphinBusOperator=[];
+
+        }else{
+
+            $DolphinBusOperator[]=[
+                "id"=>"Dolphin",
+                "operator_name"=> "Dolphin",
+                "organisation_name"=>"Dolphin"
+            ];
+
+            $busOperator=   collect($busOperator)->concat(collect($DolphinBusOperator));
+
+        }
+
+         /////////hide busOperators wrt operator block for clients////////////
+         if($clientRole == $clientRoleId){
             if(isset($operatorBlockId)){
             $filteredOperators = ($busOperator->whereNotIn('id',$operatorBlockId))->flatten();
             }
@@ -1067,7 +1137,8 @@ class ListingService
             "amenities"=> $amenities   
             );
         }
-        return $filterOptions;
+
+        return  $filterOptions;
     }
     public function busDetails(Request $request)
     {

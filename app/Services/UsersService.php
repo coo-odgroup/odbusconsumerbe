@@ -272,9 +272,7 @@ class UsersService
     }
 
     public function BookingHistory($request){
-        //$result = $this->usersRepository->BookingHistory($request);
-        //return $result;
-
+      
         $user= $this->userProfile($request);
       
         if($user!='Invalid'){
@@ -309,6 +307,17 @@ class UsersService
  
          if($list){
              foreach($list as $k => $l){
+
+                if($l->origin == 'DOLPHIN'){
+
+                    $dolphin_bk= $this->usersRepository->DolphinBookingInfo($l->id);
+                    $list[$k]=$dolphin_bk;
+
+                    $l=$list[$k];
+
+                }
+
+
                  $l['source']=$this->usersRepository->getLocation($l->source_id);
                  $l['destination']=$this->usersRepository->getLocation($l->destination_id);
 
@@ -418,9 +427,26 @@ class UsersService
 
          if($userReviews){
              foreach($userReviews as $key => $value){ 
-                 if($value->bus->booking){
-                    $value->bus->booking['src_name']=$this->usersRepository->getLocationName($value->bus->booking->source_id);
-                    $value->bus->booking['dest_name']=$this->usersRepository->getLocationName($value->bus->booking->destination_id);   
+
+                $pnrInfo=$this->usersRepository->getPnrInfo($value->pnr);
+                 if(!empty($pnrInfo)){
+                    
+                    if($pnrInfo->origin=='DOLPHIN'){
+                        $bus["bus_number"]=$pnrInfo->bus_number;      
+                        $bus["name"]=$pnrInfo->bus_name; 
+                        
+                    }else{
+                        $bus["bus_number"]=$pnrInfo->bus->bus_number;      
+                        $bus["name"]=$pnrInfo->bus->name; 
+                    }
+
+                    $userReviews[$key]['bus']=$bus;
+
+                    $bus["booking"]=$pnrInfo;
+                    $bus["booking"]['src_name']=$this->usersRepository->getLocationName($pnrInfo->source_id);
+                    $bus["booking"]['dest_name']=$this->usersRepository->getLocationName($pnrInfo->destination_id); 
+                    $userReviews[$key]['bus']=$bus;
+
                }else{
                    unset($userReviews[$key]);
                }

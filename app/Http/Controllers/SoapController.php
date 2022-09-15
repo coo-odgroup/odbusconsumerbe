@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
+use App\Transformers\DolphinTransformer;
 
 class SoapController
 {
@@ -14,6 +15,7 @@ class SoapController
    * @var SoapWrapper
    */
   protected $soapWrapper;
+  protected $DolphinTransformer;
 
   use ApiResponser;
 
@@ -22,9 +24,14 @@ class SoapController
    *
    * @param SoapWrapper $soapWrapper
    */
-  public function __construct(SoapWrapper $soapWrapper)
+  public function __construct(SoapWrapper $soapWrapper, DolphinTransformer $DolphinTransformer)
   {
     $this->soapWrapper = $soapWrapper;
+    $this->DolphinTransformer = $DolphinTransformer;
+  }
+
+  public function DolphinCancelPolicy(){
+    return $this->DolphinTransformer->GetCancellationPolicy();
   }
 
   /**

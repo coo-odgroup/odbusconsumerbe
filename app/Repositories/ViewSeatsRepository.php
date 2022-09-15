@@ -56,6 +56,11 @@ class ViewSeatsRepository
         $this->ticketFareSlab = $ticketFareSlab;
         $this->odbusCharges = $odbusCharges;  
     } 
+
+    public function getLocationName($id)
+     {
+         return $this->location->where("id", $id)->where("status", 1)->get();
+     }
     
     public function busLocationSequence($sourceId,$destinationId,$busId)
     {

@@ -84,19 +84,23 @@ class PopularService
        
         $routenames = $this->popularRepository->getAllRoutes();
 
+        $BusList=[];
+
         foreach($routenames as $route){
            $srcId = $route->source_id;
            $destId = $route->destination_id;
            $count = $route->count;
            $src = $this->popularRepository->getRoute($srcId);
            $dest= $this->popularRepository->getRoute($destId);
+           $BusList= $this->popularRepository->getBus($srcId,$destId);
 
            if($src && isset($src[0]) && $dest && isset($dest[0])){
 
             $allRoutes[] = array(
                 "source" => $src,
                 "destination" => $dest,
-                "count" => $count
+                "count" => $count,
+                "BusList" => $BusList,
             );
 
             // $allRoutes[] = array(

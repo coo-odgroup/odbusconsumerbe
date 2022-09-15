@@ -68,23 +68,10 @@ class BookTicketRepository
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
            } while ( $booking->where('transaction_id', $transactionId )->exists());
         $booking->transaction_id =  $transactionId;
-        // do {
-        //     $PNR = substr(str_shuffle("0123456789"), 0, 7);
-        //     //$PNR = 'OD'."".substr(str_shuffle("0123456789"), 0, 8);
-        //     } while ( $booking ->where('pnr', $PNR )->exists()); 
-        
+      
         do {
           switch($bookingInfo['app_type'])
           {
-            // case("WEB"):
-            //     $PNR = 'ODW'."".substr(str_shuffle("0123456789"), 0, 7);
-            //     break;
-            // case("MOB"):
-            //     $PNR = 'ODM'."".substr(str_shuffle("0123456789"), 0, 7);
-            //     break;
-            // case("ANDROID"):
-            //     $PNR = 'ODA'."".substr(str_shuffle("0123456789"), 0, 7);
-            //     break;
 
             case("WEB"):
                 $PNR = 'ODW'.rand(1000000,9999999);
@@ -104,17 +91,25 @@ class BookTicketRepository
         $booking->bus_id = $bookingInfo['bus_id'];
         $busId = $bookingInfo['bus_id'];
 
-        $user_id = Bus::where('id', $busId)->first()->user_id;
-        $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
-
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
-                                                ->where('destination_id',$bookingInfo['destination_id'])
-                                                ->where('status','1')
-                                                ->get();
+
+        $j_day=1;
+
+        if($bookingInfo['origin']== 'ODBUS'){
+
+            $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
+            ->where('destination_id',$bookingInfo['destination_id'])
+            ->where('status','1')
+            ->get();
+
+           $j_day= $ticketPriceDetails[0]->j_day  ; 
+
+        }
+
+                                           
                                                 
-        $booking->j_day = $ticketPriceDetails[0]->j_day;
+        $booking->j_day = $j_day;
         $booking->journey_dt = $bookingInfo['journey_date'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
@@ -143,6 +138,14 @@ class BookTicketRepository
         if(isset($bookingInfo['booking_type'])){
             $booking->booking_type = $bookingInfo['booking_type'];
         }
+
+        $odbusGstPercent=0;
+        $odbusGstAmount=0;
+
+        if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+
+        $user_id = Bus::where('id', $busId)->first()->user_id;
+        $busOperatorId = Bus::where('id', $busId)->first()->bus_operator_id;
         
         $odbusChargesRecord = OdbusCharges::where('user_id',$user_id)->get();
         if(isset($odbusChargesRecord[0])){
@@ -150,9 +153,9 @@ class BookTicketRepository
         }else{
             $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
         }
-        $booking->odbus_gst_charges = $odbusGstPercent;
-        $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
-        $booking->odbus_gst_amount = $odbusGstAmount;
+        
+        $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;       
+
         $busOperator = BusOperator::where("id",$busOperatorId)->get();
     
         if($busOperator[0]->need_gst_bill == $needGstBill){   
@@ -161,13 +164,35 @@ class BookTicketRepository
             $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
             $booking->owner_gst_amount = $ownerGstAmount;
         }
+       }
+
+
+        $booking->odbus_gst_charges = $odbusGstPercent;
+        $booking->odbus_gst_amount = $odbusGstAmount;
+
+        $booking->CompanyID = $bookingInfo['CompanyID'];
+        $booking->ReferenceNumber = $bookingInfo['ReferenceNumber'];
+        $booking->RouteTimeID = $bookingInfo['RouteTimeID'];
+        $booking->PickupID = $bookingInfo['PickupID'];
+        $booking->DropID = $bookingInfo['DropID'];
+
         $booking->created_by = $bookingInfo['created_by'];
 
         $userId->booking()->save($booking);
+
+
+        $seq_no_start=0;
+        $seq_no_end=0;
+
+        if($bookingInfo['origin']=='ODBUS'){
+
+            //fetch the sequence from bus_locaton_sequence
+                $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
+                $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+
+        }
         
-        //fetch the sequence from bus_locaton_sequence
-        $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
-        $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+        
         
         $bookingSequence = new BookingSequence;
         $bookingSequence->sequence_start_no = $seq_no_start;
@@ -176,6 +201,8 @@ class BookTicketRepository
          $booking->bookingSequence()->save($bookingSequence);
 
         //Update Booking Details >>>>>>>>>>
+
+        if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $bookingInfo['bookingDetail'];
@@ -188,6 +215,7 @@ class BookTicketRepository
                 ->where('status','1')
                 ->first()->id;
         }  
+      }
         $bookingDetailModels = [];  
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
@@ -204,12 +232,31 @@ class BookTicketRepository
 
         }
 
+        $bDetail['seat_name']=$bDetail['bus_seats_id'];
+
+        unset($bDetail['bus_seats_id']);
+
 
             $collection= collect($bDetail);
-            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
-            $bookingDetailModels[] = new BookingDetail($merged);
+
+            if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+
+                $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
+
+                $bookingDetailModels[] = new BookingDetail($merged);
+
+            }else{
+
+                $bookingDetailModels[] = new BookingDetail($collection->toArray());
+
+            }
+
+           
             $i++;
-        }    
+        } 
+        
+        //Log::info($bookingDetailModels);
+
         $booking->bookingDetail()->saveMany($bookingDetailModels);  
             
         return $booking; 

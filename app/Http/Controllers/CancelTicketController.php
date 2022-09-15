@@ -73,6 +73,19 @@ class CancelTicketController extends Controller
  * 
  */
 
+ public function CancelDolphinSeat(Request $request){
+
+      $data = $request->all();    
+      try {
+        $response =  $this->cancelTicketService->CancelDolphinSeat($request);
+        return $this->successResponse($response,Config::get('constants.REFUND_INITIATED'),Response::HTTP_CREATED);
+      
+      }
+      catch (Exception $e) {
+        return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }      
+} 
+
     public function cancelTicket(Request $request) {
           $data = $request->all();
           $cancelTicketValidator = $this->cancelTicketValidator->validate($data);
@@ -94,6 +107,11 @@ class CancelTicketController extends Controller
           elseif($response == 'MOBILE_NOT_MATCH'){
             return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
           }
+
+          elseif($response == 'Ticket_already_cancelled'){
+            return $this->errorResponse("Ticket Already cancelled. Please contact Odbus Support Team",Response::HTTP_PARTIAL_CONTENT);
+           }  
+  
           
           else{
             return $this->successResponse($response,Config::get('constants.REFUND_INITIATED'),Response::HTTP_CREATED);

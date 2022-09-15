@@ -28,6 +28,19 @@ class BookTicketService
     public function bookTicket($request,$clientRole,$clientId)
     {
         try {
+            $ReferenceNumber = $request['bookingInfo']['ReferenceNumber'];
+            $origin = $request['bookingInfo']['origin'];
+
+            if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+                return 'Invalid Origin';
+            }else if($origin=='DOLPHIN'){
+
+                if($ReferenceNumber ==''){
+
+                    return 'ReferenceNumber_empty';
+
+                }
+            }
             
             $needGstBill = Config::get('constants.NEED_GST_BILL');
             $customerInfo = $request['customerInfo'];
@@ -48,29 +61,40 @@ class BookTicketService
                 $destinationID = $bookingInfo['destination_id'];
                 $source = Location::where('id',$sourceID)->first()->name;
                 $destination = Location::where('id',$destinationID)->first()->name;
-                $reqInfo= array(
-                    "source" => $source,
-                    "destination" => $destination,
-                    "entry_date" => $bookingInfo['journey_date'],
-                    "bus_operator_id" => Null,
-                    "user_id" => Null
-                ); 
-                $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
-            
-                if($busRecords){
-                $busId = $bookingInfo['bus_id'];
-                $busRecords->pluck('busId');
-                $validBus = $busRecords->pluck('busId')->contains($busId);
-                }
+
+
+                if($origin == 'ODBUS'){
+
+                    $reqInfo= array(
+                        "source" => $source,
+                        "destination" => $destination,
+                        "entry_date" => $bookingInfo['journey_date'],
+                        "bus_operator_id" => Null,
+                        "user_id" => Null
+                    ); 
+    
+                    $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
+                
+                    if($busRecords){
+                    $busId = $bookingInfo['bus_id'];
+                    $busRecords->pluck('busId');
+                    $validBus = $busRecords->pluck('busId')->contains($busId);
+                    }
                     if(!$validBus){
                         return "Bus_not_running";
                     }
+
+                }
+               
                
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
                 $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill);   
                 
                 /////////////auto apply coupon//////////
+
+                if($bookingInfo['origin'] == 'ODBUS'){ 
+
                 $bcollection = collect($bookingInfo);
                 $bcollection->put('transaction_id', $booking['transaction_id']);
                 $couponDetails = Coupon::where('coupon_code',$bookingInfo['coupon_code'])
@@ -86,11 +110,13 @@ class BookTicketService
                     }else{
                         return collect($booking)->put('couponStatus', $coupon);
                     }     
-                }       
+                } 
+            }      
                 return $booking; 
 
         } catch (Exception $e) {
 
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
     }   

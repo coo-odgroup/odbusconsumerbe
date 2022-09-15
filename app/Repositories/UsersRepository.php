@@ -358,6 +358,39 @@ class UsersRepository
                 } ])->orderBy('journey_dt','asc');
     }
 
+    public function DolphinBookingInfo($id){
+
+      $ar= $this->booking->with('users')->with('bookingDetail')
+            ->where('id',$id)->first();
+
+
+    $bus["bus_number"]=$ar->bus_number;      
+    $bus["name"]=$ar->bus_name; 
+
+    $bus["bus_type"]["name"]='';
+    $bus["bus_type"]["bus_class"]=[
+        "class_name" => ""
+    ];
+
+    $bus["bus_sitting"]["name"]=""; 
+    $bus["bus_contacts"]["phone"]=""; 
+
+    $ar['bus']= $bus;
+
+    $bookingDetail=$ar->bookingDetail;
+
+    foreach($bookingDetail as $k => $bd){
+        
+        $st["seatText"]=$bd->seat_name;  
+        $stx["seats"]= $st;            
+        $ar['bookingDetail'][$k]["bus_seats"]=$stx;
+        
+    }
+
+    return $ar;
+
+    }
+
     public function AllBookings($user_id){
       return  Booking::where('users_id',$user_id)
       ->where('status','!=',0)
@@ -387,16 +420,16 @@ class UsersRepository
       return $this->review->where('users_id',$users_id)->where('pnr',$pnr)->get();
     }
 
+    public function getPnrInfo($pnr){
+
+      return $this->booking->where("pnr",$pnr)->with('bus')->first();
+      
+  }
+
     public function userReviews($user_id){
             
       return Review::where('users_id', $user_id)
                ->where('status','!=',2)
-          ->with('bus', function ($q) {
-              $q->with('busGallery');
-              $q->with('booking', function ($b){
-                  $b ->where('status','!=',0);
-              });
-          })
           ->with('users')
           ->orderBy('id','desc')
           ->get();

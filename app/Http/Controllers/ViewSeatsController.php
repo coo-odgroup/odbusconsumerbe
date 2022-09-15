@@ -111,6 +111,7 @@ class ViewSeatsController extends Controller
             'entry_date',
             'destinationId',
         ]);
+        
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
@@ -122,7 +123,17 @@ class ViewSeatsController extends Controller
         }
         
         $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request, $clientRole);
-        return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        if($viewSeatsData =='Invalid Param'){
+    
+            return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+    
+        }if($viewSeatsData =='ReferenceNumber_empty'){
+            return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+        }
+        else{
+            return $this->successResponse($viewSeatsData,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
+    
     }
 /**
  * @OA\Post(
@@ -233,7 +244,18 @@ class ViewSeatsController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
         $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request,$clientRole,$clientId);
-        return $this->successResponse($priceOnSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        
+
+        if($priceOnSeats =='Invalid Param'){
+    
+            return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+    
+        }if($priceOnSeats =='ReferenceNumber_empty'){
+            return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+        }
+        else{
+            return $this->successResponse($priceOnSeats,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
     }
 
       /**
@@ -300,6 +322,18 @@ class ViewSeatsController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
         $boardingPoints = $this->viewSeatsService->getBoardingDroppingPoints($request);
-        return $this->successResponse($boardingPoints,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+        if($boardingPoints =='Invalid Param'){
+    
+            return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+    
+        }if($boardingPoints =='ReferenceNumber_empty'){
+            return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+        }
+        else{
+            return $this->successResponse($boardingPoints,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
+
+        
     }
 }

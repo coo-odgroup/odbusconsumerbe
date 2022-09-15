@@ -22,7 +22,7 @@ class DolphinService
   public function __construct(SoapWrapper $soapWrapper)
   {
     $this->soapWrapper = $soapWrapper;
-    $this->option=["verifyCall" => "dK86BF3S7KJbPrdF94qzvjm8xanYN9a7egb84bp59Fw93J8FdwHM"];
+    $this->option=["verifyCall" =>"dK86BF3S7KJbPrdF94qzvjm8xanYN9a7egb84bp59Fw93J8FdwHM"];
     
   }
 
@@ -86,9 +86,68 @@ class DolphinService
           
       }
 
-}
+  }
 
   
+
+  public function CancelDetails($pnr) 
+  {
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('CancelDetails', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']=$pnr;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+      $response = $this->soapWrapper->call('CancelDetails.CancelDetails', [$option]);
+
+      $data=$this->xmlToArray($response->CancelDetailsResult->any);
+
+      if(isset($data['DocumentElement'])){
+        return $data=$data['DocumentElement']['ITSTicketCancelDetails'];
+      }
+  
+  }
+
+  public function ConfirmCancellation($pnr) 
+  {
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('ConfirmCancellation', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']=$pnr;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+        $response = $this->soapWrapper->call('ConfirmCancellation.ConfirmCancellation', [$option]);
+
+         $data=$this->xmlToArray($response->ConfirmCancellationResult->any);
+
+      if(isset($data['DocumentElement'])){
+
+        Log::info($data['DocumentElement']);
+      
+        return $data=$data['DocumentElement']['ConfirmCancellation'];
+     }
+  
+  }
+
+
   public function GetSource() 
   {
 
@@ -183,30 +242,7 @@ class DolphinService
   }
 
 
-  public function GetCancellationPolicy() 
-  {
-
-    $this->soapWrapper= new SoapWrapper();
-
-    $result=[];
-
-    $this->soapWrapper->add('GetCancellationPolicy', function ($service) {
-        $service
-          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
-          ->trace(true);
-      });
-
-      $option['CompanyID']='251';
-      $option['VerifyCall']=$this->option['verifyCall'];
-
-
-       $response = $this->soapWrapper->call('GetCancellationPolicy.GetCancellationPolicy', [$option]);
-
-       return  $response->GetCancellationPolicyResult->CancellationPolicy;
-  
-  }
-
-  public function BlockSeatV2(){
+  public function BlockSeat($array){
 
     $this->soapWrapper= new SoapWrapper();
 
@@ -218,32 +254,19 @@ class DolphinService
           ->trace(true);
       });
 
-      $option['ReferenceNumber']='251#1669#1645#22991#59534#3189#05072022#4:00 PM#10:00 PM';
-      $option['PassengerName']='Lima Mohanty';
-      $option['SeatNames']='22,M'; // 15,F|16,M  (This should be the format )
-      $option['Email']='banashri.seofied@gmail.com';
-      $option['Phone']='8763447921';
-      $option['PickupID']='25802';
-      $option['PayableAmount']='896';
-      $option['TotalPassengers']=1;
+      $option['ReferenceNumber']=$array['ReferenceNumber'];
+      $option['PassengerName']=$array['PassengerName'];
+      $option['SeatNames']=$array['SeatNames']; // 15,F|16,M  (This should be the format )
+      $option['Email']=$array['Email'];
+      $option['Phone']=$array['Phone'];
+      $option['PickupID']=$array['PickupID'];
+      $option['PayableAmount']=$array['PayableAmount'];
+      $option['TotalPassengers']=$array['TotalPassengers'];
       $option['VerifyCall']=$this->option['verifyCall'];
 
        $response = $this->soapWrapper->call('BlockSeatV2.BlockSeatV2', [$option]);
 
        $data=$this->xmlToArray($response->BlockSeatV2Result->any);
-
-        // 0 then Failed 
-        // 1 then Success 
-        // 2 then Already Booked 
-        // 3 then Already On Hold by Other 
-        // 4 then Route/Time Is Inactive 
-        // 5 then Arrangement Changed 
-        // 6 then Route Time Changed 
-        // 7 then Out Of Maximum Advanced Booking Date 
-        // 8 then Fare Variations, Insufficient Balance 
-        // 9 then Stop booking is active in this route 
-        // 10 then Verify call is unauthorized – contact ITS – info@itspl.ne
-       
 
        if(isset($data['DocumentElement'])){
       
@@ -251,6 +274,119 @@ class DolphinService
        }
 
        
+
+  }
+
+  public function BookSeat($array){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('BookSeat', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['ReferenceNumber']=$array['ReferenceNumber'];
+      $option['PassengerName']=$array['PassengerName'];
+      $option['SeatNames']=$array['SeatNames']; // 15,F|16,M  (This should be the format )
+      $option['Email']=$array['Email'];
+      $option['Phone']=$array['Phone'];
+      $option['PickIpID']=$array['PickupID'];
+      $option['PayableAmount']=$array['PayableAmount'];
+      $option['TotalPassengers']=$array['TotalPassengers'];
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+       $response = $this->soapWrapper->call('BookSeat.BookSeat', [$option]);
+
+       $data=$this->xmlToArray($response->BookSeatResult->any);
+
+       if(isset($data['DocumentElement'])){
+      
+        return $data=$data['DocumentElement']['ITSBookSeat'];
+       }
+
+  }
+
+  
+  public function GetBusNo($ar){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetBusNo', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']=$ar['PNRNo'];
+      $option['CompanyID']=$ar['CompanyID'];
+      $option['RouteID']=$ar['RouteID'];
+      $option['RouteTimeID']=$ar['RouteTimeID'];
+      $option['FromID']=$ar['FromID'];
+      $option['JourneyDate']=$ar['JourneyDate']; //dd-mm-yyyy      
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+
+    $response = $this->soapWrapper->call('GetBusNo.GetBusNo', [$option]);
+
+    $data=$this->xmlToArray($response->GetBusNoResult->any);
+
+    if(isset($data['DocumentElement'])){
+
+    return $data=$data['DocumentElement']['ITSGetBusNo'];
+    }
+  }
+
+  public function FetchTicketPrintData($pnr){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('FetchTicketPrintData', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['PNRNo']=$pnr;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+      $response = $this->soapWrapper->call('FetchTicketPrintData.FetchTicketPrintData', [$option]);
+
+      $data=$this->xmlToArray($response->FetchTicketPrintDataResult->any);
+
+      if(isset($data['DocumentElement'])){  
+        return $data=$data['DocumentElement']['ITSTicketPrintData'];
+      }
+
+
+  }
+
+
+  public function GetCancellationPolicy(){
+
+    $this->soapWrapper= new SoapWrapper();
+
+    $result=[];
+
+    $this->soapWrapper->add('GetCancellationPolicy', function ($service) {
+        $service
+          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
+          ->trace(true);
+      });
+
+      $option['CompanyID']=251;
+      $option['VerifyCall']=$this->option['verifyCall'];
+
+      $response = $this->soapWrapper->call('GetCancellationPolicy.GetCancellationPolicy', [$option]);
+
+      return $response->GetCancellationPolicyResult->CancellationPolicy;
 
   }
 
@@ -287,25 +423,6 @@ class DolphinService
 
   }
 
-  public function FetchTicketPrintData(){
-
-    $this->soapWrapper= new SoapWrapper();
-
-    $result=[];
-
-    $this->soapWrapper->add('FetchTicketPrintData', function ($service) {
-        $service
-          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
-          ->trace(true);
-      });
-
-      $option['PNRNo']='';
-      $option['VerifyCall']=$this->option['verifyCall'];
-
-     return $response = $this->soapWrapper->call('FetchTicketPrintData.FetchTicketPrintData', [$option]);
-
-
-  }
 
   
 
@@ -341,32 +458,7 @@ class DolphinService
 
   }
 
-  public function GetBusNo(){
-
-    $this->soapWrapper= new SoapWrapper();
-
-    $result=[];
-
-    $this->soapWrapper->add('GetBusNo', function ($service) {
-        $service
-          ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
-          ->trace(true);
-      });
-
-      $option['PNRNo']='';
-      $option['CompanyID']='';
-      $option['RouteID']='';
-      $option['RouteTimeID']='';
-      $option['FromID']='';
-      $option['JourneyDate']=''; //dd-mm-yyyy
-      
-      $option['VerifyCall']=$this->option['verifyCall'];
-
-
-        $response = $this->soapWrapper->call('GetBusNo.GetBusNo', [$option]);
-
-
-  }
+ 
 
   public function TicketStatus(){
 

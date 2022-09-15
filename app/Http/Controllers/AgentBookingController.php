@@ -269,14 +269,16 @@ class AgentBookingController extends Controller
  */
     public function agentBooking(Request $request) {
 
-
         $token = JWTAuth::getToken();
 
         $user = JWTAuth::toUser($token);
 
          $data = $request->all();
 
-         $data['bookingInfo']['origin']=$user->name;
+        $clientRole = $user->role_id;
+        $clientId = $user->id;
+
+        // $data['bookingInfo']['origin']=$user->name;
 
         $bookingValidation = $this->agentBookingValidator->validate($data);
    
@@ -285,8 +287,19 @@ class AgentBookingController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
          try {
-            $response =  $this->agentBookingService->agentBooking($data);  
-            if(isset($response['message'])){
+            $response =  $this->agentBookingService->agentBooking($data,$clientRole,$clientId);  
+            if($response=='Bus_not_running'){
+                return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
+            }
+            elseif($response =='Invalid Param'){
+    
+                return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+        
+            }elseif($response =='ReferenceNumber_empty'){
+                return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+            }
+
+            elseif(isset($response['message'])){
              return $this->errorResponse($response['note'],Response::HTTP_OK);
              }
            else{

@@ -84,6 +84,20 @@ class PopularRepository
        
     }
 
+    public function getBus($sid,$did){ 
+
+        return $this->ticketPrice->with('bus')
+        ->where([
+            ['source_id', '=', $sid],
+            ['destination_id', '=', $did],
+        ])
+        ->where("status",1)
+        ->get();
+       
+    }
+
+    
+
     public function downloadApp($phone){  
 
         $SmsGW = config('services.sms.otpservice');

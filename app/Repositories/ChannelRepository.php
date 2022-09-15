@@ -21,6 +21,7 @@ use App\Models\BusSeats;
 use App\Models\Bus;
 use App\Models\Credentials;
 use App\Models\AgentWallet;
+use App\Models\PrintTicket;
 use App\Models\AgentCommission;
 use App\Models\Notification;
 use App\Models\UserNotification;
@@ -361,6 +362,8 @@ class ChannelRepository
 
         $data['journeydate']= date('d-m-Y',strtotime($data['journeydate']));
 
+        //Log::info($data);
+
         if($SmsGW =='textLocal'){
 
             //Environment Variables
@@ -386,7 +389,8 @@ class ChannelRepository
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            
+
+           // Log::info($data);            
 
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
@@ -398,40 +402,8 @@ class ChannelRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-
-            //$msgId = $response->messages[0]->id;  // Store msg id in DB
-            //session(['msgId'=> $msgId]);
-             
+           // Log::info($response);
             return $response;
-           
-
-            // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // $err = curl_error($ch);
-            
-            // if ($err) { 
-            //     return "cURL Error #:" . $err;
-            // } 
-
-        }elseif($SmsGW=='IndiaHUB'){
-                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
-                $otp = $data['otp'];
-                // $IndiaHubApiKey = urlencode( $IndiaHubApiKey);
-                // //$channel = 'transactional';
-                // //$route =  '4';
-                // //$dcs = '0';
-                // //$flashsms = '0';
-                // $smsIndiaUrl = 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
-                // $receiver = urlencode($data['phone']);
-                // $sender_id = urlencode($data['sender']);
-                // $name = $data['name'];
-                // $message = $data['message'];
-                // $message = str_replace("<otp>",$otp,$message);
-                // $message = rawurlencode($message);
-    
-                // $api = "$smsIndiaUrl?APIKey=".$IndiaHubApiKey."&sid=".$sender_id."&msg=".$message."&msisdn=".$receiver."&fl=0&gwid=2";
-    
-                // $response = file_get_contents($api);
-                //return $response;
 
         }
       }
@@ -711,7 +683,7 @@ class ChannelRepository
       }
 
       public function getBookingRecord($transationId){
-        return $this->booking->with('users')->where('transaction_id', $transationId)->get();
+        return $this->booking->with('users')->with('bookingDetail')->where('transaction_id', $transationId)->get();
       }
 
       public function getBookingData($transationId){
@@ -799,8 +771,25 @@ class ChannelRepository
 
       }
 
+      public function UpdateAPIPnr($transactionId,$updateApiData){
 
-      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData){
+        $this->booking->where('transaction_id', $transactionId)->update($updateApiData);
+
+      }
+
+      public function InsertTicketData($booking_id,$pnr,$ticket_info){
+
+        $printTicket = new PrintTicket();
+        $printTicket->booking_id = $booking_id;
+        $printTicket->ticketdata = json_encode($ticket_info);
+        $printTicket->save();
+
+      }
+
+      
+
+
+      public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin){
 
         $key = $this->getRazorpayKey();
         $secretKey = $this->getRazorpaySecret();
@@ -862,6 +851,8 @@ class ChannelRepository
          
          
       ///////////////////CMO SMS/////////////////////////////////////////////////
+
+      if($origin=='ODBUS'){
         $busContactDetails = BusContacts::where('bus_id',$busId)
                                           ->where('status','1')
                                           ->where('booking_sms_send','1')
@@ -896,6 +887,7 @@ class ChannelRepository
           }
             //return $sms;
         }
+      }
             return "Payment Done";
         // }
         // else{ 
@@ -918,6 +910,9 @@ class ChannelRepository
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = $agentName;
         $agetWallet->status = 1;
+
+        Log::info($agetWallet);
+        
         $agetWallet->save();
 
         $newBalance = $walletBalance [0]->balance - $amount;
@@ -1001,7 +996,7 @@ class ChannelRepository
         $notification->userNotification()->save($userNotification);
         return $notification;
       }
-      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData)
+      public function UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin)
       {  
 
         $this->booking->where('id', $bookingId)->update(['status' => $booked,'payable_amount' => $payable_amount ]);
@@ -1047,40 +1042,43 @@ class ChannelRepository
            $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
  
 
-         ///////////////////CMO SMS/////////////////////////////////////////////////
-         $busContactDetails = BusContacts::where('bus_id',$busId)
-         ->where('status','1')
-         ->where('booking_sms_send','1')
-         ->get('phone');
+           if($origin=='ODBUS'){   
 
-          if($busContactDetails->isNotEmpty()){
-            $contact_number = collect($busContactDetails)->implode('phone',',');
-            $sendSmsCMO = $this->sendSmsCMO($payable_amount,$smsData, $pnr, $contact_number);
+            ///////////////////CMO SMS/////////////////////////////////////////////////
+            $busContactDetails = BusContacts::where('bus_id',$busId)
+            ->where('status','1')
+            ->where('booking_sms_send','1')
+            ->get('phone');
 
-            if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+              if($busContactDetails->isNotEmpty()){
+                $contact_number = collect($busContactDetails)->implode('phone',',');
+                $sendSmsCMO = $this->sendSmsCMO($payable_amount,$smsData, $pnr, $contact_number);
 
-            $msgId = $sendSmsCMO->messages[0]->id;
-            $status = $sendSmsCMO->status;
-            $from = $sendSmsCMO->message->sender;
-            $to = collect($sendSmsCMO->messages)->pluck('recipient');
-            $contents = $sendSmsCMO->message->content;
-            $response = collect($sendSmsCMO);
+                if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
 
-            /// save sms related things in manage_sms table///////////////
-          
-            $sms = new $this->manageSms();
-            $sms->pnr = $pnr;
-            $sms->booking_id = $bookingId;
-            $sms->sms_engine = $SmsGW;
-            $sms->type = 'cmo';
-            $sms->status = $status;
-            $sms->from = $from;
-            $sms->to = $to;
-            $sms->contents = $contents;
-            $sms->response = $response;
-            $sms->message_id = $msgId;
-            $sms->save();
-            }  
+                $msgId = $sendSmsCMO->messages[0]->id;
+                $status = $sendSmsCMO->status;
+                $from = $sendSmsCMO->message->sender;
+                $to = collect($sendSmsCMO->messages)->pluck('recipient');
+                $contents = $sendSmsCMO->message->content;
+                $response = collect($sendSmsCMO);
+
+                /// save sms related things in manage_sms table///////////////
+              
+                $sms = new $this->manageSms();
+                $sms->pnr = $pnr;
+                $sms->booking_id = $bookingId;
+                $sms->sms_engine = $SmsGW;
+                $sms->type = 'cmo';
+                $sms->status = $status;
+                $sms->from = $from;
+                $sms->to = $to;
+                $sms->contents = $contents;
+                $sms->response = $response;
+                $sms->message_id = $msgId;
+                $sms->save();
+                }  
+              }
           }
        
         return "Payment Done";
@@ -1322,7 +1320,7 @@ class ChannelRepository
     }
 
 
-    public function UpdateAdjustStatus($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData){
+    public function UpdateAdjustStatus($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin){
 
     
       $SmsGW = config('services.sms.otpservice');
@@ -1374,7 +1372,7 @@ class ChannelRepository
 
       $this->sendAdminEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
        
-       
+  if($origin=='ODBUS'){   
     ///////////////////CMO SMS/////////////////////////////////////////////////
       $busContactDetails = BusContacts::where('bus_id',$busId)
                                         ->where('status','1')
@@ -1408,6 +1406,7 @@ class ChannelRepository
           $sms->message_id = $msgId;
           $sms->save();
         }
+      }
          
       }
           return "Payment Done";

@@ -24,11 +24,15 @@ use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use DateTime;
+use App\Transformers\DolphinTransformer;
+
 
 
 class BookingManageRepository
 {
     protected $bus;
+    protected $dolphinTransformer;
+
     protected $ticketPrice;
     protected $location;
     protected $users;
@@ -43,7 +47,7 @@ class BookingManageRepository
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType,Credentials $credentials,CustomerPayment $customerPayment)
+    ,BusType $busType,Credentials $credentials,CustomerPayment $customerPayment,DolphinTransformer $dolphinTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -57,6 +61,8 @@ class BookingManageRepository
         $this->busClass = $busClass;
         $this->credentials = $credentials;
         $this->customerPayment = $customerPayment;
+        $this->dolphinTransformer = $dolphinTransformer;
+
     }   
     
     public function getJourneyDetails($mobile,$pnr)
@@ -85,6 +91,62 @@ class BookingManageRepository
                                                 } ]);
                                             }])->get();
        
+    }
+
+    public function getPnrInfo($pnr){
+
+        return $this->booking->where("pnr",$pnr)->first();
+        
+    }
+
+    public function getDolphinBookingDetails($mobile,$pnr){
+
+        $ar= $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+            $u->where('booking.pnr', '=', $pnr); 
+            $u->with("bookingDetail"); 
+              }])->get();
+
+        $bus["bus_number"]=$ar[0]->booking[0]->bus_number;      
+        $bus["name"]=$ar[0]->booking[0]->bus_name; 
+
+
+        $cancellationslabs=$this->dolphinTransformer->GetCancellationPolicy();
+
+        $cancellationslabsInfo=[];
+
+        if($cancellationslabs){
+            foreach($cancellationslabs as $p){
+   
+                $plc["duration"]=$p->duration;
+                $plc["deduction"]=(int)$p->deduction;
+
+                $cancellationslabsInfo[]=$plc;       
+            }         
+           } 
+
+        $bus["cancellationslabs"]["cancellation_slab_info"]=$cancellationslabsInfo;
+        $bus["bus_type"]["name"]='';
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"]=""; 
+        $bus["bus_contacts"]["phone"]=""; 
+
+        $ar[0]->booking[0]['bus']= $bus;
+
+        $bookingDetail=$ar[0]->booking[0]->bookingDetail;
+
+        foreach($bookingDetail as $k => $bd){
+            
+            $st["seatText"]=$bd->seat_name;  
+            $stx["seats"]= $st;            
+            $ar[0]->booking[0]['bookingDetail'][$k]["bus_seats"]=$stx;
+            
+        }
+
+        return $ar;
+
     }
 
     public function getBookingDetails($mobile,$pnr)
@@ -182,6 +244,60 @@ class BookingManageRepository
         }
     }
 
+    public function DolphinCancelTicketInfo($mobile,$pnr){
+
+        $ar= $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+         $u->where('booking.pnr', '=', $pnr); 
+         $u->with(["customerPayment" => function($b){
+             $b->where('payment_done',1);
+         }]);          
+         $u->with('bookingDetail');
+        }])->get();    
+
+
+        $bus["bus_number"]=$ar[0]->booking[0]->bus_number;      
+        $bus["name"]=$ar[0]->booking[0]->bus_name; 
+
+
+        $cancellationslabs=$this->dolphinTransformer->GetCancellationPolicy();
+
+        $cancellationslabsInfo=[];
+
+        if($cancellationslabs){
+            foreach($cancellationslabs as $p){
+   
+                $plc["duration"]=$p->duration;
+                $plc["deduction"]=(int)$p->deduction;
+
+                $cancellationslabsInfo[]=$plc;       
+            }         
+           } 
+
+        $bus["cancellationslabs"]["cancellation_slab_info"]=$cancellationslabsInfo;
+        $bus["bus_type"]["name"]='';
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"]=""; 
+        $bus["bus_contacts"]["phone"]=""; 
+
+        $ar[0]->booking[0]['bus']= $bus;
+
+        $bookingDetail=$ar[0]->booking[0]->bookingDetail;
+
+        foreach($bookingDetail as $k => $bd){
+            
+            $st["seatText"]=$bd->seat_name;  
+            $stx["seats"]= $st;            
+            $ar[0]->booking[0]['bookingDetail'][$k]["bus_seats"]=$stx;
+            
+        }
+
+        return $ar;
+
+     }
+
     public function cancelTicketInfo($mobile,$pnr){
 
        return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
@@ -199,6 +315,60 @@ class BookingManageRepository
          }]);
        }])->get();    
     }
+
+    public function DolphinAgentCancelTicket($phone,$pnr,$booked){
+
+        $ar= $this->users->where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
+            $u->where([
+                ['booking.pnr', '=', $pnr],
+                ['status', '=', $booked],
+            ]);       
+              $u->with('bookingDetail'); 
+        }])->get();
+
+        $bus["bus_number"]=$ar[0]->booking[0]->bus_number;      
+        $bus["name"]=$ar[0]->booking[0]->bus_name; 
+
+
+        $cancellationslabs=$this->dolphinTransformer->GetCancellationPolicy();
+
+        $cancellationslabsInfo=[];
+
+        if($cancellationslabs){
+            foreach($cancellationslabs as $p){
+   
+                $plc["duration"]=$p->duration;
+                $plc["deduction"]=(int)$p->deduction;
+
+                $cancellationslabsInfo[]=$plc;       
+            }         
+           } 
+
+        $bus["cancellationslabs"]["cancellation_slab_info"]=$cancellationslabsInfo;
+        $bus["bus_type"]["name"]='';
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"]=""; 
+        $bus["bus_contacts"]["phone"]=""; 
+
+        $ar[0]->booking[0]['bus']= $bus;
+
+        $bookingDetail=$ar[0]->booking[0]->bookingDetail;
+
+        foreach($bookingDetail as $k => $bd){
+            
+            $st["seatText"]=$bd->seat_name;  
+            $stx["seats"]= $st;            
+            $ar[0]->booking[0]['bookingDetail'][$k]["bus_seats"]=$stx;
+            
+        }
+
+        return $ar;
+
+     }
+
     //////////////////////////Agent Booking details////////////////////////
     public function agentCancelTicket($phone,$pnr,$booked)
     { 
