@@ -953,7 +953,7 @@
                 ],
                 "summary": "refund initiated for ticket cancellation",
                 "description": "refund initiated for ticket cancellation",
-                "operationId": "d8ce4f6649006c7c5f54868b139efd93",
+                "operationId": "9ab33c0b69d9cdcbc653369a603506d5",
                 "parameters": [
                     {
                         "name": "pnr",
@@ -2498,6 +2498,16 @@
                                 "format": "int64",
                                 "example": 254
                             }
+                        }
+                    },
+                    {
+                        "name": "entry_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "18-09-2022"
                         }
                     }
                 ],

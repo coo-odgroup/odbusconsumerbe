@@ -198,6 +198,36 @@ class BookTicketController extends Controller
  *                  default="Customer",
  *                  example="Customer" ,
  *                  ),
+ *                @OA\Property(
+ *                  property="CompanyID",
+ *                  type="integer",
+ *                  default="",
+ *                  example="" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="PickupID",
+ *                  type="integer",
+ *                  default="",
+ *                  example="" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="DropID",
+ *                  type="integer",
+ *                  default="",
+ *                  example="" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="RouteTimeID",
+ *                  type="integer",
+ *                  default="",
+ *                  example="" ,
+ *                  ),
+ *                @OA\Property(
+ *                  property="ReferenceNumber",
+ *                  type="integer",
+ *                  default="",
+ *                  example="" ,
+ *                  ),
  *                 @OA\Property(
  *                  property="bookingDetail",
  *                  type="array",
