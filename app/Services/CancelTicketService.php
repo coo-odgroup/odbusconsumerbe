@@ -43,7 +43,6 @@ class CancelTicketService
             return 'Ticket_already_cancelled';
         }else{
 
-            Log::info($dolphin_cancel_det);
             $update['refund_amount'] = $dolphin_cancel_det['RefundAmount'];  
             $deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
             $totalfare = $dolphin_cancel_det['TotalFare']; 
