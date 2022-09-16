@@ -1035,7 +1035,7 @@ class ChannelService
             //$seatIds = $request['seat_id'];
             $transationId = $data['transaction_id'];
 
-            Log::info($transationId);
+            //Log::info($transationId);
 
 
             $records = $this->channelRepository->getBookingRecord($transationId);

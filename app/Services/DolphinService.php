@@ -140,7 +140,7 @@ class DolphinService
 
       if(isset($data['DocumentElement'])){
 
-        Log::info($data['DocumentElement']);
+        //Log::info($data['DocumentElement']);
       
         return $data=$data['DocumentElement']['ConfirmCancellation'];
      }
@@ -357,12 +357,17 @@ class DolphinService
       $option['PNRNo']=$pnr;
       $option['VerifyCall']=$this->option['verifyCall'];
 
-      $response = $this->soapWrapper->call('FetchTicketPrintData.FetchTicketPrintData', [$option]);
+       $response = $this->soapWrapper->call('FetchTicketPrintData.FetchTicketPrintData', [$option]);
 
-      $data=$this->xmlToArray($response->FetchTicketPrintDataResult->any);
+
+     $data=$this->xmlToArray($response->FetchTicketPrintDataResult->any);  
 
       if(isset($data['DocumentElement'])){  
-        return $data=$data['DocumentElement']['ITSTicketPrintData'];
+         $data=$data['DocumentElement']['TicketPrintData'];
+        // Log::info($data);
+
+          return $data;
+
       }
 
 

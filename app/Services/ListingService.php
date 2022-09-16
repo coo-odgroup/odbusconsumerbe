@@ -61,10 +61,21 @@ class ListingService
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
          //return $busDetails;
 
-        $dolphinresult= $this->dolphinTransformer->BusList($request); // getting dolphin buslist
 
-        $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
-        $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
+         $DolPhinshowRecords = [];
+         $DolPhinShowSoldoutRecords =[];
+
+
+
+         if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
+
+            $dolphinresult= $this->dolphinTransformer->BusList($request); // getting dolphin buslist
+
+            $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
+            $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
+         }
+
+       
 
         //$CurrentDateTime = "2022-01-11 14:48:35";
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
@@ -857,7 +868,12 @@ class ListingService
 
 
         if( ($operatorId != null && count($operatorId)!=0 && in_array('Dolphin',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
-            $dolphinresult= $this->dolphinTransformer->Filter($request); // getting dolphin buslist
+
+            $DolPhinshowRecords = [];
+            $DolPhinShowSoldoutRecords =[];   
+            if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
+               $dolphinresult= $this->dolphinTransformer->Filter($request); // getting dolphin buslist
+            }
         }
 
         

@@ -536,7 +536,7 @@ public function getBoardingDroppingPoints(Request $request)
 
              $dolphinBusList=(isset($dolphinBusList['regular'])) ? $dolphinBusList['regular'] : [];
 
-             Log::info($dolphinBusList);
+            // Log::info($dolphinBusList);
 
              $key = array_search($ReferenceNumber, array_column($dolphinBusList, 'ReferenceNumber'));
              

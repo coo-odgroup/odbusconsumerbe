@@ -10,6 +10,12 @@ use InvalidArgumentException;
 use App\Services\DolphinService;
 use App\Repositories\ListingRepository;
 use App\Models\IncomingApiCompany;
+use App\Models\Bus;
+use App\Models\Location;
+use App\Models\Users;
+use App\Models\Booking;
+use App\Models\BookingDetail;
+use App\Jobs\SendEmailTicketJob;
 
 use DateTime;
 
@@ -19,12 +25,16 @@ class DolphinTransformer
 
     protected $listingRepository; 
     protected $DolphinService;
+    protected $booking;
+
    
-    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService)
+    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService,Booking $booking)
     {
 
         $this->listingRepository = $listingRepository;
         $this->DolphinService = $DolphinService;
+        $this->booking = $booking;
+
         
     }
     
@@ -691,15 +701,21 @@ class DolphinTransformer
 
     }
 
-    public function FetchTicketPrintData($pnr){
+    public function FetchTicketPrintData(){
 
-     
-        $res= $this->DolphinService->FetchTicketPrintData($pnr);
+        $list=$this->booking->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 
-        Log::info($res);
+        if($list){
+            foreach($list as $l){
+                $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);
 
-       return $res;
-      
+                if($res){
+                    
+                }
+               
+
+            }
+        }
 
     }
 

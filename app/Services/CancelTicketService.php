@@ -40,15 +40,14 @@ class CancelTicketService
         $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);  
         
         if($dolphin_cancel_det['Status']==0){
-            return 'Ticket_already_cancelled';
+            return 'failed';
         }else{
 
-            Log::info($dolphin_cancel_det);
-            $update['refund_amount'] = $dolphin_cancel_det['RefundAmount'];  
+            $update['api_refund_amount'] = $dolphin_cancel_det['RefundAmount'];  
             $deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
             $totalfare = $dolphin_cancel_det['TotalFare']; 
 
-            $update['deduction_percent'] = $deduction=round((($deductAmount / $totalfare) * 100),1);            
+            $update['api_deduction_percent'] = $deduction=round((($deductAmount / $totalfare) * 100),1);            
 
             $this->cancelTicketRepository->updateCancelTicketDolphin($update,$pnr_dt->id);
 
