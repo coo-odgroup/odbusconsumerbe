@@ -270,7 +270,7 @@ class ChannelController extends Controller
         } 
         try {
             $response = $this->channelService->makePayment($request,$clientRole);
-            Log::info($response);
+           // Log::info($response);
 
             if(isset($response['razorpay_order_id'])){
 

@@ -40,7 +40,7 @@ class AgentBookingService
             $source = Location::where('id',$sourceID)->first()->name;
             $destination = Location::where('id',$destinationID)->first()->name;
 
-            Log::info($request);
+           // Log::info($request);
 
             $ReferenceNumber = $request['bookingInfo']['ReferenceNumber'];
             $origin = $request['bookingInfo']['origin'];

@@ -140,7 +140,7 @@ class DolphinService
 
       if(isset($data['DocumentElement'])){
 
-        Log::info($data['DocumentElement']);
+        //Log::info($data['DocumentElement']);
       
         return $data=$data['DocumentElement']['ConfirmCancellation'];
      }
@@ -364,7 +364,7 @@ class DolphinService
 
       if(isset($data['DocumentElement'])){  
          $data=$data['DocumentElement']['TicketPrintData'];
-         Log::info($data);
+        // Log::info($data);
 
           return $data;
 
