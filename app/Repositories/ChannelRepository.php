@@ -911,7 +911,7 @@ class ChannelRepository
         $agetWallet->created_by = $agentName;
         $agetWallet->status = 1;
 
-       // Log::info($agetWallet);
+        Log::info($agetWallet);
         
         $agetWallet->save();
 

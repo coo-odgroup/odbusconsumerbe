@@ -28,8 +28,11 @@ class BookTicketService
     public function bookTicket($request,$clientRole,$clientId)
     {
         try {
-            $ReferenceNumber = $request['bookingInfo']['ReferenceNumber'];
-            $origin = $request['bookingInfo']['origin'];
+
+ $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
+        $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
+
+          
 
             if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
                 return 'Invalid Origin';

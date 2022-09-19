@@ -330,7 +330,8 @@ class DolphinTransformer
               $sleeper_blank=[];
               $emptySeat=0;
 
-                for($i=1;$i<=$Rows;$i++){
+               // for($i=1;$i<=$Rows;$i++){
+                    for($i=$Rows;$i>=1;$i--){
                     for($j=1;$j<=$Cols;$j++){
                         foreach($dolphinSeatresult as $d){
 
@@ -370,6 +371,7 @@ class DolphinTransformer
 
                
                      $blank_row_flag=false;
+                     $blankcount=0;
 
                     if($sleeper){   
                       foreach($sleeper as $i => $dd){ 
@@ -388,13 +390,16 @@ class DolphinTransformer
                                     $seat_class_id = 4;
                                 }
 
-                                if($i==1 && count($dd) > 1){
+                                if($i==2 && count($dd) > 2){
 
                                     $blank_row_flag=true;
 
                                     $viewSeat['upperBerth_totalRows']=$row1+1;
 
-                                    for($j=0;$j<count($sleeper[0])-1;$j++){
+                                   // for($j=0;$j<count($sleeper[0])-1;$j++){
+
+                                if($blankcount<=4){
+                                    for($j=0;$j<5;$j++){
 
                                         $blank=[
                                             "id"=> '',
@@ -405,9 +410,12 @@ class DolphinTransformer
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           
                                         ]; 
+
+                                        $blankcount++;
             
                                        array_push($UpperberthArr,$blank); 
                                     } 
+                                }
 
 
                                     $ar=[
@@ -422,9 +430,12 @@ class DolphinTransformer
                                 }
 
 
-                                else if(count($dd)==1){
+                                else if(count($dd)==2){
 
-                                    for($j=0;$j<count($sleeper[0])-1;$j++){
+                                    if($blankcount<=4){  
+
+                                    //for($j=0;$j<count($sleeper[0])-1;$j++){
+                                    for($j=0;$j<5;$j++){
 
                                         $blank=[
                                             "id"=> '',
@@ -435,9 +446,12 @@ class DolphinTransformer
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           
                                         ]; 
+
+                                        $blankcount++;
             
                                     array_push($UpperberthArr,$blank); 
                                     }
+                                }
 
 
                                     $ar=[
@@ -464,8 +478,8 @@ class DolphinTransformer
                                         "seat_class_id"=> $seat_class_id,
                                         "berthType"=> "2", //Upper Berth
                                         "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
-                                        "rowNumber"=>  $i,
-                                        "colNumber"=>  $k                            
+                                        "rowNumber"=>  ($seat_class_id==3) ? 2 : $i,
+                                        "colNumber"=> ($seat_class_id==3) ? 4 : $k,                             
                                     ];
                                     
                                 }
@@ -701,21 +715,56 @@ class DolphinTransformer
 
     }
 
-    public function FetchTicketPrintData(){
+    public function FetchTicketPrintData($pnr){
 
-        $list=$this->booking->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
+        if($pnr!=''){
+            $list=$this->booking->where('pnr',$pnr)->first();
 
-        if($list){
-            foreach($list as $l){
-                $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);
 
-                if($res){
-                    
+            if(!empty($list)){
+                if($list->api_pnr!=null){
+
+
+                    $res= $this->DolphinService->FetchTicketPrintData($list->api_pnr);
+                    if($res){
+
+
+                        $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
+                        $ar['CoachNo']=$res['CoachNo'];
+                        $ar['PickUpName']=$res['PickUpName'];
+                        $ar['MainTime']=$res['MainTime'];
+                        $ar['ReportingTime']=$res['ReportingTime'];
+                       return $ar;                    
+                    }
+
                 }
                
+            }            
 
+        }else{
+
+            $list=$this->booking->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
+
+            if($list){
+                $main=[];
+                foreach($list as $l){
+                    $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);    
+                    if($res){
+                        $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
+                        $ar['CoachNo']=$res['CoachNo'];
+                        $ar['PickUpName']=$res['PickUpName'];
+                        $ar['MainTime']=$res['MainTime'];
+                        $ar['ReportingTime']=$res['ReportingTime'];
+                        $main[]=$ar; 
+                    }
+                }
+
+                return $main;
             }
+
         }
+
+       
 
     }
 

@@ -34,8 +34,8 @@ class SoapController
     return $this->DolphinTransformer->GetCancellationPolicy();
   }
 
-  public function DolphinCronJobEmailSms(){
-    return $this->DolphinTransformer->FetchTicketPrintData();
+  public function DolphinCronJobEmailSms($pnr){
+    return $this->DolphinTransformer->FetchTicketPrintData($pnr);
   }
 
   

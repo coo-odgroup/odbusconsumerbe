@@ -44,8 +44,8 @@ class ViewSeatsService
         $journeyDate = $request['entry_date'];
         $journeyDate = date("Y-m-d", strtotime($journeyDate));
 
-        $ReferenceNumber = $request['ReferenceNumber'];
-        $origin = $request['origin'];
+        $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
+        $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
         if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
             return 'Invalid Origin';
@@ -311,9 +311,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     $entry_date = $request['entry_date'];
     $entry_date = date("Y-m-d", strtotime($entry_date));
     //$busOperatorId = $request['busOperatorId'];
-
-    $ReferenceNumber = $request['ReferenceNumber'];
-    $origin = $request['origin'];
+ $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
+        $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
     if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
         return 'Invalid Origin';

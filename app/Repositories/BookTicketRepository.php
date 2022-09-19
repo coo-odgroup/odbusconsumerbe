@@ -62,6 +62,8 @@ class BookTicketRepository
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill){
         $defUserId = Config::get('constants.USER_ID'); 
+
+	$bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
    
         $booking = new $this->booking;
         do {
@@ -170,11 +172,11 @@ class BookTicketRepository
         $booking->odbus_gst_charges = $odbusGstPercent;
         $booking->odbus_gst_amount = $odbusGstAmount;
 
-        $booking->CompanyID = $bookingInfo['CompanyID'];
-        $booking->ReferenceNumber = $bookingInfo['ReferenceNumber'];
-        $booking->RouteTimeID = $bookingInfo['RouteTimeID'];
-        $booking->PickupID = $bookingInfo['PickupID'];
-        $booking->DropID = $bookingInfo['DropID'];
+        $booking->CompanyID = (isset($bookingInfo['CompanyID'])) ? $bookingInfo['CompanyID']: '';
+        $booking->ReferenceNumber =(isset($bookingInfo['ReferenceNumber'])) ? $bookingInfo['ReferenceNumber']: '';
+        $booking->RouteTimeID = (isset($bookingInfo['RouteTimeID'])) ? $bookingInfo['RouteTimeID'] : '';
+        $booking->PickupID =(isset($bookingInfo['PickupID'])) ? $bookingInfo['PickupID'] : '';
+        $booking->DropID = (isset($bookingInfo['DropID'])) ? $bookingInfo['DropID'] : '';
 
         $booking->created_by = $bookingInfo['created_by'];
 
@@ -183,6 +185,8 @@ class BookTicketRepository
 
         $seq_no_start=0;
         $seq_no_end=0;
+
+       
 
         if($bookingInfo['origin']=='ODBUS'){
 

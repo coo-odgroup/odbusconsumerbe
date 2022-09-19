@@ -195,7 +195,7 @@ class AgentBookingRepository
                 if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
                     $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
 
-                   // Log::info($comissionByCustomer);
+                    Log::info($comissionByCustomer);
                                      
                     break;
                 }  

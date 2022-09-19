@@ -157,7 +157,7 @@ Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientC
 Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExternalApiLocation']);
 Route::get('/countries', [SoapController::class, 'getCountries']);
 Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
-Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
+Route::get('/DolphinCronJobEmailSms/{pnr}', [SoapController::class, 'DolphinCronJobEmailSms']);
 
 
 
