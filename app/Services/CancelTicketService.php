@@ -117,12 +117,18 @@ class CancelTicketService
                             return 'Ticket_already_cancelled';
                          }
 
+                        // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                        // $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
+                        // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];  
+
                         $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                        $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
-                        $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];                         
+                        $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                        
+                        $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;  
+
                         $emailData['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1);
-                        $smsData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                        $refund =  $this->cancelTicketRepository->DolphinCancelUpdate($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId);                        
+                        $smsData['refundAmount'] = $refundAmount = $dolphin_cancel_det['RefundAmount'];
+                        $refund =  $this->cancelTicketRepository->DolphinCancelUpdate($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$refundAmount);                        
 
                         $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                         if($emailData['email'] != ''){

@@ -250,7 +250,7 @@ class CancelTicketRepository
         return $data;
     }
 
-    public function DolphinCancelUpdate($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
+    public function DolphinCancelUpdate($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$refundAmount){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
@@ -261,7 +261,7 @@ class CancelTicketRepository
         $api = new Api($key, $secretKey);
         $payment = $api->payment->fetch($razorpay_payment_id);
        
-        $paidAmount = $payment->amount;
+        $paidAmount = $this->booking->where('id', $bookingId)->first()->total_fare; //$payment->amount;
         $paymentStatus = $payment->status;
         $refundStatus = $payment->refund_status;
         $ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
@@ -273,7 +273,7 @@ class CancelTicketRepository
                 return 'refunded';
             }
             else{
-                $refundAmount = round($baseFare * ((100-$percentage) / 100),2);
+                $refundAmount =$refundAmount; //round($baseFare * ((100-$percentage) / 100),2);
                 $data = array(
                      'refundAmount' => $refundAmount,
                      'paidAmount' => $paidAmount/100,

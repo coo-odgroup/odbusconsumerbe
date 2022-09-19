@@ -141,13 +141,13 @@ class DolphinTransformer
 
              $seat_price = ($data['BusType'] == 0) ? $data['AcSeatRate'] : $data['NonAcSeatRate'];
 
-             $dolphin_gstdata= IncomingApiCompany::where("name","DOLPHIN")->first();
+            //  $dolphin_gstdata= IncomingApiCompany::where("name","DOLPHIN")->first();
 
-             if($dolphin_gstdata){
+            //  if($dolphin_gstdata){
 
-                $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
+            //     $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
 
-            }
+            // }
 
             
              $arr=[
@@ -240,13 +240,13 @@ class DolphinTransformer
 
                 $seat_price = ($v['BusType'] == 0) ? $v['AcSeatRate'] : $v['NonAcSeatRate'];
 
-                $dolphin_gstdata= IncomingApiCompany::where("name","DOLPHIN")->first();
+                // $dolphin_gstdata= IncomingApiCompany::where("name","DOLPHIN")->first();
 
-                if($dolphin_gstdata){
+                // if($dolphin_gstdata){
 
-                    $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
+                //     $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
 
-                }
+                // }
 
                $arr=[
                  "origin"=> "DOLPHIN",
@@ -502,11 +502,11 @@ class DolphinTransformer
 
                                     $seat_price= $d['SeatRate'];
 
-                                    if($dolphin_gstdata){
+                                    // if($dolphin_gstdata){
 
-                                        $seat_price += round(($d['SeatRate'] * $dolphin_gstdata->gst)/100);
+                                    //     $seat_price += round(($d['SeatRate'] * $dolphin_gstdata->gst)/100);
                                      
-                                     }
+                                    //  }
 
                                     $ar["bus_seats"]= [
                                             "ticket_price_id"=> 0,
@@ -611,11 +611,11 @@ class DolphinTransformer
 
                                 $seat_price= $d['SeatRate'];
 
-                                    if($dolphin_gstdata){
+                                    // if($dolphin_gstdata){
 
-                                        $seat_price += round(($d['SeatRate'] * $dolphin_gstdata->gst)/100);
+                                    //     $seat_price += round(($d['SeatRate'] * $dolphin_gstdata->gst)/100);
                                      
-                                     }
+                                    //  }
     
                                 $ar["bus_seats"]=[
                                         "ticket_price_id"=> 0,
@@ -646,11 +646,13 @@ class DolphinTransformer
         $nm_ar=[];
         $TotalPassengers=0;
 
-        if($records[0]->payable_amount == 0.00){
-            $amount = $records[0]->total_fare;
-            }else{
-                $amount = $records[0]->payable_amount;
-            }
+        $amount = $records[0]->owner_fare; 
+
+        // if($records[0]->payable_amount == 0.00){
+        //     $amount = $records[0]->total_fare;
+        //     }else{
+        //         $amount = $records[0]->payable_amount;
+        //     }
 
         if(!empty($records[0]->bookingDetail)){
             foreach($records[0]->bookingDetail as $bdt){
@@ -682,11 +684,13 @@ class DolphinTransformer
         $nm_ar=[];
         $TotalPassengers=0;
 
-        if($records[0]->payable_amount == 0.00){
-            $amount = $records[0]->total_fare;
-            }else{
-                $amount = $records[0]->payable_amount;
-            }
+        // if($records[0]->payable_amount == 0.00){
+        //     $amount = $records[0]->total_fare;
+        //     }else{
+        //         $amount = $records[0]->payable_amount;
+        //     }
+
+        $amount = $records[0]->owner_fare; 
 
         if(!empty($records[0]->bookingDetail)){
             foreach($records[0]->bookingDetail as $bdt){

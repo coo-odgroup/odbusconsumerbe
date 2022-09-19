@@ -208,7 +208,17 @@ class clientBookingController extends Controller
       
           }elseif($response=='Bus_not_running'){
               return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
-          }elseif(isset($response['message'])){
+          }
+          elseif($response =='Invalid Param'){
+    
+            return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+    
+          }elseif($response =='ReferenceNumber_empty'){
+              return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+          }
+        
+          
+          elseif(isset($response['message'])){
             return $this->errorResponse($response['note'],Response::HTTP_OK);
           }
           else{

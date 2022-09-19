@@ -47,6 +47,22 @@ class ClientBookingService
     public function clientBooking($request,$clientRole,$clientId)
     {
         try {
+
+            $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
+            $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
+    
+              
+    
+                if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+                    return 'Invalid Origin';
+                }else if($origin=='DOLPHIN'){
+    
+                    if($ReferenceNumber ==''){    
+                        return 'ReferenceNumber_empty';
+    
+                    }
+                }
+
             $bookTicket = $this->clientBookingRepository->clientBooking($request,$clientRole,$clientId);
             return $bookTicket;
 

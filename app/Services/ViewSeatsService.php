@@ -365,8 +365,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => 0,
-                "totalFare" => $total_fare
+                "transactionFee" => round($total_fare * (10/100)), // 5% as per santosh
+                "totalFare" => $total_fare + round($total_fare * (10/100)) // 5% as per santosh
                 );  
 
               return $seatWithPriceRecords;  

@@ -536,10 +536,16 @@ class BookingManageService
                             return 'Ticket_already_cancelled';
                          }
 
-                            $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                            $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
+                            // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                            // $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
                             
-                            $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];                         
+                            // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];    
+
+                            $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                            $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                            
+                            $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;   
+
                             $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                             return $emailData;
 
@@ -731,10 +737,17 @@ class BookingManageService
                     $otp = rand(10000, 99999);
                     $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id); 
 
-                    $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                    $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
+                    // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                    // $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];  
                     
-                    $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];                         
+                    // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];   
+
+
+                    $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                    $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                    
+                    $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
+                    
                     $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                     return $emailData;
                 }else{
@@ -902,18 +915,24 @@ class BookingManageService
                          }
 
 
+                        //  $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
+                        //  $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
+
                          $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
-                         $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
-                         $data['deductionPercentage'] = $deduction=round((($deductAmount / $dolphin_cancel_det['TotalFare']) * 100),1)."%";
-                        
-                         $data['totalfare'] = $paidAmount ;
+                         $data['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                    
+                         $data['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
+
+                    
+                         $data['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1)."%";
+
                          $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction,$pnr); 
 
                          $smsData['refundAmount'] = $refundAmt; 
 
                          $emailData['deductionPercentage'] = $deduction;
                          $emailData['refundAmount'] = $refundAmt;
-                         $emailData['totalfare'] = $paidAmount;
+                         $emailData['totalfare'] = $totalfare;
                  
                          $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                         if($emailData['email'] != ''){

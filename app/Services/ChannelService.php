@@ -124,14 +124,15 @@ class ChannelService
 
                $origin=$records[0]->origin;
 
-              if($records[0]->payable_amount == 0.00){
+             
+               if($records[0]->payable_amount == 0.00){
                 $amount = $records[0]->total_fare;
                 }else{
                     $amount = $records[0]->payable_amount;
                 }
 
-              if($origin=='ODBUS') {
 
+              if($origin=='ODBUS') {
 
                  ///////////////////////cancelled bus recheck////////////////////////
                     $routeDetails = TicketPrice::where('source_id', $sourceId)
@@ -799,7 +800,11 @@ class ChannelService
                     $amount = $records[0]->payable_amount;
                 }
 
+               
+
                 if($origin=='ODBUS') {
+
+                
 
                   ///////////////////////cancelled bus recheck////////////////////////
                   $routeDetails = TicketPrice::where('source_id', $sourceId)
