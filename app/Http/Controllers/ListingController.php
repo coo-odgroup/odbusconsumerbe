@@ -426,6 +426,16 @@ class ListingController extends Controller
  *              )
  *          )
  *      ),
+ *     @OA\Parameter(
+ *          name="entry_date",
+ *          description="journey date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="18-09-2022"
+ *          )
+ *      ),
  *  @OA\Response(response="200", description="get all Filter Options"),
  *  @OA\Response(response=206, description="validation error"),
  *  @OA\Response(response=400, description="Bad request"),

@@ -89,6 +89,24 @@ class ViewSeatsController extends Controller
  *              example=53
  *          )
  *      ),
+ *     @OA\Parameter(
+ *          name="ReferenceNumber",
+ *          description="reference number for Dolphin service",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="origin",
+ *          description="Service provider name",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
  *  @OA\Response(response="200", description=" get all seats information"),
  *  @OA\Response(response="206", description=" validation error"),
  *  @OA\Response(response=400, description="Bad request"),
@@ -209,6 +227,24 @@ class ViewSeatsController extends Controller
  *              )
  *          )
  *      ),
+ *     @OA\Parameter(
+ *          name="ReferenceNumber",
+ *          description="reference number for Dolphin service",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="origin",
+ *          description="Service provider name",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
  *  @OA\Response(response="200", description=" get Total Price on seats selection"),
  *  @OA\Response(response="206", description=" validation error"),
  *  @OA\Response(response=400, description="Bad request"),
@@ -292,6 +328,34 @@ class ViewSeatsController extends Controller
  *          @OA\Schema(
  *              type="integer",
  *               example=434
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="journey_date",
+ *          description="journey date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="18-09-2022"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="ReferenceNumber",
+ *          description="reference number for Dolphin service",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="origin",
+ *          description="Service provider name",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
  *          )
  *      ),
  *  @OA\Response(response="200", description=" get all Boarding Dropping Points"),
