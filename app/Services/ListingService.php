@@ -700,80 +700,80 @@ class ListingService
            $totalSeats = $totalSeats - $bookedSeats[2];
             if($clientRole == $clientRoleId){
 
-            /////client extra service charge added to seatfare////////////////
-            $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                /////client extra service charge added to seatfare////////////////
+                $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                                 ->where('status', '1')
                                                 ->get(); 
                     
-            $client_service_charges = 0;
-            $addCharge = 0;
-            if($clientCommissions){
-                foreach($clientCommissions as $clientCom){
-                    $startFare = $clientCom->starting_fare;
-                    $uptoFare = $clientCom->upto_fare;
-                    if($startingFromPrice >= $startFare && $startingFromPrice <= $uptoFare){
-                        $addCharge = $clientCom->addationalcharges;
-                        break;
-                    }  
-                }   
-            } 
-            $client_service_charges = ($addCharge/100 * $startingFromPrice);
-            $newSeatFare = $startingFromPrice + $client_service_charges;
+                $client_service_charges = 0;
+                $addCharge = 0;
+                if($clientCommissions){
+                    foreach($clientCommissions as $clientCom){
+                        $startFare = $clientCom->starting_fare;
+                        $uptoFare = $clientCom->upto_fare;
+                        if($startingFromPrice >= $startFare && $startingFromPrice <= $uptoFare){
+                            $addCharge = $clientCom->addationalcharges;
+                            break;
+                        }  
+                    }   
+                } 
+                $client_service_charges = ($addCharge/100 * $startingFromPrice);
+                $newSeatFare = $startingFromPrice + $client_service_charges;
 
-              /////////hide buses wrt operator block////////////
-              $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
-              $Contains=0;
-              if(isset($operatorBlockId)){
+                /////////hide buses wrt operator block////////////
+                 $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
+                $Contains=0;
+                if(isset($operatorBlockId)){
                   $Contains = $operatorBlockId->contains($operatorId);
-              }
+                }
 
-              if($Contains==0){
+                if($Contains==0){
            
-                $arr= array(
-                    "origin" => 'ODBUS',
-                    "CompanyID" => '',
-                    "ReferenceNumber" => '',
-                    "BoardingPoints" => '',
-                    "DroppingPoints" => '',
-                    "RouteTimeID" => '',
-                    "srcId" => $sourceID,
-                    "destId" => $destinationID,
-                    "display" => $flag,
-                    "busId" => $busId, 
-                    "busName" => $busName,
-                    "via" => $via,
-                    "popularity" => $popularity,
-                    "busNumber" => $busNumber,
-                    "maxSeatBook" => $maxSeatBook,
-                    "conductor_number" => $conductor_number,
-                    "operatorId" => $operatorId,
-                    "operatorUrl" => $operatorUrl,
-                    "operatorName" => $operatorName,
-                    "sittingType" => $sittingType,
-                    "bus_description" => $bus_description,
-                    "busType" => $busType,
-                    "busTypeName" => $busTypeName,
-                    "totalSeats" => $totalSeats,
-                    "seaters" => $seatClassRecords,
-                    "sleepers" => $sleeperClassRecords,
-                    "startingFromPrice" => $newSeatFare,
-                    "departureTime" =>$depTime,
-                    "arrivalTime" =>$arrTime,
-                    "totalJourneyTime" =>$totalJourneyTime, 
-                    "amenity" =>$amenityDatas,
-                    "safety" => $safetyDatas,
-                    "cancellationDuration" => $cSlabDuration,
-                    "cancellationDuduction" => $cSlabDeduction,
-                    "cancellationPolicyContent" => $cancellationPolicyContent,
-                    "TravelPolicyContent" => $TravelPolicyContent,
-                    ); 
-            if($totalSeats>0){
-            $ListingRecords['regular'][] = $arr;
+                    $arr= array(
+                        "origin" => 'ODBUS',
+                        "CompanyID" => '',
+                        "ReferenceNumber" => '',
+                        "BoardingPoints" => '',
+                        "DroppingPoints" => '',
+                        "RouteTimeID" => '',
+                        "srcId" => $sourceID,
+                        "destId" => $destinationID,
+                        "display" => $flag,
+                        "busId" => $busId, 
+                        "busName" => $busName,
+                        "via" => $via,
+                        "popularity" => $popularity,
+                        "busNumber" => $busNumber,
+                        "maxSeatBook" => $maxSeatBook,
+                        "conductor_number" => $conductor_number,
+                        "operatorId" => $operatorId,
+                        "operatorUrl" => $operatorUrl,
+                        "operatorName" => $operatorName,
+                        "sittingType" => $sittingType,
+                        "bus_description" => $bus_description,
+                        "busType" => $busType,
+                        "busTypeName" => $busTypeName,
+                        "totalSeats" => $totalSeats,
+                        "seaters" => $seatClassRecords,
+                        "sleepers" => $sleeperClassRecords,
+                        "startingFromPrice" => $newSeatFare,
+                        "departureTime" =>$depTime,
+                        "arrivalTime" =>$arrTime,
+                        "totalJourneyTime" =>$totalJourneyTime, 
+                        "amenity" =>$amenityDatas,
+                        "safety" => $safetyDatas,
+                        "cancellationDuration" => $cSlabDuration,
+                        "cancellationDuduction" => $cSlabDeduction,
+                        "cancellationPolicyContent" => $cancellationPolicyContent,
+                        "TravelPolicyContent" => $TravelPolicyContent,
+                        ); 
+                    if($totalSeats>0){
+                        $ListingRecords['regular'][] = $arr;
+                    }else{
+                        $ListingRecords['soldout'][] = $arr;
+                    }
+                }
             }else{
-            $ListingRecords['soldout'][] = $arr;
-            }
-        }
-      }else{
                 $arr= array(
                     "origin" => 'ODBUS',
                     "CompanyID" => '',
@@ -824,9 +824,9 @@ class ListingService
                 ); 
                 if($totalSeats>0){
                     $ListingRecords['regular'][] = $arr;
-                  }else{
+                }else{
                     $ListingRecords['soldout'][] = $arr;
-                  }
+                }
             }           
         }
         return $ListingRecords;
