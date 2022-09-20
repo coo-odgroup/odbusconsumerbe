@@ -356,7 +356,7 @@ class CancelTicketRepository
                                         ->get('phone');
         if($busContactDetails->isNotEmpty()){
             $contact_number = collect($busContactDetails)->implode('phone',',');
-            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+            //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

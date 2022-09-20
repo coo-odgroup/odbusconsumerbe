@@ -263,7 +263,6 @@ class CancelTicketService
                            
                             $refund = $this->cancelTicketRepository->refundPolicy($deduction,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId)
                             ;
-                            return $refund; 
                             $refundAmt =  $refund['refundAmount'];
                             $smsData['refundAmount'] = $refundAmt;
 
