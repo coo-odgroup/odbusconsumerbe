@@ -67,13 +67,13 @@ class ListingService
 
 
 
-         if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
+         //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
 
             $dolphinresult= $this->dolphinTransformer->BusList($request); // getting dolphin buslist
 
             $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
             $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
-         }
+        // }
 
        
 
@@ -871,9 +871,9 @@ class ListingService
 
             $DolPhinshowRecords = [];
             $DolPhinShowSoldoutRecords =[];   
-            if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
+            //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
                $dolphinresult= $this->dolphinTransformer->Filter($request); // getting dolphin buslist
-            }
+            //}
         }
 
         
@@ -1158,7 +1158,25 @@ class ListingService
     }
     public function busDetails(Request $request)
     {
-        return $this->listingRepository->busDetails($request);
+        $origin=(isset($request['origin'])) ? $request['origin'] : 'ODBUS';
+        $ReferenceNumber=(isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
+
+        
+        if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+            return 'Invalid Origin';
+        }else if($origin=='DOLPHIN'){
+
+            if($ReferenceNumber ==''){
+
+                return 'ReferenceNumber_empty';
+
+            }else{
+                return $dolphinBusDetails= $this->dolphinTransformer->BusDetails($request);
+            }
+        }else if($origin=='ODBUS'){
+
+             return $this->listingRepository->busDetails($request);
+        }
     }
 
     public function UpdateExternalApiLocation(){

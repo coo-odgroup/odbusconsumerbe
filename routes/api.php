@@ -67,7 +67,7 @@ Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
 Route::post('/Filter', [ListingController::class, 'filter']);    
-Route::get('/BusDetails', [ListingController::class, 'busDetails']);
+Route::post('/BusDetails', [ListingController::class, 'busDetails']);
 Route::post('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::post('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
 Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);

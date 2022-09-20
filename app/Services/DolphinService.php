@@ -431,7 +431,7 @@ class DolphinService
 
   
 
-  public function GetAmenities(){
+  public function GetAmenities($CompanyID){
 
     $this->soapWrapper= new SoapWrapper();
 
@@ -443,7 +443,7 @@ class DolphinService
           ->trace(true);
       });
 
-      $option['CompanyID']='251';
+      $option['CompanyID']=$CompanyID;
       $option['VerifyCall']=$this->option['verifyCall'];
 
 
@@ -454,10 +454,7 @@ class DolphinService
 
      if(isset($data['DocumentElement'])){
      
-       return $data=$data['DocumentElement']['GetAmenities'];
-
-
-     
+       return $data=$data['DocumentElement']['GetAmenities'];     
    }
 
 
@@ -518,7 +515,7 @@ class DolphinService
   
   }
 
-  public function GetBoardingPointDetails() 
+  public function GetBoardingPointDetails($ref_no) 
   {
 
     $this->soapWrapper= new SoapWrapper();
@@ -531,7 +528,7 @@ class DolphinService
           ->trace(true);
       });
 
-      $option['ReferenceNumber']='251#1669#1604#15885#43072#3190#05072022#7:00 PM#11:25 PM';
+      $option['ReferenceNumber']=$ref_no;
       $option['VerifyCall']=$this->option['verifyCall'];
 
 

@@ -330,6 +330,13 @@ class DolphinTransformer
               $sleeper_blank=[];
               $emptySeat=0;
 
+              
+              $viewSeat['bus'][]=[ 
+                "id"=> 0,
+                "name"=> "DOLPHIN TOURS & TRAVELS",
+                "bus_seat_layout_id"=> 0
+                ];
+
                // for($i=1;$i<=$Rows;$i++){
                     for($i=$Rows;$i>=1;$i--){
                     for($j=1;$j<=$Cols;$j++){
@@ -366,6 +373,7 @@ class DolphinTransformer
                 $viewSeat['lowerBerth_totalRows']= count($seater);
                 $viewSeat['lowerBerth_totalColumns']= count($seater[0]);
 
+
                 $UpperberthArr=[];
                 $LowerberthArr=[];
 
@@ -373,7 +381,10 @@ class DolphinTransformer
                      $blank_row_flag=false;
                      $blankcount=0;
 
-                    if($sleeper){   
+                     $st_id=1;  
+
+                    if($sleeper){ 
+                     
                       foreach($sleeper as $i => $dd){ 
                             foreach($dd as $k => $d){
                                 $seat_class_id ='';
@@ -402,10 +413,10 @@ class DolphinTransformer
                                     for($j=0;$j<5;$j++){
 
                                         $blank=[
-                                            "id"=> '',
-                                            "bus_seat_layout_id"=> '',
+                                            "id"=> $st_id,
+                                            "bus_seat_layout_id"=> 0,
                                             "seat_class_id"=> 4,
-                                            "berthType"=> "1",
+                                            "berthType"=> 1,
                                             "seatText"=> '',
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           
@@ -414,15 +425,17 @@ class DolphinTransformer
                                         $blankcount++;
             
                                        array_push($UpperberthArr,$blank); 
+
+                                       $st_id++; 
                                     } 
                                 }
 
 
                                     $ar=[
-                                        "id"=> $d['SeatNo'],
-                                        "bus_seat_layout_id"=> '',
+                                        "id"=>$st_id,// $d['SeatNo'],
+                                        "bus_seat_layout_id"=> 0,
                                         "seat_class_id"=> $seat_class_id,
-                                        "berthType"=> "2",
+                                        "berthType"=> 2,
                                         "seatText"=> $d['SeatNo'],
                                         "rowNumber"=> $i+1,
                                         "colNumber"=> $k                           
@@ -438,10 +451,10 @@ class DolphinTransformer
                                     for($j=0;$j<5;$j++){
 
                                         $blank=[
-                                            "id"=> '',
-                                            "bus_seat_layout_id"=> '',
+                                            "id"=>$st_id,//'',
+                                            "bus_seat_layout_id"=>0,
                                             "seat_class_id"=> 4,
-                                            "berthType"=> "1",
+                                            "berthType"=> 1,
                                             "seatText"=> '',
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           
@@ -450,15 +463,17 @@ class DolphinTransformer
                                         $blankcount++;
             
                                     array_push($UpperberthArr,$blank); 
+
+                                    $st_id++;  
                                     }
                                 }
 
 
                                     $ar=[
-                                        "id"=> $d['SeatNo'],
-                                        "bus_seat_layout_id"=> '',
+                                        "id"=>$st_id,// $d['SeatNo'],
+                                        "bus_seat_layout_id"=> 0,
                                         "seat_class_id"=> $seat_class_id,
-                                        "berthType"=> "2",
+                                        "berthType"=> 2,
                                         "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
                                         "rowNumber"=> $i,
                                         "colNumber"=> count($sleeper[0])-1                           
@@ -473,10 +488,10 @@ class DolphinTransformer
 
 
                                     $ar=[
-                                        "id"=> $d['SeatNo'],
-                                        "bus_seat_layout_id"=> '',
+                                        "id"=>$st_id,// $d['SeatNo'],
+                                        "bus_seat_layout_id"=>0,
                                         "seat_class_id"=> $seat_class_id,
-                                        "berthType"=> "2", //Upper Berth
+                                        "berthType"=> 2, //Upper Berth
                                         "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
                                         "rowNumber"=>  ($seat_class_id==3) ? 2 : $i,
                                         "colNumber"=> ($seat_class_id==3) ? 4 : $k,                             
@@ -510,18 +525,23 @@ class DolphinTransformer
 
                                     $ar["bus_seats"]= [
                                             "ticket_price_id"=> 0,
-                                            "seats_id"=> $d['SeatNo'],
+                                            "seats_id"=>$st_id, //$d['SeatNo'],
                                             "new_fare"=> $seat_price
                                     ];
                                 }
 
                                 array_push($UpperberthArr,$ar);
+
+                                $st_id++;  
                             }
-                      
+                           
                         }
+
+                       
                     }
 
-
+                   
+                 $st_id2=   $st_id;
                ////////// lower berth 
 
                 if($seater){
@@ -552,23 +572,25 @@ class DolphinTransformer
                                 for($j=0;$j<count($seater[0])-1;$j++){
 
                                     $blank=[
-                                        "id"=> '',
-                                        "bus_seat_layout_id"=> '',
+                                        "id"=>$st_id2,// '',
+                                        "bus_seat_layout_id"=>0,
                                         "seat_class_id"=> 4,
-                                        "berthType"=> "1",
+                                        "berthType"=> 1,
                                         "seatText"=> '',
                                         "rowNumber"=> $i,
                                         "colNumber"=> $j                           
                                     ]; 
         
                                    array_push($LowerberthArr,$blank); 
+
+                                   $st_id2++;  
                                 }
 
                                 $ar=[
-                                    "id"=> $d['SeatNo'],
-                                    "bus_seat_layout_id"=> '',
+                                    "id"=>$st_id2,// $d['SeatNo'],
+                                    "bus_seat_layout_id"=> 0,
                                     "seat_class_id"=> $seat_class_id,
-                                    "berthType"=> "1",
+                                    "berthType"=> 1,
                                     "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
                                     "rowNumber"=> $i,
                                     "colNumber"=> count($seater[0])-1                           
@@ -580,10 +602,10 @@ class DolphinTransformer
                             }else{
 
                                 $ar=[
-                                    "id"=> $d['SeatNo'],
-                                    "bus_seat_layout_id"=> '',
+                                    "id"=>$st_id2,//$d['SeatNo'],
+                                    "bus_seat_layout_id"=> 0,
                                     "seat_class_id"=> $seat_class_id,
-                                    "berthType"=> "1",
+                                    "berthType"=> 1,
                                     "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
                                     "rowNumber"=> $i,
                                     "colNumber"=> $k                           
@@ -619,18 +641,16 @@ class DolphinTransformer
     
                                 $ar["bus_seats"]=[
                                         "ticket_price_id"=> 0,
-                                        "seats_id"=> $d['SeatNo'],
+                                        "seats_id"=> $st_id2,//$d['SeatNo'],
                                         "new_fare"=>  $seat_price
                                 ];
     
                             }
 
                             array_push($LowerberthArr,$ar);
+                            $st_id2++;  
                         }
 
-                        
-
-                            
                     }
                 }
 
@@ -731,13 +751,11 @@ class DolphinTransformer
 
                     $res= $this->DolphinService->FetchTicketPrintData($list->api_pnr);
                     if($res){
-
-
                         $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
-                        $ar['CoachNo']=$res['CoachNo'];
-                        $ar['PickUpName']=$res['PickUpName'];
-                        $ar['MainTime']=$res['MainTime'];
-                        $ar['ReportingTime']=$res['ReportingTime'];
+                        $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
+                        $ar['PickUpName']=(isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
+                        $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
+                        $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
                        return $ar;                    
                     }
 
@@ -755,10 +773,10 @@ class DolphinTransformer
                     $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);    
                     if($res){
                         $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
-                        $ar['CoachNo']=$res['CoachNo'];
-                        $ar['PickUpName']=$res['PickUpName'];
-                        $ar['MainTime']=$res['MainTime'];
-                        $ar['ReportingTime']=$res['ReportingTime'];
+                        $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
+                        $ar['PickUpName']=(isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
+                        $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
+                        $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
                         $main[]=$ar; 
                     }
                 }
@@ -818,6 +836,207 @@ class DolphinTransformer
 
     public function ConfirmCancellation($pnr){
         return $this->DolphinService->ConfirmCancellation($pnr);
+    }
+
+    public function BusDetails($request){
+
+        $busId = $request['bus_id'];
+        $sourceId = $request['source_id'];
+        $destinationId = $request['destination_id'];
+        $journey_date = $request['journey_date'];
+        $ReferenceNumber=$request['ReferenceNumber'];
+
+
+        $arr=[
+            "sourceID"=>$sourceId,
+            "destinationID"=>$destinationId,
+            "entry_date"=>$journey_date
+        ];
+         $dolphinBusList= $this->Filter($arr);
+
+         $dolphinBusList=(isset($dolphinBusList['regular'])) ? $dolphinBusList['regular'] : [];
+         $key = array_search($ReferenceNumber, array_column($dolphinBusList, 'ReferenceNumber'));         
+         $CompanyID= $dolphinBusList[$key]['CompanyID'];
+         $RouteID= $dolphinBusList[$key]['busId'];
+         $RouteTimeID= $dolphinBusList[$key]['RouteTimeID'];
+         $bus_description= $dolphinBusList[$key]['bus_description'];
+         $busName= $dolphinBusList[$key]['busName'];        
+
+        $amenity= $this->DolphinService->GetAmenities($CompanyID);  
+
+        $bus_amenity=[];
+
+         if($key = array_search($RouteTimeID, array_column($amenity, 'RouteTimeID'))){
+
+          $list= explode('#',$amenity[$key]["Amenities"]);
+
+          if($list){
+            foreach($list as $a){
+                $ar=explode('|',$a);
+                $bus_amenity[]= [
+                    "id"=> 0,
+                    "bus_id"=> $RouteID,
+                    "amenities_id"=> $ar[0],
+                    "created_at"=> "",
+                    "updated_at"=> "",
+                    "created_by"=> "",
+                    "status"=> 1,
+                    "amenities"=> [
+                      "id"=> $ar[0],
+                      "name"=> $ar[1].'-'.$ar[1],
+                      "android_image"=> ""
+                    ]
+                ];
+
+            }
+          }
+
+         }        
+
+
+       
+
+        $cancelpolicy=[];
+
+        $cancelpolicyres= $this->DolphinService->GetCancellationPolicy();
+        if($cancelpolicyres){
+            foreach($cancelpolicyres->Policy->PolicyDetails as $p){
+                $ar['id']=0;
+                $ar['cancellation_slab_id']=0;
+                $ar['duration']=($p->FromMinutes/60)."-".($p->ToMinutes/60);
+                $ar['deduction']=$p->DeductPercent;
+                $ar['status']=1;
+                $ar['created_at']="";
+                $ar['updated_at']="";
+                $ar['created_by']="";
+
+                $cancelpolicy[]=(object)$ar;
+
+            }
+        }
+
+
+        $b_ar=explode("#",$dolphinBusList[$key]['BoardingPoints']);
+        if($dolphinBusList[$key]['DroppingPoints']){
+
+          $d_ar=explode("#",$dolphinBusList[$key]['DroppingPoints']);
+
+        }
+
+        $boardingArray=[];
+        $droppingArray=[];
+       
+
+       if($b_ar){
+          foreach($b_ar as $b){
+              $b_ar2=explode("|",$b);
+               $boardingArray[]=[
+                "id"=> $b_ar2[0],
+                "bus_id"=> $RouteID,
+                "location_id"=> $sourceId,
+                "boarding_droping_id"=> $b_ar2[0],
+                "stoppage_name"=> $b_ar2[1],
+                "stoppage_time"=> $b_ar2[2],
+                "created_at"=> "",
+                "updated_at"=> "",
+                "created_by"=> "",
+                "status"=> 1
+               ];
+
+          }                    
+       }
+
+       if(isset($d_ar)){
+          foreach($d_ar as $d){
+              $d_ar2=explode("|",$d);            
+
+               $droppingArray[]= [
+                "id"=> $d_ar2[0],
+                "bus_id"=> $RouteID,
+                "location_id"=> $sourceId,
+                "boarding_droping_id"=>$d_ar2[0],
+                "stoppage_name"=> $d_ar2[1],
+                "stoppage_time"=>$d_ar2[2],
+                "created_at"=> "",
+                "updated_at"=> "",
+                "created_by"=> "",
+                "status"=> 1
+               ];
+
+          }                    
+       }
+
+      if(!empty($boardingArray)){
+
+          if(empty($droppingArray)){
+
+            $droppingArray[]= [
+                "id"=> 0,
+                "bus_id"=> $RouteID,
+                "location_id"=> $sourceId,
+                "boarding_droping_id"=>0,
+                "stoppage_name"=> $destination_name,
+                "stoppage_time"=>$dolphinBusList[$key]['arrivalTime'],
+                "created_at"=> "",
+                "updated_at"=> "",
+                "created_by"=> "",
+                "status"=> 1
+            ];
+          }
+      }
+
+      $bs_dt= [          
+           [ "id"=> $RouteID,
+            "user_id"=> 0,
+            "bus_operator_id"=> 0,
+            "name"=> $busName,
+            "via"=> "",
+            "bus_number"=> "",
+            "bus_description"=> $bus_description,
+            "bus_type_id"=> 9,
+            "bus_sitting_id"=> 12,
+            "bus_seat_layout_id"=> 23,
+            "cancellationslabs_id"=> 7,
+            "running_cycle"=> 2,
+            "popularity"=> null,
+            "type"=> 2,
+            "admin_notes"=> null,
+            "has_return_bus"=> 0,
+            "return_bus_id"=> null,
+            "cancelation_points"=> null,
+            "created_at"=> "",
+            "updated_at"=> "",
+            "created_by"=> "MD HUSSEN",
+            "status"=> 1,
+            "sequence"=> 1000,
+            "max_seat_book"=> 6,
+            "cancellation_policy_desc"=> null,
+            "travel_policy_desc"=> null,
+            "cancellationslabs"=> [
+              "id"=> 0,
+              "user_id"=> 0,
+              "rule_name"=> "",
+              "cancellation_policy_desc"=> "",
+              "status"=> 1,
+              "created_at"=> "",
+              "updated_at"=> "",
+              "created_by"=> "",
+              "cancellation_slab_info"=>$cancelpolicy
+            ],
+            "bus_amenities"=>$bus_amenity,
+            "bus_safety"=> [],
+            "bus_gallery"=> [],
+            "review"=> []
+        ]
+    ];
+
+        
+      $busDetails["busDetails"] = $bs_dt;
+      $busDetails["boarding_point"] = $boardingArray;
+      $busDetails["dropping_point"] = $droppingArray;
+
+     return $busDetails;
+    
     }
    
 }

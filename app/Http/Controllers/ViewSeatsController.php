@@ -141,7 +141,7 @@ class ViewSeatsController extends Controller
         }
         
         $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request, $clientRole);
-        if($viewSeatsData =='Invalid Param'){
+        if($viewSeatsData =='Invalid Origin'){
     
             return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
     
@@ -282,7 +282,7 @@ class ViewSeatsController extends Controller
         $priceOnSeats = $this->viewSeatsService->getPriceOnSeatsSelection($request,$clientRole,$clientId);
         
 
-        if($priceOnSeats =='Invalid Param'){
+        if($priceOnSeats =='Invalid Origin'){
     
             return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
     
@@ -387,7 +387,7 @@ class ViewSeatsController extends Controller
         }  
         $boardingPoints = $this->viewSeatsService->getBoardingDroppingPoints($request);
 
-        if($boardingPoints =='Invalid Param'){
+        if($boardingPoints =='Invalid Origin'){
     
             return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
     

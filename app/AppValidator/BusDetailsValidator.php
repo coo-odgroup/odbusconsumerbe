@@ -13,6 +13,7 @@ class BusDetailsValidator
             'bus_id' => 'required|numeric',
             'source_id' => 'required|numeric',
             'destination_id' => 'required|numeric',
+            'journey_date' => 'required|date_format:d-m-Y'
         ];      
       
         $busDetailsValidation = Validator::make($data, $rules);

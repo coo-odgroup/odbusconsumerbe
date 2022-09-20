@@ -526,7 +526,8 @@ class ListingController extends Controller
         $data = $request->only([
             'bus_id',
             'source_id',
-            'destination_id'
+            'destination_id',
+            'journey_date'
         ]);
         $busDetailsValidation = $this->busDetailsValidator->validate($data);
         if ($busDetailsValidation->fails()) {
@@ -534,7 +535,17 @@ class ListingController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         $details = $this->listingService->busDetails($request);
-        return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+        if($details =='Invalid Origin'){
+    
+            return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
+    
+        }if($details =='ReferenceNumber_empty'){
+            return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
+        }
+        else{
+           return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
     }
 
     public function UpdateExternalApiLocation(){
