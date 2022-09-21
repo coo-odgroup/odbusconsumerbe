@@ -255,7 +255,8 @@ class BookingManageRepository
         }])->get();    
 
 
-        $bus["bus_number"]=$ar[0]->booking[0]->bus_number;      
+        $bus["bus_number"]=$ar[0]->booking[0]->bus_number;  
+        $bus["bus_description"]="";    
         $bus["name"]=$ar[0]->booking[0]->bus_name; 
 
 

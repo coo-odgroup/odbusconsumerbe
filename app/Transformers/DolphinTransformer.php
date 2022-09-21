@@ -690,9 +690,16 @@ class DolphinTransformer
         $arr['Phone']=$records[0]->users->phone;
         $arr['PickupID']=$records[0]->PickupID;
         $arr['PayableAmount']=$amount;
-        $arr['TotalPassengers']=$TotalPassengers;               
+        $arr['TotalPassengers']=$TotalPassengers;  
+        
+        Log::info($arr);
 
-       return $res= $this->DolphinService->BlockSeat($arr);
+        $res= $this->DolphinService->BlockSeat($arr);
+
+       Log::info($res);
+
+       return $res;
+
 
        
 
