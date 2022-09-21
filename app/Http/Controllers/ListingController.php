@@ -472,7 +472,7 @@ class ListingController extends Controller
     }
    
     /**
- * @OA\Get(
+ * @OA\Post(
  *     path="/api/BusDetails",
  *     tags={"BusDetails API"},
  *     description="Get details of a Bus",
@@ -505,6 +505,35 @@ class ListingController extends Controller
  *          @OA\Schema(
  *              type="integer",
  *              example="434"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="journey_date",
+ *          description="journey date",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="18-09-2022"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="origin",
+ *          description="destination Id",
+ *          required=true,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string",
+ *              example="ODBUS"
+ *          )
+ *      ),
+ *     @OA\Parameter(
+ *          name="ReferenceNumber",
+ *          description="ReferenceNumber",
+ *          required=false,
+ *          in="query",
+ *          @OA\Schema(
+ *              type="string"
  *          )
  *      ),
  *  @OA\Response(response="200", description="Bus Details"),
