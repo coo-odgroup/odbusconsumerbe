@@ -313,6 +313,20 @@ class DolphinTransformer
 
     }
 
+    public function GetseatLayoutName($ReferenceNumber,$id){
+      $res= $this->seatLayout($ReferenceNumber);
+
+      if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
+        return $res['lower_berth'][$key]['seatText'];
+      }
+
+      if($key = array_search($id, array_column($res['upper_berth'], 'id'))){
+        return $res['upper_berth'][$key]['seatText'];
+      }
+       
+
+    }
+
     public function seatLayout($ReferenceNumber)
     {
 
@@ -690,13 +704,9 @@ class DolphinTransformer
         $arr['Phone']=$records[0]->users->phone;
         $arr['PickupID']=$records[0]->PickupID;
         $arr['PayableAmount']=$amount;
-        $arr['TotalPassengers']=$TotalPassengers;  
-        
-        Log::info($arr);
+        $arr['TotalPassengers']=$TotalPassengers;         
 
         $res= $this->DolphinService->BlockSeat($arr);
-
-       Log::info($res);
 
        return $res;
 

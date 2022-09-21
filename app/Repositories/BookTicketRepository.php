@@ -17,6 +17,8 @@ use App\Models\OdbusCharges;
 use App\Models\BusOperator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
+use App\Transformers\DolphinTransformer;
+
 
 class BookTicketRepository
 {
@@ -28,8 +30,10 @@ class BookTicketRepository
     protected $busSeats;
     protected $busLocationSequence;
     protected $channelRepository; 
+    protected $dolphinTransformer;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository)
+
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,DolphinTransformer $dolphinTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -38,7 +42,9 @@ class BookTicketRepository
         $this->busSeats = $busSeats;
         $this->booking = $booking;
         $this->channelRepository = $channelRepository;
-        $this->busLocationSequence = $busLocationSequence;       
+        $this->busLocationSequence = $busLocationSequence;    
+        $this->dolphinTransformer = $dolphinTransformer;
+
     } 
 
     public function CheckExistingUser($phone){
@@ -236,20 +242,30 @@ class BookTicketRepository
 
         }
 
-        $bDetail['seat_name']=$bDetail['bus_seats_id'];
+       
 
-        unset($bDetail['bus_seats_id']);
-
-
-            $collection= collect($bDetail);
+          
 
             if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+
+                unset($bDetail['bus_seats_id']);
+
+                $collection= collect($bDetail);
 
                 $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
 
                 $bookingDetailModels[] = new BookingDetail($merged);
 
-            }else{
+            }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
+                // get real seat name from dolphin transformer
+                $ReferenceNumber=$bookingInfo['ReferenceNumber'];
+                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id']);
+
+                unset($bDetail['bus_seats_id']);
+
+                $bDetail['seat_name']= $seat_name; 
+               
+                $collection= collect($bDetail);
 
                 $bookingDetailModels[] = new BookingDetail($collection->toArray());
 
