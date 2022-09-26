@@ -16,6 +16,8 @@ use App\Models\Users;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Jobs\SendEmailTicketJob;
+use App\Models\Credentials;
+
 
 use DateTime;
 
@@ -26,14 +28,18 @@ class DolphinTransformer
     protected $listingRepository; 
     protected $DolphinService;
     protected $booking;
+    protected $credentials;
+
 
    
-    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService,Booking $booking)
+    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService,Booking $booking,Credentials $credentials)
     {
 
         $this->listingRepository = $listingRepository;
         $this->DolphinService = $DolphinService;
         $this->booking = $booking;
+        $this->credentials = $credentials;
+
 
         
     }
@@ -756,35 +762,84 @@ class DolphinTransformer
 
     }
 
-    public function FetchTicketPrintData($pnr){
+    public function sendsms($dd)
+    {
+        
+            //Environment Variables
+            //$apiKey = config('services.sms.textlocal.key');
+            $apiKey = $this->credentials->first()->sms_textlocal_key;
+            $textLocalUrl = config('services.sms.textlocal.url_send');
+            $sender = config('services.sms.textlocal.senderid');
+            $message = config('services.sms.textlocal.dolphinTkt');
+            $apiKey = urlencode( $apiKey);
+            $receiver = urlencode($dd['phone']);
+            $name = $dd['name'];
+            $pnr = $dd['pnr'];
+            $busdetails = $dd['busdetails'];
+            $dtl = $dd['dtl'];
+            $depttime = $dd['depttime'];
+            $rpttime = $dd['rpttime'];
 
-        if($pnr!=''){
-            $list=$this->booking->where('pnr',$pnr)->first();
+            $message = str_replace("<name>",$name,$message);
+            $message = str_replace("<PNR>",$pnr,$message);
+            $message = str_replace("<busdetails>",$busdetails,$message);
+            $message = str_replace("<PickUpAddress1><PickUpAddress2><PickUpAddress3>",$dtl,$message);
+            $message = str_replace("<depttime>",$depttime,$message);
+            $message = str_replace("<rpttime>",$rpttime,$message);
+            $message = rawurlencode($message);
+            $response_type = "json"; 
+            $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
+
+            // Log::info($data);
+            // Log::info($textLocalUrl);
+
+            
+            $ch = curl_init($textLocalUrl);   
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($response);
+           // Log::info($response);
+           // $msgId = $response->messages[0]->id;  // Store msg id in DB
+           // session(['msgId'=> $msgId]);
+
+    }
+   
+
+    public function FetchTicketPrintData(){
+
+        // if($pnr!=''){
+        //     $list=$this->booking->where('pnr',$pnr)->first();
+
+        //     if(!empty($list)){
+        //         if($list->api_pnr!=null){
 
 
-            if(!empty($list)){
-                if($list->api_pnr!=null){
+        //             $res= $this->DolphinService->FetchTicketPrintData($list->api_pnr);
+        //             if($res){
+        //                 $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
+        //                 $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
+        //                 $ar['PickUpName']=(isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
+        //                 $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
+        //                 $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
+        //                return $ar;                    
+        //             }
 
-
-                    $res= $this->DolphinService->FetchTicketPrintData($list->api_pnr);
-                    if($res){
-                        $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
-                        $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
-                        $ar['PickUpName']=(isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
-                        $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
-                        $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
-                       return $ar;                    
-                    }
-
-                }
+        //         }
                
-            }            
+        //     }            
 
-        }else{
+        // }else{
+            
 
-            $list=$this->booking->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
+            $list=$this->booking->with('users')->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 
             if($list){
+                Log::info("dolphin bus number cron job");
                 $main=[];
                 foreach($list as $l){
                     $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);    
@@ -795,13 +850,39 @@ class DolphinTransformer
                         $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
                         $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
                         $main[]=$ar; 
+
+                        if(isset($res['CoachNo']) && $l->dolphin_sms_email==0){
+
+                            /////////// send dolphin sms 
+                            Log::info($l->users->phone);
+                            $data['phone']=$l->users->phone;
+                            $data['name']=$l->users->name;
+                            $data['pnr']=$l->pnr;
+                            $data['busdetails']=$res['CoachNo'];
+                            $data['dtl']=$res['PickUpName'];
+                            $data['depttime']=$res['MainTime'];
+                            $data['rpttime']=$res['ReportingTime'];
+                
+                            $this->sendsms($data);
+
+                          ////// update the sms status in booking table to 1
+
+                         // $dolphin_sms_email_arr['dolphin_sms_email' => 1,'bus_number'=>$res['CoachNo'],'pickup_details'=>$res['PickUpName'] ] ;
+
+                          $this->booking->where('id', $l->id)->update(['dolphin_sms_email' => 1,'bus_number'=>$res['CoachNo'],'pickup_details'=>$res['PickUpName'] ] ); 
+
+
+                        }
+
+                        
+
                     }
                 }
 
                 return $main;
             }
 
-        }
+       //}
 
        
 

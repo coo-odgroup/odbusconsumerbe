@@ -314,6 +314,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
  $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
         $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
+        $seatWithPriceRecords=[];
+
     if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
         return 'Invalid Origin';
     }else if($origin=='DOLPHIN'){
@@ -357,7 +359,33 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 
               }
 
+        if($clientRole == $clientRoleId){
 
+          $dolphinFare=  $total_fare + round($total_fare * (10/100)); // 10% extra as per santosh
+
+                /////client extra service charge added to seatfare////////////////
+               $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                   ->where('status', '1')
+                                                   ->get(); 
+                       
+               $client_service_charges = 0;
+               $addCharge = 0;
+               if($clientCommissions){
+                   foreach($clientCommissions as $clientCom){
+                       $startFare = $clientCom->starting_fare;
+                       $uptoFare = $clientCom->upto_fare;
+                       if($dolphinFare >= $startFare && $dolphinFare <= $uptoFare){
+                           $addCharge = $clientCom->addationalcharges;
+                           break;
+                       }  
+                   }   
+               } 
+               $client_service_charges = ($addCharge/100 * $dolphinFare);
+               $newSeatFare = $dolphinFare + $client_service_charges;
+               $seatWithPriceRecords[] = array(
+                   "totalFare" => $newSeatFare
+                   ); 
+           }else{   
             $seatWithPriceRecords[] = array(
                 "ownerFare" => $total_fare,
                 "odbus_charges_ownerFare" => $total_fare,
@@ -365,9 +393,10 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => round($total_fare * (10/100)), // 5% as per santosh
-                "totalFare" => $total_fare + round($total_fare * (10/100)) // 5% as per santosh
-                );  
+                "transactionFee" => round($total_fare * (10/100)), // 10% extra as per santosh
+                "totalFare" => $total_fare + round($total_fare * (10/100)) // 10% extra as per santosh
+                );
+            }  
 
               return $seatWithPriceRecords;  
 

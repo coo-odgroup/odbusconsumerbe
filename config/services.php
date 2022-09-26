@@ -82,6 +82,7 @@ return [
             'msgTicketCMO' => env('SMS_TKT_TEMPLATE_CMO'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
+            'dolphinTkt' => env('DOLPHIN_TKT_TEMPLATE'),            
             'cancelTicketOTP' => env('OTP_TICKET_CANCEL'),
             'senderid' => env('SENDER_ID'),
             
@@ -96,6 +97,7 @@ return [
             'msgTicketCMO' => env('SMS_TKT_TEMPLATE_CMO'),
             'cancelTicket' => env('CANCEL_TKT_TEMPLATE'),
             'cancelTicketCMO' => env('CANCEL_TKT_TEMPLATE_CMO'),
+            'dolphinTkt' => env('DOLPHIN_TKT_TEMPLATE'), 
             'cancelTicketOTP' => env('OTP_TICKET_CANCEL'),
             'senderid' => env('SENDER_ID'),
         ]
