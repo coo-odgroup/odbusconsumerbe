@@ -151,48 +151,6 @@ class BookTicketController extends Controller
  *                  example="1" ,
  *                  ),
  *                @OA\Property(
- *                  property="total_fare",
- *                  type="double",
- *                  default="1000",
- *                  example="1000" ,
- *                  ),
- *                @OA\Property(
- *                  property="specialFare",
- *                  type="double",
- *                  default="10",
- *                  example="10" ,
- *                  ),
- *                @OA\Property(
- *                  property="addOwnerFare",
- *                  type="double",
- *                  default="10",
- *                  example="10" ,
- *                  ),
- *                @OA\Property(
- *                  property="festiveFare",
- *                  type="double",
- *                  default="10",
- *                  example="10" ,
- *                  ),
- *                @OA\Property(
- *                  property="owner_fare",
- *                  type="double",
- *                  default="900",
- *                  example="900" ,
- *                  ),
- *                @OA\Property(
- *                  property="odbus_service_Charges",
- *                  type="double",
- *                  default="70",
- *                  example="70" ,
- *                  ),
- *                @OA\Property(
- *                  property="transactionFee",
- *                  type="double",
- *                  default="10",
- *                  example="10" ,
- *                  ),
- *                @OA\Property(
  *                  property="created_by",
  *                  type="string",
  *                  default="Customer",

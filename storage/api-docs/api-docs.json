@@ -352,41 +352,6 @@
                                                 "default": "1",
                                                 "example": "1"
                                             },
-                                            "total_fare": {
-                                                "type": "double",
-                                                "default": "1000",
-                                                "example": "1000"
-                                            },
-                                            "specialFare": {
-                                                "type": "double",
-                                                "default": "10",
-                                                "example": "10"
-                                            },
-                                            "addOwnerFare": {
-                                                "type": "double",
-                                                "default": "10",
-                                                "example": "10"
-                                            },
-                                            "festiveFare": {
-                                                "type": "double",
-                                                "default": "10",
-                                                "example": "10"
-                                            },
-                                            "owner_fare": {
-                                                "type": "double",
-                                                "default": "900",
-                                                "example": "900"
-                                            },
-                                            "odbus_service_Charges": {
-                                                "type": "double",
-                                                "default": "70",
-                                                "example": "70"
-                                            },
-                                            "transactionFee": {
-                                                "type": "double",
-                                                "default": "10",
-                                                "example": "10"
-                                            },
                                             "created_by": {
                                                 "type": "string",
                                                 "default": "Customer",
