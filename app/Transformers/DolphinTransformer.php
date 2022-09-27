@@ -1136,5 +1136,39 @@ class DolphinTransformer
      return $busDetails;
     
     }
+
+    public function GetSeatType($ReferenceNumber,$seatIds){
+
+        
+
+
+        $seatResult= $this->seatLayout($ReferenceNumber);
+
+        $seater=[];
+        $sleeper=[];
+
+        foreach($seatIds as $s){
+
+            if($key = array_search($s, array_column($seatResult['lower_berth'], 'id'))){
+                $seater[]=$s;
+            }
+
+            if($key = array_search($s, array_column($seatResult['upper_berth'], 'id'))){
+                $sleeper[]=$s;
+            }
+
+        }
+      
+
+        $main['seater']=$seater;
+        $main['sleeper']=$sleeper;
+
+        return $main;
+
+       
+
+
+
+    }
    
 }

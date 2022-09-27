@@ -335,12 +335,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
                 foreach($seaterIds as $st){
 
-
                     $key = array_search($st, array_column($seatResult['lower_berth'], 'id'));
-
-
                    $total_fare += $seatResult['lower_berth'][$key]['bus_seats']['new_fare'];
-
 
                 }
 

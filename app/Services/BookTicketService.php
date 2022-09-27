@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
+use App\Transformers\DolphinTransformer;
+
 
 class BookTicketService
 {
@@ -22,12 +24,16 @@ class BookTicketService
     protected $bookTicketRepository; 
     protected $listingService; 
     protected $viewSeatsService; 
-    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService,ViewSeatsService $viewSeatsService)
+    protected $dolphinTransformer;
+
+    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService,ViewSeatsService $viewSeatsService,DolphinTransformer $dolphinTransformer)
     {
         $this->bookTicketRepository = $bookTicketRepository;
         $this->offerRepository = $offerRepository;
         $this->listingService = $listingService;
         $this->viewSeatsService = $viewSeatsService;
+        $this->dolphinTransformer = $dolphinTransformer;
+
     }
     public function bookTicket($request,$clientRole,$clientId)
     {
@@ -86,7 +92,7 @@ class BookTicketService
                     }
                 }
                 /////////////////////price related changes from(ODBUS)//////////////////
-                if($bookingInfo['origin'] == 'ODBUS'){
+                if($origin == 'ODBUS'){
                     $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
                     $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
                     $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
@@ -107,13 +113,43 @@ class BookTicketService
                    
                     $priceDetails = $this->viewSeatsService->getPriceCalculationOdbus($data,$clientId);
                 }
+
+                /////////// get seat price for dolphin
+
+
+                if($origin=='DOLPHIN'){
+                    $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
+                    $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+
+                    $entry_date = $bookingInfo['journey_date'];
+                    $busId = $bookingInfo['bus_id'];
+                    $sourceId = $bookingInfo['source_id'];
+                    $destinationId =  $bookingInfo['destination_id'];
+
+                    $seatTypArr=$this->dolphinTransformer->GetSeatType($ReferenceNumber,$seatIds);
+                    
+                    $data = array(
+                        'busId' => $busId,
+                        'sourceId' => $sourceId,
+                        'destinationId' => $destinationId,
+                        'seater' => $seatTypArr['seater'],
+                        'sleeper' => $seatTypArr['sleeper'],
+                        'entry_date' => $entry_date,
+                        'ReferenceNumber' => $ReferenceNumber,
+                        'origin' => $origin,
+                    );
+
+                    $priceDetails= $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+
+                    Log::info($priceDetails);
+                }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
                 $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails);   
                
                 /////////////auto apply coupon//////////
 
-                if($bookingInfo['origin'] == 'ODBUS'){ 
+            if($bookingInfo['origin'] == 'ODBUS'){ 
 
                 $bcollection = collect($bookingInfo);
                 $bcollection->put('transaction_id', $booking['transaction_id']);
