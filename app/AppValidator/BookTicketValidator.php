@@ -22,9 +22,9 @@ class BookTicketValidator
             'bookingInfo.dropping_time' => 'required',
             'bookingInfo.app_type' => ["required" , "in:WEB,MOB,ANDROID"],  
             'bookingInfo.typ_id' => 'required',
-            'bookingInfo.total_fare' => 'required|numeric',
-            'bookingInfo.owner_fare' => 'required|numeric',
-            'bookingInfo.odbus_service_Charges' => 'required|numeric',
+            //'bookingInfo.total_fare' => 'required|numeric',
+            //'bookingInfo.owner_fare' => 'required|numeric',
+            //'bookingInfo.odbus_service_Charges' => 'required|numeric',
             'bookingInfo.created_by' => 'required',
             'bookingInfo.bookingDetail' => [
                                             'bus_seats_id' => 'required',

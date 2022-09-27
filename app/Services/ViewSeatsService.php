@@ -812,6 +812,126 @@ public function getBoardingDroppingPoints(Request $request)
         return $seatWithPriceRecords;
         
     }
+
+    //////////////////used for ODBUS booking PRICE CALCULATION ///////////////
+
+    public function getPriceCalculationOdbus($request,$clientId)
+    {
+       
+        $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
+        $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
+        
+        $busId = $request['busId'];
+        $sourceId = $request['sourceId'];
+        $destinationId = $request['destinationId'];
+        $entry_date = $request['entry_date'];
+     
+        $entry_date = date("Y-m-d", strtotime($entry_date));
+        $user_id = Bus::where('id', $busId)->first()->user_id;
+        $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
+    
+        $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
+        $ticket_new_fare=array();
+        if($seaterIds){
+            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($seaterIds,$busId,$busWithTicketPrice->id);
+        }             
+        if($sleeperIds){
+            $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
+        }
+        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+    
+        $ownerFare=0;
+        $odbus_charges_ownerFare=0;
+        $totalSplFare =0;
+        $totalOwnFare =0;
+        $totalFestiveFare =0;
+        $PriceDetail=[];
+        $service_charges=0;
+        $tktprc = Arr::flatten($ticket_new_fare);
+    
+        $collectionSeater = collect($seaterIds);
+        $collectionSleeper = collect($sleeperIds);
+    
+        if(count($tktprc) > 0){
+                foreach($tktprc as $tkt){
+                    if( $tkt->type==2 || ($tkt->type==null && $tkt->operation_date != null )){
+                        // do nothing (this logic is to avoid extra seat block , seat block seats )
+                    }  else{
+                        if($tkt->operation_date== $entry_date || $tkt->operation_date==null ){
+                            
+                            if($tkt->new_fare == 0 ){
+     
+                                if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
+                                {
+                                    $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                }
+    
+                                else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
+                                {
+                                    $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                                }
+                               
+                                array_push($PriceDetail,$tkt);
+                            }
+                            
+                            if($collectionSeater && $collectionSeater->contains($tkt->seats_id)){
+                               
+                                $totalSplFare +=$miscfares[0];
+                                $totalOwnFare +=$miscfares[2];
+                                $totalFestiveFare +=$miscfares[4];
+                                $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
+                            }
+                            else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){ 
+                                $totalSplFare +=$miscfares[1];
+                                $totalOwnFare +=$miscfares[3];
+                                $totalFestiveFare +=$miscfares[5];
+                                $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
+                            }
+                          
+                            $seat_fare=$tkt->new_fare;
+                            $ownerFare +=$tkt->new_fare;
+    
+                            ////////// add odbus service chanrges to seat fare
+    
+                            $odbusServiceCharges = 0;
+                            foreach($ticketFareSlabs as $ticketFareSlab){
+                    
+                                $startingFare = $ticketFareSlab->starting_fare;
+                                $uptoFare = $ticketFareSlab->upto_fare;
+                                if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
+                                    $percentage = $ticketFareSlab->odbus_commision;
+                                    $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
+                                    $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
+                                    $service_charges += $odbusServiceCharges;
+                                    }     
+                                } 
+                            $odbus_charges_ownerFare +=$tkt->new_fare; 
+                        }                        
+                    }       
+                }  
+        }
+        $transactionFee = 0;
+    
+        $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
+        $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
+        $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
+        $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
+    
+        $seatWithPriceRecords[] = array(
+                //"PriceDetail" => $PriceDetail,
+                "ownerFare" => $ownerFare,
+                "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
+                "specialFare" => $totalSplFare,
+                "addOwnerFare" => $totalOwnFare,
+                "festiveFare" => $totalFestiveFare,
+                "odbusServiceCharges" => $service_charges,
+                "transactionFee" => $transactionFee,
+                "totalFare" => $totalFare
+                ); 
+    
+        return $seatWithPriceRecords;
+        
+    }
     /////////////for client api use(not in use)///////////////////
     public function checkSeatStatus($request)
     {

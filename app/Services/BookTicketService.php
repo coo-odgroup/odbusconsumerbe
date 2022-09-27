@@ -3,9 +3,11 @@
 namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Coupon;
+use App\Models\Seats;
 use App\Repositories\BookTicketRepository;
 use App\Repositories\OfferRepository;
 use App\Services\ListingService;
+use App\Services\ViewSeatsService;
 use App\Models\Location;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -19,11 +21,13 @@ class BookTicketService
     
     protected $bookTicketRepository; 
     protected $listingService; 
-    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService)
+    protected $viewSeatsService; 
+    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService,ViewSeatsService $viewSeatsService)
     {
         $this->bookTicketRepository = $bookTicketRepository;
         $this->offerRepository = $offerRepository;
         $this->listingService = $listingService;
+        $this->viewSeatsService = $viewSeatsService;
     }
     public function bookTicket($request,$clientRole,$clientId)
     {
@@ -32,16 +36,12 @@ class BookTicketService
         $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
         $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
 
-          
-
             if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
                 return 'Invalid Origin';
             }else if($origin=='DOLPHIN'){
 
                 if($ReferenceNumber ==''){
-
                     return 'ReferenceNumber_empty';
-
                 }
             }
             
@@ -65,9 +65,7 @@ class BookTicketService
                 $source = Location::where('id',$sourceID)->first()->name;
                 $destination = Location::where('id',$destinationID)->first()->name;
 
-
                 if($origin == 'ODBUS'){
-
                     $reqInfo= array(
                         "source" => $source,
                         "destination" => $destination,
@@ -86,14 +84,33 @@ class BookTicketService
                     if(!$validBus){
                         return "Bus_not_running";
                     }
-
                 }
-               
-               
+                /////////////////////price related changes from(ODBUS)//////////////////
+                if($bookingInfo['origin'] == 'ODBUS'){
+                    $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
+                    $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+                    $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
+                    $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
+                    $entry_date = $bookingInfo['journey_date'];
+                    $busId = $bookingInfo['bus_id'];
+                    $sourceId = $bookingInfo['source_id'];
+                    $destinationId =  $bookingInfo['destination_id'];
+                    
+                    $data = array(
+                        'busId' => $busId,
+                        'sourceId' => $sourceId,
+                        'destinationId' => $destinationId,
+                        'seater' => $seater,
+                        'sleeper' => $sleeper,
+                        'entry_date' => $entry_date,
+                    );
+                   
+                    $priceDetails = $this->viewSeatsService->getPriceCalculationOdbus($data,$clientId);
+                }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
-                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill);   
-                
+                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails);   
+               
                 /////////////auto apply coupon//////////
 
                 if($bookingInfo['origin'] == 'ODBUS'){ 

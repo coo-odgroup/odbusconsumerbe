@@ -392,6 +392,31 @@
                                                 "default": "Customer",
                                                 "example": "Customer"
                                             },
+                                            "CompanyID": {
+                                                "type": "integer",
+                                                "default": "",
+                                                "example": ""
+                                            },
+                                            "PickupID": {
+                                                "type": "integer",
+                                                "default": "",
+                                                "example": ""
+                                            },
+                                            "DropID": {
+                                                "type": "integer",
+                                                "default": "",
+                                                "example": ""
+                                            },
+                                            "RouteTimeID": {
+                                                "type": "integer",
+                                                "default": "",
+                                                "example": ""
+                                            },
+                                            "ReferenceNumber": {
+                                                "type": "integer",
+                                                "default": "",
+                                                "example": ""
+                                            },
                                             "bookingDetail": {
                                                 "type": "array",
                                                 "items": {
@@ -2548,13 +2573,13 @@
             }
         },
         "/api/BusDetails": {
-            "get": {
+            "post": {
                 "tags": [
                     "BusDetails API"
                 ],
                 "summary": "Get Details of a Bus",
                 "description": "Get details of a Bus",
-                "operationId": "08c1505c7f8a66c3153c88d1d9c419bd",
+                "operationId": "d1209f9db70936dc42e6b40852072796",
                 "parameters": [
                     {
                         "name": "bus_id",
@@ -2584,6 +2609,35 @@
                         "schema": {
                             "type": "integer",
                             "example": "434"
+                        }
+                    },
+                    {
+                        "name": "journey_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "18-09-2022"
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "description": "destination Id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ODBUS"
+                        }
+                    },
+                    {
+                        "name": "ReferenceNumber",
+                        "in": "query",
+                        "description": "ReferenceNumber",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -4878,6 +4932,24 @@
                             "type": "integer",
                             "example": 53
                         }
+                    },
+                    {
+                        "name": "ReferenceNumber",
+                        "in": "query",
+                        "description": "reference number for Dolphin service",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "description": "Service provider name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -4992,6 +5064,24 @@
                                 "example": 2755
                             }
                         }
+                    },
+                    {
+                        "name": "ReferenceNumber",
+                        "in": "query",
+                        "description": "reference number for Dolphin service",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "description": "Service provider name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -5067,6 +5157,34 @@
                         "schema": {
                             "type": "integer",
                             "example": 434
+                        }
+                    },
+                    {
+                        "name": "journey_date",
+                        "in": "query",
+                        "description": "journey date",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "18-09-2022"
+                        }
+                    },
+                    {
+                        "name": "ReferenceNumber",
+                        "in": "query",
+                        "description": "reference number for Dolphin service",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "description": "Service provider name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],

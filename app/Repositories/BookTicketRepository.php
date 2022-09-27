@@ -66,11 +66,12 @@ class BookTicketRepository
       return $this->users->create($customerInfo)->latest('id')->first('id');   ;  
     }
 
-    public function SaveBooking($bookingInfo,$userId,$needGstBill){
+    public function SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails){
+        //Log::info($priceDetails);
         $defUserId = Config::get('constants.USER_ID'); 
 
-	$bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
-   
+	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
+        
         $booking = new $this->booking;
         do {
            $transactionId = date('YmdHis') . gettimeofday()['usec'];
@@ -80,7 +81,6 @@ class BookTicketRepository
         do {
           switch($bookingInfo['app_type'])
           {
-
             case("WEB"):
                 $PNR = 'ODW'.rand(1000000,9999999);
                 break;
@@ -90,8 +90,6 @@ class BookTicketRepository
             case("ANDROID"):
                 $PNR = 'ODA'."".rand(1000000,9999999);
                 break;
-
-
           }
         } while ( $booking ->where('pnr', $PNR )->exists());  
 
@@ -113,10 +111,7 @@ class BookTicketRepository
 
            $j_day= $ticketPriceDetails[0]->j_day  ; 
 
-        }
-
-                                           
-                                                
+        }                                                                
         $booking->j_day = $j_day;
         $booking->journey_dt = $bookingInfo['journey_date'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
@@ -126,14 +121,20 @@ class BookTicketRepository
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];
-        $booking->owner_fare = $bookingInfo['owner_fare'];
-        $booking->total_fare = $bookingInfo['total_fare'];
-        $booking->additional_special_fare = $bookingInfo['specialFare'];
-        $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
-        $booking->additional_festival_fare = $bookingInfo['festiveFare'];
-        $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        $booking->transactionFee = $bookingInfo['transactionFee'];
-
+        $booking->owner_fare = $priceDetails[0]['ownerFare'];
+        $booking->total_fare = $priceDetails[0]['totalFare'];
+        $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
+        $booking->additional_special_fare = $priceDetails[0]['specialFare'];
+        $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
+        $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
+        $booking->transactionFee = $priceDetails[0]['transactionFee'];
+        //$booking->owner_fare = $bookingInfo['owner_fare'];
+        //$booking->total_fare = $bookingInfo['total_fare'];
+        //$booking->additional_special_fare = $bookingInfo['specialFare'];
+        //$booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
+        //$booking->additional_festival_fare = $bookingInfo['festiveFare'];
+        //$booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        //$booking->transactionFee = $bookingInfo['transactionFee'];
 
         if(isset($bookingInfo['adj_note'])){
             $booking->booking_adj_note = $bookingInfo['adj_note'];            
@@ -162,14 +163,14 @@ class BookTicketRepository
             $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
         }
         
-        $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;       
+        $odbusGstAmount = $priceDetails[0]['ownerFare'] * $odbusGstPercent/100;       
 
         $busOperator = BusOperator::where("id",$busOperatorId)->get();
     
         if($busOperator[0]->need_gst_bill == $needGstBill){   
             $ownerGstPercentage = $busOperator[0]->gst_amount;
             $booking->owner_gst_charges = $ownerGstPercentage;
-            $ownerGstAmount = $bookingInfo['owner_fare'] * $ownerGstPercentage/100;
+            $ownerGstAmount = $priceDetails[0]['ownerFare'] * $ownerGstPercentage/100;
             $booking->owner_gst_amount = $ownerGstAmount;
         }
        }
@@ -185,25 +186,16 @@ class BookTicketRepository
         $booking->DropID = (isset($bookingInfo['DropID'])) ? $bookingInfo['DropID'] : '';
 
         $booking->created_by = $bookingInfo['created_by'];
-
         $userId->booking()->save($booking);
-
 
         $seq_no_start=0;
         $seq_no_end=0;
-
-       
-
         if($bookingInfo['origin']=='ODBUS'){
-
             //fetch the sequence from bus_locaton_sequence
                 $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
                 $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
-
         }
-        
-        
-        
+         
         $bookingSequence = new BookingSequence;
         $bookingSequence->sequence_start_no = $seq_no_start;
         $bookingSequence->sequence_end_no = $seq_no_end;
@@ -231,29 +223,18 @@ class BookTicketRepository
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
 
         if($bDetail['passenger_gender']=='Female' || $bDetail['passenger_gender']=='female' ){
-
             $bDetail['passenger_gender']='F';
-
         }
 
         if($bDetail['passenger_gender']=='Male' || $bDetail['passenger_gender']=='male' ){
 
             $bDetail['passenger_gender']='M';
-
         }
-
-       
-
-          
-
             if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
 
                 unset($bDetail['bus_seats_id']);
-
                 $collection= collect($bDetail);
-
                 $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
-
                 $bookingDetailModels[] = new BookingDetail($merged);
 
             }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
@@ -262,23 +243,15 @@ class BookTicketRepository
                 $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id']);
 
                 unset($bDetail['bus_seats_id']);
-
                 $bDetail['seat_name']= $seat_name; 
-               
                 $collection= collect($bDetail);
-
                 $bookingDetailModels[] = new BookingDetail($collection->toArray());
 
             }
-
-           
             $i++;
-        } 
-        
+        }  
         //Log::info($bookingDetailModels);
-
-        $booking->bookingDetail()->saveMany($bookingDetailModels);  
-            
+        $booking->bookingDetail()->saveMany($bookingDetailModels);       
         return $booking; 
     }
 
