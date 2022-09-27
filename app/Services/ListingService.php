@@ -841,7 +841,7 @@ class ListingService
     public function filter(Request $request,$clientRole,$clientId)
     {
         $booked = Config::get('constants.BOOKED_STATUS');   
-        $price = $request['price'];
+        
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID'];
         $busOperatorId = $request['bus_operator_id']; 
@@ -898,11 +898,31 @@ class ListingService
 
         else{
             $sortar=['departureTime', 'asc']; 
-        } 
+        }
+        
+        
+        $price = $request['price'];
+           
+        if(isset($request['sortBy'])){
+            $price =3;
+            $sortBy= $request['sortBy'];
+
+            if($sortBy=='rating'){
+              $sortar= ['Totalrating', 'desc'];
+            }        
+            else if($sortBy=='departure'){
+            $sortar=['departureTime', 'asc'];   
+            }
+            else if($sortBy=='seat'){
+            $sortar=['totalSeats', 'desc'];
+            }
+ 
+         }
+
 
         
         //return $busDetails;
-        if(isset($busDetails[0])){
+    if(isset($busDetails[0])){
             $records = array();
             $FilterRecords = array();
             $showBusRecords = [];
@@ -1042,42 +1062,47 @@ class ListingService
 
            $HideSoldoutRecords = (isset($hideRecords['soldout'])) ? $hideRecords['soldout'] : [];
            $hideRecords = (isset($hideRecords['regular'])) ? $hideRecords['regular'] : [];
-
-          // $FilterRecords = collect($showRecords)->concat(collect($hideRecords));
         } 
-        // else{
-        //     $FilterRecords = $showRecords;
-        // } 
-        //return $FilterRecords;
 
-       if($price == 0){
+      
+        if ($price == 0){
 
-           $sortar= ['startingFromPrice', 'desc'];
-           
-            $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+            $sortar= ['startingFromPrice', 'desc'];           
+            
+             $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+             $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
+          
+         }
+
+         else if($price == 1){
+
+            $sortar= ['startingFromPrice', 'asc'];
             $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
-           // return $showRecords->concat($hideRecords);
-            //return collect($FilterRecords)->sortBy(['departureTime', 'asc']);
-        }
-        else if($price == 1){
+              $hideRecords = collect($hideRecords)->sortBy([$sortar]);           
+         }     
+       else{ 
 
-          $sortar= ['startingFromPrice', 'asc'];
           $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
-            $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+          $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+          
+        }
 
-
-            //return $showRecords->concat($hideRecords);
-            //return collect($FilterRecords)->sortBy(['startingFromPrice', 'asc']);
-       }
 
         $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($HideSoldoutRecords));
 
         $ListingRecords = $showRecords->concat($soldoutRecords);
         return $ListingRecords->concat($hideRecords);
 
-     }  
+    }  
 
      else{
+
+        if($price == 0){
+            $sortar= ['startingFromPrice', 'desc'];  
+         }
+         else if($price == 1){
+           $sortar= ['startingFromPrice', 'asc'];
+        } 
         $ListingRecords =  collect($DolPhinshowRecords)->sortBy([$sortar]);
         return $ListingRecords->concat(collect($DolPhinShowSoldoutRecords));
     } 
