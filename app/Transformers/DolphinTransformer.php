@@ -839,10 +839,11 @@ class DolphinTransformer
             $list=$this->booking->with('users')->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 
             if($list){
-                Log::info("dolphin bus number cron job");
+                //Log::info("dolphin bus number cron job");
                 $main=[];
                 foreach($list as $l){
-                    $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr);    
+                    $res= $this->DolphinService->FetchTicketPrintData($l->api_pnr); 
+                   // Log::info($res);   
                     if($res){
                         $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
                         $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
