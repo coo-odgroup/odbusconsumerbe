@@ -187,7 +187,7 @@ class ViewSeatsRepository
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->where('duration','>',0)
                                 ->get(['seats_id','duration']);
-
+        
         $extraSeatsBlock = BusSeats::where('bus_id',$busId)
                                     ->where('status',1)
                                     ->where('ticket_price_id',$ticketPriceId)
@@ -196,6 +196,15 @@ class ViewSeatsRepository
                                     ->where('type',null)
                                     ->get('seats_id');
 
+        /////IT WILL block all extra sats with previous date discussed Lima//////
+        $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->where('duration','=',0)
+                                    ->where('operation_date','<' ,$entry_date)
+                                    ->where('type',null)
+                                    ->get('seats_id');                            
+        
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $depTime = date("H:i:s", strtotime($depTime));
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
@@ -277,8 +286,14 @@ class ViewSeatsRepository
             }]) 
             ->get();
 
+    
         $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));
-       
+
+        if(!$oldExtraSeatsBlock->isEmpty()){
+            $oldextraSeatsHide = collect($oldExtraSeatsBlock)->pluck('seats_id');  
+            $totalHideSeats = $totalHideSeats->concat(collect($oldextraSeatsHide));   
+        }
+        
         /////////Hide Extra Seats based on seize time/////////
 
         if(!$extraSeats->isEmpty()){
@@ -294,13 +309,12 @@ class ViewSeatsRepository
             $eBlockSeats = collect($extraSeatsBlock)->pluck('seats_id');
             $totalHideSeats = $totalHideSeats->concat(collect($eBlockSeats));
         }
-        
+
         foreach($availableSeats as $seat){ 
             if($totalHideSeats->contains($seat->id)){
                 unset($seat['busSeats']); 
             }
         }
-        
         return $availableSeats;
     }
 
