@@ -195,16 +195,15 @@ class ViewSeatsRepository
                                     ->where('operation_date',$entry_date)
                                     ->where('type',null)
                                     ->get('seats_id');
-
-        /////IT WILL block all extra sats with previous date discussed Lima//////
+         ///Seats blocked prior to journey date////////                           
         $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
                                     ->where('status',1)
                                     ->where('ticket_price_id',$ticketPriceId)
                                     ->where('duration','=',0)
                                     ->where('operation_date','<' ,$entry_date)
                                     ->where('type',null)
-                                    ->get('seats_id');                            
-        
+                                    ->pluck('seats_id');                        
+       
         //$CurrentDateTime = "2022-01-05 16:48:35";
         $depTime = date("H:i:s", strtotime($depTime));
         $CurrentDateTime = Carbon::now();//->toDateTimeString();
@@ -230,8 +229,6 @@ class ViewSeatsRepository
                                 ->where('status',1)
                                 ->where('ticket_price_id',$ticketPriceId)
                                 ->pluck('seats_id');
-                                 
-        /////////////////////////////////////////////////    
 
        $openSeatsHide = BusSeats::where('operation_date','!=', $entry_date)
             ->where('type',1)
@@ -269,14 +266,15 @@ class ViewSeatsRepository
                                 ->where('status',1)
                                 ->pluck('seats_id'); 
                        
-                            
+                       
         $noMoreavailableSeats = collect($blockSeatsOnAllDates)->diff(collect($permanentSeats));                   
-        //return $noMoreavailableSeats;
-////////////////////////////seat block check for all dates//////////////////////////////////////////////
+
+        ////////////////////All available seats not booked////////////////////////////////////
         $availableSeats = $this->seats
             ->where('bus_seat_layout_id',$bus_seat_layout_id)
             ->where('berthType', $Berth)
             ->where('status','1')
+            //->with("busSeats")->get();
             ->with(["busSeats"=> function ($query) use ($busId,$bookedSeatIDs,$entry_date,              $ticketPriceId){
                     $query->where('status',1)
                             ->where('bus_id',$busId)
@@ -286,14 +284,15 @@ class ViewSeatsRepository
             }]) 
             ->get();
 
-          
         
         $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));   
         
-        // if(!$oldExtraSeatsBlock->isEmpty()){
-        //     $oldextraSeatsHide = collect($oldExtraSeatsBlock)->pluck('seats_id');  
-        //     $totalHideSeats = $totalHideSeats->concat(collect($oldextraSeatsHide));   
-        // } 
+
+        /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
+        $oldExtraSeatsBlock = collect($oldExtraSeatsBlock)->diff(collect($permanentSeats));
+        if(!$oldExtraSeatsBlock->isEmpty()){ 
+            $totalHideSeats = $totalHideSeats->concat(collect($oldExtraSeatsBlock));   
+        } 
       
         /////////Hide Extra Seats based on seize time/////////
 
