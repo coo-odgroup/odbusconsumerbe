@@ -903,7 +903,7 @@ class ListingService
         
         $price = $request['price'];
            
-        if(isset($request['sortBy'])){
+        if(isset($request['sortBy']) && $request['sortBy']!=''){
             $price =3;
             $sortBy= $request['sortBy'];
 
