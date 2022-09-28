@@ -286,14 +286,17 @@ class ViewSeatsRepository
             }]) 
             ->get();
 
-    
-        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));
+            Log::info($busId);
+            Log::info($permanentSeats);
 
+        
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));   
+        
         if(!$oldExtraSeatsBlock->isEmpty()){
             $oldextraSeatsHide = collect($oldExtraSeatsBlock)->pluck('seats_id');  
             $totalHideSeats = $totalHideSeats->concat(collect($oldextraSeatsHide));   
-        }
-        
+        } 
+      
         /////////Hide Extra Seats based on seize time/////////
 
         if(!$extraSeats->isEmpty()){
@@ -308,6 +311,10 @@ class ViewSeatsRepository
         if(!$extraSeatsBlock->isEmpty()){
             $eBlockSeats = collect($extraSeatsBlock)->pluck('seats_id');
             $totalHideSeats = $totalHideSeats->concat(collect($eBlockSeats));
+        }
+
+        if(!$seatsOpenOnDate->isEmpty()){
+            $totalHideSeats = collect($totalHideSeats)->diff(collect($seatsOpenOnDate));
         }
 
         foreach($availableSeats as $seat){ 
