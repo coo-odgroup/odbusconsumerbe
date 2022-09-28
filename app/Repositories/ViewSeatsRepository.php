@@ -286,16 +286,14 @@ class ViewSeatsRepository
             }]) 
             ->get();
 
-            Log::info($busId);
-            Log::info($permanentSeats);
-
+          
         
         $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));   
         
-        if(!$oldExtraSeatsBlock->isEmpty()){
-            $oldextraSeatsHide = collect($oldExtraSeatsBlock)->pluck('seats_id');  
-            $totalHideSeats = $totalHideSeats->concat(collect($oldextraSeatsHide));   
-        } 
+        // if(!$oldExtraSeatsBlock->isEmpty()){
+        //     $oldextraSeatsHide = collect($oldExtraSeatsBlock)->pluck('seats_id');  
+        //     $totalHideSeats = $totalHideSeats->concat(collect($oldextraSeatsHide));   
+        // } 
       
         /////////Hide Extra Seats based on seize time/////////
 

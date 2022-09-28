@@ -554,9 +554,9 @@ class ListingService
             if(!$extraSeatsBlock->isEmpty()){
                 $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
             }
-            if(!$oldExtraSeatsBlock->isEmpty()){
-                $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));
-            }
+            // if(!$oldExtraSeatsBlock->isEmpty()){
+            //     $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));
+            // }
             
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                            ->where('bus_id',$busId)
