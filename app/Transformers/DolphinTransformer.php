@@ -175,7 +175,7 @@ class DolphinTransformer
                  "conductor_number"=> "",
                  "couponCode"=> [],
                  "couponDetails"=> [],
-                 "operatorId"=> '',
+                 "operatorId"=> 0,
                  "operatorUrl"=> "",
                  "operatorName"=> $data['CompanyName'],
                  "sittingType"=>  $data['ArrangementName'],
