@@ -456,15 +456,15 @@ class ListingService
                                    ->where('type',null)
                                    ->pluck('seats_id');
 
-        /////IT WILL block all extra sats with previous date discussed Lima//////
-        $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
+         ///Seats blocked prior to journey date////////                           
+         $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
                                     ->where('status',1)
                                     ->where('ticket_price_id',$ticketPriceId)
                                     ->where('duration','=',0)
                                     ->where('operation_date','<' ,$entry_date)
                                     ->where('type',null)
-                                    ->pluck('seats_id');                             
-                         
+                                    ->pluck('seats_id');                           
+                                                    
         $ActualExtraSeatsOpen = ($extraSeatsOpen->diff($extraSeatsBlock))->values();
 
 
@@ -554,9 +554,12 @@ class ListingService
             if(!$extraSeatsBlock->isEmpty()){
                 $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
             }
-            // if(!$oldExtraSeatsBlock->isEmpty()){
-            //     $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));
-            // }
+        /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
+            $oldExtraSeatsBlock = collect($oldExtraSeatsBlock)->diff(collect($permanentSeats));
+            if(!$oldExtraSeatsBlock->isEmpty()){ 
+                $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));   
+            } 
+        
             
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
                                            ->where('bus_id',$busId)
