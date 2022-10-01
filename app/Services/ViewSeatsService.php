@@ -68,23 +68,27 @@ class ViewSeatsService
 
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
-
+       
         $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
         
         if (sizeof($bookingIds)){
             $blockedSeats=array();
             foreach($bookingIds as $bookingId){
                 //$seatsIds = array();
+                $seatIDsPerbooking = array();
                 $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
                 foreach($bookedSeatIds as $bookedSeatId){
+                    $seatIDsPerbooking[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
                     $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
                     $gender[] = $this->viewSeatsRepository->bookingGenderDetail($bookingId,$bookedSeatId);     
-                }   
-                 $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
-                 $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
-                 $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
-                 $bookedRange = Arr::sort($bookedSequence);
-                //>>1
+                }  
+
+                $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
+                $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
+                $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
+                $bookedRange = Arr::sort($bookedSequence);
+                
+                 //>>1
                 //seat available on requested seq so blocked seats are none.
                 // if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
                 //    //$blockedSeats=array();
@@ -105,17 +109,17 @@ class ViewSeatsService
                 if((last($reqRange)<=head($bookedRange))){
                     $blockedSeats=array();
                  }
-                 elseif((last($bookedRange)<=head($reqRange))){   
-                     $blockedSeats=array();
+                 elseif((last($bookedRange)<=head($reqRange))){  
+                     $blockedSeats=array(); 
                  }else{
-                     //seat not available on requested seq so blocked seats are calculated   
-                     $blockedSeats = array_merge($blockedSeats,$seatsIds);
+                     //seat not available on requested seq so blocked seats are calculated 
+                     $blockedSeats = array_merge($blockedSeats,$seatIDsPerbooking);
                  } 
             }
         }else{          //no booking on that specific date, so all seats are available
                 $blockedSeats=array();
         }
-
+        
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
            $viewSeat['bus']=$busRecord= $this->viewSeatsRepository->busRecord($busId);
@@ -279,18 +283,26 @@ public function checkBlockedSeats($request)
     if (sizeof($bookingIds)){
         $blockedSeats=array();
         foreach($bookingIds as $bookingId){
+            $seatIDsPerbooking = array();
             $bookedSeatIds = $this->viewSeatsRepository->bookingDetail($bookingId);
             foreach($bookedSeatIds as $bookedSeatId){
+                $seatIDsPerbooking[] = $this->viewSeatsRepository->busSeats($bookedSeatId);
                 $seatsIds[] = $this->viewSeatsRepository->busSeats($bookedSeatId);   
             }   
              $srcId=  $this->viewSeatsRepository->getSourceId($bookingId);
              $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
              $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
              $bookedRange = Arr::sort($bookedSequence);
-            //seat not available on requested seq so blocked seats are calculated 
-            if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>($reqRange))){
-                $blockedSeats = array_merge($blockedSeats,$seatsIds);
+             
+             if((last($reqRange)<=head($bookedRange))){
+                $blockedSeats=array();
              }
+             elseif((last($bookedRange)<=head($reqRange))){  
+                 $blockedSeats=array(); 
+             }else{
+                 //seat not available on requested seq so blocked seats are calculated 
+                 $blockedSeats = array_merge($blockedSeats,$seatIDsPerbooking);
+             } 
         }
     }else{          //no booking on that specific date, so all seats are available
             $blockedSeats=array();
