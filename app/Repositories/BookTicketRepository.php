@@ -116,8 +116,8 @@ class BookTicketRepository
         $booking->journey_dt = $bookingInfo['journey_date'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
-        $booking->boarding_time = $bookingInfo['boarding_time'];
-        $booking->dropping_time =  $bookingInfo['dropping_time'];
+        $booking->boarding_time = date('H:i',strtotime($bookingInfo['boarding_time']));
+        $booking->dropping_time =  date('H:i',strtotime($bookingInfo['dropping_time']));
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];

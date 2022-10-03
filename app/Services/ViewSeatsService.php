@@ -590,7 +590,7 @@ public function getBoardingDroppingPoints(Request $request)
                      $boardingArray[]=[
                         "id"=> $b_ar2[0],
                         "boardingPoints"=> $b_ar2[1],
-                        "boardingTimes"=> $b_ar2[2]
+                        "boardingTimes"=> date('H:i',strtotime($b_ar2[2]))
                      ];
                 }                    
              }
@@ -601,7 +601,7 @@ public function getBoardingDroppingPoints(Request $request)
                      $droppingArray[]=[
                         "id"=> $d_ar2[0],
                         "droppingPoints"=> $d_ar2[1],
-                        "droppingTimes"=> $d_ar2[2]
+                        "droppingTimes"=> date('H:i',strtotime($d_ar2[2]))
                      ];
                 }                    
              }
@@ -612,7 +612,7 @@ public function getBoardingDroppingPoints(Request $request)
                     $droppingArray[]=  [
                         "id"=> 0,
                         "droppingPoints"=> $destination_name,
-                        "droppingTimes"=> $dolphinBusList[$key]['arrivalTime']
+                        "droppingTimes"=> date('H:i',strtotime($dolphinBusList[$key]['arrivalTime']))
                      ];
                 }
 
