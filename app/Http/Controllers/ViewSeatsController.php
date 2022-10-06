@@ -15,6 +15,7 @@ use App\AppValidator\ViewSeatsValidator;
 use App\AppValidator\PriceOnSeatSelectionValidator;
 use App\AppValidator\BoardingDroppingValidator;
 use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ViewSeatsController extends Controller
 {
@@ -133,6 +134,7 @@ class ViewSeatsController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
+        $clientId = $user->id;
         $viewSeatsValidation = $this->viewSeatsValidator->validate($data);
         
         if ($viewSeatsValidation->fails()) {
@@ -140,7 +142,7 @@ class ViewSeatsController extends Controller
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }
         
-        $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request, $clientRole);
+        $viewSeatsData = $this->viewSeatsService->getAllViewSeats($request, $clientRole,$clientId);
         if($viewSeatsData =='Invalid Origin'){
     
             return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
@@ -379,13 +381,19 @@ class ViewSeatsController extends Controller
             'sourceId',
             'destinationId',
         ]);
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+        $clientId = $user->id;
+
         $boardDropValidation = $this->boardingDroppingValidator->validate($data);
         
         if ($boardDropValidation->fails()) {
             $errors = $boardDropValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
-        $boardingPoints = $this->viewSeatsService->getBoardingDroppingPoints($request);
+        $boardingPoints = $this->viewSeatsService->getBoardingDroppingPoints($request,$clientRole,$clientId);
 
         if($boardingPoints =='Invalid Origin'){
     

@@ -707,8 +707,10 @@ border: 0;
                         <td>Bus Route: {{$source}}-{{$destination}}</td>
                       </tr>
                       <tr>
-                        <td>Deparature Timing: {{date("g:iA", strtotime($departureTime))}}</td>
-                        <td>Arrival Timing: {{date("g:iA", strtotime($arrivalTime))}}</td>
+                        <!-- <td>Deparature Timing: {{date("g:iA", strtotime($departureTime))}}</td>
+                        <td>Arrival Timing: {{date("g:iA", strtotime($arrivalTime))}}</td> -->
+                        <td>Deparature Timing: {{$departureTime}}</td>
+                        <td>Arrival Timing: {{$arrivalTime}}</td>
                       </tr>
                       <tr>
                         <td>From: {{$source}}</td>

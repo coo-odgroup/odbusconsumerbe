@@ -126,7 +126,7 @@ class BookTicketService
                     $sourceId = $bookingInfo['source_id'];
                     $destinationId =  $bookingInfo['destination_id'];
 
-                    $seatTypArr=$this->dolphinTransformer->GetSeatType($ReferenceNumber,$seatIds);
+                    $seatTypArr=$this->dolphinTransformer->GetSeatType($ReferenceNumber,$seatIds,$clientRole,$clientId);
                     
                     $data = array(
                         'busId' => $busId,
@@ -145,7 +145,7 @@ class BookTicketService
                 }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
-                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails);   
+                $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId);   
                
                 /////////////auto apply coupon//////////
 

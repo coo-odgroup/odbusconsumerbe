@@ -76,7 +76,7 @@ class AgentBookingService
 
             }
 
-            $bookTicket = $this->agentBookingRepository->agentBooking($request);
+            $bookTicket = $this->agentBookingRepository->agentBooking($request,$clientRole,$clientId);
             return $bookTicket;
 
         } catch (Exception $e) {

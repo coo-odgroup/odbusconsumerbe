@@ -69,7 +69,7 @@ class ListingService
 
          //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
 
-            $dolphinresult= $this->dolphinTransformer->BusList($request); // getting dolphin buslist
+            $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId); // getting dolphin buslist
 
             $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
             $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
@@ -888,7 +888,7 @@ class ListingService
             $DolPhinshowRecords = [];
             $DolPhinShowSoldoutRecords =[];   
             //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
-               $dolphinresult= $this->dolphinTransformer->Filter($request); // getting dolphin buslist
+               $dolphinresult= $this->dolphinTransformer->Filter($request,$clientRole,$clientId); // getting dolphin buslist
             //}
         }
 
@@ -1146,7 +1146,7 @@ class ListingService
 
         //Log::info($request);
        
-         $DolphinBusList = $this->dolphinTransformer->Filter($request);
+         $DolphinBusList = $this->dolphinTransformer->Filter($request,$clientRole,$clientId);
 
          //Log::info($DolphinBusList);
 
@@ -1197,7 +1197,7 @@ class ListingService
 
         return  $filterOptions;
     }
-    public function busDetails(Request $request)
+    public function busDetails(Request $request,$clientRole, $clientId)
     {
         $origin=(isset($request['origin'])) ? $request['origin'] : 'ODBUS';
         $ReferenceNumber=(isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
@@ -1212,7 +1212,7 @@ class ListingService
                 return 'ReferenceNumber_empty';
 
             }else{
-                return $dolphinBusDetails= $this->dolphinTransformer->BusDetails($request);
+                return $dolphinBusDetails= $this->dolphinTransformer->BusDetails($request,$clientRole, $clientId);
             }
         }else if($origin=='ODBUS'){
 

@@ -558,12 +558,18 @@ class ListingController extends Controller
             'destination_id',
             'journey_date'
         ]);
+
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token); 
+        $clientRole = $user->role_id;
+        $clientId = $user->id;
+
         $busDetailsValidation = $this->busDetailsValidator->validate($data);
         if ($busDetailsValidation->fails()) {
             $errors = $busDetailsValidation->errors();
             return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
-        $details = $this->listingService->busDetails($request);
+        $details = $this->listingService->busDetails($request,$clientRole, $clientId);
 
         if($details =='Invalid Origin'){
     

@@ -53,7 +53,7 @@ class AgentBookingRepository
 
     }   
     
-    public function agentBooking($request)
+    public function agentBooking($request,$clientRole,$clientId)
     { 
 
         $needGstBill = Config::get('constants.NEED_GST_BILL');
@@ -268,7 +268,7 @@ class AgentBookingRepository
             }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
                 // get real seat name from dolphin transformer
                 $ReferenceNumber=$bookingInfo['ReferenceNumber'];
-                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id']);
+                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
 
                 unset($bDetail['bus_seats_id']);
 

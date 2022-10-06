@@ -17,6 +17,8 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Jobs\SendEmailTicketJob;
 use App\Models\Credentials;
+use App\Models\ClientFeeSlab;
+
 
 
 use DateTime;
@@ -44,7 +46,7 @@ class DolphinTransformer
         
     }
     
-    public function BusList($request){
+    public function BusList($request,$clientRole,$clientId){
          $srcResult= $this->listingRepository->getLocationID($request['source']);
         $destResult= $this->listingRepository->getLocationID($request['destination']);
 
@@ -57,7 +59,7 @@ class DolphinTransformer
 
             $data= $this->DolphinService->GetAvailableRoutes($dolphin_source,$dolphin_dest,$request['entry_date']);
 
-            $dolphinresult= $this->BusListProcess($data,$srcResult[0]->id,$destResult[0]->id);
+            $dolphinresult= $this->BusListProcess($data,$srcResult[0]->id,$destResult[0]->id,$clientRole,$clientId);
 
         }
 
@@ -66,7 +68,7 @@ class DolphinTransformer
 
     }
 
-    public function Filter($request){
+    public function Filter($request,$clientRole,$clientId){
 
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID'];
@@ -83,7 +85,7 @@ class DolphinTransformer
             $dolphin_dest=$destResult[0]->dolphin_id;
             $data= $this->DolphinService->GetAvailableRoutes($dolphin_source,$dolphin_dest,$entry_date);
 
-            $dolphinresult= $this->BusListProcess($data,$sourceID,$destinationID);
+            $dolphinresult= $this->BusListProcess($data,$sourceID,$destinationID,$clientRole,$clientId);
 
         } 
 
@@ -91,7 +93,7 @@ class DolphinTransformer
 
     }
 
-    public function BusListProcess($data,$src_id,$dest_id){
+    public function BusListProcess($data,$src_id,$dest_id,$clientRole,$clientId){
 
         
         $policy= $this->GetCancellationPolicy();
@@ -141,7 +143,7 @@ class DolphinTransformer
      
              // $duration=  $arrival_date_time - $booking_date_time;
 
-             $seatsList=$this->seatLayout($data['ReferenceNumber']);
+             $seatsList=$this->seatLayout($data['ReferenceNumber'],$clientRole,$clientId);
 
              $seat_price=0;
 
@@ -154,6 +156,32 @@ class DolphinTransformer
             //     $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
 
             // }
+
+            $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
+            if($clientRole == $clientRoleId){
+
+                /////client extra service charge added to seatfare////////////////
+                $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                ->where('status', '1')
+                                                ->get(); 
+                    
+                $client_service_charges = 0;
+                $addCharge = 0;
+                if($clientCommissions){
+                    foreach($clientCommissions as $clientCom){
+                        $startFare = $clientCom->starting_fare;
+                        $uptoFare = $clientCom->upto_fare;
+                        if($seat_price >= $startFare && $seat_price <= $uptoFare){
+                            $addCharge = $clientCom->dolphinaddationalCharges;
+                            break;
+                        }  
+                    }   
+                } 
+                $client_service_charges = ($addCharge/100 * $seat_price);
+                $seat_price = $seat_price + $client_service_charges;
+
+            }
 
             
              $arr=[
@@ -239,7 +267,7 @@ class DolphinTransformer
         
                 $duration= $interval->format('%hh %im');
 
-                $seatsList=$this->seatLayout($v['ReferenceNumber']);
+                $seatsList=$this->seatLayout($v['ReferenceNumber'],$clientRole,$clientId);
 
 
                 $seat_price=0;
@@ -253,6 +281,33 @@ class DolphinTransformer
                 //     $seat_price += round(($seat_price * $dolphin_gstdata->gst)/100);
 
                 // }
+
+                $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
+                if($clientRole == $clientRoleId){
+    
+                    /////client extra service charge added to seatfare////////////////
+                    $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                    ->where('status', '1')
+                                                    ->get(); 
+                        
+                    $client_service_charges = 0;
+                    $addCharge = 0;
+                    if($clientCommissions){
+                        foreach($clientCommissions as $clientCom){
+                            $startFare = $clientCom->starting_fare;
+                            $uptoFare = $clientCom->upto_fare;
+                            if($seat_price >= $startFare && $seat_price <= $uptoFare){
+                                $addCharge = $clientCom->addationalcharges;
+                                break;
+                            }  
+                        }   
+                    } 
+                    $client_service_charges = ($addCharge/100 * $seat_price);
+                    $seat_price = $seat_price + $client_service_charges;
+    
+                }
+                
 
                $arr=[
                  "origin"=> "DOLPHIN",
@@ -319,8 +374,8 @@ class DolphinTransformer
 
     }
 
-    public function GetseatLayoutName($ReferenceNumber,$id){
-      $res= $this->seatLayout($ReferenceNumber);
+    public function GetseatLayoutName($ReferenceNumber,$id,$clientRole,$clientId){
+      $res= $this->seatLayout($ReferenceNumber,$clientRole,$clientId);
 
       if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
         return $res['lower_berth'][$key]['seatText'];
@@ -333,7 +388,7 @@ class DolphinTransformer
 
     }
 
-    public function seatLayout($ReferenceNumber)
+    public function seatLayout($ReferenceNumber,$clientRole,$clientId)
     {
 
       $dolphinSeatresult= $this->DolphinService->GetSeatArrangementDetails($ReferenceNumber);
@@ -537,6 +592,33 @@ class DolphinTransformer
 
                                     $seat_price= $d['SeatRate'];
 
+                                    $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
+                                        if($clientRole == $clientRoleId){
+
+                                            /////client extra service charge added to seatfare////////////////
+                                            $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                                            ->where('status', '1')
+                                                                            ->get(); 
+                                                
+                                            $client_service_charges = 0;
+                                            $addCharge = 0;
+                                            if($clientCommissions){
+                                                foreach($clientCommissions as $clientCom){
+                                                    $startFare = $clientCom->starting_fare;
+                                                    $uptoFare = $clientCom->upto_fare;
+                                                    if($seat_price >= $startFare && $seat_price <= $uptoFare){
+                                                        $addCharge = $clientCom->dolphinaddationalCharges;
+                                                        break;
+                                                    }  
+                                                }   
+                                            } 
+                                            $client_service_charges = ($addCharge/100 * $seat_price);
+                                            $seat_price = $seat_price + $client_service_charges;
+
+                                        }
+
+
                                     // if($dolphin_gstdata){
 
                                     //     $seat_price += round(($d['SeatRate'] * $dolphin_gstdata->gst)/100);
@@ -652,6 +734,32 @@ class DolphinTransformer
                                 $emptySeat++;
 
                                 $seat_price= $d['SeatRate'];
+
+                                $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
+                                if($clientRole == $clientRoleId){
+
+                                    /////client extra service charge added to seatfare////////////////
+                                    $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                                    ->where('status', '1')
+                                                                    ->get(); 
+                                        
+                                    $client_service_charges = 0;
+                                    $addCharge = 0;
+                                    if($clientCommissions){
+                                        foreach($clientCommissions as $clientCom){
+                                            $startFare = $clientCom->starting_fare;
+                                            $uptoFare = $clientCom->upto_fare;
+                                            if($seat_price >= $startFare && $seat_price <= $uptoFare){
+                                                $addCharge = $clientCom->dolphinaddationalCharges;
+                                                break;
+                                            }  
+                                        }   
+                                    } 
+                                    $client_service_charges = ($addCharge/100 * $seat_price);
+                                    $seat_price = $seat_price + $client_service_charges;
+
+                                }
 
                                     // if($dolphin_gstdata){
 
@@ -937,7 +1045,7 @@ class DolphinTransformer
         return $this->DolphinService->ConfirmCancellation($pnr);
     }
 
-    public function BusDetails($request){
+    public function BusDetails($request,$clientRole, $clientId){
 
         $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
@@ -951,7 +1059,7 @@ class DolphinTransformer
             "destinationID"=>$destinationId,
             "entry_date"=>$journey_date
         ];
-         $dolphinBusList= $this->Filter($arr);
+         $dolphinBusList= $this->Filter($arr,$clientRole, $clientId);
 
          $dolphinBusList=(isset($dolphinBusList['regular'])) ? $dolphinBusList['regular'] : [];
          $key = array_search($ReferenceNumber, array_column($dolphinBusList, 'ReferenceNumber'));         
@@ -1138,12 +1246,12 @@ class DolphinTransformer
     
     }
 
-    public function GetSeatType($ReferenceNumber,$seatIds){
+    public function GetSeatType($ReferenceNumber,$seatIds,$clientRole,$clientId){
 
         
 
 
-        $seatResult= $this->seatLayout($ReferenceNumber);
+        $seatResult= $this->seatLayout($ReferenceNumber,$clientRole,$clientId);
 
         $seater=[];
         $sleeper=[];

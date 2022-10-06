@@ -66,7 +66,7 @@ class BookTicketRepository
       return $this->users->create($customerInfo)->latest('id')->first('id');   ;  
     }
 
-    public function SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails){
+    public function SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId){
         //Log::info($priceDetails);
         $defUserId = Config::get('constants.USER_ID'); 
 
@@ -240,7 +240,7 @@ class BookTicketRepository
             }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
                 // get real seat name from dolphin transformer
                 $ReferenceNumber=$bookingInfo['ReferenceNumber'];
-                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id']);
+                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
 
                 unset($bDetail['bus_seats_id']);
                 $bDetail['seat_name']= $seat_name; 

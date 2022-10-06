@@ -30,7 +30,7 @@ class ViewSeatsService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->viewSeatsRepository = $viewSeatsRepository;
     }
-    public function getAllViewSeats($request,$clientRole)
+    public function getAllViewSeats($request,$clientRole,$clientId)
     {
 
         $booked = Config::get('constants.BOOKED_STATUS');
@@ -56,7 +56,7 @@ class ViewSeatsService
                 return 'ReferenceNumber_empty';
 
             }else{
-                return $dolphinSeatresult= $this->dolphinTransformer->seatLayout($ReferenceNumber);
+                return $dolphinSeatresult= $this->dolphinTransformer->seatLayout($ReferenceNumber,$clientRole,$clientId);
             }
         }else if($origin=='ODBUS'){
 
@@ -337,7 +337,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             return 'ReferenceNumber_empty';
 
         }else{
-              $seatResult= $this->dolphinTransformer->seatLayout($ReferenceNumber);
+              $seatResult= $this->dolphinTransformer->seatLayout($ReferenceNumber,$clientRole,$clientId);
 
             // return $seatResult; 
 
@@ -369,7 +369,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
         if($clientRole == $clientRoleId){
 
-          $dolphinFare=  $total_fare + round($total_fare * (10/100)); // 10% extra as per santosh
+          $dolphinFare=  $total_fare ;//+ round($total_fare * (10/100)); // 10% extra as per santosh
 
                 /////client extra service charge added to seatfare////////////////
                $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
@@ -383,15 +383,17 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                        $startFare = $clientCom->starting_fare;
                        $uptoFare = $clientCom->upto_fare;
                        if($dolphinFare >= $startFare && $dolphinFare <= $uptoFare){
-                           $addCharge = $clientCom->addationalcharges;
+                           $addCharge = $clientCom->dolphinaddationalCharges;
                            break;
                        }  
                    }   
                } 
                $client_service_charges = ($addCharge/100 * $dolphinFare);
-               $newSeatFare = $dolphinFare + $client_service_charges;
+              // $newSeatFare = $dolphinFare + $client_service_charges;
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $newSeatFare
+                   "totalFare" => $total_fare,
+                   "baseFare" => $total_fare - $client_service_charges ,
+                   "serviceCharge" => $client_service_charges,
                    ); 
            }else{   
             $seatWithPriceRecords[] = array(
@@ -516,7 +518,9 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
         $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
         $seatWithPriceRecords[] = array(
-            "totalFare" => $newSeatFare
+            "totalFare" => $newSeatFare,
+            "baseFare" => $odbus_charges_ownerFare ,
+            "serviceCharge" => $newSeatFare - $odbus_charges_ownerFare,
             ); 
     }else{
         $seatWithPriceRecords[] = array(
@@ -536,7 +540,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     
 }
 
-public function getBoardingDroppingPoints(Request $request)
+public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId)
 {
     $busId = $request['busId'];
     $sourceId = $request['sourceId'];
@@ -568,7 +572,7 @@ public function getBoardingDroppingPoints(Request $request)
                 "destinationID"=>$destinationId,
                 "entry_date"=>$journey_date
             ];
-             $dolphinBusList= $this->dolphinTransformer->Filter($arr);
+             $dolphinBusList= $this->dolphinTransformer->Filter($arr,$clientRole,$clientId);
 
              $dolphinBusList=(isset($dolphinBusList['regular'])) ? $dolphinBusList['regular'] : [];
 
@@ -941,7 +945,7 @@ public function getBoardingDroppingPoints(Request $request)
         
     }
     /////////////for client api use(not in use)///////////////////
-    public function checkSeatStatus($request)
+    public function checkSeatStatus($request,$clientRole,$clientId)
     {
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');

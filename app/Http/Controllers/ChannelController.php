@@ -344,8 +344,9 @@ class ChannelController extends Controller
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
+        $clientId = $user->id;
         try {
-            $response = $this->channelService->checkSeatStatus($request,$clientRole); 
+            $response = $this->channelService->checkSeatStatus($request,$clientRole,$clientId); 
             if($response == 'SEAT UN-AVAIL'){
                 return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
             }
