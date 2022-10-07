@@ -750,6 +750,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[0];
                                 $totalOwnFare +=$miscfares[2];
                                 $totalFestiveFare +=$miscfares[4];
+                                $ownerFare = $tkt->new_fare+$miscfares[2];
                                 $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){
@@ -757,11 +758,12 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
+                                $ownerFare = $tkt->new_fare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
                           
                             $seat_fare=$tkt->new_fare;
-                            $ownerFare +=$tkt->new_fare;
+                            //$ownerFare +=$tkt->new_fare;
     
                             ////////// add odbus service chanrges to seat fare
     
@@ -885,23 +887,25 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                
                                 array_push($PriceDetail,$tkt);
                             }
-                            
+
                             if($collectionSeater && $collectionSeater->contains($tkt->seats_id)){
                                
                                 $totalSplFare +=$miscfares[0];
                                 $totalOwnFare +=$miscfares[2];
                                 $totalFestiveFare +=$miscfares[4];
+                                $ownerFare = $tkt->new_fare+$miscfares[2];
                                 $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){ 
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
+                                $ownerFare = $tkt->new_fare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
                           
                             $seat_fare=$tkt->new_fare;
-                            $ownerFare +=$tkt->new_fare;
+                            //$ownerFare +=$tkt->new_fare;
     
                             ////////// add odbus service chanrges to seat fare
     
