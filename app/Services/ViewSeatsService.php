@@ -718,6 +718,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $totalFestiveFare =0;
         $PriceDetail=[];
         $service_charges=0;
+        $baseFare = 0;
         $tktprc = Arr::flatten($ticket_new_fare);
     
         $collectionSeater = collect($seaterIds);
@@ -735,13 +736,14 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
                                     $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
                                 {
                                     $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                                    $baseFare = $busWithTicketPrice->base_sleeper_fare;
                                 }
-                               
                                 array_push($PriceDetail,$tkt);
                             }
                             
@@ -750,7 +752,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[0];
                                 $totalOwnFare +=$miscfares[2];
                                 $totalFestiveFare +=$miscfares[4];
-                                $ownerFare = $tkt->new_fare+$miscfares[2];
+                                $ownerFare += $baseFare+$miscfares[2];
                                 $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){
@@ -758,7 +760,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
-                                $ownerFare = $tkt->new_fare+$miscfares[3];
+                                $ownerFare += $baseFare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
                           
@@ -861,6 +863,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $totalFestiveFare =0;
         $PriceDetail=[];
         $service_charges=0;
+        $baseFare = 0;
         $tktprc = Arr::flatten($ticket_new_fare);
     
         $collectionSeater = collect($seaterIds);
@@ -878,13 +881,14 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
                                     $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
                                 {
                                     $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                                    $baseFare = $busWithTicketPrice->base_sleeper_fare;
                                 }
-                               
                                 array_push($PriceDetail,$tkt);
                             }
 
@@ -893,17 +897,16 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[0];
                                 $totalOwnFare +=$miscfares[2];
                                 $totalFestiveFare +=$miscfares[4];
-                                $ownerFare = $tkt->new_fare+$miscfares[2];
+                                $ownerFare += $baseFare+$miscfares[2];
                                 $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){ 
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
-                                $ownerFare = $tkt->new_fare+$miscfares[3];
+                                $ownerFare += $baseFare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
-                          
                             $seat_fare=$tkt->new_fare;
                             //$ownerFare +=$tkt->new_fare;
     
