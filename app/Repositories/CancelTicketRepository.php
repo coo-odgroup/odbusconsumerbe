@@ -265,9 +265,12 @@ class CancelTicketRepository
         $paidAmount = $this->booking->where('id', $bookingId)->first()->total_fare; //$payment->amount;
         $paymentStatus = $payment->status;
         $refundStatus = $payment->refund_status;
-        $ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
-        $odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
-        $baseFare = $ownerFare + $odbusCharges; 
+        //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
+        //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
+        $totalFare = $this->booking->where('id', $bookingId)->first()->total_fare;
+        $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
+        $baseFare = $totalFare - $transactionFees;
+        //$baseFare = $ownerFare + $odbusCharges; 
       
        // if($paymentStatus == 'captured'){
             if($refundStatus != null){
@@ -304,16 +307,18 @@ class CancelTicketRepository
         $paymentStatus = $payment->status;
         //$refundStatus = $payment['refund_status'];
         $refundStatus = $payment->refund_status;
-        $ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
-        $odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
-        $baseFare = $ownerFare + $odbusCharges; 
-      
+        //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
+        //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
+        $totalFare = $this->booking->where('id', $bookingId)->first()->total_fare;
+        $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
+        $baseFare = $totalFare - $transactionFees;
+        //$baseFare = $ownerFare + $odbusCharges; 
+         
        // if($paymentStatus == 'captured'){
             if($refundStatus != null){
                 return 'refunded';
             }
             else{
-
                 $refundAmount = round($baseFare * ((100-$percentage) / 100),2);
                 //$refundAmount = round($paidAmount * ((100-$percentage) / 100),2);
 

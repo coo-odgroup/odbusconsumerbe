@@ -599,9 +599,12 @@ class BookingManageService
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
                     $jDate = date("d-m-Y", strtotime($jDate));
                     $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
-                    $ownerFare = $booking_detail[0]->booking[0]->owner_fare;
-                    $odbusCharges = $booking_detail[0]->booking[0]->odbus_charges;
-                    $baseFare = $ownerFare + $odbusCharges;
+                    //$ownerFare = $booking_detail[0]->booking[0]->owner_fare;
+                    //$odbusCharges = $booking_detail[0]->booking[0]->odbus_charges;
+                    $totalFare = $booking_detail[0]->booking[0]->total_fare;
+                    $transactionFees = $booking_detail[0]->booking[0]->transactionFee;
+                    $baseFare = $totalFare - $transactionFees;
+                    //$baseFare = $ownerFare + $odbusCharges;
 
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                     $current_date_time = Carbon::now()->toDateTimeString(); 
