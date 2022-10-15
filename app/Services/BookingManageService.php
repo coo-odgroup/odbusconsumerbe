@@ -669,7 +669,8 @@ class BookingManageService
     
                             $emailData['refundAmount'] = $refundAmt;
                             $emailData['deductionPercentage'] = $deduction."%";
-                            $emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
+                            //$emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
+                            $emailData['deductAmount'] =round($baseFare-$refundAmt,2);
                             $emailData['totalfare'] = $paidAmt;
                                 
                             return $emailData;
@@ -684,7 +685,8 @@ class BookingManageService
     
                             $emailData['refundAmount'] = $refundAmt;
                             $emailData['deductionPercentage'] = $deduction."%";
-                            $emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
+                            //$emailData['deductAmount'] =round($paidAmt-$refundAmt,2);
+                            $emailData['deductAmount'] =round($baseFare-$refundAmt,2);
                             $emailData['totalfare'] = $paidAmt;                         
                             return $emailData;   
                         }
