@@ -87,6 +87,10 @@ class CancelTicketService
                           $route = $sourceName .'-'. $destinationName;
                         $userMailId =$booking_detail[0]->email;
                         $bookingId =$booking_detail[0]->booking[0]->id;
+
+                    $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
+
+                    
                         $booking = $this->cancelTicketRepository->GetBooking($bookingId);
                         
                         $current_date_time = Carbon::now()->toDateTimeString(); 
@@ -106,7 +110,11 @@ class CancelTicketService
                             'journeydate' => $jDate, 
                             'route' => $route,
                             'seat_no' => $seat_arr,
-                            'cancellationDateTime' => $current_date_time
+                            'cancellationDateTime' => $current_date_time,
+                            'origin' => $pnr_dt->origin,
+                            'bus_name' => $pnr_dt->bus_name,
+                            'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
+                            'cancelation_policy'=> $cancellationslabs
                         );   
     
                      if($booking_detail[0]->booking[0]->customerPayment != null){
@@ -117,14 +125,12 @@ class CancelTicketService
                             return 'Ticket_already_cancelled';
                          }
 
-                        // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                        // $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
-                        // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];  
-
                         $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                        $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                        //$emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];  
+                        $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
+                        $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare']; 
                         
-                        $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;  
+                       // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;  
 
                         $emailData['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1);
                         $smsData['refundAmount'] = $refundAmount = $dolphin_cancel_det['RefundAmount'];
@@ -159,6 +165,7 @@ class CancelTicketService
             else{  
     
             $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone,$pnr,$booked);
+
             if(isset($booking_detail[0])){         
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                     $jDate =$booking_detail[0]->booking[0]->journey_dt;
@@ -177,6 +184,10 @@ class CancelTicketService
                       $route = $sourceName .'-'. $destinationName;
                     $userMailId =$booking_detail[0]->email;
                     $bookingId =$booking_detail[0]->booking[0]->id;
+
+                    
+                    $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
                     $booking = $this->cancelTicketRepository->GetBooking($bookingId);
                     
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
@@ -201,7 +212,11 @@ class CancelTicketService
                         'journeydate' => $jDate, 
                         'route' => $route,
                         'seat_no' => $seat_arr,
-                        'cancellationDateTime' => $current_date_time
+                        'cancellationDateTime' => $current_date_time,
+                        'origin' => $booking_detail[0]->booking[0]->origin,
+                        'bus_name' => $busName,
+                        'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
+                        'cancelation_policy' =>$cancelPolicies
                     );
 
                     /////// 30 mins before booking time no deduction//////////
@@ -223,7 +238,7 @@ class CancelTicketService
 
                  if($booking_detail[0]->booking[0]->customerPayment != null){
                     $razorpay_payment_id = $booking_detail[0]->booking[0]->customerPayment->razorpay_id;   
-                    $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+                    
                     foreach($cancelPolicies as $cancelPolicy){
                         $duration = $cancelPolicy->duration;
                         $deduction = $cancelPolicy->deduction;

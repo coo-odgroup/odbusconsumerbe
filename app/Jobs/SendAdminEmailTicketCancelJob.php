@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 
+
 class SendAdminEmailTicketCancelJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -32,13 +33,15 @@ class SendAdminEmailTicketCancelJob implements ShouldQueue
     protected $cancellationDateTime;
     protected $totalfare;
     protected $subject;
+    protected $cancelation_policy;
+    protected $origin;
+    protected $bus_name;
+    protected $transaction_fee;
 
 
     public function __construct($request)
 
     {
-
-
         $this->to = $request['email'];
         $this->pnr = $request['pnr'];
         $this->journeydate = $request['journeydate'];
@@ -50,6 +53,10 @@ class SendAdminEmailTicketCancelJob implements ShouldQueue
         $this->totalfare = $request['totalfare'];
         $this->cancellationDateTime = $request['cancellationDateTime'];
         $this->subject ='';
+        $this->cancelation_policy = $request['cancelation_policy'];
+        $this->origin = $request['origin'];
+        $this->bus_name = $request['bus_name'];
+        $this->transaction_fee = $request['transaction_fee'];
 
         
 
@@ -74,7 +81,10 @@ class SendAdminEmailTicketCancelJob implements ShouldQueue
             'deductionPercentage'=> $this->deductionPercentage,
             'refundAmount'=> $this->refundAmount,
             'cancellationDateTime'=> $this->cancellationDateTime,
-            
+            'origin'=> $this->origin,
+            'bus_name'=> $this->bus_name,
+            'transaction_fee'=> $this->transaction_fee,
+            'cancelation_policy'=>  $this->cancelation_policy  
         ];
         //dd($data);
         $this->subject = config('services.email.subjectTicketCancel');

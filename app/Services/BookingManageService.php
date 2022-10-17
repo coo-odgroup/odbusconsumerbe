@@ -536,15 +536,15 @@ class BookingManageService
                             return 'Ticket_already_cancelled';
                          }
 
-                            // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                            // $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
-                            
-                            // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];    
-
                             $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                            $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                            $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
                             
-                            $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;   
+                            $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];    
+
+                            // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                            // $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                            
+                            // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;   
 
                             $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                             return $emailData;
@@ -742,16 +742,16 @@ class BookingManageService
                     $otp = rand(10000, 99999);
                     $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id); 
 
-                    // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                    // $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];  
-                    
-                    // $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];   
-
-
                     $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                    $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                    $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];  
                     
-                    $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
+                    $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];   
+
+
+                    // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
+                    // $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                    
+                    // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
                     
                     $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                     return $emailData;
@@ -873,6 +873,9 @@ class BookingManageService
                         $userMailId =$booking_detail[0]->email;
                         $bookingId =$booking_detail[0]->booking[0]->id;
                         $booking = $this->cancelTicketRepository->GetBooking($bookingId);
+
+                        $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
+
                         
                         $current_date_time = Carbon::now()->toDateTimeString(); 
      
@@ -891,7 +894,11 @@ class BookingManageService
                             'journeydate' => $jDate, 
                             'route' => $route,
                             'seat_no' => $seat_arr,
-                            'cancellationDateTime' => $current_date_time
+                            'cancellationDateTime' => $current_date_time,
+                            'origin' => $pnr_dt->origin,
+                            'bus_name' => $pnr_dt->bus_name,
+                            'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
+                            'cancelation_policy'=> $cancellationslabs
                         ); 
 
 
@@ -920,13 +927,12 @@ class BookingManageService
                          }
 
 
-                        //  $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
-                        //  $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
 
                          $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
-                         $data['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                         //$data['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                         $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
                     
-                         $data['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
+                         $data['totalfare'] = $totalfare =  $dolphin_cancel_det['TotalFare'];
 
                     
                          $data['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1)."%";
@@ -988,6 +994,8 @@ class BookingManageService
                             $interval = $bookingDate->diff($cancelDate);
                             $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
 
+                            $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
                             $smsData = array(
                                 'phone' => $phone,
                                 'PNR' => $pnr,
@@ -1003,7 +1011,11 @@ class BookingManageService
                                 'journeydate' => $jDate, 
                                 'route' => $route,
                                 'seat_no' => $seat_arr,
-                                'cancellationDateTime' => $current_date_time
+                                'cancellationDateTime' => $current_date_time,
+                                'origin' => $booking_detail[0]->booking[0]->origin,
+                                'bus_name' => $busName,
+                                'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
+                                'cancelation_policy' =>$cancelPolicies
                             );
                             if($cancelDate >= $bookingDate || $interval < 12)
                             {
@@ -1030,7 +1042,7 @@ class BookingManageService
                                 $data['cancel_status'] = true;
                             }
 
-                            $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+                           
                     
                             foreach($cancelPolicies as $cancelPolicy){
                             $duration = $cancelPolicy->duration;

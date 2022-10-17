@@ -206,7 +206,7 @@
                            </td>
                                       
                             <td  style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:5px; border: solid 1px #d1d1d1;">
-                              <strong>{{$route}}</strong>
+                              <strong>{{$route}} ({{$bus_name}})</strong>
                             </td>                                                                                
                           <tr>
                              <tr>
@@ -235,7 +235,13 @@
                            </td>
                                       
                             <td  style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:5px; border: solid 1px #d1d1d1;">
-                              <strong>Rs. {{$totalfare}}</strong>
+                              <strong>Rs. {{$totalfare}} 
+
+                              @if($origin == 'DOLPHIN')
+                              <span>(Excluding the transaction & convenience charges)</span>
+                             @endif
+
+                              </strong>
                             </td>                                                         
                          </tr>
                           <tr>
@@ -293,7 +299,26 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    <table border="0" cellspacing="0" cellpadding="0"  width="90%" align="center" bgcolor="#eceaea">
+
+                                <table border="0" cellspacing="0" cellpadding="0"  width="90%" align="center" bgcolor="#eceaea">
+                                <tbody>
+                                <tr>
+                                    <th align="center" style="font-size: 18px;  color: #0f204c; padding: 20px 10px 20px 10px;" ><u>Cancellation Time</u></th>
+                                    <th align="right" style="padding: 10px; font-size: 15px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:40px;"><strong>Cancellation Charges</strong></th>
+                                
+                                </tr>
+                               
+                                @foreach($cancelation_policy as $can) 
+                                    <tr style="border-bottom: solid 1px #fff;">
+                                        <td style="border-bottom: solid 1px #fff;">
+                                                         <td align="left" style="padding: 10px; font-size: 14px; font-family: Arial, sans-serif; color: #444; font-weight:normal; padding-left:40px; border-right: solid 1px #f9f9f9;">Before {{ $can->duration }} Hour of Bus Departure Time</td>
+                                        <td>{{ $can->deduction }}%</td>
+                                    </tr>
+                                @endforeach  
+                                </tbody>
+                            </table>
+
+                                    <!-- <table border="0" cellspacing="0" cellpadding="0"  width="90%" align="center" bgcolor="#eceaea">
                                         <tbody>
                                         <tr>
                                            <th align="center" style="font-size: 18px;  color: #0f204c; padding: 20px 10px 20px 10px;" ><u>Cancellation Charges</u></th>
@@ -311,7 +336,7 @@
                                                 </table>
                                             </td>
                                         </tr>
-                                                                             <tr>
+                                    <tr>
                                             <td>
                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%" >
                                                     <tr style="border-bottom: solid 1px #fff;">
@@ -348,7 +373,7 @@
                                             </td>
                                         </tr>
                                                                         </tbody>
-                                    </table>
+                                    </table> -->
                                 </td>
                             </tr>
                             
@@ -389,6 +414,9 @@
 	<li>Partial cancellation is not available in&nbsp;<a href="https://www.odbus.in" target="_blank"><strong>ODBUS</strong></a>.</li>
 	<li>In respect of refunds due to cancellation of service by Operator , passenger is required to send an e-mail to <a href="mailto:support@odbus.in"><!--email_off-->support@odbus.in<!--/email_off--></a> mentioning PNR of the ticket. We will verify and refund the amount to the concerned Credit card / Internet banking account.</li>
 	<li>Refunds for Ticket cancellations / Failed Transactions to passengers will be given normally in 10 - 12 Bank working days by&nbsp;<a href="https://www.odbus.in"><strong>ODBUS</strong></a>, after the cancellation of ticket or receipt of e-mail. If refunds are delayed, passengers may contact&nbsp;<a href="https://www.odbus.in" target="_blank"><strong>ODBUS</strong></a>&nbsp;Executive at <strong><a href="tel:9583918888">9583918888</a></strong>&nbsp;( 09:00 AM to 06:00 PM&nbsp;)</li>
+
+    <li>Transaction Fee / GST are non-refundable for Ticket Cancellation / Service Cancellation.Cancellation charges are applicable on Base fare not on the discounted .</li>
+      
 </ol>
                                                         </td>
                                                         
