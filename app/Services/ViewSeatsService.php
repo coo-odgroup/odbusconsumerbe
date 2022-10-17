@@ -18,6 +18,8 @@ use App\Models\BusSpecialFare;
 use App\Models\OwnerFare;
 use App\Models\BusOwnerFare;
 use App\Transformers\DolphinTransformer;
+use App\Models\IncomingApiCompany;
+
 
 
 
@@ -395,7 +397,16 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
                    ); 
-           }else{   
+           }else{ 
+
+            $additional_charge=0;
+
+             $dolphin_data= IncomingApiCompany::where("name","DOLPHIN")->first();
+
+             if($dolphin_data){
+                $additional_charge= $dolphin_data->additional_charge;
+             }
+
             $seatWithPriceRecords[] = array(
                 "ownerFare" => $total_fare,
                 "odbus_charges_ownerFare" => $total_fare,
@@ -403,8 +414,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => round($total_fare * (10/100)), // 10% extra as per santosh
-                "totalFare" => $total_fare + round($total_fare * (10/100)) // 10% extra as per santosh
+                "transactionFee" => round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
+                "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)) // 10% extra as per santosh
                 );
             }  
 
