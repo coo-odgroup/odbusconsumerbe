@@ -267,9 +267,9 @@ class CancelTicketRepository
         $refundStatus = $payment->refund_status;
         //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
         //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
-        $totalFare = $this->booking->where('id', $bookingId)->first()->total_fare;
+        $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
         $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
-        $baseFare = $totalFare - $transactionFees;
+        $baseFare = $payableAmount - $transactionFees;
         //$baseFare = $ownerFare + $odbusCharges; 
       
        // if($paymentStatus == 'captured'){
@@ -309,9 +309,9 @@ class CancelTicketRepository
         $refundStatus = $payment->refund_status;
         //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
         //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
-        $totalFare = $this->booking->where('id', $bookingId)->first()->total_fare;
+        $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
         $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
-        $baseFare = $totalFare - $transactionFees;
+        $baseFare = $payableAmount - $transactionFees;
         //$baseFare = $ownerFare + $odbusCharges; 
          
        // if($paymentStatus == 'captured'){
