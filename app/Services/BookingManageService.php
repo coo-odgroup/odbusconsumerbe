@@ -601,9 +601,9 @@ class BookingManageService
                     $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
                     //$ownerFare = $booking_detail[0]->booking[0]->owner_fare;
                     //$odbusCharges = $booking_detail[0]->booking[0]->odbus_charges;
-                    $totalFare = $booking_detail[0]->booking[0]->total_fare;
+                    $payableAmount = $booking_detail[0]->booking[0]->payable_amount;
                     $transactionFees = $booking_detail[0]->booking[0]->transactionFee;
-                    $baseFare = $totalFare - $transactionFees;
+                    $baseFare = $payableAmount - $transactionFees;
                     //$baseFare = $ownerFare + $odbusCharges;
 
                     $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
