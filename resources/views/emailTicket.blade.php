@@ -878,7 +878,7 @@ border: 0;
 <li>Customer can't claim any cancellation refund on rescheduled tickets.</li>
 <li>The cancellation terms are different for each Operator which is set by Bus Owners itself. These terms are shown while booking as well as on the ticket printout/Email confirmation.</li>
 <li>Tickets booked through online should be cancelled only through online.</li>
-<li>Transaction Fee / GST are non-refundable for Ticket Cancellation / Service Cancellation.</li>
+<li>Transaction & convenience charges are non-refundable for Ticket Cancellation / Service Cancellation.</li>
 <li>Cancellation charges are applicable on Base fare not on the discounted .</li>
 </ol>   
 

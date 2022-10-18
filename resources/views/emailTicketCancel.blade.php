@@ -415,7 +415,7 @@
 	<li>In respect of refunds due to cancellation of service by Operator , passenger is required to send an e-mail to <a href="mailto:support@odbus.in"><!--email_off-->support@odbus.in<!--/email_off--></a> mentioning PNR of the ticket. We will verify and refund the amount to the concerned Credit card / Internet banking account.</li>
 	<li>Refunds for Ticket cancellations / Failed Transactions to passengers will be given normally in 10 - 12 Bank working days by&nbsp;<a href="https://www.odbus.in"><strong>ODBUS</strong></a>, after the cancellation of ticket or receipt of e-mail. If refunds are delayed, passengers may contact&nbsp;<a href="https://www.odbus.in" target="_blank"><strong>ODBUS</strong></a>&nbsp;Executive at <strong><a href="tel:9583918888">9583918888</a></strong>&nbsp;( 09:00 AM to 06:00 PM&nbsp;)</li>
 
-    <li>Transaction Fee / GST are non-refundable for Ticket Cancellation / Service Cancellation.Cancellation charges are applicable on Base fare not on the discounted .</li>
+    <li>Transaction & convenience charges are non-refundable for Ticket Cancellation / Service Cancellation.Cancellation charges are applicable on Base fare not on the discounted .</li>
       
 </ol>
                                                         </td>
