@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BotManController;
+use App\Http\Controllers\SoapController;
+use App\Http\Controllers\HTMLPDFController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,3 +30,8 @@ Route::get('qr-code-g', function () {
   return view('qrCode');
     
 });
+
+
+Route::get('pdfdownload/{pnr}', [SoapController::class,'pdfdownload']);
+
+Route::get('pdfdownload/{pnr}', [HTMLPDFController::class,'htmlPdf']);

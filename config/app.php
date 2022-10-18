@@ -163,7 +163,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
-        Artisaninweb\SoapWrapper\ServiceProvider::class
+        Artisaninweb\SoapWrapper\ServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class
     ],
 
     /*
@@ -220,7 +221,8 @@ return [
         'Curl' => Ixudra\Curl\Facades\Curl::class,        
         'Mailjet' => Mailjet\LaravelMailjet\Facades\Mailjet::class,
         'SoapWrapper' => Artisaninweb\SoapWrapper\Facade\SoapWrapper::class,
-        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];

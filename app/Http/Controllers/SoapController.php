@@ -56,4 +56,11 @@ class SoapController
     return $this->successResponse($response->ListOfCountryNamesByNameResult->tCountryCodeAndName,Config::get('constants.RECORD_FETCHED'), Response::HTTP_ACCEPTED);
   
   }
+
+  public function pdfdownload($pnr){
+    $view = "Lima";
+    header("Content-type: text/html");
+    header("Content-Disposition: attachment; filename=view.html");
+    return $view;
+  }
 }
