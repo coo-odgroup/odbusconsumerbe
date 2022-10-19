@@ -27,6 +27,6 @@ class HTMLPDFController extends Controller
       $pdf = PDF::loadView('htmlPdf',$data);
 
        // $pdf = PDF::loadView('htmlPdf');
-        return $pdf->download('pdfview.pdf');
+        return $pdf->download($pnr.'.pdf');
     }
 }
