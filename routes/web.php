@@ -33,4 +33,4 @@ Route::get('qr-code-g', function () {
     
 });
 
-Route::get('downloadTicket/{pnr}', [HTMLPDFController::class,'downlaodTicket']);
+Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downlaodTicket']);

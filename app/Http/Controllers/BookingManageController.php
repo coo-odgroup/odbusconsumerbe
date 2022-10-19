@@ -368,15 +368,15 @@ class BookingManageController extends Controller
     } 
 
 
-    public function downlaodTicket($pnr) {
-     
-      $data= $this->bookingManageService->downlaodTicket($pnr);  
+    public function downlaodTicket($pnr)
+    {
 
-      Log::info($data);
+        $data= $this->bookingManageService->downlaodTicket($pnr);  
 
       $pdf = PDF::loadView('htmlPdf',$data);
-      return $pdf->download($pnr.'.pdf');
-       
+
+       // $pdf = PDF::loadView('htmlPdf');
+        return $pdf->download($pnr.'.pdf');
     }
 
 
