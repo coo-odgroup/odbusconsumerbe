@@ -19,9 +19,13 @@ class TestimonialService
     }
     public function getAll($request)
     {    
-
         $list= $this->testimonialRepository->getAll($request['user_id']);
-       
         return  $list;
+    }
+
+    public function getFAQ()
+    {    
+        $faq = $this->testimonialRepository->getFAQ();
+        return  $faq;
     }
 }

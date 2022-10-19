@@ -3943,6 +3943,50 @@
                 ]
             }
         },
+        "/api/GetFAQ": {
+            "post": {
+                "tags": [
+                    "Get FAQ"
+                ],
+                "summary": "Get FAQ",
+                "description": "Get FAQ",
+                "operationId": "96a993b7072b45f2d6f9db9d7227c191",
+                "responses": {
+                    "200": {
+                        "description": "Get FAQ"
+                    },
+                    "206": {
+                        "description": "validation error"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/ClientLogin": {
             "post": {
                 "tags": [

@@ -31,6 +31,7 @@ use App\Http\Controllers\AuthClientsController;
 use App\Http\Controllers\ClientBookingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\MantisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -138,6 +139,7 @@ Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCance
 Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
 Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
+Route::post('/GetFAQ', [TestimonialController::class, 'getFAQ']);
 
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
@@ -158,6 +160,9 @@ Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExter
 Route::get('/countries', [SoapController::class, 'getCountries']);
 Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
+
+
+Route::post('/GetToken', [MantisController::class, 'getToken']);
 
 
 
