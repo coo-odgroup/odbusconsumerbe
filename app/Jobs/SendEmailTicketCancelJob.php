@@ -9,6 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use PDF;
+
 
 
 
@@ -86,6 +88,10 @@ class SendEmailTicketCancelJob implements ShouldQueue
             'cancelation_policy'=>  $this->cancelation_policy            
         ];
         //Log::info($data);
+
+        $pdf = PDF::loadView('emailTicketCancel',$data)->save(public_path().'/cancelticketpdf/'.$this->pnr.'.pdf');
+
+
         $this->subject = config('services.email.subjectTicketCancel');
         $this->subject = str_replace("<PNR>",$this->pnr,$this->subject);
 

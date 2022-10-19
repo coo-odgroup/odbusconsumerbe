@@ -31,7 +31,4 @@ Route::get('qr-code-g', function () {
     
 });
 
-
-Route::get('pdfdownload/{pnr}', [SoapController::class,'pdfdownload']);
-
 Route::get('pdfdownload/{pnr}', [HTMLPDFController::class,'htmlPdf']);
