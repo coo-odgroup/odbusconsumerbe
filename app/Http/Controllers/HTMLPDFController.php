@@ -4,18 +4,29 @@ namespace App\Http\Controllers;
 
 use PDF;
 use Illuminate\Http\Request;
+use App\Services\BookingManageService;
+
+
 
 class HTMLPDFController extends Controller
 {
-    public function __construct()
-    {      
+
+    protected $bookTicketService;
+
+    public function __construct(BookingManageService $bookingManageService)
+    {   
+        $this->bookingManageService = $bookingManageService;  
+
     }
     
-    public function htmlPdf($pnr)
+    public function downlaodTicket($pnr)
     {
-        // selecting PDF view
-        $pdf = PDF::loadView('htmlPdf');
-        // download pdf file
+
+        $data= $this->bookingManageService->downlaodTicket($pnr);  
+
+      $pdf = PDF::loadView('htmlPdf',$data);
+
+       // $pdf = PDF::loadView('htmlPdf');
         return $pdf->download('pdfview.pdf');
     }
 }

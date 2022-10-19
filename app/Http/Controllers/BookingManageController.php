@@ -13,6 +13,8 @@ use App\Services\BookingManageService;
 use App\AppValidator\BookingManageValidator;
 use App\AppValidator\AgentCancelTicketValidator;
 use Illuminate\Support\Facades\Log;
+use PDF;
+
 
 
 class BookingManageController extends Controller
@@ -364,6 +366,21 @@ class BookingManageController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
+
+
+    public function downlaodTicket($pnr) {
+     
+      $data= $this->bookingManageService->downlaodTicket($pnr);  
+
+      Log::info($data);
+
+      $pdf = PDF::loadView('htmlPdf',$data);
+      return $pdf->download($pnr.'.pdf');
+       
+    }
+
+
+    
     /**
      * @OA\Post(
      *     path="/api/AgentcancelTicketOTP",

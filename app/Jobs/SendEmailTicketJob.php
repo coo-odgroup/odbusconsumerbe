@@ -209,7 +209,7 @@ class SendEmailTicketJob implements ShouldQueue
 
         //Log::info($data);
 
-        $pdf = PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
+       // $pdf = PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);

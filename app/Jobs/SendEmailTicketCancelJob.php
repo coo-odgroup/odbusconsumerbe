@@ -89,7 +89,7 @@ class SendEmailTicketCancelJob implements ShouldQueue
         ];
         //Log::info($data);
 
-        $pdf = PDF::loadView('emailTicketCancel',$data)->save(public_path().'/cancelticketpdf/'.$this->pnr.'.pdf');
+       // $pdf = PDF::loadView('emailTicketCancel',$data)->save(public_path().'/cancelticketpdf/'.$this->pnr.'.pdf');
 
 
         $this->subject = config('services.email.subjectTicketCancel');

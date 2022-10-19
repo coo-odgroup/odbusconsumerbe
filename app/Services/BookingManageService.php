@@ -23,6 +23,7 @@ use App\Transformers\DolphinTransformer;
 
 
 
+
 class BookingManageService
 {
     
@@ -435,6 +436,258 @@ class BookingManageService
         }
         //return $emailSms;
     } 
+
+    public function downlaodTicket($pnr){
+
+        $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+
+        $mobile= $pnr_dt->users->phone;
+
+        if($pnr_dt->origin=='DOLPHIN'){
+
+
+            $b= $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr);
+
+               
+                    $b=$b[0];  
+
+                    $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
+                   $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
+                   
+                        $seat_arr=[];
+                        $seat_no='';                           
+                        foreach($b->booking[0]->bookingDetail as $bd){
+                            array_push($seat_arr,$bd->bus_seats['seats']['seatText']);              
+                        }  
+
+                   
+                   
+                      //  return $body;
+
+                      $cancellation_slab_info=[];
+
+                      if($b->booking[0]->bus['cancellationslabs']['cancellation_slab_info']){
+                        foreach($b->booking[0]->bus['cancellationslabs']['cancellation_slab_info'] as $c){
+                            $c_ar['duration']=$c['duration'];
+                            $c_ar['deduction']=$c['deduction'];    
+                            $cancellation_slab_info[]=(object) $c_ar;                                
+                          }
+                      }                         
+                                 
+                        $cancellationslabs =$cancellation_slab_info;
+        
+                        $transactionFee=$b->booking[0]->transactionFee;
+            
+                        $customer_gst_status=$b->booking[0]->customer_gst_status;
+                        $customer_gst_number=$b->booking[0]->customer_gst_number;
+                        $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
+                        $customer_gst_business_email=$b->booking[0]->customer_gst_business_email;
+                        $customer_gst_business_address=$b->booking[0]->customer_gst_business_address;
+                        $customer_gst_percent=$b->booking[0]->customer_gst_percent;
+                        $customer_gst_amount=$b->booking[0]->customer_gst_amount;
+                        $coupon_discount=$b->booking[0]->coupon_discount;
+                        $totalfare=$b->booking[0]->total_fare;
+                        $discount=$b->booking[0]->coupon_discount;
+                        $payable_amount=$b->booking[0]->payable_amount;
+                        $odbus_charges = $b->booking[0]->odbus_charges;
+                        $odbus_gst = $b->booking[0]->odbus_gst_charges;
+                        $owner_fare = $b->booking[0]->owner_fare;
+
+
+                        $collection = collect($seat_arr);
+            $seat_names = $collection->implode(',');
+
+
+            $p_name=[];
+            foreach($b->booking[0]->bookingDetail as $p){
+                $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
+                array_push($p_name,$pp);
+            }    
+            $pp_names='';
+    
+            if($p_name){
+                $pp_names = implode(',',$p_name);
+            }
+
+            $agent_number='';
+            $customer_comission=0;
+
+            if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
+                $agent_number= $this->user->where('id',$b->booking[0]->user_id)->get();
+                if(isset($agent_number[0])){
+                    $agent_number = $agent_number[0]->phone;
+                    $customer_comission = $b->booking[0]->customer_comission;
+                }   
+            }
+            
+           
+          
+            $data = [
+                'name' => $b->name,
+                'pnr' => $b->booking[0]->pnr,
+                'bookingdate'=> date('d-m-Y',strtotime($b->booking[0]->created_at)),
+                'journeydate' => date('d-m-Y',strtotime($b->booking[0]->journey_dt)) ,
+                'boarding_point'=> $b->booking[0]->boarding_point,
+                'dropping_point' => $b->booking[0]->dropping_point,
+                'departureTime'=> $b->booking[0]->boarding_time,
+                'arrivalTime'=> $b->booking[0]->dropping_time,
+                'seat_no' =>$seat_arr,
+                'busname'=> $b->booking[0]->bus['name'],
+                'source'=> $source_data[0]->name,
+                'destination'=> $dest_data[0]->name,
+                'busNumber'=> $b->booking[0]->bus['bus_number'],
+                'bustype' => $b->booking[0]->bus['bus_type']['name'],
+                'busTypeName' => $b->booking[0]->bus['bus_type']['bus_class']['class_name'],
+                'sittingType' =>$b->booking[0]->bus['bus_sitting']['name'],
+                'conductor_number'=> $b->booking[0]->bus['bus_contacts']['phone'],
+                'customer_number'=> $b->phone,
+                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                'totalfare'=> $b->booking[0]->total_fare,
+                'discount' =>   $b->booking[0]->coupon_discount,
+                'payable_amount' => $b->booking[0]->payable_amount,
+                'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
+                'odbus_charges'=>$b->booking[0]->odbus_charges,
+                'owner_fare'=> $b->booking[0]->owner_fare,
+                'transactionFee'=> $transactionFee,             
+                'customer_gst_status'=> $customer_gst_status, 
+                'customer_gst_number'=> $customer_gst_number, 
+                'customer_gst_business_name'=> $customer_gst_business_name, 
+                'customer_gst_business_email'=> $customer_gst_business_email, 
+                'customer_gst_business_address'=> $customer_gst_business_address, 
+                'customer_gst_percent'=> $customer_gst_percent, 
+                'customer_gst_amount'=> $customer_gst_amount, 
+                'coupon_discount'=> $coupon_discount,
+                'total_seats'=>  count($b->booking[0]->bookingDetail),
+                'seat_names'=>  $seat_names ,
+                'qrcode_image_path' => url('public/qrcode/'.$b->booking[0]->pnr.'.png'),
+                'cancelation_policy' => $cancellationslabs,
+                'p_names' => $pp_names, 
+                'agent_number'=> $agent_number,
+                'customer_comission' => $customer_comission           
+            ];
+
+          
+    
+        } else{
+
+          
+       
+         $b= $this->bookingManageRepository->getBookingDetails($mobile,$pnr);
+
+        
+            $b=$b[0];
+            $seat_arr=[];
+            $seat_no='';
+            foreach($b->booking[0]->bookingDetail as $bd){
+                array_push($seat_arr,$bd->busSeats->seats->seatText);              
+            }  
+           $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
+           $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
+           
+         
+
+            $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
+
+            $transactionFee=$b->booking[0]->transactionFee;
+
+            $customer_gst_status=$b->booking[0]->customer_gst_status;
+            $customer_gst_number=$b->booking[0]->customer_gst_number;
+            $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
+            $customer_gst_business_email=$b->booking[0]->customer_gst_business_email;
+            $customer_gst_business_address=$b->booking[0]->customer_gst_business_address;
+            $customer_gst_percent=$b->booking[0]->customer_gst_percent;
+            $customer_gst_amount=$b->booking[0]->customer_gst_amount;
+            $coupon_discount=$b->booking[0]->coupon_discount;
+            $totalfare=$b->booking[0]->total_fare;
+            $discount=$b->booking[0]->coupon_discount;
+            $payable_amount=$b->booking[0]->payable_amount;
+            $odbus_charges = $b->booking[0]->odbus_charges;
+            $odbus_gst = $b->booking[0]->odbus_gst_charges;
+            $owner_fare = $b->booking[0]->owner_fare;
+
+
+            $collection = collect($seat_arr);
+            $seat_names = $collection->implode(',');
+
+
+            $p_name=[];
+            foreach($b->booking[0]->bookingDetail as $p){
+                $pp = $p['passenger_name']." (".$p['passenger_gender'].") ";
+                array_push($p_name,$pp);
+            }    
+            $pp_names='';
+    
+            if($p_name){
+                $pp_names = implode(',',$p_name);
+            }
+
+            $agent_number='';
+            $customer_comission=0;
+
+            if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
+                $agent_number= $this->user->where('id',$b->booking[0]->user_id)->get();
+                if(isset($agent_number[0])){
+                    $agent_number = $agent_number[0]->phone;
+                    $customer_comission = $b->booking[0]->customer_comission;
+                }   
+            }
+           
+          
+            $data = [
+                'name' => $b->name,
+                'pnr' => $b->booking[0]->pnr,
+                'bookingdate'=> date('d-m-Y',strtotime($b->booking[0]->created_at)),
+                'journeydate' => date('d-m-Y',strtotime($b->booking[0]->journey_dt)) ,
+                'boarding_point'=> $b->booking[0]->boarding_point,
+                'dropping_point' => $b->booking[0]->dropping_point,
+                'departureTime'=> $b->booking[0]->boarding_time,
+                'arrivalTime'=> $b->booking[0]->dropping_time,
+                'seat_no' =>$seat_arr,
+                'busname'=> $b->booking[0]->bus->name,
+                'source'=> $source_data[0]->name,
+                'destination'=> $dest_data[0]->name,
+                'busNumber'=> $b->booking[0]->bus->bus_number,
+                'bustype' => $b->booking[0]->bus->busType->name,
+                'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
+                'sittingType' => $b->booking[0]->bus->busSitting->name, 
+                'conductor_number'=> $b->booking[0]->bus->busContacts->phone,
+                'customer_number'=> $b->phone,
+                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                'totalfare'=> $totalfare,
+                'discount' =>  $discount,
+                'payable_amount' => $payable_amount ,
+                'odbus_gst'=> $odbus_gst,
+                'odbus_charges'=> $odbus_charges,
+                'owner_fare'=> $owner_fare,
+                'transactionFee'=> $transactionFee,             
+                'customer_gst_status'=> $customer_gst_status, 
+                'customer_gst_number'=> $customer_gst_number, 
+                'customer_gst_business_name'=> $customer_gst_business_name, 
+                'customer_gst_business_email'=> $customer_gst_business_email, 
+                'customer_gst_business_address'=> $customer_gst_business_address, 
+                'customer_gst_percent'=> $customer_gst_percent, 
+                'customer_gst_amount'=> $customer_gst_amount, 
+                'coupon_discount'=> $coupon_discount,
+                'total_seats'=>  count($b->booking[0]->bookingDetail),
+                'seat_names'=>  $seat_names ,
+                'qrcode_image_path' => url('public/qrcode/'.$b->booking[0]->pnr.'.png'),
+                'cancelation_policy' => $cancellationslabs,
+                'p_names' => $pp_names,  
+                'agent_number'=> $agent_number,
+                'customer_comission' => $customer_comission        
+            ];
+
+
+           
+    } 
+
+
+   return $data;
+
+    }
+   
+
+        
 
     public function cancelTicketInfo($request)
     {

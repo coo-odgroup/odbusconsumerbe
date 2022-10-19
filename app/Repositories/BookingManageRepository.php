@@ -95,7 +95,7 @@ class BookingManageRepository
 
     public function getPnrInfo($pnr){
 
-        return $this->booking->where("pnr",$pnr)->first();
+        return $this->booking->with('users')->where("pnr",$pnr)->first();
         
     }
 

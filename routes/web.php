@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BotManController;
 use App\Http\Controllers\SoapController;
+use App\Http\Controllers\BookingManageController;
 use App\Http\Controllers\HTMLPDFController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,4 +33,4 @@ Route::get('qr-code-g', function () {
     
 });
 
-Route::get('pdfdownload/{pnr}', [HTMLPDFController::class,'htmlPdf']);
+Route::get('downloadTicket/{pnr}', [HTMLPDFController::class,'downlaodTicket']);
