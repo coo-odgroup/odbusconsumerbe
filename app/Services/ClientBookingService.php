@@ -21,7 +21,7 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
-
+use App\Transformers\DolphinTransformer;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
@@ -33,9 +33,10 @@ class ClientBookingService
     protected $channelRepository; 
     protected $commonRepository;
     protected $cancelTicketRepository;
+    protected $dolphinTransformer;
     protected $bookingManageRepository;    
 
-    public function __construct(ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository)
+    public function __construct(ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository,DolphinTransformer $dolphinTransformer)
     {
         $this->clientBookingRepository = $clientBookingRepository;
         $this->viewSeatsService = $viewSeatsService;
@@ -43,6 +44,8 @@ class ClientBookingService
         $this->commonRepository = $commonRepository;
         $this->cancelTicketRepository = $cancelTicketRepository;
         $this->bookingManageRepository = $bookingManageRepository;
+        $this->dolphinTransformer = $dolphinTransformer;
+
     }
     public function clientBooking($request,$clientRole,$clientId)
     {
@@ -51,8 +54,7 @@ class ClientBookingService
             $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
             $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
     
-              
-    
+           
                 if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
                     return 'Invalid Origin';
                 }else if($origin=='DOLPHIN'){
@@ -67,6 +69,10 @@ class ClientBookingService
             return $bookTicket;
 
         } catch (Exception $e) {
+
+            Log::info($e->getMessage());
+
+    
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        
@@ -79,6 +85,11 @@ class ClientBookingService
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');  
                 $transationId = $request['transaction_id']; 
 
+
+                $records = $this->channelRepository->getBookingRecord($transationId);
+                $origin=$records[0]->origin;
+
+            if($origin=='ODBUS') {
                 $bookingDetails = Booking::where('transaction_id', $transationId)
                                         ->with(["bookingDetail" => function($b){
                                             $b->with(["busSeats" => function($bs){
@@ -170,12 +181,23 @@ class ClientBookingService
             $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($data);
             
             $intersect = collect($bookedHoldSeats)->intersect($seatIds);
-            
-            $records = $this->channelRepository->getBookingRecord($transationId);
+        }
+
+           elseif($origin=='DOLPHIN') {
+
+                $intersect=[];
+
+                $res= $this->dolphinTransformer->BlockSeat($records);
+                if($res['Status']!=1){
+                    return  $res['Message'];
+                }
+              }
 
             $amount = $records[0]->total_fare;
                
             /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
+
+            if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1)) {
 
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
 
@@ -209,6 +231,7 @@ class ClientBookingService
                 }
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
 
+
                 if(count($intersect)){
                     return "SEAT UN-AVAIL";
                 }else{
@@ -217,14 +240,16 @@ class ClientBookingService
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
-                    $data = array(
+                    $data = array(                        
+                        'status' => "Success",
                         'customer_name' => $name,
                         'amount' => $amount,
                     );
                     return $data;         
-                }             
+            } 
+          }            
         } catch (Exception $e) {
-            Log::info($e);
+            Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }   
     } 

@@ -17,6 +17,8 @@ use App\AppValidator\ClientCancelTicketValidator;
 use App\AppValidator\ClientCancelTktValidator;
 use App\AppValidator\BookingManageValidator;
 use App\Models\OdbusCharges;
+use Illuminate\Support\Facades\Log;
+
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -192,7 +194,6 @@ class clientBookingController extends Controller
         $todayDate = Date('Y-m-d');
         $validTillDate = Date('Y-m-d', strtotime($todayDate. " + $advDays days"));
         $data['bookingInfo']['user_id']=$user->id;
-        $data['bookingInfo']['origin']=$user->name;
         $bookingValidation = $this->clientBookingValidator->validate($data);
    
         if ($bookingValidation->fails()) {
@@ -201,6 +202,8 @@ class clientBookingController extends Controller
         } 
         try { 
           $response = $this->clientBookingService->clientBooking($data,$clientRole,$clientId); 
+
+          Log::info($response);
         
           if( $data['bookingInfo']['journey_dt'] > $validTillDate ||  $data['bookingInfo']['journey_dt'] < $todayDate ){
           
@@ -215,8 +218,7 @@ class clientBookingController extends Controller
     
           }elseif($response =='ReferenceNumber_empty'){
               return $this->errorResponse("Reference Number is required",Response::HTTP_OK);
-          }
-        
+          }       
           
           elseif(isset($response['message'])){
             return $this->errorResponse($response['note'],Response::HTTP_OK);
@@ -236,6 +238,9 @@ class clientBookingController extends Controller
         //    }
         // }
         catch (Exception $e) {
+
+          Log::info($e->getMessage());
+
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
         }      
     } 
@@ -334,21 +339,46 @@ class clientBookingController extends Controller
         } 
         try {
             $response = $this->clientBookingService->seatBlock($request,$clientRole);
-            switch($response){
-                case('BUS_SEIZED'):  
-                return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
-                break;
-                case('SEAT UN-AVAIL'):  
-                    return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
-                break;
-                case('BUS_CANCELLED'):    
-                    return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
-                break;
-                case('SEAT_BLOCKED'):    
-                    return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
-                break;
-            }
-            return $this->successResponse($response,Config::get('constants.SEAT_BLOCKED_FOR_PAYMENT'),Response::HTTP_CREATED);    
+
+            if(isset($response['status']) && $response['status']=="Success" ){
+
+              $this->successResponse($response,Config::get('constants.SEAT_BLOCKED_FOR_PAYMENT'),Response::HTTP_CREATED);    
+  
+           }elseif($response=='BUS_SEIZED'){
+  
+              return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
+  
+           }elseif($response=='SEAT UN-AVAIL'){
+  
+              return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+              
+           }elseif($response=='BUS_CANCELLED'){
+  
+              return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK); 
+              
+          }elseif($response=='SEAT_BLOCKED'){
+  
+              return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK); 
+              
+          }else{
+              return $this->errorResponse($response,Response::HTTP_OK); 
+          }
+
+          
+            // switch($response){
+            //     case('BUS_SEIZED'):  
+            //     return $this->errorResponse(Config::get('constants.BUS_SEIZED'),Response::HTTP_OK);
+            //     break;
+            //     case('SEAT UN-AVAIL'):  
+            //         return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+            //     break;
+            //     case('BUS_CANCELLED'):    
+            //         return $this->errorResponse(Config::get('constants.BUS_CANCELLED'),Response::HTTP_OK);   
+            //     break;
+            //     case('SEAT_BLOCKED'):    
+            //         return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'),Response::HTTP_OK);   
+            //     break;
+            // }
         }
         catch (Exception $e) {
              return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);

@@ -28,6 +28,8 @@ use App\Models\BusContacts;
 use App\Services\ViewSeatsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
+use App\Transformers\DolphinTransformer;
+
 
 class ClientBookingRepository
 {
@@ -40,9 +42,10 @@ class ClientBookingRepository
     protected $busLocationSequence;
     protected $viewSeatsService; 
     protected $channelRepository; 
+    protected $dolphinTransformer;
     protected $listingService; 
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,ListingService $listingService)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,ListingService $listingService,DolphinTransformer $dolphinTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -53,7 +56,9 @@ class ClientBookingRepository
         $this->channelRepository = $channelRepository;
         $this->busLocationSequence = $busLocationSequence;
         $this->viewSeatsService = $viewSeatsService;
-        $this->listingService = $listingService;    
+        $this->listingService = $listingService; 
+        $this->dolphinTransformer = $dolphinTransformer;
+
     }   
     
     public function clientBooking($request,$clientRole,$clientId)
@@ -62,22 +67,31 @@ class ClientBookingRepository
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
         $defUserId = Config::get('constants.USER_ID');
-        $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;
 
-        $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
-        
-        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
-       
-        $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
-        $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
         $entry_date = $bookingInfo['journey_dt'];
         $busId = $bookingInfo['bus_id'];
         $sourceId = $bookingInfo['source_id'];
         $destinationId =  $bookingInfo['destination_id'];
+        $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
         
         ////////////////////////busId validation////////////////////////////////////
         $source = Location::where('id',$sourceId)->first()->name;
         $destination = Location::where('id',$destinationId)->first()->name;
+
+        $clientDetail = User::where('id', $clientId)->first();
+
+        $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
+
+	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
+
+        if($bookingInfo['origin']== 'ODBUS'){ // dolphin related changes
+
+            $busOperatorId = Bus::where('id',$bookingInfo['bus_id'])->first()->bus_operator_id;         
+            
+            $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+        
+            $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
+            $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
        
         $reqInfo= array(
             "source" => $source,
@@ -90,27 +104,49 @@ class ClientBookingRepository
         $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
     
         if($busRecords){
-        $busId = $bookingInfo['bus_id'];
         $busRecords->pluck('busId');
         $validBus = $busRecords->pluck('busId')->contains($busId);
         }
             if(!$validBus){
                 return "Bus_not_running";
             }
-       
+
+
+            $data = array(
+                'busId' => $busId,
+                'sourceId' => $sourceId,
+                'destinationId' => $destinationId,
+                'seater' => $seater,
+                'sleeper' => $sleeper,
+                'entry_date' => $entry_date,
+            );
+            $priceDetails = $this->viewSeatsService->getPriceCalculation($data,$clientId);
+
+    }  
+    
+    
+    if($bookingInfo['origin'] =='DOLPHIN'){
+        $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
+        $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+
+        $seatTypArr=$this->dolphinTransformer->GetSeatType($ReferenceNumber,$seatIds,$clientRole,$clientId);
+        
         $data = array(
             'busId' => $busId,
             'sourceId' => $sourceId,
             'destinationId' => $destinationId,
-            'seater' => $seater,
-            'sleeper' => $sleeper,
+            'seater' => $seatTypArr['seater'],
+            'sleeper' => $seatTypArr['sleeper'],
             'entry_date' => $entry_date,
+            'ReferenceNumber' => $ReferenceNumber,
+            'origin' => $bookingInfo['origin'],
         );
-        $priceDetails = $this->viewSeatsService->getPriceCalculation($data,$clientId);
-        //return $priceDetails;
-        //$details = $this->viewSeatsService->getPriceOnSeatsSelection($busId,$sourceId,$destinationId,$seater,$sleeper,$entry_date);
-       
-        //$details = $this->viewSeatsService->getPriceOnSeatsSelection(request(),$data);
+
+        $priceDetails= $this->viewSeatsService->DolphinPriceCalculation($data,$clientRole,$clientId);
+
+    }
+
+    
 
         $cId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
@@ -154,9 +190,18 @@ class ClientBookingRepository
         //$busId = $bookingInfo['bus_id'];
         $booking->source_id = $bookingInfo['source_id'];
         $booking->destination_id =  $bookingInfo['destination_id'];
-        $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])
-                                                ->where('destination_id',$bookingInfo['destination_id'])->get();
-        $booking->j_day = $ticketPriceDetails[0]->j_day;
+
+        $j_day=1;
+
+        if($bookingInfo['origin']== 'ODBUS'){
+
+            $ticketPriceDetails = $this->ticketPrice->where('bus_id',$busId)->where('source_id',$bookingInfo['source_id'])->where('destination_id',$bookingInfo['destination_id'])->get();
+
+           $j_day= $ticketPriceDetails[0]->j_day  ; 
+
+        } 
+      
+        $booking->j_day = $j_day;
         $booking->journey_dt = $bookingInfo['journey_dt'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
@@ -165,24 +210,29 @@ class ClientBookingRepository
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = 'CLNTWEB';
         $booking->owner_fare = $priceDetails[0]['ownerFare'];
-        //$booking->total_fare = $priceDetails[0]['totalFare'];
         $booking->total_fare = $priceDetails[0]['totalFare'];
         $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
-        //$booking->transactionFee = $priceDetails[0]['transactionFee'];
         $booking->additional_special_fare = $priceDetails[0]['specialFare'];
         $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
         $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
-       
-        // $booking->owner_fare = $bookingInfo['owner_fare'];
-        // $booking->total_fare = $bookingInfo['total_fare'];
-        // $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        // $booking->transactionFee = $bookingInfo['transactionFee'];
+
+        $booking->CompanyID = (isset($bookingInfo['CompanyID'])) ? $bookingInfo['CompanyID']: '';
+        $booking->ReferenceNumber =(isset($bookingInfo['ReferenceNumber'])) ? $bookingInfo['ReferenceNumber']: '';
+        $booking->RouteTimeID = (isset($bookingInfo['RouteTimeID'])) ? $bookingInfo['RouteTimeID'] : '';
+        $booking->PickupID =(isset($bookingInfo['PickupID'])) ? $bookingInfo['PickupID'] : '';
+        $booking->DropID = (isset($bookingInfo['DropID'])) ? $bookingInfo['DropID'] : '';
+         
+        
+        $odbusGstPercent=0;
+        $odbusGstAmount=0;
+
+
+        if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
 
         $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
       
         $booking->odbus_gst_charges = $odbusGstPercent;
         $odbusGstAmount = $priceDetails[0]['ownerFare'] * $odbusGstPercent/100;
-        $booking->odbus_gst_amount = $odbusGstAmount;
       
         $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
@@ -192,6 +242,11 @@ class ClientBookingRepository
             $ownerGstAmount = $priceDetails[0]['ownerFare'] * $ownerGstPercentage/100;
             $booking->owner_gst_amount = $ownerGstAmount;
         } 
+      }
+
+
+      $booking->odbus_gst_charges = $odbusGstPercent;
+      $booking->odbus_gst_amount = $odbusGstAmount;
           
         $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                             ->where('status', '1')
@@ -207,18 +262,25 @@ class ClientBookingRepository
                 }  
             }   
         } 
+
         $clientComAmount = round($clientComission/100 * $priceDetails[0]['totalFare'],2);
         $booking->client_comission = $clientComAmount;
         $booking->client_percentage = $clientComission;
                        
-        $booking->created_by = $bookingInfo['origin'];
+        $booking->created_by = $clientDetail->name;
         $booking->users_id = $userId;
         $cId->booking()->save($booking);
+
+        $seq_no_start=0;
+        $seq_no_end=0;
+        if($bookingInfo['origin']=='ODBUS'){
         
-        //fetch the sequence from bus_locaton_sequence
-        $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
-        $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
-        
+            //fetch the sequence from bus_locaton_sequence
+            $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
+            $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
+
+        }
+
         $bookingSequence = new BookingSequence;
         $bookingSequence->sequence_start_no = $seq_no_start;
         $bookingSequence->sequence_end_no = $seq_no_end;
@@ -226,39 +288,70 @@ class ClientBookingRepository
         $booking->bookingSequence()->save($bookingSequence);
 
         //Update Booking Details >>>>>>>>>>
+
+        if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
   
-        $ticketPriceId = $ticketPriceDetails[0]->id;
-        //$bookingDetail = $request['bookingInfo']['bookingDetail'];
-        //$seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
-        foreach ($seatIds as $seatId){
-            $busSeatsId[] = $this->busSeats
-                ->where('bus_id',$busId)
-                ->where('ticket_price_id',$ticketPriceId)
-                ->where('seats_id',$seatId)->first()->id;
-        }  
+            $ticketPriceId = $ticketPriceDetails[0]->id;
+            //$bookingDetail = $request['bookingInfo']['bookingDetail'];
+            //$seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
+            foreach ($seatIds as $seatId){
+                $busSeatsId[] = $this->busSeats
+                    ->where('bus_id',$busId)
+                    ->where('ticket_price_id',$ticketPriceId)
+                    ->where('seats_id',$seatId)->first()->id;
+            } 
+        } 
         $bookingDetailModels = [];  
         $i=0;
-       foreach ($bookingInfo['bookingDetail'] as $bDetail) {
+    foreach ($bookingInfo['bookingDetail'] as $bDetail) {
+
+        if($bDetail['passenger_gender']=='Female' || $bDetail['passenger_gender']=='female' ){
+            $bDetail['passenger_gender']='F';
+        }
+
+        if($bDetail['passenger_gender']=='Male' || $bDetail['passenger_gender']=='male' ){
+
+            $bDetail['passenger_gender']='M';
+        }
+
+        if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+
+            unset($bDetail['bus_seats_id']);
+
             $collection= collect($bDetail);
-            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i], 'created_by' => $bookingInfo['origin']]))->toArray();
+            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i], 'created_by' => $clientDetail->name]))->toArray();
             $bookingDetailModels[] = new BookingDetail($merged);
-            $i++;
-        }    
+        }
+
+        elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
+            // get real seat name from dolphin transformer
+            $ReferenceNumber=$bookingInfo['ReferenceNumber'];
+            $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
+
+            unset($bDetail['bus_seats_id']);
+            $bDetail['seat_name']= $seat_name; 
+            $bDetail['created_by']= $clientDetail->name; 
+            $collection= collect($bDetail);
+            $bookingDetailModels[] = new BookingDetail($collection->toArray());
+
+        }
+        $i++;
+    }    
         $passengerDetails = $booking->bookingDetail()->saveMany($bookingDetailModels);      
         //return $booking; 
         return collect($booking->toArray())
                                 ->only(['pnr', 'transaction_id'])
                                 ->all();
-        }
-        else{
-            $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
-            $arr['message']="less_balance";
-            return $arr;
-            } 
-     }else{
-         return 'CLIENT_INVALID';
-     }
-    }
+   }
+    else{
+        $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
+        $arr['message']="less_balance";
+        return $arr;
+    } 
+}else{
+    return 'CLIENT_INVALID';
+}
+}
 
     public function ticketConfirmation($request)
     {

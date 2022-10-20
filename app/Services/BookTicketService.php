@@ -141,7 +141,7 @@ class BookTicketService
 
                     $priceDetails= $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
 
-                    Log::info($priceDetails);
+                   // Log::info($priceDetails);
                 }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 

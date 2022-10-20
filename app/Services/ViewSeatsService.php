@@ -692,6 +692,94 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
 
 }
 
+ //////////////////used for client API booking///////////////
+
+ public function DolphinPriceCalculation($request,$clientRole,$clientId)
+ {
+
+    $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+    $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
+    $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
+    $busId = $request['busId'];
+    $sourceId = $request['sourceId'];
+    $destinationId = $request['destinationId'];
+    $entry_date = $request['entry_date'];
+    $entry_date = date("Y-m-d", strtotime($entry_date));
+    //$busOperatorId = $request['busOperatorId'];
+       $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
+        $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
+
+        $seatWithPriceRecords=[];
+
+        $seatResult= $this->dolphinTransformer->seatLayout($ReferenceNumber,$clientRole,$clientId);
+
+            // return $seatResult; 
+
+              $total_fare=0;
+
+              if(!empty($seaterIds)){
+
+                foreach($seaterIds as $st){
+
+                    $key = array_search($st, array_column($seatResult['lower_berth'], 'id'));
+                   $total_fare += $seatResult['lower_berth'][$key]['bus_seats']['new_fare'];
+
+                }
+
+              }
+
+
+              if(!empty($sleeperIds)){
+
+                foreach($sleeperIds as $sl){
+
+                    $key2 = array_search($sl, array_column($seatResult['upper_berth'], 'id'));
+
+                    $total_fare += $seatResult['upper_berth'][$key2]['bus_seats']['new_fare'];
+
+                }
+                
+              }
+
+
+          $dolphinFare=  $total_fare ;//+ round($total_fare * (10/100)); // 10% extra as per santosh
+
+                /////client extra service charge added to seatfare////////////////
+               $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                   ->where('status', '1')
+                                                   ->get(); 
+                       
+               $client_service_charges = 0;
+               $addCharge = 0;
+               if($clientCommissions){
+                   foreach($clientCommissions as $clientCom){
+                       $startFare = $clientCom->starting_fare;
+                       $uptoFare = $clientCom->upto_fare;
+                       if($dolphinFare >= $startFare && $dolphinFare <= $uptoFare){
+                           $addCharge = $clientCom->dolphinaddationalCharges;
+                           break;
+                       }  
+                   }   
+               } 
+               $client_service_charges = ($addCharge/100 * $dolphinFare);
+              // $newSeatFare = $dolphinFare + $client_service_charges;
+               $seatWithPriceRecords[] = array(
+                   "totalFare" => $total_fare,
+                   "baseFare" => $total_fare - $client_service_charges ,
+                   "serviceCharge" => $client_service_charges,
+                   "ownerFare" => $total_fare,
+                    "odbus_charges_ownerFare" => $total_fare,
+                    "specialFare" => 0,
+                    "addOwnerFare" => 0,
+                    "festiveFare" => 0,
+                    "odbusServiceCharges" => 0,
+                   ); 
+
+        return $seatWithPriceRecords;  
+
+     
+ }
+
     //////////////////used for client API booking///////////////
 
     public function getPriceCalculation($request,$clientId)
