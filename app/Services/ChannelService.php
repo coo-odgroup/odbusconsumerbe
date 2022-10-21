@@ -107,7 +107,7 @@ class ChannelService
     } 
     
     ///////////////////////////////////////////////////////////////////
-    public function makePayment($request)
+    public function makePayment($request,$clientRole)
     {
         try {
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
@@ -208,7 +208,7 @@ class ChannelService
 
                 $intersect=[];
 
-                $res= $this->dolphinTransformer->BlockSeat($records);
+                $res= $this->dolphinTransformer->BlockSeat($records,$clientRole);
                 if($res['Status']!=1){
                     return  $res['Message'];
                 }
@@ -317,14 +317,10 @@ class ChannelService
 
            $origin=$records[0]->origin;
 
-           $res=  $this->dolphinTransformer->BlockSeat($records);
+           $res=  $this->dolphinTransformer->BlockSeat($records,$clientRole);
 
            return $res;
-            // if($res['Status']==1){
-            //      return $this->dolphinTransformer->BookSeat($records);
-            // }else{
-            //     return $res;
-            // }
+          
 
     } catch (Exception $e) {
         Log::info($e->getMessage());
@@ -436,7 +432,7 @@ class ChannelService
        
     } 
     
-    public function pay($request)
+    public function pay($request,$clientRole)
     {
         try {
           
@@ -461,7 +457,7 @@ class ChannelService
 
             if($origin=='DOLPHIN') {
 
-                $res= $this->dolphinTransformer->BookSeat($records);
+                $res= $this->dolphinTransformer->BookSeat($records,$clientRole);
 
                 $bookingRecord= $records;
 
@@ -597,7 +593,7 @@ class ChannelService
         }    
     } 
     
-    public function walletPayment($request)
+    public function walletPayment($request,$clientRole)
     {
         try {
 
@@ -709,7 +705,7 @@ class ChannelService
 
                 $intersect=[];
 
-                $res= $this->dolphinTransformer->BlockSeat($records);
+                $res= $this->dolphinTransformer->BlockSeat($records,$clientRole);
 
                 if($res['Status']!=1){
                     return  $res['Message'];
@@ -741,7 +737,7 @@ class ChannelService
     }
     
 
-    public function agentPaymentStatus($request)
+    public function agentPaymentStatus($request,$clientRole)
     {
         try {
             $booked = Config::get('constants.BOOKED_STATUS');
@@ -760,7 +756,7 @@ class ChannelService
     
             if($origin=='DOLPHIN') {
     
-                $res= $this->dolphinTransformer->BookSeat($records);
+                $res= $this->dolphinTransformer->BookSeat($records,$clientRole);
 
                // Log::info($res);
     
@@ -911,7 +907,7 @@ class ChannelService
     }
 
 
-    public function UpdateAdjustStatus($request)
+    public function UpdateAdjustStatus($request,$clientRole)
     {
         try {
           
@@ -940,7 +936,7 @@ class ChannelService
 
            if($origin=='DOLPHIN') {
 
-            $res= $this->dolphinTransformer->BookSeat($records);
+            $res= $this->dolphinTransformer->BookSeat($records,$clientRole);
 
             $bookingRecord= $records;
 

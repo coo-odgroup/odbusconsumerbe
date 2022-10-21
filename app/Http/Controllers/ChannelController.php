@@ -425,15 +425,19 @@ public function pay(Request $request){
     $data = $request->all();
     $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
 
+    $token = JWTAuth::getToken();
+    $user = JWTAuth::toUser($token); 
+    $clientRole = $user->role_id;
+
     if ($paymentStatusValidation->fails()) {
      
     $errors = $paymentStatusValidation->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }  
         try{
-            $response = $this->channelService->pay($request);
+            $response = $this->channelService->pay($request,$clientRole);
             //return $response; 
-            If($response == 'Payment Done'){
+            if($response == 'Payment Done'){
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
             }
             else{
@@ -450,13 +454,17 @@ public function pay(Request $request){
     $data = $request->all();
     $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
 
+    $token = JWTAuth::getToken();
+    $user = JWTAuth::toUser($token); 
+    $clientRole = $user->role_id;
+
     if ($paymentStatusValidation->fails()) {
      
     $errors = $paymentStatusValidation->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }  
         try{
-            $response = $this->channelService->UpdateAdjustStatus($request);
+            $response = $this->channelService->UpdateAdjustStatus($request,$clientRole);
             //return $response; 
             If($response == 'Payment Done'){
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
@@ -600,18 +608,17 @@ public function pay(Request $request){
   public function walletPayment(Request $request)
   {   
       $data = $request->all();
-    //   $token = JWTAuth::getToken();
-    //   $user = JWTAuth::toUser($token); 
-    //   $clientRole = $user->role_id;
+      $token = JWTAuth::getToken();
+      $user = JWTAuth::toUser($token); 
+      $clientRole = $user->role_id;
       $walletPaymentValidation = $this->agentWalletPaymentValidator->validate($data);
 
       if ($walletPaymentValidation->fails()) {
       $errors = $walletPaymentValidation->errors();
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }  
-      try {
-         // $response = $this->channelService->walletPayment($request,$clientRole); 
-         $response = $this->channelService->walletPayment($request); 
+      try {        
+         $response = $this->channelService->walletPayment($request,$clientRole); 
 
          if(isset($response['notifications'])){
 
@@ -688,13 +695,17 @@ public function pay(Request $request){
     $data = $request->all();
     $paymentStatusValidation = $this->agentPaymentStatusValidator->validate($data);
 
+    $token = JWTAuth::getToken();
+    $user = JWTAuth::toUser($token); 
+    $clientRole = $user->role_id;
+
     if ($paymentStatusValidation->fails()) {
     $errors = $paymentStatusValidation->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }  
     try{  
-        $response = $this->channelService->agentPaymentStatus($request); 
-         If($response == 'Payment Done'){
+        $response = $this->channelService->agentPaymentStatus($request,$clientRole); 
+         if($response == 'Payment Done'){
              return $this->successResponse(Config::get('constants.PAYMENT_DONE'),Response::HTTP_OK);
          }
          else{

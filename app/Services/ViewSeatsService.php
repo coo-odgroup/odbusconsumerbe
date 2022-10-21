@@ -761,14 +761,45 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                        }  
                    }   
                } 
+             
                $client_service_charges = ($addCharge/100 * $dolphinFare);
+
+        /// below code is to get actual dolphin seat price By Lima (21 Oct,2022)
+        $ActualSeatResult= $this->dolphinTransformer->seatLayout($ReferenceNumber,$clientRole,$clientId,true);
+
+              $owner_fare=0;
+
+              if(!empty($seaterIds)){
+
+                foreach($seaterIds as $st){
+                    $key = array_search($st, array_column($ActualSeatResult['lower_berth'], 'id'));
+                   $owner_fare += $ActualSeatResult['lower_berth'][$key]['bus_seats']['new_fare'];
+
+                }
+
+              }
+
+
+              if(!empty($sleeperIds)){
+
+                foreach($sleeperIds as $sl){
+
+                    $key2 = array_search($sl, array_column($ActualSeatResult['upper_berth'], 'id'));
+
+                    $owner_fare += $ActualSeatResult['upper_berth'][$key2]['bus_seats']['new_fare'];
+
+                }
+                
+              }
+
+              
               // $newSeatFare = $dolphinFare + $client_service_charges;
                $seatWithPriceRecords[] = array(
                    "totalFare" => $total_fare,
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
-                   "ownerFare" => $total_fare,
-                    "odbus_charges_ownerFare" => $total_fare,
+                   "ownerFare" => $owner_fare, // actual dolphin fare
+                    "odbus_charges_ownerFare" => $owner_fare,
                     "specialFare" => 0,
                     "addOwnerFare" => 0,
                     "festiveFare" => 0,

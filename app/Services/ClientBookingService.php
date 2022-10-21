@@ -187,13 +187,17 @@ class ClientBookingService
 
                 $intersect=[];
 
-                $res= $this->dolphinTransformer->BlockSeat($records);
+                $res= $this->dolphinTransformer->BlockSeat($records,$clientRole);
+
                 if($res['Status']!=1){
                     return  $res['Message'];
                 }
               }
 
             $amount = $records[0]->total_fare;
+
+            Log::info($amount);
+
                
             /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
 
@@ -201,7 +205,7 @@ class ClientBookingService
 
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
 
-            if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
+            if($request['customer_gst_status']== 1){
 
                     $update_customer_gst['customer_gst_status']=1;
                     $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
@@ -231,6 +235,7 @@ class ClientBookingService
                 }
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
 
+                Log::info($amount);
 
                 if(count($intersect)){
                     return "SEAT UN-AVAIL";
@@ -254,13 +259,40 @@ class ClientBookingService
         }   
     } 
  
-    public function ticketConfirmation($request)
+    public function ticketConfirmation($request,$clientRole)
     {
         try {
+
+            $records = $this->channelRepository->getBookingRecord($request['transaction_id']);
+
+            $origin=$records[0]->origin;
+
+            if($origin=='DOLPHIN') {
+
+                $res= $this->dolphinTransformer->BookSeat($records,$clientRole);
+
+                $bookingRecord= $records;
+
+                if($res['Status']==1 && $res['PNRNO']){
+
+                   $updateApiData['api_pnr']=$res['PNRNO'];
+                   $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
+                   $this->channelRepository->UpdateAPIPnr($request['transaction_id'],$updateApiData);                 
+
+                }else{
+                    return 'Failed';
+                }
+
+            }
+           
+            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
             return $bookTicket;
 
+            
+
         } catch (Exception $e) {
+            Log::info($e->getMessage());   
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        

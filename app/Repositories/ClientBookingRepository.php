@@ -365,13 +365,13 @@ class ClientBookingRepository
                                        ->with('bookingDetail')
                                        ->get();     
                                                        
+        $origin = $bookingRecord[0]->origin;  
         $busId = $bookingRecord[0]->bus_id;  
         $sourceId = $bookingRecord[0]->source_id;
         $destinationId = $bookingRecord[0]->destination_id;
         $entry_date = $bookingRecord[0]->journey_dt;
                              
         $bookingId = $bookingRecord[0]->id; 
-        $busId = $bookingRecord[0]->bus_id;
         $pnr = $bookingRecord[0]->pnr;
         $comissionAmount = $bookingRecord[0]->client_comission;             
         $amount = $bookingRecord[0]->total_fare;
@@ -418,55 +418,81 @@ class ClientBookingRepository
         $this->booking->where('id', $bookingId)->update(['status' => $booked]);
         $booking = $this->booking->find($bookingId);
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+
+        if($origin=='ODBUS'){
   
         $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                                ->select('id','pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time')
+                                ->select('pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time')
                                ->with(['users'=> function($u){
-                                  $u->select('id','name','email','phone');   
+                                  $u->select('name','email','phone');   
                                }])
                                ->with(["bus" => function($bs){
-                                $bs->select('id','name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
+                                $bs->select('name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
                                 $bs->with(['cancellationslabs'=> function($c){
-                                    $c->select('id','rule_name','cancellation_policy_desc');
+                                    $c->select('rule_name','cancellation_policy_desc');
                                     $c->with(['cancellationSlabInfo' => function($cs){
                                         $cs->select('cancellation_slab_id','duration','deduction');
                                         }]);
                                     }]);
                                 $bs->with(['BusType' => function($bt){
-                                $bt->select('id','bus_class_id','name');
+                                $bt->select('bus_class_id','name');
                                 $bt->with(['busClass' => function($bc){
-                                   $bc->select('id','class_name');
+                                   $bc->select('class_name');
                                    }]);
                                  }]);
                                 $bs->with(['BusSitting'=> function($bst){
-                                    $bst->select('id','name');
+                                    $bst->select('name');
                                      }]);                
                                 $bs->with(['busContacts' => function($bc){
-                                    $bc->select('bus_id','phone');
+                                    $bc->select('phone');
                                      }]);               
                                 }])
                                 ->with(["bookingDetail" => function($b){
-                                    $b->select('id','booking_id','bus_seats_id','passenger_name','passenger_gender',);
+                                    $b->select('passenger_name','passenger_gender',);
                                     $b->with(["busSeats" => function($bs){
-                                        $bs->select('id','seats_id');
+                                        //$bs->select('seats_id');
                                         $bs->with(["seats" => function($s){
-                                            $s->select('id','seatText');  
+                                            $s->select('seatText');  
                                         }]);
                                     }]);    
                                 }])
                               ->with(['clientWallet' => function($cw){
-                                $cw->select('booking_id','balance');
+                                $cw->select('balance');
                                 $cw->orderBy('id','DESC');
                                 $cw->where("status",1);
                                 $cw->limit(1);
                                 }])
                               ->get();
+                }
+
+             if($origin=='DOLPHIN'){
+                    $bookingDetails = $this->booking->where('transaction_id', $transactionId)
+                    ->select('id','pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','bus_number','bus_name')
+                   ->with(['users'=> function($u){
+                      $u->select('id','name','email','phone');   
+                   }])
+                   ->with('bus')
+                    ->with(["bookingDetail" => function($b){
+                        $b->select('id','booking_id','passenger_name','passenger_gender','seat_name');
+                    }])
+                  ->with(['clientWallet' => function($cw){
+                    $cw->select('id','booking_id','balance');
+                    $cw->orderBy('id','DESC');
+                    $cw->where("status",1);
+                    $cw->limit(1);
+                    }])
+                  ->get();
+
+            }
+
                              
         $srcName = Location::where('id',$bookingDetails[0]->source_id)->first()->name;
         $destName = Location::where('id',$bookingDetails[0]->destination_id)->first()->name;
         
         $bookingDetails[0]['src_name'] = $srcName;
         $bookingDetails[0]['dest_name'] = $destName;
+
+        if($origin=='ODBUS'){
        
         $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
         $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
@@ -577,9 +603,14 @@ class ClientBookingRepository
             $sms->save();
             }  
         }
+
         unset($bookingDetails[0]->bus->cancellationslabs); 
         unset($bookingDetails[0]->bus->cancellationslabs_id); 
-        return $bookingDetails;             
+    }
+
+        $bal['wallet_balance']=$bookingDetails[0]->clientWallet[0]->balance;
+       
+        return $bal;        
     }
 
     public function clientCancelTicket($clientId,$pnr,$booked)

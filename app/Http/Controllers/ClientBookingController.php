@@ -203,7 +203,7 @@ class clientBookingController extends Controller
         try { 
           $response = $this->clientBookingService->clientBooking($data,$clientRole,$clientId); 
 
-          Log::info($response);
+          //Log::info($response);
         
           if( $data['bookingInfo']['journey_dt'] > $validTillDate ||  $data['bookingInfo']['journey_dt'] < $todayDate ){
           
@@ -340,9 +340,12 @@ class clientBookingController extends Controller
         try {
             $response = $this->clientBookingService->seatBlock($request,$clientRole);
 
+            
+          // Log::info($response);
+
             if(isset($response['status']) && $response['status']=="Success" ){
 
-              $this->successResponse($response,Config::get('constants.SEAT_BLOCKED_FOR_PAYMENT'),Response::HTTP_CREATED);    
+              return $this->successResponse($response,Config::get('constants.SEAT_BLOCKED_FOR_PAYMENT'),Response::HTTP_CREATED);    
   
            }elseif($response=='BUS_SEIZED'){
   
@@ -423,6 +426,7 @@ class clientBookingController extends Controller
 
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
+        $clientRole = $user->role_id;
         $data = $request->all();
         
         $data['client_id']=$user->id;
@@ -433,7 +437,7 @@ class clientBookingController extends Controller
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         }  
         try{  
-            $response = $this->clientBookingService->ticketConfirmation($data); 
+            $response = $this->clientBookingService->ticketConfirmation($data,$clientRole); 
 
             switch($response){
               case('SEAT UN-AVAIL'):  

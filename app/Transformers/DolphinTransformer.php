@@ -388,7 +388,7 @@ class DolphinTransformer
 
     }
 
-    public function seatLayout($ReferenceNumber,$clientRole,$clientId)
+    public function seatLayout($ReferenceNumber,$clientRole,$clientId,$getActualPriceStatus=false)
     {
 
       $dolphinSeatresult= $this->DolphinService->GetSeatArrangementDetails($ReferenceNumber);
@@ -594,7 +594,7 @@ class DolphinTransformer
 
                                     $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
 
-                                        if($clientRole == $clientRoleId){
+                                        if($clientRole == $clientRoleId && $getActualPriceStatus==false){
 
                                             /////client extra service charge added to seatfare////////////////
                                             $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
@@ -737,7 +737,7 @@ class DolphinTransformer
 
                                 $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
 
-                                if($clientRole == $clientRoleId){
+                                if($clientRole == $clientRoleId && $getActualPriceStatus==false){
 
                                     /////client extra service charge added to seatfare////////////////
                                     $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
@@ -789,24 +789,32 @@ class DolphinTransformer
                
     }  
     
-    public function BlockSeat($records){
+    public function BlockSeat($records,$clientRole){
 
         $nm_ar=[];
         $TotalPassengers=0;
 
         $amount = $records[0]->owner_fare; 
 
-        // if($records[0]->payable_amount == 0.00){
-        //     $amount = $records[0]->total_fare;
-        //     }else{
-        //         $amount = $records[0]->payable_amount;
-        //     }
+      // $seat_res= $this->seatLayout($records[0]->ReferenceNumber,$clientRole,$records[0]->user_id,true);
+      
 
         if(!empty($records[0]->bookingDetail)){
             foreach($records[0]->bookingDetail as $bdt){
                 $st_nm= $bdt->seat_name.','.$bdt->passenger_gender;
                 $nm_ar[]=$st_nm;
                 $TotalPassengers++;
+
+                ////////// get actual seat price of dolphin 
+
+                // if($key = array_search($bdt->seat_name, array_column($seat_res['lower_berth'], 'seatText'))){
+                //  $amount= $seat_res['lower_berth'][$key]['bus_seats']['new_fare'];
+                // }
+    
+                // else if($key = array_search($bdt->seat_name, array_column($seat_res['upper_berth'], 'seatText'))){
+                //  $amount= $seat_res['upper_berth'][$key]['bus_seats']['new_fare'];
+                // }
+
             }
 
         }
@@ -818,7 +826,9 @@ class DolphinTransformer
         $arr['Phone']=$records[0]->users->phone;
         $arr['PickupID']=$records[0]->PickupID;
         $arr['PayableAmount']=$amount;
-        $arr['TotalPassengers']=$TotalPassengers;         
+        $arr['TotalPassengers']=$TotalPassengers;    
+        
+       // Log::info($arr);
 
         $res= $this->DolphinService->BlockSeat($arr);
 
@@ -830,18 +840,12 @@ class DolphinTransformer
     }
 
 
-    public function BookSeat($records){
+    public function BookSeat($records,$clientRole){
 
         $nm_ar=[];
         $TotalPassengers=0;
-
-        // if($records[0]->payable_amount == 0.00){
-        //     $amount = $records[0]->total_fare;
-        //     }else{
-        //         $amount = $records[0]->payable_amount;
-        //     }
-
         $amount = $records[0]->owner_fare; 
+
 
         if(!empty($records[0]->bookingDetail)){
             foreach($records[0]->bookingDetail as $bdt){
@@ -919,30 +923,6 @@ class DolphinTransformer
    
 
     public function FetchTicketPrintData(){
-
-        // if($pnr!=''){
-        //     $list=$this->booking->where('pnr',$pnr)->first();
-
-        //     if(!empty($list)){
-        //         if($list->api_pnr!=null){
-
-
-        //             $res= $this->DolphinService->FetchTicketPrintData($list->api_pnr);
-        //             if($res){
-        //                 $ar['DOLPHIN_PNRNO']=$res['PNRNO'];
-        //                 $ar['CoachNo']=(isset($res['CoachNo'])) ? $res['CoachNo'] : '';
-        //                 $ar['PickUpName']=(isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
-        //                 $ar['MainTime']=(isset($res['MainTime'])) ? $res['MainTime'] : ''; 
-        //                 $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
-        //                return $ar;                    
-        //             }
-
-        //         }
-               
-        //     }            
-
-        // }else{
-            
 
             $list=$this->booking->with('users')->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 
