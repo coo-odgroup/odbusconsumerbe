@@ -473,6 +473,10 @@ class clientBookingController extends Controller
             //   case('PNR_NOT_MATCH'):
             //     return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
             //     break;
+
+            case('Ticket_already_cancelled'):
+              return $this->errorResponse("Ticket Already cancelled. Please contact Odbus Support Team",Response::HTTP_PARTIAL_CONTENT);
+              break;
               case('INV_CLIENT'):
                 return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
                 break;
@@ -498,7 +502,11 @@ class clientBookingController extends Controller
         } 
         try {
             $response = $this->clientBookingService->clientCancelTicketInfo($data);  
-            switch($response){
+            switch($response){             
+               case('Ticket_already_cancelled'):
+                return $this->errorResponse("Ticket Already cancelled. Please contact Odbus Support Team",Response::HTTP_PARTIAL_CONTENT);
+                break;
+
               case('INV_CLIENT'):
                 return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
                 break;

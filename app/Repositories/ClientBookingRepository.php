@@ -613,6 +613,20 @@ class ClientBookingRepository
         return $bal;        
     }
 
+    public function DolphinClientCancelTicketInfo($clientId,$pnr,$booked){
+        return $this->booking->where([
+            ['pnr', '=', $pnr],
+            ['status', '=', $booked], 
+            ['user_id', '=', $clientId],  
+            ])
+            ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare')
+            ->with(['users'=> function($u){
+            $u->select('id','name','email','phone');   
+            }])
+            ->with('bookingDetail')
+            ->get();
+    }
+
     public function clientCancelTicket($clientId,$pnr,$booked)
     { 
         return $this->booking->where([

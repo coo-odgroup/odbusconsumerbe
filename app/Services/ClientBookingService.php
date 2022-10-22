@@ -455,7 +455,7 @@ class ClientBookingService
         try {        
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
-            $booked = Config::get('constants.BOOKED_STATUS');
+            $booked = Config::get('constants.BOOKED_STATUS');           
 
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             if(isset($booking_detail[0])){ 
@@ -478,7 +478,7 @@ class ClientBookingService
 
                        $userId = $booking_detail[0]->user_id;
                        $paidAmount = $booking_detail[0]->total_fare;
-                       $data['bookingDetails'] = $booking_detail;
+                       //$data['bookingDetails'] = $booking_detail;
                        
                        if($booking_detail[0]->status==2){
                            $data['cancel_status'] = false;
@@ -500,13 +500,13 @@ class ClientBookingService
                               $deduction = 10;//minimum deduction 
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
-                              $data['deductionPercentage'] = $deduction."%"; 
+                             // $data['deductionPercentage'] = $deduction."%"; 
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt);
-                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
+                              //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                             // $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
                             
                               return $data;
           
@@ -514,13 +514,13 @@ class ClientBookingService
                            
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
-                              $data['deductionPercentage'] = $deduction."%";
+                             // $data['deductionPercentage'] = $deduction."%";
                               $deductAmt = round($paidAmount-$refundAmt,2);
                               $data['deductAmount'] = $deductAmt;
                               $data['totalfare'] = $paidAmount;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt);
-                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
+                              //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                              //$data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
                            
                               return $data;   
                           }
@@ -540,6 +540,32 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
+
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+
+            if($pnr_dt->origin=='DOLPHIN'){    
+                $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
+
+               
+    
+                 if(isset($booking_detail[0])){ 
+                       
+                            $dolphin_cancel_det= $this->dolphinTransformer->cancelTicketInfo($pnr_dt->api_pnr);                      
+                             if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
+                                return 'Ticket_already_cancelled';
+                             }
+    
+                                $emailData['cancel_status'] ="true";
+                                $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
+                                $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
+                               return $emailData;
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }        
+            elseif($pnr_dt->origin=='ODBUS'){
+
 
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             if(isset($booking_detail[0])){ 
@@ -610,9 +636,10 @@ class ClientBookingService
                               return $data;   
                           }
                       }                          
-          }else{         
-              return "INV_CLIENT";            
-          }
+            }else{         
+                return "INV_CLIENT";            
+            }
+            }
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
@@ -642,6 +669,30 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
+
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+
+            if($pnr_dt->origin=='DOLPHIN'){    
+                $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
+            
+                        if(isset($booking_detail[0])){ 
+                            
+                            $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
+                            if($dolphin_cancel_det['Status']==0){
+                                return 'Ticket_already_cancelled';
+                            }                        
+        
+                                $emailData['cancel_status'] ="true";
+                                $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
+                                $emailData['totalfare'] = $booking_detail[0]->payable_amount;  
+                               return $emailData;
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }        
+            elseif($pnr_dt->origin=='ODBUS'){
+
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             if(isset($booking_detail[0])){ 
                
@@ -801,8 +852,9 @@ class ClientBookingService
                           }
                       }                          
             } 
-          else{            
+            else{            
               return "INV_CLIENT";            
+            }
           }
         } catch (Exception $e) {
             Log::info($e->getMessage());
