@@ -455,7 +455,33 @@ class ClientBookingService
         try {        
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
-            $booked = Config::get('constants.BOOKED_STATUS');           
+            $booked = Config::get('constants.BOOKED_STATUS');   
+
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+
+            if($pnr_dt->origin=='DOLPHIN'){    
+                $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
+
+               
+    
+                 if(isset($booking_detail[0])){ 
+                       
+                            $dolphin_cancel_det= $this->dolphinTransformer->cancelTicketInfo($pnr_dt->api_pnr);                      
+                             if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
+                                return 'Ticket_already_cancelled';
+                             }
+    
+                                $emailData['cancel_status'] ="true";
+                                $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
+                                $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
+                               return $emailData;
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }        
+            elseif($pnr_dt->origin=='ODBUS'){
+
 
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             if(isset($booking_detail[0])){ 
@@ -525,8 +551,9 @@ class ClientBookingService
                               return $data;   
                           }
                       }                          
-          }else{         
-              return "INV_CLIENT";            
+            }else{         
+                return "INV_CLIENT";            
+            }
           }
         } catch (Exception $e) {
             Log::info($e->getMessage());
@@ -542,6 +569,7 @@ class ClientBookingService
             $booked = Config::get('constants.BOOKED_STATUS');
 
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+
 
             if($pnr_dt->origin=='DOLPHIN'){    
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
@@ -867,6 +895,77 @@ class ClientBookingService
         try {
             $pnr = $request['pnr'];
             $mobile = $request['mobile'];
+
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
+
+            if($pnr_dt->origin=='DOLPHIN'){
+
+                $booking_detail = $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr); 
+
+                if(isset($booking_detail[0])){ 
+                    if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 
+                      
+                        $departureTime = $booking_detail[0]->booking[0]->boarding_time;
+                        $arrivalTime = $booking_detail[0]->booking[0]->dropping_time;
+                        $depTime = date("h:i A",strtotime($departureTime));
+                        $arrTime = date("h:i A",strtotime($arrivalTime)); 
+    
+                        $jdays=0;
+
+                        if(stripos($depTime,'AM') > -1 && stripos($arrTime,'PM') > -1){
+                            $jdays = 1;                           
+                            $departureTime =date("Y-m-d ".$departureTime);
+                            $arrivalTime =date("Y-m-d ".$arrivalTime);
+                        }
+    
+                        if(stripos($depTime,'PM') > -1 && stripos($arrTime,'AM') > -1){
+                            $jdays = 2;
+                            $tomorrow = date("Y-m-d", strtotime("+1 day"));
+                            $departureTime =date("Y-m-d ".$departureTime);
+                            $arrivalTime =$tomorrow." ".$arrivalTime; 
+                        }
+
+                        $j_endDate = $booking_detail[0]->booking[0]->journey_dt;
+
+                        $arr_time = new DateTime($arrivalTime);
+                        $dep_time = new DateTime($departureTime);
+                        $totalTravelTime = $dep_time->diff($arr_time);
+                        $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+    
+                        switch($jdays)
+                        {
+                            case(1):
+                                $j_endDate = $booking_detail[0]->booking[0]->journey_dt;
+                                break;
+                            case(2):
+                                $j_endDate = date('Y-m-d', strtotime('+1 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                                break;
+                            case(3):
+                                $j_endDate = date('Y-m-d', strtotime('+2 day', strtotime($booking_detail[0]->booking[0]->journey_dt)));
+                                break;
+                        }
+    
+    
+                         $booking_detail[0]->booking[0]['source']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
+                         $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);  
+                         $booking_detail[0]->booking[0]['journeyDuration'] =  $totalJourneyTime;
+                         $booking_detail[0]->booking[0]['journey_end_dt'] =  $j_endDate;           
+                         $booking_detail[0]->booking[0]['created_date'] = date('Y-m-d',strtotime($booking_detail[0]->booking[0]['created_at']));           
+                                          
+                         
+                       // return $booking_detail;                  
+                    }                
+                    else{                
+                         return "PNR_NOT_MATCH";                
+                    }
+                }            
+                else{            
+                    return "MOBILE_NOT_MATCH";            
+                }
+
+            }else{
+
             $booking_detail = $this->clientBookingRepository->bookingDetails($mobile,$pnr); 
 
             if(isset($booking_detail[0])){ 
@@ -916,6 +1015,62 @@ class ClientBookingService
             else{            
                 return "MOBILE_NOT_MATCH";            
             }
+         }
+
+         $response['name']=$booking_detail[0]->name;
+         $response['email']=$booking_detail[0]->email;
+         $response['phone']=$booking_detail[0]->phone;
+         $response['transaction_id']=$booking_detail[0]->transaction_id;
+         $response['pnr']=$booking_detail[0]->booking[0]->pnr;
+         $response['journey_dt']=$booking_detail[0]->booking[0]->journey_dt;
+         $response['source']=$booking_detail[0]->booking[0]->source[0]->name;
+         $response['destination']=$booking_detail[0]->booking[0]->destination[0]->name;
+         $response['boarding_point']=$booking_detail[0]->booking[0]->boarding_point;
+         $response['dropping_point']=$booking_detail[0]->booking[0]->dropping_point;
+         $response['boarding_time']=$booking_detail[0]->booking[0]->boarding_time;
+         $response['dropping_time']=$booking_detail[0]->booking[0]->dropping_time;
+         $response['origin']=$booking_detail[0]->booking[0]->origin;
+         $response['status']=$booking_detail[0]->booking[0]->status;
+         $response['booking_status']=($booking_detail[0]->booking[0]->status==1) ? 'Confirmed' : 'Cancelled';
+         $response['total_fare']=$booking_detail[0]->booking[0]->payable_amount;
+
+         if(is_array($booking_detail[0]->booking[0]->bus)){
+            $response['bus_name']=$booking_detail[0]->booking[0]->bus['name'];
+            $response['bus_number']=$booking_detail[0]->booking[0]->bus['bus_number'];
+            $response['cancellationslabs']=$booking_detail[0]->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
+         }
+
+         if(is_object($booking_detail[0]->booking[0]->bus)){
+            $response['bus_name']=$booking_detail[0]->booking[0]->bus->name;
+            $response['bus_number']=$booking_detail[0]->booking[0]->bus->bus_number;
+            $response['cancellationslabs']=$booking_detail[0]->booking[0]->cancellationslabs->cancellation_slab_info;
+         }
+        
+        
+         $response['journeyDuration']=$booking_detail[0]->booking[0]->journeyDuration;
+
+         $passenger_details=[];
+
+         foreach($booking_detail[0]->booking[0]->bookingDetail as $bd){
+            $ps['name']=$bd->passenger_name;
+            $ps['gender']=$bd->passenger_gender;
+            $ps['age']=$bd->passenger_age;
+
+            if($booking_detail[0]->booking[0]->origin=='DOLPHIN'){
+                $ps['seat_name']=$bd->seat_name;
+            }
+
+            if($booking_detail[0]->booking[0]->origin=='ODBUS'){
+                $ps['seat_name']=$bd->busSeats->seats->seatText;
+            }
+
+            $passenger_details[]= $ps;
+            
+         }
+
+         $response['passenger_details']=$passenger_details;
+
+         return $response;
             
         } catch (Exception $e) {
             Log::info($e->getMessage());
