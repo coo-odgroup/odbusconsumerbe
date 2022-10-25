@@ -196,8 +196,6 @@ class ClientBookingService
 
             $amount = $records[0]->total_fare;
 
-            Log::info($amount);
-
                
             /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
 
@@ -582,9 +580,11 @@ class ClientBookingService
                              if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
                                 return 'Ticket_already_cancelled';
                              }
+
+                            // Log::info($booking_detail[0]);
     
                                 $emailData['cancel_status'] ="true";
-                                $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
+                                $emailData['refundAmount'] = (int)$dolphin_cancel_det['RefundAmount'];                                
                                 $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
                                return $emailData;
                     }    
@@ -704,6 +704,10 @@ class ClientBookingService
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
             
                         if(isset($booking_detail[0])){ 
+
+                            $userId = $booking_detail[0]->user_id;
+                                $bookingId = $booking_detail[0]->id;
+
                             
                             $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
                             if($dolphin_cancel_det['Status']==0){
@@ -711,8 +715,26 @@ class ClientBookingService
                             }                        
         
                                 $emailData['cancel_status'] ="true";
-                                $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
-                                $emailData['totalfare'] = $booking_detail[0]->payable_amount;  
+                                $emailData['refundAmount'] = (int)$dolphin_cancel_det['RefundAmount'];                                
+                                $emailData['totalfare'] = $totalfare=$booking_detail[0]->payable_amount;  
+
+                              
+
+                                $data['refundAmount']=$refundAmt=$dolphin_cancel_det['RefundAmount'];
+
+                                $deductAmount =  $booking_detail[0]->payable_amount - $dolphin_cancel_det['RefundAmount'];
+
+                                $deduction=round((($deductAmount / $totalfare) * 100),1);
+                                $data['Percentage'] = $deduction;
+                                $data['deductAmount'] = $deductAmount;
+                                $data['totalfare'] = $totalfare;
+                                $cancelComCal = $this->cancelCommission($userId,$deductAmount);
+                                $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                                $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
+
+                                
+                                $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
+                                
                                return $emailData;
                     }    
                     else{                

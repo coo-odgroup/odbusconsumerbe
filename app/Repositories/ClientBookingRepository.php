@@ -623,7 +623,7 @@ class ClientBookingRepository
             ['status', '=', $booked], 
             ['user_id', '=', $clientId],  
             ])
-            ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare')
+            ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare','payable_amount')
             ->with(['users'=> function($u){
             $u->select('id','name','email','phone');   
             }])
