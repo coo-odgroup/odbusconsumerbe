@@ -44,8 +44,10 @@ class ClientBookingRepository
     protected $channelRepository; 
     protected $dolphinTransformer;
     protected $listingService; 
+    protected $users;
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,ListingService $listingService,DolphinTransformer $dolphinTransformer)
+
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,ListingService $listingService,DolphinTransformer $dolphinTransformer,Users $users)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -58,6 +60,8 @@ class ClientBookingRepository
         $this->viewSeatsService = $viewSeatsService;
         $this->listingService = $listingService; 
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->users = $users;
+
 
     }   
     

@@ -1006,7 +1006,7 @@ class ClientBookingService
                      //$booking_detail[0]->booking[0]['created_date'] = date('Y-m-d',strtotime($booking_detail[0]->booking[0]['created_at']));           
                      //$booking_detail[0]->booking[0]['updated_date'] =   date('Y-m-d',strtotime($booking_detail[0]->booking[0]['updated_at']));                    
                      
-                    return $booking_detail;                  
+                   // return $booking_detail;                  
                 }                
                 else{                
                      return "PNR_NOT_MATCH";                
@@ -1043,7 +1043,7 @@ class ClientBookingService
          if(is_object($booking_detail[0]->booking[0]->bus)){
             $response['bus_name']=$booking_detail[0]->booking[0]->bus->name;
             $response['bus_number']=$booking_detail[0]->booking[0]->bus->bus_number;
-            $response['cancellationslabs']=$booking_detail[0]->booking[0]->cancellationslabs->cancellation_slab_info;
+            $response['cancellationslabs']=$booking_detail[0]->booking[0]->bus->cancellationslabs->cancellation_slab_info;
          }
         
         
