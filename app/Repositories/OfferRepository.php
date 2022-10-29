@@ -40,7 +40,7 @@ class OfferRepository
                                   ->with(['coupon' => function ($a){
                                     $a->where('status',1);
                                     }])
-                                  ->get(['id','coupon_id','user_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time','slider_description']);
+                                  ->get(['id','coupon_id','user_id','occassion','category','url','slider_photo','alt_tag','start_date','start_time','end_date','end_time','slider_description','android_image']);
 
        
         return $allOffers;    
