@@ -79,6 +79,8 @@ class HomepageService
                     $o->slider_photo= $path->sliderphoto_url.$o->slider_photo;
                     if($o->android_image){
                         $o->android_image= $path->sliderphoto_url.$o->android_image;
+                    }else{
+                        $o->android_image='';
                     }
                     
                 }
