@@ -77,6 +77,10 @@ class HomepageService
             if($offer){
                 foreach($offer as $o){
                     $o->slider_photo= $path->sliderphoto_url.$o->slider_photo;
+                    if($o->android_image){
+                        $o->android_image= $path->sliderphoto_url.$o->android_image;
+                    }
+                    
                 }
             }
 
