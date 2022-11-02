@@ -991,6 +991,7 @@ class ListingService
             /////////////day wise seize time change////////////////////////////////
             $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$ticketPriceId)
                                           ->where('seized_date', $entry_date)
+                                           ->where('status', 1)
                                           ->get('seize_booking_minute');    
             if(!$dayWiseSeizeTime->isEmpty()){
                 $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
