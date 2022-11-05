@@ -141,7 +141,9 @@ class AgentBookingRepository
         $booking->transactionFee = $bookingInfo['transactionFee'];
 
         if(isset($bookingInfo['adj_note'])){
-            $booking->booking_adj_note = $bookingInfo['adj_note'];            
+            $booking->booking_adj_note = $bookingInfo['adj_note']; 
+            $booking->adjust_pnr = $bookingInfo['adjust_pnr'];            
+
         }
 
         if(isset($bookingInfo['status'])){
