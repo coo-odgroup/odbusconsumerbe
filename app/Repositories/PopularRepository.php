@@ -57,6 +57,12 @@ class PopularRepository
         return $this->location->where('id',$sourceId)->get();
     }
 
+    public function getDolhinRoute($id){ 
+        return $this->location->where('dolphin_id',$id)->get();
+    }
+
+    
+
     public function getBusIds(){
         return  $this->booking
         ->select('bus_id',(DB::raw('count(*) as count')))

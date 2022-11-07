@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
+use App\Services\DolphinService;
+
 
 use InvalidArgumentException;
 
@@ -16,12 +18,16 @@ class PopularService
     protected $popularRepository; 
     protected $commonRepository;   
     protected $dolphinTransformer;
+    protected $dolphinService;
 
-    public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository,DolphinTransformer $dolphinTransformer)
+
+    public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository,DolphinTransformer $dolphinTransformer, DolphinService $dolphinService)
     {
         $this->popularRepository = $popularRepository;
         $this->commonRepository = $commonRepository;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->dolphinService=$dolphinService;
+
 
     }
 
@@ -131,6 +137,9 @@ class PopularService
        
         $routenames = $this->popularRepository->getAllRoutes();
 
+        $DolphinCity=$this->dolphinService->GetCityPair();
+
+
         $BusList=[];
 
         foreach($routenames as $route){
@@ -154,6 +163,33 @@ class PopularService
                 }
            
         } 
+
+        foreach($DolphinCity as $d){
+
+            $srcId = $d['FromCityID'];
+            $destId = $d['ToCityID'];
+            $count = 0;
+            $src = $this->popularRepository->getDolhinRoute($srcId);
+            $dest= $this->popularRepository->getDolhinRoute($destId);
+            $BusList= [];
+
+            if($src && isset($src[0]) && $dest && isset($dest[0])){
+
+                $allRoutes[] = array(
+                    "source" => $src,
+                    "destination" => $dest,
+                    "count" => $count,
+                    "BusList" => $BusList,
+                );
+
+            }
+       
+    }
+
+
+
+    
+
         return $allRoutes;
 
     }
