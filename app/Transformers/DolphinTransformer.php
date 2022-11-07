@@ -45,6 +45,22 @@ class DolphinTransformer
 
         
     }
+
+    public function GetCityPair(){
+       $data=  $this->DolphinService->GetCityPair();
+
+       $result=[];
+
+       if($data){
+        foreach($data as $v){            
+                $v2['from']=$v['FromCity'];
+                $v2['to']=$v['ToCity'];
+                $result[]=$v2;
+        }
+       }
+
+       return  $result;
+    }
     
     public function BusList($request,$clientRole,$clientId){
          $srcResult= $this->listingRepository->getLocationID($request['source']);
