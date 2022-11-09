@@ -124,7 +124,15 @@ class PopularService
            
         } 
 
-        $allRoutes= collect($DolphinCity)->concat(collect($allRoutes))->unique();
+        if($DolphinCity){
+            foreach($DolphinCity as $d){
+
+                $allRoutes[] = $d;
+
+            }
+        }
+
+      //  $allRoutes= collect($DolphinCity)->concat(collect($allRoutes))->unique();
 
         return $allRoutes;
 

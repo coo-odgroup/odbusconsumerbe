@@ -53,8 +53,8 @@ class DolphinTransformer
 
        if($data){
         foreach($data as $v){            
-                $v2['from']=$v['FromCity'];
-                $v2['to']=$v['ToCity'];
+                $v2['source']=$v['FromCity'];
+                $v2['destination']=$v['ToCity'];
                 $result[]=$v2;
         }
        }
