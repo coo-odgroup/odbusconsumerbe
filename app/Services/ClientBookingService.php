@@ -10,6 +10,7 @@ use App\Repositories\BookingManageRepository;
 use App\Repositories\CommonRepository;
 use App\Models\TicketPrice;
 use App\Models\BusCancelled;
+use App\Models\BookingSeized;
 use App\Models\Booking;
 use App\Models\BusSeats;
 use App\Models\ClientFeeSlab;
