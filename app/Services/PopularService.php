@@ -177,8 +177,8 @@ class PopularService
             $srcId = $d['FromCityID'];
             $destId = $d['ToCityID'];
             $count = 0;
-            $src = $this->popularRepository->getDolhinRoute($srcId);
-            $dest= $this->popularRepository->getDolhinRoute($destId);
+            $src = $this->popularRepository->getDolphinRoute($srcId);
+            $dest= $this->popularRepository->getDolphinRoute($destId);
             $BusList= [];
 
             if($src && isset($src[0]) && $dest && isset($dest[0])){

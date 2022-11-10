@@ -57,7 +57,7 @@ class PopularRepository
         return $this->location->where('id',$sourceId)->get();
     }
 
-    public function getDolhinRoute($id){ 
+    public function getDolphinRoute($id){ 
         return $this->location->where('dolphin_id',$id)->get();
     }
 
