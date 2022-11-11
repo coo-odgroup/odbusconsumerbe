@@ -108,7 +108,7 @@ class MantisTransformer
                 $dep_time = new DateTime($bus->DeptTime);
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
-        
+
                 $cancellationDuration=[];
                 $cancellationDuduction=[];
 

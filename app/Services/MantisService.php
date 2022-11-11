@@ -122,7 +122,7 @@ class MantisService
     {
         $res = [];
         try{
-          $token = "79FC687F06C0493F65D579A22A3CE6E6|50-S|202211041512||FFFF";
+          $token = "D4FF124914D8B8798D2A423D2AB251A1|50-S|202211181346||FFFF";
           $response = Http::withToken($token)->get($this->cityurl);
           //return $response;
           $cityLists[] = response()->json(json_decode($response)->data);
