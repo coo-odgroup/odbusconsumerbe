@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use DateTime;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 class ListingService
 {
@@ -28,13 +29,15 @@ class ListingService
     protected $listingRepository; 
     protected $commonRepository;  
     protected $dolphinTransformer;
+    protected $mantisTransformer;
     
-    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(ListingRepository $listingRepository,CommonRepository $commonRepository,ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->listingRepository = $listingRepository;
         $this->commonRepository = $commonRepository;
         $this->viewSeatsRepository = $viewSeatsRepository;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
     }
     public function getAll($request,$clientRole,$clientId)
     {  
@@ -59,13 +62,22 @@ class ListingService
 
          $selCouponRecords = $this->listingRepository->getAllCoupon();
          $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date, $userId); 
-         //return $busDetails;
+        //return $busDetails;
+        ////////////////////////////Mantis changes///////////////////////////////////////////
+        $mantisShowRecords = [];
+        $mantisShowSoldoutRecords =[];
 
+        $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
+        //return $mantisResult;
+        $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
+        $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
+
+
+
+        ///////////////////////////////////////////////////
 
          $DolPhinshowRecords = [];
          $DolPhinShowSoldoutRecords =[];
-
-
 
          //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
 
@@ -255,26 +267,24 @@ class ListingService
 
                // $ListingRecords = collect($showRecords)->concat(collect($hideRecords));
                // $showRecords = collect($showRecords)->sortBy([ $sortar]);
-                $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([ $sortar]);
+                $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
+
                 $hideRecords = collect($hideRecords)->sortBy([$sortar]);
                 $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($HideSoldoutRecords));
-                $ListingRecords = $showRecords->concat($soldoutRecords)->concat(collect($DolPhinShowSoldoutRecords));
+                $ListingRecords = $showRecords->concat($soldoutRecords)->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords));
+   
                 $ListingRecords = $ListingRecords->concat($hideRecords);
             }else{
-                $ListingRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([
-                    $sortar
-                 ]);
-
-               $ListingRecords = $ListingRecords->concat(collect($ShowSoldoutRecords))->concat(collect($DolPhinShowSoldoutRecords));
+                $ListingRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
+                    
+               $ListingRecords = $ListingRecords->concat(collect($ShowSoldoutRecords))->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords));
             } 
          }
          
          else{
-            $ListingRecords= collect($ListingRecords)->concat(collect($DolPhinshowRecords))->sortBy([
-                $sortar
-                ]);
-
-             $ListingRecords = $ListingRecords->concat(collect($DolPhinShowSoldoutRecords));
+            $ListingRecords= collect($ListingRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
+                
+             $ListingRecords = $ListingRecords->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords));
         }
         return $ListingRecords;  
 
@@ -879,9 +889,23 @@ class ListingService
         $selCouponRecords = $this->listingRepository->getAllCoupon();
         $busDetails = $this->listingRepository->getticketPrice($sourceID,$destinationID,$busOperatorId,$entry_date,$userId);  
 
+        ///////Mantis changes////////////////////
+
+        $mantisResult = [];
+
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
+    
+            $mantisShowRecords = [];
+            $mantisShowSoldoutRecords = [];   
+            $mantisResult = $this->mantisTransformer->Filter($request,$clientRole,$clientId); // getting Mantis buslist
+            //}
+        }
+        $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
+        $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
+
+        /////////////////////////////////////////
 
         $dolphinresult=[];
-
 
         if( ($operatorId != null && count($operatorId)!=0 && in_array('Dolphin',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
 
@@ -1084,33 +1108,30 @@ class ListingService
         if ($price == 0){
 
             $sortar= ['startingFromPrice', 'desc'];           
-            
-             $hideRecords = collect($hideRecords)->sortBy([$sortar]);
-             $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
+            $hideRecords = collect($hideRecords)->sortBy([$sortar]);
+            $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
           
          }
 
          else if($price == 1){
 
             $sortar= ['startingFromPrice', 'asc'];
-            $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
-              $hideRecords = collect($hideRecords)->sortBy([$sortar]);           
-         }     
-       else{ 
+            $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
 
-          $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->sortBy([$sortar]);
-          $hideRecords = collect($hideRecords)->sortBy([$sortar]);
-          
+            $hideRecords = collect($hideRecords)->sortBy([$sortar]);           
+         }     
+        else{ 
+          $showRecords = collect($showRecords)->concat(collect($DolPhinshowRecords))->concat(collect($mantisShowRecords))->sortBy([$sortar]);
+
+          $hideRecords = collect($hideRecords)->sortBy([$sortar]);  
         }
 
 
-        $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($HideSoldoutRecords));
+        $soldoutRecords = collect($ShowSoldoutRecords)->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords))->concat(collect($HideSoldoutRecords));
 
         $ListingRecords = $showRecords->concat($soldoutRecords);
         return $ListingRecords->concat($hideRecords);
-
     }  
-
      else{
 
         if($price == 0){
@@ -1119,8 +1140,8 @@ class ListingService
          else if($price == 1){
            $sortar= ['startingFromPrice', 'asc'];
         } 
-        $ListingRecords =  collect($DolPhinshowRecords)->sortBy([$sortar]);
-        return $ListingRecords->concat(collect($DolPhinShowSoldoutRecords));
+        $ListingRecords = collect($DolPhinshowRecords)->concat(collect($mantisShowRecords))->sortBy([$sortar]);
+        return $ListingRecords->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords));
     } 
     
     }
@@ -1222,6 +1243,10 @@ class ListingService
 
     public function UpdateExternalApiLocation(){
         return $this->listingRepository->UpdateExternalApiLocation();
+    }
+
+    public function updateMantisApiLocation(){
+        return $this->listingRepository->updateMantisApiLocation();
     }
    
 }

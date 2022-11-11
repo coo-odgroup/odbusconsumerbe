@@ -588,4 +588,9 @@ class ListingController extends Controller
         return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
 
     }
+    public function updateMantisApiLocation(){
+        $details = $this->listingService->updateMantisApiLocation();
+        return $this->successResponse($details,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+
+    }
 }

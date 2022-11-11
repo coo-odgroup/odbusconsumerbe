@@ -161,6 +161,7 @@ Route::get('/countries', [SoapController::class, 'getCountries']);
 Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
 
+Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
 
 Route::post('/GetToken', [MantisController::class, 'getToken']);
 

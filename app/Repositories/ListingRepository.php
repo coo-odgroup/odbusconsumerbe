@@ -34,6 +34,7 @@ use App\Repositories\ViewSeatsRepository;
 use App\Models\BookingDetail;
 use Illuminate\Support\Str;
 use App\Services\DolphinService;
+use App\Services\MantisService;
 
 
 use DateTime;
@@ -62,9 +63,10 @@ class ListingRepository
     protected $viewSeatsRepository;
     protected $busLocationSequence;
     protected $dolphinService;
+    protected $mantisService;
     
 
-    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence, DolphinService $dolphinService)
+    public function __construct(Bus $bus,Location $location,BusOperator $busOperator,BusStoppageTiming $busStoppageTiming,BusType $busType,Amenities $amenities,BoardingDroping $boardingDroping,BusClass $busClass,SeatClass $seatClass,BusSeats $busSeats,TicketPrice $ticketPrice,BusScheduleDate $busScheduleDate,BusSchedule $busSchedule, Booking $booking,CommonRepository $commonRepository, ViewSeatsRepository $viewSeatsRepository, BusLocationSequence $busLocationSequence, DolphinService $dolphinService,MantisService $mantisService)
     {
         $this->bus = $bus;
         $this->location = $location;
@@ -83,6 +85,7 @@ class ListingRepository
         $this->viewSeatsRepository = $viewSeatsRepository;
         $this->busLocationSequence=$busLocationSequence;
         $this->dolphinService=$dolphinService;
+        $this->mantisService = $mantisService;
      }   
 
      public function getLocation($searchValue)
@@ -659,4 +662,63 @@ class ListingRepository
       return $location;
     }
 
-}
+    ////////Mantis Location save/////////////
+
+  public function updateMantisApiLocation(){
+
+        $mantisdata = $this->mantisService->getCityList();
+        //return $mantisdata; 
+        $locationUpdated=0;
+        $locationAdded=0;
+   
+       if($mantisdata){
+           foreach($mantisdata as $data){
+            //return $data->City;
+               $loc = $this->location
+               ->where('name',$data->City)
+               ->where('status','!=',2)
+               ->get();
+
+                   if(count($loc) == 0)
+                   {
+                       $location = new $this->location;
+                       $insertData['name'] = $data->City;  
+                       $insertData['synonym'] = $data->City;  
+                       $insertData['is_mantis'] = 1;
+                       $insertData['mantis_id'] = $data->CityId;
+                       $location=$this->LocModel($insertData,$location);
+                       $location->save();
+   
+                       $locationAdded++;   
+                   }else{
+                       $location = $this->location->find($loc[0]->id);
+                       $updateData['name'] = $data->City;    
+                       $updateData['synonym'] = $data->City; 
+                       $updateData['is_mantis'] = 1;
+                       $updateData['mantis_id'] = $data->CityId;
+                       $location=$this->LocModel($updateData,$location);
+                       $location->update();
+   
+                       $locationUpdated++;   
+                   }  
+           }
+       }
+    }
+
+    public function LocModel($data, Location $location)
+    { 
+        $trim = trim( $data['name']);
+        $remove_space= str_replace(' ', '-', $trim);  
+        $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space);             
+        $url = strtolower($remove_special_char);
+
+        $location->name = $data['name'];
+        $location->url = $url;
+        $location->synonym = $data['synonym'];
+        $location->is_mantis = $data['is_mantis'];
+        $location->status = 1;
+        $location->mantis_id = $data['mantis_id'];
+        $location->created_by = 'CRON JOB';
+        return $location;
+    }
+  }

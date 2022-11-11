@@ -19,7 +19,7 @@ use App\Models\OwnerFare;
 use App\Models\BusOwnerFare;
 use App\Transformers\DolphinTransformer;
 use App\Models\IncomingApiCompany;
-
+use App\Transformers\MantisTransformer;
 
 
 
@@ -27,14 +27,14 @@ class ViewSeatsService
 {
     protected $dolphinTransformer;
     protected $viewSeatsRepository;    
-    public function __construct(ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->dolphinTransformer = $dolphinTransformer;
         $this->viewSeatsRepository = $viewSeatsRepository;
+        $this->mantisTransformer = $mantisTransformer;
     }
     public function getAllViewSeats($request,$clientRole,$clientId)
     {
-
         $booked = Config::get('constants.BOOKED_STATUS');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $lowerBerth = Config::get('constants.LOWER_BERTH');
@@ -49,9 +49,16 @@ class ViewSeatsService
         $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
         $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
-        if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+        if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
             return 'Invalid Origin';
-        }else if($origin=='DOLPHIN'){
+        }
+        ////////////////Mantis changes/////////////////
+        else if($origin == 'MANTIS'){
+            $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$journeyDate,$busId,$clientRole,$clientId);
+            return $mantisSeatresult;
+        }
+        //////////////////////////////////////////////
+        else if($origin=='DOLPHIN'){
 
             if($ReferenceNumber ==''){
 
