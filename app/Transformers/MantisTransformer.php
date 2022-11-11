@@ -108,7 +108,7 @@ class MantisTransformer
                 $dep_time = new DateTime($bus->DeptTime);
                 $totalTravelTime = $dep_time->diff($arr_time);
                 $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
-
+        
                 $cancellationDuration=[];
                 $cancellationDuduction=[];
 
@@ -149,7 +149,7 @@ class MantisTransformer
                     "totalSeats"=> $bus->BusStatus->Availability,
                     "seaters"=> '',
                     "sleepers"=> '',
-                    "startingFromPrice"=> $bus->BusStatus->BaseFares, 
+                    "startingFromPrice"=> implode(".", $bus->BusStatus->BaseFares), 
                     "departureTime"=> date("H:i",strtotime($bus->DeptTime)),
                     "arrivalTime"=> date("H:i",strtotime($bus->ArrTime)),
                     "totalJourneyTime"=> $totalJourneyTime, 
