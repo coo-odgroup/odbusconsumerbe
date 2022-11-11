@@ -228,4 +228,9 @@ class PopularController extends Controller
             
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     }
+
+    public function CityPair() {
+        $response = $this->popularService->CityPair();      
+        return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    } 
 }

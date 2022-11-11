@@ -11,9 +11,9 @@
   body {
     margin: 0;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    font-size: 1rem;
+    font-size: 13px;
     font-weight: 400;
-    line-height: 1.5;
+    line-height:14px;
     color: #212529;
     text-align: left;
     /* background-color: #f5f7ff; */
@@ -41,8 +41,8 @@ h1, h2, h3, h4, h5, h6 {
    .row {
     display: flex;
     /*flex-wrap: wrap;*/
-    margin-right: -15px;
-    margin-left: -15px;
+    /* margin-right: -15px;
+    margin-left: -15px; */
 }
 .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto{
     position: relative;
@@ -125,7 +125,7 @@ border-top: 2px solid #dee2e6;
 
 .table-sm th,
 .table-sm td {
-padding: 0.3rem;
+padding: 0.2rem;
 }
 
 .table-bordered {
@@ -222,7 +222,7 @@ border: 0;
 
    .od-body{
        /* background: #ffffff; */
-       padding:6px;
+       padding:0px;
        margin-top: 15px;
        border-radius: 4px;
    }
@@ -246,7 +246,7 @@ border: 0;
    }
 
    .od-body ul li {
-    margin-bottom: 8px;
+    margin-bottom:4px;
     font-size:12px;
    }
 
@@ -329,7 +329,7 @@ border: 0;
   }
 
   .odbox1 ol{
-    margin-left:13px;
+    margin-left:5px;
   }
 
   .odbox2{
@@ -339,20 +339,31 @@ border: 0;
   }
 
   .odbox2 p{
-    font-size:14px;
+    font-size:12px;
     color: #000000;
     font-weight: 300;
-    margin-bottom: 5px;
+    margin-bottom:0px;
     margin-top: 1px;
+    line-height:14px;
   }
 
   .odbox3 p{
     font-size:14px;
     color: #000000;
     font-weight: 500;
-    margin-bottom: 5px;
+    margin-bottom:0px;
     margin-top: 2px;
     text-align: right;
+    line-height:14px;
+  }
+
+p{
+    font-size:12px;
+    color: #000000;
+    font-weight:400;
+    margin-bottom:6px;
+    margin-top: 1px;
+    line-height:16px;
   }
 
 
@@ -440,23 +451,30 @@ border: 0;
 <!-- /Head -->
 
 <body>
-  <div style=" padding:20px 0;">
+  <div style=" padding:0px 0;">
     <div class="container">
         <div class="od-body mb25" style="background:#112f77; border-radius:0px ; border-top-left-radius:8px; border-top-right-radius:8px; margin-top: 0px; margin-bottom: 0px; padding-bottom: 0px; padding-top: 0; padding-left: 0px; padding-right: 0px;">
-           <div class="row mb40">
-              
-               <div  style="padding-left: 15px; text-align: center;"><img src="{{url('public/template/logo.png')}}" style="margin-top:15px;" class="od-logo"/><br/>
-               <span style="color:#ffffff;"><strong>ODBus Ticket Information</strong></span></div>     
-                 
-           </div>
+        <table style="width:100%">
+        <tr>
+          <td style="width:86%;"><div style="padding-left: 15px; width:90%; float: left;  text-align: left;">
+                <img src="https://provider.odbus.co.in/public/uploads/logo/2071106438-odbus-logo.png" style="margin-top:15px;" class="od-logo"/><br/>
+                <span style="color:#ffffff;"><strong>ODBus Ticket Information</strong></span>
+               </div> </td>
+          <td style="width:80px; padding-top: 15px; padding-bottom:10px;" > <img src="https://www.odtravels.in/email/qr-code.png" style="width:70px;"/></td>
+        </tr>
+        </table>
+        
            <div style="background: #000000; padding: 8px; text-align: center; color: #ffffff; font-size: 15px;">
-           <img src="https://www.odtravels.in/email/qr-code.png" width="80"/><br>
-           {{$source}}-{{$destination}} on {{date('j \\ F Y', strtotime($journeydate))}}</div>
+           
+           {{$source}}-{{$destination}} on {{date('j \\ F Y', strtotime($journeydate))}}
+          </div>
          </div>
+
+
          <div class="od-body mb25" style="background:#ffffff; border-top-left-radius:0px; border-top-right-radius:0px; margin-top: 0px; padding-top: 0; ">
-           <div class="row  mt30 mb25">
-            <div class="col-md-12 odtext24">
-                <h3>JOURNEY DETAILS:</h3>
+           <div class="mt30 mb25">
+            <div class="odtext24">
+            <p style="font-size: 14px; margin-top:8px;"><strong>JOURNEY DETAILS:</strong></p>
                 <table bgcolor="#ffffff" class="table table-bordered">
                     <thead>
                       <tr>
@@ -519,7 +537,7 @@ border: 0;
                     </tbody>
                   </table>   
 
-                  <h3>PASSENGER DETAILS:</h3>
+                  <p style="font-size: 14px"><strong>PASSENGER DETAILS:</strong></p>
                 <table class="table table-bordered " style="overflow-x: scroll;">
                     <thead>
                       <tr>
@@ -533,17 +551,17 @@ border: 0;
                     <tbody>
                     @foreach($passengerDetails as $passenger) 
                         <tr>
-                        <th scope="row">{{$loop->iteration}}</th>
-                        <td>{{$passenger['passenger_name']}} </td>
-                        <td>{{$passenger['passenger_age']}}</td>
-                        <td>{{$passenger['passenger_gender']}}</td>
-                        <td>CNF/SEAT/{{$seat_no[$loop->index]}}</td>
+                        <th scope="row" style="text-align: center;" >{{$loop->iteration}}</th>
+                        <td scope="row" style="text-align: center;" >{{$passenger['passenger_name']}} </td>
+                        <td scope="row" style="text-align: center;" >{{$passenger['passenger_age']}}</td>
+                        <td scope="row" style="text-align: center;" >{{$passenger['passenger_gender']}}</td>
+                        <td scope="row" style="text-align: center;" >CNF/SEAT/{{$seat_no[$loop->index]}}</td>
                         </tr>
                     @endforeach  
                     </tbody>
                   </table>
 
-                  <h3>FARE BREAKUP</h3>
+                  <p style="font-size: 14px"><strong>FARE BREAKUP</strong></p>
                    <table class="table table-bordered"> 
                     <tbody>
                       <tr>
@@ -582,9 +600,9 @@ border: 0;
                     </tbody>
                   </table>
 
-                  <br><br><br><br><br><br>
+                  <br>
 
-                  <h3>Cancellation Policy</h3>
+                  <p style="font-size: 14px"><strong>Cancellation Policy</strong></p>
                    <table class="table table-bordered">
                     <thead>
                       <tr>
@@ -603,7 +621,7 @@ border: 0;
                     </tbody>
                   </table>
 
-                  <h3>TERMS & CONDITIONS</h3>
+                  <p style="font-size: 16px"><strong>TERMS & CONDITIONS</strong></p>
                   <p style="font-size: 14px"><strong>Are Not Odbus Responsibilities</strong></p>
 <ul>
 <li>Any incorrect data provided by customer while booking the ticket.</li>
@@ -637,14 +655,14 @@ border: 0;
 <li>Cancellation charges are applicable on Base fare not on the discounted .</li>
 </ul>   
 
+<div style="padding: 15px 15px; background: #f5f7ff; border-radius: 8px;" >
+<p style="font-size: 14px"><strong>Contact Information</strong></p>
+<p style="font-size: 12px margin-bottom: 5px;">ODBUS Helpline (07:00 AM To 11:00 PM):9583-918-888 (For Online Booking issue or Online Cancellation issue.) </p>
+<p style="font-size: 12px margin-bottom: 5px;">ODBUS Customer Support Email (Response time 3 working days): support@odbus.in</p>
+</div>
 
-<p><strong>Contact Information</strong></p>
-                    <p>ODBUS Helpline (07:00 AM To 11:00 PM):9583-918-888 (For Online Booking issue or Online Cancellation issue.) </p>
-                    <p>ODBUS Customer Support Email (Response time 3 working days): support@odbus.in</p>
-
-
-                    <p>Thankyou</p>
-                    <p>Team ODBUS</p>
+<p style="margin-bottom: 5px; margin-top:10px;font-size: 14px">Thankyou</p>
+<p style="margin-bottom: 5px; font-size: 14px">Team ODBUS</p>
             </div>  
         </div>
         

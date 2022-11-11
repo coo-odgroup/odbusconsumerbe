@@ -7,16 +7,28 @@ use App\Repositories\CommonRepository;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use App\Transformers\DolphinTransformer;
+use App\Services\DolphinService;
+
+
 use InvalidArgumentException;
 
 class PopularService
 {
     protected $popularRepository; 
     protected $commonRepository;   
-    public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository)
+    protected $dolphinTransformer;
+    protected $dolphinService;
+
+
+    public function __construct(PopularRepository $popularRepository,CommonRepository $commonRepository,DolphinTransformer $dolphinTransformer, DolphinService $dolphinService)
     {
         $this->popularRepository = $popularRepository;
         $this->commonRepository = $commonRepository;
+        $this->dolphinTransformer = $dolphinTransformer;
+        $this->dolphinService=$dolphinService;
+
+
     }
 
     public function downloadApp(Request $request){
@@ -78,8 +90,13 @@ class PopularService
           //return $unique_arr = array_intersect_key($topOperators, $temp);
 
     }
-    public function allRoutes(Request $request)
+
+
+    public function CityPair()
     {
+
+        $DolphinCity=$this->dolphinTransformer->GetCityPair();
+
         $allRoutes = array();
        
         $routenames = $this->popularRepository->getAllRoutes();
@@ -87,33 +104,100 @@ class PopularService
         $BusList=[];
 
         foreach($routenames as $route){
-           $srcId = $route->source_id;
-           $destId = $route->destination_id;
-           $count = $route->count;
-           $src = $this->popularRepository->getRoute($srcId);
-           $dest= $this->popularRepository->getRoute($destId);
-           $BusList= $this->popularRepository->getBus($srcId,$destId);
 
-           if($src && isset($src[0]) && $dest && isset($dest[0])){
+          //  if($route->bus->busSchedule != null ){
+                $srcId = $route->source_id;
+                $destId = $route->destination_id;
+                $count = $route->count;
+                $src = $this->popularRepository->getRoute($srcId);
+                $dest= $this->popularRepository->getRoute($destId);
+                
+                if($src && isset($src[0]) && $dest && isset($dest[0])){
 
-            $allRoutes[] = array(
-                "source" => $src,
-                "destination" => $dest,
-                "count" => $count,
-                "BusList" => $BusList,
-            );
+                    $allRoutes[] = array(
+                        "source" => $src[0]->name,
+                        "destination" => $dest[0]->name
+                    );
 
-            // $allRoutes[] = array(
-            //     "source_id" => $src[0]->id, 
-            //     "source_name" =>$src[0]->name, 
-            //     "source_url" =>$src[0]->url, 
-            //     "destination_id" => $dest[0]->id, 
-            //     "destination_name" =>$dest[0]->name, 
-            //     "destination_url" =>$dest[0]->url
-            // );
-           }
+                }  
+           // }       
            
         } 
+
+        if($DolphinCity){
+            foreach($DolphinCity as $d){
+
+                $allRoutes[] = $d;
+
+            }
+        }
+
+      //  $allRoutes= collect($DolphinCity)->concat(collect($allRoutes))->unique();
+
+        return $allRoutes;
+
+    }
+
+    
+    public function allRoutes(Request $request)
+    {
+        $allRoutes = array();
+       
+        $routenames = $this->popularRepository->getAllRoutes();
+
+        $DolphinCity=$this->dolphinService->GetCityPair();
+
+
+        $BusList=[];
+
+        foreach($routenames as $route){
+
+                $srcId = $route->source_id;
+                $destId = $route->destination_id;
+                $count = $route->count;
+                $src = $this->popularRepository->getRoute($srcId);
+                $dest= $this->popularRepository->getRoute($destId);
+                $BusList= $this->popularRepository->getBus($srcId,$destId);
+
+                if($src && isset($src[0]) && $dest && isset($dest[0])){
+
+                    $allRoutes[] = array(
+                        "source" => $src,
+                        "destination" => $dest,
+                        "count" => $count,
+                        "BusList" => $BusList,
+                    );
+
+                }
+           
+        } 
+
+        foreach($DolphinCity as $d){
+
+            $srcId = $d['FromCityID'];
+            $destId = $d['ToCityID'];
+            $count = 0;
+            $src = $this->popularRepository->getDolphinRoute($srcId);
+            $dest= $this->popularRepository->getDolphinRoute($destId);
+            $BusList= [];
+
+            if($src && isset($src[0]) && $dest && isset($dest[0])){
+
+                $allRoutes[] = array(
+                    "source" => $src,
+                    "destination" => $dest,
+                    "count" => $count,
+                    "BusList" => $BusList,
+                );
+
+            }
+       
+    }
+
+
+
+    
+
         return $allRoutes;
 
     }

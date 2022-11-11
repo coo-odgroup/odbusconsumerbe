@@ -135,10 +135,15 @@ class AgentBookingRepository
         $booking->owner_fare = $bookingInfo['owner_fare'];
         $booking->total_fare = $bookingInfo['total_fare'];
         $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        $booking->additional_special_fare =$bookingInfo['specialFare'];
+        $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
+        $booking->additional_festival_fare = $bookingInfo['festiveFare'];
         $booking->transactionFee = $bookingInfo['transactionFee'];
 
         if(isset($bookingInfo['adj_note'])){
-            $booking->booking_adj_note = $bookingInfo['adj_note'];            
+            $booking->booking_adj_note = $bookingInfo['adj_note']; 
+            $booking->adjust_pnr = $bookingInfo['adjust_pnr'];            
+
         }
 
         if(isset($bookingInfo['status'])){

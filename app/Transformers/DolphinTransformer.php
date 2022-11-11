@@ -45,6 +45,22 @@ class DolphinTransformer
 
         
     }
+
+    public function GetCityPair(){
+       $data=  $this->DolphinService->GetCityPair();
+
+       $result=[];
+
+       if($data){
+        foreach($data as $v){            
+                $v2['source']=$v['FromCity'];
+                $v2['destination']=$v['ToCity'];
+                $result[]=$v2;
+        }
+       }
+
+       return  $result;
+    }
     
     public function BusList($request,$clientRole,$clientId){
          $srcResult= $this->listingRepository->getLocationID($request['source']);
@@ -117,8 +133,15 @@ class DolphinTransformer
         if (!empty($data)){
 
            if (count($data) == count($data, COUNT_RECURSIVE)){
+
+           if(is_array($data['ArrivalTime']) && empty($data['ArrivalTime'])){
+             $ArrivalTime= $data['CityTime'];
+           }else{
+             $ArrivalTime= $data['ArrivalTime'];
+
+           }
             
-            if(strpos('AM',$data['ArrivalTime']) == 0 && strpos('PM',$data['RouteTime']) ==0){
+            if(strpos('AM',$ArrivalTime) == 0 && strpos('PM',$data['RouteTime']) ==0){
               $booking_date= date('Y-m-d',strtotime($data['BookingDate']));        
               $arrival_date= date('Y-m-d',strtotime($data['BookingDate']. ' +1 day'));         
      
@@ -129,7 +152,7 @@ class DolphinTransformer
              }
      
              $booking_date_time= $booking_date.' '.$data['RouteTime'];
-             $arrival_date_time= $arrival_date.' '.$data['ArrivalTime'];
+             $arrival_date_time= $arrival_date.' '.$ArrivalTime;
      
              
      
@@ -215,7 +238,7 @@ class DolphinTransformer
                  "sleepers"=> '',
                  "startingFromPrice"=> $seat_price ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
                  "departureTime"=> date("H:i",strtotime($data['CityTime'])),
-                 "arrivalTime"=> date("H:i",strtotime($data['ArrivalTime'])),
+                 "arrivalTime"=> date("H:i",strtotime($ArrivalTime)),
                  "totalJourneyTime"=> $duration, 
                  "amenity"=> [],
                  "safety"=> [],
@@ -245,8 +268,16 @@ class DolphinTransformer
            else{
      
              foreach($data as $v){
+
+
+                if(is_array($v['ArrivalTime']) && empty($v['ArrivalTime'])){
+                    $ArrivalTime= $v['CityTime'];
+                  }else{
+                    $ArrivalTime= $v['ArrivalTime'];
+       
+                  }
      
-               if(strpos('AM',$v['ArrivalTime']) == 0 && strpos('PM',$v['RouteTime']) ==0){
+               if(strpos('AM',$ArrivalTime) == 0 && strpos('PM',$v['RouteTime']) ==0){
                  $booking_date= date('Y-m-d',strtotime($v['BookingDate']));        
                  $arrival_date= date('Y-m-d',strtotime($v['BookingDate']. ' +1 day'));         
         
@@ -257,7 +288,7 @@ class DolphinTransformer
                 }
         
                 $booking_date_time= $booking_date.' '.$v['RouteTime'];
-                $arrival_date_time= $arrival_date.' '.$v['ArrivalTime'];
+                $arrival_date_time= $arrival_date.' '.$ArrivalTime;
         
                 
         
@@ -340,7 +371,7 @@ class DolphinTransformer
                  "sleepers"=> '',
                  "startingFromPrice"=> $seat_price ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
                  "departureTime"=> date("H:i",strtotime($v['CityTime'])),
-                 "arrivalTime"=> date("H:i",strtotime($v['ArrivalTime'])),
+                 "arrivalTime"=> date("H:i",strtotime($ArrivalTime)),
                  "totalJourneyTime"=> $duration, 
                  "amenity"=> [],
                  "safety"=> [],

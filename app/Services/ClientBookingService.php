@@ -10,6 +10,7 @@ use App\Repositories\BookingManageRepository;
 use App\Repositories\CommonRepository;
 use App\Models\TicketPrice;
 use App\Models\BusCancelled;
+use App\Models\BookingSeized;
 use App\Models\Booking;
 use App\Models\BusSeats;
 use App\Models\ClientFeeSlab;
@@ -136,9 +137,23 @@ class ClientBookingService
                     }else{
                         $diff_in_minutes = 0;
                     }
-                    if($seizedTime > $diff_in_minutes){
-                        return "BUS_SEIZED";
-                    }
+
+                     /////////////day wise seize time change////////////////////////////////
+                     $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$routeDetails[0]->id)
+                     ->where('seized_date', $entry_date)
+                     ->where('status', 1)
+                     ->get('seize_booking_minute');   
+
+                     if(!$dayWiseSeizeTime->isEmpty()){
+                         $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
+                         if($dWiseSeizeTime > $diff_in_minutes){
+                             return "BUS_SEIZED";
+                         }
+                     }
+                     elseif($seizedTime > $diff_in_minutes){
+                         return "BUS_SEIZED";
+                     }
+                   
                 }                             
             ///////////////////////cancelled bus recheck////////////////////////            
             $startJDay = $routeDetails[0]->start_j_days;

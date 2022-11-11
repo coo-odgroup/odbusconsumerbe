@@ -57,6 +57,12 @@ class PopularRepository
         return $this->location->where('id',$sourceId)->get();
     }
 
+    public function getDolphinRoute($id){ 
+        return $this->location->where('dolphin_id',$id)->get();
+    }
+
+    
+
     public function getBusIds(){
         return  $this->booking
         ->select('bus_id',(DB::raw('count(*) as count')))
@@ -76,7 +82,10 @@ class PopularRepository
     public function getAllRoutes(){ 
 
         return $this->ticketPrice
-        ->select('source_id','destination_id',(DB::raw('count(*) as count')))
+        ->select('bus_id','source_id','destination_id',(DB::raw('count(*) as count')))
+        ->with(['bus' => function($bs){
+            $bs->with('busSchedule');
+            }])
         ->where("status",1)
         ->groupBy('source_id', 'destination_id')
         ->orderBy('count', 'DESC')

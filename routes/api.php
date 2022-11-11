@@ -140,7 +140,7 @@ Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientC
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
 Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
 Route::post('/GetFAQ', [TestimonialController::class, 'getFAQ']);
-
+Route::get('/CityPair', [PopularController::class, 'CityPair']);
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
@@ -162,6 +162,7 @@ Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy'
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
 
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
+
 
 Route::post('/GetToken', [MantisController::class, 'getToken']);
 
