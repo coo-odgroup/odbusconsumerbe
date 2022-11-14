@@ -537,9 +537,35 @@ class ListingRepository
                     $bp->bus_image_5 = $path->busphoto_url.$bp->bus_image_5;                        
                 }
             }
-        } 
+        }
+        
+        $Totalrating=0;
+        $Totalrating_5star=0;
+        $Totalrating_4star=0;
+        $Totalrating_3star=0;
+        $Totalrating_2star=0;
+        $Totalrating_1star=0;
+
         if($record[0]->review){
             foreach($record[0]->review as $rv){
+
+                $Totalrating += $rv->rating_overall;  
+                if($rv->rating_overall==5){
+                 $Totalrating_5star ++;   
+                } 
+                if($rv->rating_overall==4){
+                 $Totalrating_4star ++;   
+                } 
+                if($rv->rating_overall==3){
+                 $Totalrating_3star ++;   
+                } 
+                if($rv->rating_overall==2){
+                 $Totalrating_2star ++;   
+                } 
+                if($rv->rating_overall==1){
+                 $Totalrating_1star ++;   
+                }  
+
                 if($rv->users->profile_image != NULL && $rv->users->profile_image != ''){
                     $contains = Str::contains($rv->users->profile_image, 'https');
                     if(!$contains){
@@ -548,6 +574,17 @@ class ListingRepository
                 }
             }
         }
+
+        $Totalrating = number_format($Totalrating/count($record[0]->review),1);
+
+
+        $result["Totalrating"] = $Totalrating;
+        $result["Totalrating_5star"] = $Totalrating_5star;
+        $result["Totalrating_4star"] = $Totalrating_4star;
+        $result["Totalrating_3star"] = $Totalrating_3star;
+        $result["Totalrating_2star"] = $Totalrating_2star;
+        $result["Totalrating_1star"] = $Totalrating_1star;
+
         $result['boarding_point'] = $this->busStoppageTiming
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $sourceID)
@@ -557,7 +594,8 @@ class ListingRepository
                                               ->where('bus_id', $busId)
                                               ->where('location_id', $destinationID)
                                               ->where('status','1')
-                                              ->get();                                     
+                                              ->get();  
+
         return $result;
     }
 
