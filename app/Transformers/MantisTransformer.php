@@ -220,7 +220,7 @@ class MantisTransformer
             case '1':
                 $seaterArr['bus_seats'] = [
                     "ticket_price_id"=> 0,
-                    "seats_id"=>$type.($j+1),
+                    "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
                 ];
                 break;
@@ -228,7 +228,7 @@ class MantisTransformer
                 $seaterArr['bus_seats'] = [
                     "ticket_price_id" => 0,
                     "seat_for" => "male",
-                    "seats_id"=>$type.($j+1),
+                    "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
                 ];
                 break;
@@ -236,7 +236,7 @@ class MantisTransformer
                  $seaterArr['bus_seats'] = [
                     "ticket_price_id" => 0,
                      "seat_for" => "female",
-                     "seats_id"=>$type.($j+1),
+                     "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
                 ];
                 break;
@@ -275,15 +275,15 @@ public function seatBerthArr($mantisSeatResult,$berthType){
 		$matrixArr = Arr::crossJoin($rowArray, $colArray);
         if($berthType=='Lower'){
             $i = $j = 0;
-            $type = 'L';
+            $type = 100;
         }else{
             $i = $seatTypeArr[0][0];
             $j = 0;
-            $type = 'U';
+            $type = 200;
         }
 		foreach($seatTypeArr as $sta){
 			$seaterArr = [
-				"id"=> $type.($j+1),
+				"id"=> $type+($j+1),
 				"bus_seat_layout_id"=> 0,
 				"seatText"=> $seatTextArr[$i],
 				"rowNumber"=> $sta[1],
@@ -355,7 +355,7 @@ public function seatBerthArr($mantisSeatResult,$berthType){
 		}
 		foreach($matrixArr as $b){
 			$blank = [
-				"id"=> $type.($j + 1),
+				"id"=> $type+($j + 1),
 				"bus_seat_layout_id"=> 0,
 				"seat_class_id"=> 4,
 				"seatText"=> "",
