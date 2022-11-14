@@ -20,6 +20,7 @@ use App\Models\BusOwnerFare;
 use App\Transformers\DolphinTransformer;
 use App\Models\IncomingApiCompany;
 use App\Transformers\MantisTransformer;
+use Illuminate\Support\Str;
 
 
 
@@ -332,13 +333,49 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     $entry_date = $request['entry_date'];
     $entry_date = date("Y-m-d", strtotime($entry_date));
     //$busOperatorId = $request['busOperatorId'];
- $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
-        $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
+    $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
+    $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
-        $seatWithPriceRecords=[];
+    $seatWithPriceRecords=[];
 
-    if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+    if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
         return 'Invalid Origin';
+    ////////////Mantis changes///////////////
+    }else if($origin=='MANTIS'){
+        $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+        //return $mantisSeatresult['lower_berth'][0];
+        $total_fare = 0;
+        $additional_charge = 0;
+
+        if(!empty($seaterIds)){
+            foreach($seaterIds as $sId){
+                //$key = Arr::get($mantisSeatresult['lower_berth'], 'id');
+                //return $key;
+               $key1 = array_search($sId, array_column($mantisSeatresult['lower_berth'], 'id'));
+               $total_fare += $mantisSeatresult['lower_berth'][$key1]['bus_seats']['new_fare'];
+            }
+          }
+          if(!empty($sleeperIds)){
+            foreach($sleeperIds as $slId){
+                $key2 = array_search($slId, array_column($mantisSeatresult['upper_berth'], 'id'));
+                $total_fare += $mantisSeatresult['upper_berth'][$key2]['bus_seats']['new_fare'];
+            }  
+          }  
+          $mantis_data = IncomingApiCompany::where("name","MANTIS")->first();
+          if($mantis_data){
+             $additional_charge = $mantis_data->additional_charge;
+          }
+         $seatWithPriceRecords[] = array(
+             "ownerFare" => $total_fare,
+             "odbus_charges_ownerFare" => $total_fare,
+             "specialFare" => 0,
+             "addOwnerFare" => 0,
+             "festiveFare" => 0,
+             "odbusServiceCharges" => 0,
+             "transactionFee" => round($total_fare * ($additional_charge/100)), 
+             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100))
+             );
+            return $seatWithPriceRecords;
     }else if($origin=='DOLPHIN'){
 
         if($ReferenceNumber ==''){
@@ -572,12 +609,54 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     $boardingDroppings = array(); 
 
     $destination_row=$this->viewSeatsRepository->getLocationName($destinationId);
-
     $destination_name=$destination_row[0]->name;
    
-
-    if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+    if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS' ){
         return 'Invalid Origin';
+    ////////////Mantis changes///////////////
+    }else if($origin=='MANTIS'){
+        $arr = [
+            "sourceID" => $sourceId,
+            "destinationID" => $destinationId,
+            "entry_date" => $journey_date
+        ];
+        $mantisBusList = $this->mantisTransformer->Filter($arr,$clientRole,$clientId);
+        $mantisBusList = (isset($mantisBusList['regular'])) ? $mantisBusList['regular'] : [];
+    
+        $key = array_search($busId, array_column($mantisBusList, 'busId'));
+        $boarding_arr = explode("#",Str::after($mantisBusList[$key]['BoardingPoints'],'#'));
+        $dropping_arr = explode("#",Str::after($mantisBusList[$key]['DroppingPoints'],'#'));
+
+        if($boarding_arr){
+            foreach($boarding_arr as $b){
+                $b_ar = explode("|",$b);
+                 $boardingArray[]=[
+                    "id"=> $b_ar[0],
+                    "boardingPoints"=> $b_ar[1],
+                    "boardingTimes"=> date('H:i',strtotime($b_ar[2]))
+                 ];
+            }                    
+         }
+        if($dropping_arr){
+            foreach($dropping_arr as $d){
+                $d_ar = explode("|",$d);
+                 $droppingArray[]=[
+                    "id" => $d_ar[0],
+                    "droppingPoints" => $d_ar[1],
+                    "droppingTimes" => date('H:i',strtotime($d_ar[2]))
+                 ];
+            }                    
+        } 
+        if(!empty($boardingArray) && !empty($droppingArray)){
+
+            $boardingDroppings[] = array(   
+                "boardingPoints" => $boardingArray,
+                "droppingPoints" => $droppingArray,
+            ); 
+            return $boardingDroppings;
+        }else{
+            return '';
+        }      
     }else if($origin=='DOLPHIN'){
 
         if($ReferenceNumber ==''){
