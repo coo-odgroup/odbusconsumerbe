@@ -575,7 +575,11 @@ class ListingRepository
             }
         }
 
-        $Totalrating = number_format($Totalrating/count($record[0]->review),1);
+        if($Totalrating > 0 && count($record[0]->review) > 0 ){
+            $Totalrating = number_format($Totalrating/count($record[0]->review),1);
+        }
+
+        
 
 
         $result["Totalrating"] = $Totalrating;
