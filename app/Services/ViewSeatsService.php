@@ -343,22 +343,20 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     ////////////Mantis changes///////////////
     }else if($origin=='MANTIS'){
         $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
-        //return $mantisSeatresult['lower_berth'][0];
+        //return $mantisSeatresult;
         $total_fare = 0;
         $additional_charge = 0;
 
         if(!empty($seaterIds)){
             foreach($seaterIds as $sId){
-                //$key = Arr::get($mantisSeatresult['lower_berth'], 'id');
-                //return $key;
-               $key1 = array_search($sId, array_column($mantisSeatresult['lower_berth'], 'id'));
-               $total_fare += $mantisSeatresult['lower_berth'][$key1]['bus_seats']['new_fare'];
+                $lbcollection = collect($mantisSeatresult['lower_berth']);
+                $total_fare += $lbcollection->where('id', $sId)->pluck('bus_seats.new_fare')[0];
             }
           }
           if(!empty($sleeperIds)){
             foreach($sleeperIds as $slId){
-                $key2 = array_search($slId, array_column($mantisSeatresult['upper_berth'], 'id'));
-                $total_fare += $mantisSeatresult['upper_berth'][$key2]['bus_seats']['new_fare'];
+                $ubcollection = collect($mantisSeatresult['upper_berth']);
+                $total_fare += $ubcollection->where('id', $slId)->pluck('bus_seats.new_fare')[0];
             }  
           }  
           $mantis_data = IncomingApiCompany::where("name","MANTIS")->first();
