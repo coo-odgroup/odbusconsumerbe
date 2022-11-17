@@ -550,4 +550,10 @@ class BookingManageController extends Controller
       } 
 
     }
+
+    public function FeedbackCronJob(){     
+      $result = $this->bookingManageService->FeedbackCronJob(); 
+       return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+
+    }
 }

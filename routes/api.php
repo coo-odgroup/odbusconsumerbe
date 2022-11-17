@@ -160,7 +160,7 @@ Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExter
 Route::get('/countries', [SoapController::class, 'getCountries']);
 Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
-
+Route::get('/FeedbackCronJob', [BookingManageController::class, 'FeedbackCronJob']);
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
 
 

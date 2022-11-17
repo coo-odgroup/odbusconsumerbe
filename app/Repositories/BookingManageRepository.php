@@ -16,6 +16,7 @@ use App\Models\BusContacts;
 use App\Models\Seats;
 use App\Models\TicketPrice;
 use App\Jobs\SendEmailTicketJob;
+use App\Jobs\SendFeedbackEmailJob;
 use App\Models\Credentials;
 use App\Models\AgentWallet;
 use App\Models\Notification;
@@ -98,6 +99,45 @@ class BookingManageRepository
         return $this->booking->with('users')->where("pnr",$pnr)->first();
         
     }
+
+    public function all_pnr(){
+
+        $before2days=date('Y-m-d',strtotime(" - 24 hours"));
+
+       $all=  $this->booking->with('users')
+                             ->where("status",1)
+                             ->where("feedback_status",0)
+                             ->where("journey_dt",$before2days)
+                             ->get();
+       //send email                         
+       
+        if($all){
+        foreach($all as $a){
+
+            if($a->users->email != ''){  
+
+
+                $this->booking->where('id', $a->id)->update(['feedback_status' => 1]);    
+
+
+                $sendEmailTicket = $this->sendFeedbackEmail($a->users->name,$a->pnr,$a->journey_dt,$a->users->email); 
+           }
+            
+        }
+        }
+
+        
+    }
+
+    public function sendFeedbackEmail($name,$pnr,$journey_dt,$email){
+
+        return  SendFeedbackEmailJob::dispatch($name,$pnr,$journey_dt,$email);
+
+
+
+    }
+
+    
 
     public function getDolphinBookingDetails($mobile,$pnr){
 

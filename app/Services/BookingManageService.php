@@ -679,10 +679,10 @@ class BookingManageService
 
 
            
-    } 
+        } 
 
 
-   return $data;
+        return $data;
 
     }
    
@@ -1449,6 +1449,12 @@ class BookingManageService
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
+
+    }
+
+    public function FeedbackCronJob(){
+
+       return $all_pnr = $this->bookingManageRepository->all_pnr(); 
 
     }
 }
