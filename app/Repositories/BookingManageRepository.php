@@ -119,12 +119,16 @@ class BookingManageRepository
                              ->where("feedback_status",0)
                              ->where("journey_dt",$before2days)
                              ->get();
-       //send email                         
+       //send email  
+       
+       $ins=0;
        
         if($all){
         foreach($all as $a){
 
-            if($a->users->email != ''){  
+            if($a->users->email != ''){ 
+                
+                $ins++;
 
 
                 $this->booking->where('id', $a->id)->update(['feedback_status' => 1]);    
@@ -135,6 +139,8 @@ class BookingManageRepository
             
         }
         }
+
+        Log::info($ins." email has been sent");
 
         
     }
