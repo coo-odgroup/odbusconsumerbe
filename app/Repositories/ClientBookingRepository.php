@@ -613,6 +613,7 @@ class ClientBookingRepository
     }
 
         $bal['wallet_balance']=$bookingDetails[0]->clientWallet[0]->balance;
+        $bal['final_pnr']=$bookingRecord[0]->pnr; 
        
         return $bal;        
     }

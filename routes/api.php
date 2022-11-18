@@ -147,6 +147,9 @@ Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
 Route::post('/apiReference', [ApiReferenceController::class, 'apiReference']);
+Route::get('/GetPnr/{trans_id}', [BookingManageController::class, 'GetPnr']);
+
+
 //});
 });
 

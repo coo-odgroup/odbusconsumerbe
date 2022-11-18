@@ -100,6 +100,16 @@ class BookingManageRepository
         
     }
 
+    public function GetPnr($trans_id){
+
+        $dd= $this->booking->where("transaction_id",$trans_id)->first();
+
+       return $dd->pnr;
+        
+    }
+
+    
+
     public function all_pnr(){
 
         $before2days=date('Y-m-d',strtotime(" - 24 hours"));
