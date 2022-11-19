@@ -259,6 +259,8 @@ class UsersService
                     $l['cancel']= false;
                  }
 
+                 $l['review_list']=$this->usersRepository->getReviews($l->pnr);
+
 
              }
          }
