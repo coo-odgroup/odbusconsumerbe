@@ -319,6 +319,7 @@ class UsersService
 
 
                  $l['source']=$this->usersRepository->getLocation($l->source_id);
+                 $l['review_list']=$this->usersRepository->getReviews($l->pnr);
                  $l['destination']=$this->usersRepository->getLocation($l->destination_id);
 
                  $l['created_date'] = date('Y-m-d',strtotime($l['created_at']));  
