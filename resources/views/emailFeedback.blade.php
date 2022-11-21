@@ -11,11 +11,11 @@
   <table style="text-align: center; background: #014; max-width: 700px; margin:0 auto; margin-top:20px; width: 100%; border-collapse: collapse; " >
     <tr>
       <td style="text-align: left;">
-        <img class="fix" src="{{url('public/template/logo.png')}}" style="padding: 20px 25px; width:150px;" alt="">
+        <img class="fix" src="{{url('public/template/logo.png')}}" style="padding:10px 15px; width:140px;" alt="">
       </td>
-      <td style="color:#fff; padding: 15px 25px; line-height:25px; text-align: right;">
-        <p><strong>Phone No:<a href="tel:9583918888" style="color:#fff; text-decoration:none;"> 95839 18888</a></strong><br/>
-<strong>Email:<a href="mailto:support@odbus.in" style="color:#fff; text-decoration:none;" > support@odbus.in</a></strong></p>
+      <td style="color:#fff; padding: 5px 25px; line-height:25px; text-align: right;">
+        <p><strong style="font-weight: 400;">Phone No:<a href="tel:9583918888" style="color:#fff; text-decoration:none;"> 95839 18888</a></strong><br/>
+<strong style="font-weight: 400;">Email:<a href="mailto:support@odbus.in" style="color:#fff; text-decoration:none;" > support@odbus.in</a></strong></p>
       </td>
     </tr>
   </table>
@@ -30,13 +30,12 @@
     <tr>
       <td style="color: #014; padding:50px 50px 0px; text-align: left; font-size: 16px; line-height: 26px;">
       <p><strong>Dear {{$name}}, </strong></p>
-      <p>First, we'd like to thank you for your recent reservation with ODBUS.</p>
-      
+      <p>First, we'd like to thank you for your recent reservation with ODBUS.</p>      
       <p>Thank you for giving us the opportunity to serve you. We look forward to have you again. </p>
       <p>We'd love to hear your experience with ODBUS as well as share them with the other customers.</p>
       <p>We have made this super easy if you have a moment now. Just select one of our listings below and write a few sentences.</p>
       <p>For Google click here: <a href="https://g.page/ODBUS/review" target="_blank">https://g.page/ODBUS/review</a><br/>
-      For Face book click here: <a href="https://www.facebook.com/odbus/reviews/" target="_blank">https://www.facebook.com/odbus/reviews/</a><br/>
+      For Facebook click here: <a href="https://www.facebook.com/odbus/reviews/" target="_blank">https://www.facebook.com/odbus/reviews/</a><br/>
       For App click here:  <a href="http://www.surl.li/dlqur" target="_blank">http://surl.li/dlqur</a><br/>
       </p>
      
@@ -56,19 +55,22 @@
       <td colspan="7"><span style="font-size: 16px;line-height: 32px;"><strong style="font-size: 27px; color: #fff;">Follow us:</strong></span></td>
     </tr>
     <tr style="height: 10px"></tr>
+
     <tr align="center">
-      <td style="width: 240px;"></td>
-      <td><a href="https://www.facebook.com/odbus/" target="_blank"><img style="width:40px" src="{{url('public/template/facebook.png')}}"  ></a></td>
-      <td><a href="https://www.instagram.com/od_bus/" target="_blank"><img style="width:40px"  src="{{url('public/template/instagram.png')}}" ></a></td>
-      <td><a href="https://www.linkedin.com/company/odbus" target="_blank"><img style="width:40px" src="{{url('public/template/linkedin.png')}}"></a></td>
-      <td><a href="https://twitter.com/od_bus/" target="_blank"><img style="width:40px" src="{{url('public/template/twitter.png')}}" ></a></td>
-      <td style="width: 240px;"></td>
+      <td style="width:230px;"></td>
+
+      <td><span style="font-size: 16px;line-height: 32px;text-align: left;"><strong style="font-size:16px; font-weight: 400; color: #fff;">Follow us:</strong></span></td>
+      <td><a href="https://www.facebook.com/odbus/" target="_blank"><img style="width:30px" src="{{url('public/template/facebook.png')}}"></a></td>
+      <td><a href="https://www.instagram.com/od_bus/" target="_blank"><img style="width:30px"src="{{url('public/template/instagram.png')}}"></a></td>
+      <td><a href="https://www.linkedin.com/company/odbus" target="_blank"><img style="width:30px" src="{{url('public/template/linkedin.png')}}"></a></td>
+      <td><a href="https://twitter.com/od_bus/" target="_blank"><img style="width:30px" src="{{url('public/template/twitter.png')}}"></a></td>
+      <td style="width:230px;"></td>
     </tr>
     <tr style="height: 10px"></tr>
     <tr>
-      <td colspan="6">
-        <p style="color:#fff;  line-height: 24px;">OD Tours and Travels Pvt Ltd, 3rd Floor, Hotel Rajdhani, Cuttack Puri Road,<Br/> Bhubaneswar - 751006 (Odisha), India</p>
-        <p style="color:#fff;"><a href="#" style="color:#fff; text-decoration: none;">Unsubscribe </a> | <a href="#" style="color:#fff; text-decoration: none;"> Update Your Email Preferences </a> | <a href="#" style="color:#fff; text-decoration: none;">Support </a></p>
+    <td colspan="7">
+        <p style="color:#fff;  line-height: 20px; font-size:14px">OD Tours and Travels Pvt Ltd, 3rd Floor, Hotel Rajdhani, Cuttack Puri Road,<Br/> Bhubaneswar - 751006 (Odisha), India</p>
+        <!-- <p style="color:#fff;"><a href="#" style="color:#fff; text-decoration: none;">Unsubscribe </a> | <a href="#" style="color:#fff; font-size:14px; text-decoration: none;"> Update Your Email Preferences </a> | <a href="#" style="color:#fff; text-decoration: none;">Support </a></p> -->
       </td>
     </tr>
   </table>
