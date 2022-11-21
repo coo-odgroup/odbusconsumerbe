@@ -22,6 +22,7 @@ class MantisService
         $this->cityurl = 'https://api.iamgds.com/ota/CityList';
         $this->searchurl = 'https://api.iamgds.com/ota/Search';
         $this->charturl = 'https://api.iamgds.com/ota/Chart';
+        $this->holdSeatsurl = 'https://tranapi.iamgds.com/ota/HoldSeats';
         $this->http = $client;
         $this->headers = [
             'cache-control' => 'no-cache',
@@ -32,26 +33,41 @@ class MantisService
     public function getToken(string $uri = null)
     {
 
-        $token = "8B70D3AF9EB103CD987C16F358AAFF93|50-S|202211081034||FFFF";
-        $result=[];
-        $response = Http::withToken($token)->get($this->charturl,[
-                                                        "fromCityId"=> 4292 ,
-                                                        "toCityId"=> 4562,
-                                                        "journeyDate" => "2022-11-30",
-                                                        "busId" => 1,
-                                                        //'headers' => $headers,
-                                                        //'verify'  => false,
-                                                        ]);                                             
-          
+        $token = '0B82B58A7B049961F3FE72104ADAEA95|50-S|202211281017||FFFF';
+                                      
+        $response = Http::withHeaders([
+            'Access-Token' => $token,
+           // 'Content-Type' => 'application/json'
+            ])->post($this->holdSeatsurl,
+        [
+            "FromCityId"=> 4292,
+            "ToCityId"=> 4562,
+            "JourneyDate"=> "2022-11-28",
+            "BusId"=> 1,
+            "PickUpID"=> "39436",
+            "DropOffID"=> "750",
+            "ContactInfo"=> [
+              "CustomerName"=> "test",
+              "Email"=> "testbooking@travelyaari.com",
+              "Phone"=> "9090909090",
+              "Mobile"=> "9090909090"
+            ],
+            "Passengers"=> [[
+                "Name"=> "test",
+                "Age"=> 25,
+                "Gender"=> "M",
+                "SeatNo"=> "1",
+                "Fare"=> 12,
+                "SeatTypeId"=> 1,
+                "IsAcSeat"=> false
+            ]]]
         
+    );  
+        return $response->json();
+        return $response->throw()->json();
+        return  $response->getStatusCode();                                          
+          
         return (object) json_decode($response);
-        //return Http::dd()->get('http://example.com');
-        // return Http::post('https://api.iamgds.com/ota/Auth', [
-        //     'ClientId' => 50,
-        //     'ClientSecret'=> 'd66de12fa3473a93415b02494253f088',
-        // ]);
-
-        //return $response;
 
         ///////////
         // $full_path = $this->url;
@@ -182,7 +198,7 @@ class MantisService
     public function search($s,$d,$dt) ////used for listing API
     {
        
-        $token = "6D2F6545458E43A0B36709417CD7C33E|50-S|202211181022||FFFF";
+        $token = "FB52B6C5762527504615A07CC344696F|50-S|202211211606||FFFF";
         $result=[];
         $response = Http::withToken($token)->get($this->searchurl,[
                                                         "fromCityId"=> $s ,
@@ -207,6 +223,39 @@ class MantisService
                                                         //'headers' => $headers,
                                                         //'verify'  => false,
                                                         ]);                                             
+        return (object) json_decode($response);
+    }
+
+    public function HoldSeats() 
+    {
+        $token = "3EC4A97458E68CC9C2EC1E8E73A17B99|50-S|202211231131||FFFF";
+        $response = Http::withHeaders([
+                        'Access-Token' => $token,
+                    // 'Content-Type' => 'application/json'
+                        ])->post($this->holdSeatsurl,[
+                            "FromCityId"=> 4292,
+                            "ToCityId"=> 4562,
+                            "JourneyDate"=> "2022-11-28",
+                            "BusId"=> 1,
+                            "PickUpID"=> "39436",
+                            "DropOffID"=> "750",
+                            "ContactInfo"=> [
+                            "CustomerName"=> "test",
+                            "Email"=> "testbooking@travelyaari.com",
+                            "Phone"=> "9090909090",
+                            "Mobile"=> "9090909090"
+                            ],
+                            "Passengers"=> [[
+                                "Name"=> "test",
+                                "Age"=> 25,
+                                "Gender"=> "M",
+                                "SeatNo"=> "1",
+                                "Fare"=> 12,
+                                "SeatTypeId"=> 1,
+                                "IsAcSeat"=> false
+                            ]]]);    
+                
+        return $response->json();                                        
         return (object) json_decode($response);
     }
 

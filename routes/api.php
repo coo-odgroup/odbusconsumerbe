@@ -170,7 +170,7 @@ Route::get('/FeedbackCronJob', [BookingManageController::class, 'FeedbackCronJob
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
 
 
-Route::post('/GetToken', [MantisController::class, 'getToken']);
+Route::get('/GetToken', [MantisController::class, 'getToken']);
 
 
 

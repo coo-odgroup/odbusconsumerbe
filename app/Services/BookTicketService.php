@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Illuminate\Support\Arr;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 class BookTicketService
@@ -26,13 +27,14 @@ class BookTicketService
     protected $viewSeatsService; 
     protected $dolphinTransformer;
 
-    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService,ViewSeatsService $viewSeatsService,DolphinTransformer $dolphinTransformer)
+    public function __construct(BookTicketRepository $bookTicketRepository,OfferRepository $offerRepository,ListingService $listingService,ViewSeatsService $viewSeatsService,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bookTicketRepository = $bookTicketRepository;
         $this->offerRepository = $offerRepository;
         $this->listingService = $listingService;
         $this->viewSeatsService = $viewSeatsService;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }
     public function bookTicket($request,$clientRole,$clientId)
@@ -42,7 +44,7 @@ class BookTicketService
         $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
         $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
 
-            if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+            if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
                 return 'Invalid Origin';
             }else if($origin=='DOLPHIN'){
 
@@ -142,6 +144,39 @@ class BookTicketService
                     $priceDetails= $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
 
                    // Log::info($priceDetails);
+                }
+                /////////mantis changes///////
+                if($origin =='MANTIS'){
+                    $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
+                    $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
+                    
+                    $entry_date = $bookingInfo['journey_date'];
+                    $busId = $bookingInfo['bus_id'];
+                    $sourceId = $bookingInfo['source_id'];
+                    $destinationId =  $bookingInfo['destination_id'];
+
+                    $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+                    
+                    //////need to check/////////
+                    $seater = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',1)->pluck('id');
+
+                    $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+
+                    $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+
+                    $sleeper = array_merge($lbSleeper->toArray(), $ubSleeper->toArray());
+                    
+                    $data = array(
+                        'busId' => $busId,
+                        'sourceId' => $sourceId,
+                        'destinationId' => $destinationId,
+                        'seater' => $seater,
+                        'sleeper' => $sleeper,
+                        'entry_date' => $entry_date,
+                        'origin' => $origin,
+                    );
+                   
+                    $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
                 }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
