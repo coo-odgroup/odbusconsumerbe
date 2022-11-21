@@ -373,6 +373,18 @@ public function seatBerthArr($mantisSeatResult,$berthType){
 		//return collect($seatmatrixArr)->flatten(1);
         return [$berthTypeArr,$lRows,$lCols];
 }
+    public function GetseatText($sourceId,$destinationId,$journeyDate,$busId,$id,$clientRole,$clientId){
+        $res = $this->MantisSeatLayout($sourceId,$destinationId,$journeyDate,$busId,$clientRole,$clientId);
+        /////need to check//////
+        // if($res['lower_berth']){
+        // return collect($res['lower_berth'])->whereIn('id', $id)->pluck('seatText');
+        // }
+        if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
+        return $res['lower_berth'][$key]['seatText'];
+        }
 
-    
+        if($key = array_search($id, array_column($res['upper_berth'], 'id'))){
+        return $res['upper_berth'][$key]['seatText'];
+        }
+    }  
 }

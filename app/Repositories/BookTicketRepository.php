@@ -18,6 +18,7 @@ use App\Models\BusOperator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 class BookTicketRepository
@@ -33,7 +34,7 @@ class BookTicketRepository
     protected $dolphinTransformer;
 
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -44,7 +45,7 @@ class BookTicketRepository
         $this->channelRepository = $channelRepository;
         $this->busLocationSequence = $busLocationSequence;    
         $this->dolphinTransformer = $dolphinTransformer;
-
+        $this->mantisTransformer = $mantisTransformer;
     } 
 
     public function CheckExistingUser($phone){
@@ -67,7 +68,7 @@ class BookTicketRepository
     }
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId){
-        //Log::info($priceDetails);
+
         $defUserId = Config::get('constants.USER_ID'); 
 
 	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
@@ -176,7 +177,6 @@ class BookTicketRepository
         }
        }
 
-
         $booking->odbus_gst_charges = $odbusGstPercent;
         $booking->odbus_gst_amount = $odbusGstAmount;
 
@@ -249,9 +249,17 @@ class BookTicketRepository
                 $bookingDetailModels[] = new BookingDetail($collection->toArray());
 
             }
+            elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
+                
+                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+            
+                unset($bDetail['bus_seats_id']);
+                $bDetail['mantis_seat_name'] = $seat_name; 
+                $collection = collect($bDetail);
+                $bookingDetailModels[] = new BookingDetail($collection->toArray());
+            }
             $i++;
         }  
-        //Log::info($bookingDetailModels);
         $booking->bookingDetail()->saveMany($bookingDetailModels);       
         return $booking; 
     }
