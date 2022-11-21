@@ -32,6 +32,8 @@ use App\Http\Controllers\ClientBookingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
+use App\Http\Controllers\ApiReferenceController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -144,6 +146,10 @@ Route::get('/CityPair', [PopularController::class, 'CityPair']);
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
 Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
+Route::post('/apiReference', [ApiReferenceController::class, 'apiReference']);
+Route::get('/GetPnr/{trans_id}', [BookingManageController::class, 'GetPnr']);
+
+
 //});
 });
 

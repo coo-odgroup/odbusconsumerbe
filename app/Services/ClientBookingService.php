@@ -289,6 +289,7 @@ class ClientBookingService
                 if($res['Status']==1 && $res['PNRNO']){
 
                    $updateApiData['api_pnr']=$res['PNRNO'];
+                   $updateApiData['pnr']=$res['PNRNO'];
                    $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
                    $this->channelRepository->UpdateAPIPnr($request['transaction_id'],$updateApiData);                 
 

@@ -556,4 +556,11 @@ class BookingManageController extends Controller
        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
 
     }
+
+    public function GetPnr($trans_id){     
+      $result = $this->bookingManageService->GetPnr($trans_id);   
+      return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+    }
+
+    
 }

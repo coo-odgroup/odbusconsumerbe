@@ -320,6 +320,10 @@ class UsersRepository
 
     }
 
+    public function getReviews($pnr){
+        return Review::where("pnr",$pnr)->orderBy('id','desc')->first();
+    }
+
     public function CompletedBookings($user_id,$today){
       return Booking::where('users_id',$user_id)
             ->where('status','!=',2)

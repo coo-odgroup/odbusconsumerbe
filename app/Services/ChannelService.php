@@ -478,6 +478,7 @@ class ChannelService
 
                 if($res['Status']==1 && $res['PNRNO']){
 
+                   $updateApiData['pnr']=$res['PNRNO'];
                    $updateApiData['api_pnr']=$res['PNRNO'];
                    $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
                    $this->channelRepository->UpdateAPIPnr($transationId,$updateApiData);
@@ -493,6 +494,8 @@ class ChannelService
                     $busNumber = '';
                     $busId= $bookingRecord[0]->bus_id;
                     $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
+
+                    $pnr = $res['PNRNO'];
 
                 }else{
                     return 'Failed';
@@ -515,9 +518,11 @@ class ChannelService
                     $busId= $bookingRecord[0]->bus->id;
                     $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
 
+                    $pnr = $bookingRecord[0]->pnr; 
+
             }
 
-            $pnr = $bookingRecord[0]->pnr; 
+           
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $bookingId = $bookingRecord[0]->id;                   
             $phone = $bookingRecord[0]->users->phone;
@@ -796,6 +801,7 @@ class ChannelService
                 if($res['Status']==1 && $res['PNRNO']){
     
                    $updateApiData['api_pnr']=$res['PNRNO'];
+                   $updateApiData['pnr']=$res['PNRNO'];
                    $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
                    $this->channelRepository->UpdateAPIPnr($transationId,$updateApiData);
     
@@ -803,7 +809,9 @@ class ChannelService
                    $bustype = 'NA';
                     $busTypeName = 'NA';
                     $sittingType = 'NA'; 
-                    $conductor_number = 'NA';                  
+                    $conductor_number = 'NA';   
+
+                    $pnr=$res['PNRNO'];
                 
                     $seat_no = $bookingRecord[0]->bookingDetail->pluck('seat_name');                               
                     $busname = "DOLPHIN TOURS & TRAVELS";
@@ -831,11 +839,13 @@ class ChannelService
                     $busId= $bookingRecord[0]->bus->id;
                     $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
 
+                    $pnr=$bookingRecord[0]->pnr; 
+
             }
 
            // Log::info($bookingRecord);
 
-            $pnr = $bookingRecord[0]->pnr; 
+           // $pnr = $bookingRecord[0]->pnr; 
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $bookingId = $bookingRecord[0]->id;                   
             $phone = $bookingRecord[0]->users->phone;
@@ -974,6 +984,7 @@ class ChannelService
             if($res['Status']==1 && $res['PNRNO']){
 
                 $updateApiData['api_pnr']=$res['PNRNO'];
+                $updateApiData['pnr']=$res['PNRNO'];
                 $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
                 $this->channelRepository->UpdateAPIPnr($transationId,$updateApiData);
  
@@ -987,6 +998,8 @@ class ChannelService
                  $busNumber = '';
                  $busId= $bookingRecord[0]->bus_id;
                  $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
+
+                 $pnr = $res['PNRNO']; 
  
              }else{
                  return 'Failed';
@@ -1011,11 +1024,11 @@ class ChannelService
                 $busNumber = $bookingRecord[0]->bus->bus_number;
                 $busId= $bookingRecord[0]->bus->id;
                 $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
-
+                $pnr = $bookingRecord[0]->pnr; 
           }
 
 
-          $pnr = $bookingRecord[0]->pnr; 
+         
           $passengerDetails = $bookingRecord[0]->bookingDetail;
           $bookingId = $bookingRecord[0]->id;                   
           $phone = $bookingRecord[0]->users->phone;

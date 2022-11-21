@@ -199,11 +199,13 @@ class ViewSeatsService
                                     $ub->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
                                     }     
                                 }
-                            } 
-                            if($clientRole == $clientRoleId){
-                                unset($ub->busSeats->ticket_price);
-                                unset($ub->busSeats->new_fare);
-                            } 
+                            }
+                            
+                            //// changes by Lima 21 Nov,2022 (as per Rabti)
+                            // if($clientRole == $clientRoleId){
+                            //     unset($ub->busSeats->ticket_price);
+                            //     unset($ub->busSeats->new_fare);
+                            // } 
                         }
                         if (sizeof($bookingIds)){
                             if(in_array($ub['id'], $blockedSeats)){
@@ -255,10 +257,10 @@ class ViewSeatsService
                                     }     
                                 }           
                             } 
-                            if($clientRole == $clientRoleId){
-                                unset($lb->busSeats->ticket_price);
-                                unset($lb->busSeats->new_fare);
-                            }   
+                            // if($clientRole == $clientRoleId){
+                            //     unset($lb->busSeats->ticket_price);
+                            //     unset($lb->busSeats->new_fare);
+                            // }   
                         }
                         if (sizeof($bookingIds)){    
                             if(in_array($lb['id'], $blockedSeats)){
