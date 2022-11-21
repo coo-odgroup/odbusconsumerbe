@@ -619,6 +619,8 @@ class DolphinTransformer
 
                                 if($d['Available'] =='Y'){
 
+                                    $client_service_charges_new=0;
+
                                     $emptySeat++;
 
                                     $seat_price= $d['SeatRate'];
@@ -643,9 +645,14 @@ class DolphinTransformer
                                                         break;
                                                     }  
                                                 }   
-                                            } 
+                                            }
+                                           
                                             $client_service_charges = ($addCharge/100 * $seat_price);
+                                            
                                             $seat_price = $seat_price + $client_service_charges;
+
+                                            $new_base_fare=$seat_price;
+                                            $client_service_charges_new = ($addCharge/100 * $new_base_fare); // only for outgoing api calculation
 
                                         }
 
@@ -659,7 +666,12 @@ class DolphinTransformer
                                     $ar["bus_seats"]= [
                                             "ticket_price_id"=> 0,
                                             "seats_id"=>$st_id, //$d['SeatNo'],
-                                            "new_fare"=> $seat_price
+                                            "new_fare"=> $seat_price,
+                                            "ticket_price" => [
+                                                "id" => 0,
+                                                "base_seat_fare" => 0,
+                                                "base_sleeper_fare" => $seat_price - $client_service_charges_new
+                                            ]
                                     ];
                                 }
 
@@ -762,6 +774,7 @@ class DolphinTransformer
     
                             if($d['Available'] =='Y'){
 
+                                $client_service_charges_new=0;
                                 $emptySeat++;
 
                                 $seat_price= $d['SeatRate'];
@@ -787,8 +800,12 @@ class DolphinTransformer
                                             }  
                                         }   
                                     } 
+
                                     $client_service_charges = ($addCharge/100 * $seat_price);
                                     $seat_price = $seat_price + $client_service_charges;
+
+                                    $new_base_fare=$seat_price;
+                                    $client_service_charges_new = ($addCharge/100 * $new_base_fare); // only for outgoing api calculation
 
                                 }
 
@@ -801,7 +818,12 @@ class DolphinTransformer
                                 $ar["bus_seats"]=[
                                         "ticket_price_id"=> 0,
                                         "seats_id"=> $st_id2,//$d['SeatNo'],
-                                        "new_fare"=>  $seat_price
+                                        "new_fare"=>  $seat_price,
+                                        "ticket_price" => [
+                                            "id" => 0,
+                                            "base_seat_fare" => $seat_price - $client_service_charges_new,
+                                            "base_sleeper_fare" => 0
+                                        ]
                                 ];
     
                             }
