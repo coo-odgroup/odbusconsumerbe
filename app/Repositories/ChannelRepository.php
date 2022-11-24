@@ -760,9 +760,7 @@ class ChannelRepository
       }
       //////mantis changes////////
       public function UpdateMantisHoldId($transationId,$holdId){
-        Log::info($holdId);
         $this->booking->where('transaction_id', $transationId)->update(['holdId' => $holdId]);
-
       }
       ////////
       public function GetCustomerPaymentId($razorpay_order_id)
