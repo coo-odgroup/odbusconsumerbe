@@ -757,9 +757,14 @@ class ChannelRepository
           //$this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
           $this->booking->lockForUpdate()->where('id', $bookingId)->update(['status' => $seatHold]);
       });
+      }
+      //////mantis changes////////
+      public function UpdateMantisHoldId($transationId,$holdId){
+        Log::info($holdId);
+        $this->booking->where('transaction_id', $transationId)->update(['holdId' => $holdId]);
 
       }
-
+      ////////
       public function GetCustomerPaymentId($razorpay_order_id)
       {
           return $this->customerPayment->where('order_id', $razorpay_order_id)->pluck('id');

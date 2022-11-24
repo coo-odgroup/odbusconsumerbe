@@ -19,7 +19,9 @@ use InvalidArgumentException;
 use App\Repositories\CommonRepository;
 use Illuminate\Support\Arr;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 
 
@@ -29,14 +31,16 @@ class ChannelService
     protected $viewSeatsService; 
     protected $commonRepository;
     protected $dolphinTransformer;
+    protected $mantisTransformer;
 
 
-    public function __construct(ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,CommonRepository $commonRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,CommonRepository $commonRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
         $this->commonRepository = $commonRepository;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }
     public function storeGWInfo($data)
@@ -120,13 +124,15 @@ class ChannelService
                 $seatIds = $request['seatIds'];
                 $entry_date = $request['entry_date'];
                 $entry_date = date("Y-m-d", strtotime($entry_date));
-
-
+                if(isset($request['IsAcBus'])){
+                    $IsAcBus = $request['IsAcBus'];
+                }else{
+                     $IsAcBus = false;
+                }
                $records = $this->channelRepository->getBookingRecord($transationId);
 
                $origin=$records[0]->origin;
 
-             
                if($records[0]->payable_amount == 0.00){
                 $amount = $records[0]->total_fare;
                 }else{
@@ -228,11 +234,17 @@ class ChannelService
                     return  $res['Message'];
                 }
               }
-              
-        if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1)) {
+              else if($origin =='MANTIS') {
 
-                       
-
+                $intersect=[];
+                $res = $this->mantisTransformer->HoldSeats($seatIds,$sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$IsAcBus);
+            
+                if(!$res["success"]){ 
+                    return $res["Error"]["Msg"];
+                }
+              }
+        if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1) || ($origin =='MANTIS' && $res["success"])) { 
+                      
             /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
 
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
@@ -293,6 +305,11 @@ class ChannelService
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
                     $bookingId = $records[0]->id;    
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+                    
+                    /////mantis holdId updated to booking table////////
+                    $holdId = $res["data"]['HoldId'];
+                    $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
+                    
                     $name = $records[0]->users->name;
                     $receiptId = 'rcpt_'.$transationId;
     
@@ -300,7 +317,6 @@ class ChannelService
     
                     $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
                         
-    
                     $data = array(
                         'name' => $name,
                         'amount' => $amount,
@@ -309,19 +325,12 @@ class ChannelService
                     );
                     return $data;
                 }           
-
            }
-
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-
-
-      
+        }     
     }
-
-
 
     public function BlockDolphinSeat($request,$clientRole){
 
@@ -336,14 +345,10 @@ class ChannelService
 
            return $res;
           
-
-    } catch (Exception $e) {
-        Log::info($e->getMessage());
-        throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-    }
-
-
-
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
     }
     
     

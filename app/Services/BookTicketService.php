@@ -157,14 +157,21 @@ class BookTicketService
 
                     $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
                     
-                    //////need to check/////////
-                    $seater = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',1)->pluck('id');
+                    $seater = [];
+                    $lbSleeper = [];
+                    $ubSleeper = [];
+                    $sleeper = [];
+                   
+                    if(isset($mantisSeatresult['lower_berth'])){
+                        $seater = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',1)->pluck('id');
 
-                    $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
-
-                    $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
-
-                    $sleeper = array_merge($lbSleeper->toArray(), $ubSleeper->toArray());
+                        $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                    }
+                    if(isset($mantisSeatresult['upper_berth'])){
+                        $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                    }
+                    $sleeper = collect($lbSleeper)->merge(collect($ubSleeper));
+                    //$sleeper = array_merge($lbSleeper->toArray(), $ubSleeper->toArray());
                     
                     $data = array(
                         'busId' => $busId,
