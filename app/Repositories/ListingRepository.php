@@ -750,7 +750,7 @@ class ListingRepository
     public function LocModel($data, Location $location)
     { 
         $trim = trim( $data['name']);
-        $remove_space= str_replace(' ', '-', $trim);  
+        $remove_space= str_replace(' ', '', $trim);  
         $remove_special_char = preg_replace('/[^A-Za-z0-9\-]/', '',$remove_space);             
         $url = strtolower($remove_special_char);
 
