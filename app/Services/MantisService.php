@@ -35,7 +35,7 @@ class MantisService
     public function getToken(string $uri = null)
     {
 
-        $token = '3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF';
+        $token = '731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF';
                                       
         $response = Http::withHeaders([
             'Access-Token' => $token,
@@ -79,7 +79,7 @@ class MantisService
 
       $res = [];
       try{
-        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
             
         //$token = Cache::get('token');
         $response = Http::withToken($token)->get($this->cityurl);
@@ -118,7 +118,7 @@ class MantisService
     {
         $res = [];
         try{
-          $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+          $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
           $response = Http::withToken($token)->get($this->cityurl);
           //return $response;
           $cityLists[] = response()->json(json_decode($response)->data);
@@ -178,7 +178,7 @@ class MantisService
     public function search($s,$d,$dt) ////used for listing API
     {
        
-        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $result=[];
         $response = Http::withToken($token)->get($this->searchurl,[
                                                         "fromCityId"=> $s ,
@@ -193,7 +193,7 @@ class MantisService
     }
     public function chart($s,$d,$dt,$busId) 
     {
-        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $result=[];
         $response = Http::withToken($token)->get($this->charturl,[
                                                         "fromCityId"=> $s ,
@@ -208,7 +208,7 @@ class MantisService
 
     public function HoldSeats($bookingDet) 
     {
-        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $response = Http::withHeaders([
                         'Access-Token' => $token,
                     //'Content-Type' => 'application/json'
@@ -229,7 +229,7 @@ class MantisService
     public function searchBus($s,$d,$dt,$busId) ///used to get details of a Bus
     {
        
-        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $response = [];
         $response = Http::withToken($token)->get($this->searchBusurl,[
                                                         "fromCityId"=> $s ,

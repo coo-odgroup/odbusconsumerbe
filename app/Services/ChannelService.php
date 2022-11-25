@@ -517,7 +517,7 @@ class ChannelService
                     $this->channelRepository->UpdateMantisAPIPnr($transationId,$updatebookingDt);
  
                     $conductor_number = 'NA';                  
-                    $seat_no = $bookingRecord[0]->bookingDetail->pluck('mantis_seat_name');                               
+                    $seat_no = $bookingRecord[0]->bookingDetail->pluck('seat_name');                               
                     
                     $sourceId = $bookingRecord[0]->source_id;
                     $destId = $bookingRecord[0]->destination_id;

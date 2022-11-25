@@ -431,15 +431,15 @@ public function seatBerthArr($mantisSeatResult,$berthType){
         if(!empty($records[0]->bookingDetail)){
             foreach($records[0]->bookingDetail as $bdt){
                 $collection = collect($bdt);
-                //$filtered = $collection->only(['passenger_name', 'passenger_gender','passenger_age','mantis_seat_name']);
-                $seatTxt = $collection->get('mantis_seat_name');
+                //$filtered = $collection->only(['passenger_name', 'passenger_gender','passenger_age',seat_name']);
+                $seatTxt = $collection->get('seat_name');
                 $seatType = $seatR->where('seatText', $seatTxt)->pluck('berthType');
                 //$fare = $seatR->where('seatText', $seatTxt)->pluck('bus_seats.new_fare');
                 $filtered = [
                     'Name' => $collection->get('passenger_name'),
                     'Age' => (int)$collection->get('passenger_age'),
                     'Gender' => $collection->get('passenger_gender'),
-                    'SeatNo' => $collection->get('mantis_seat_name'),
+                    'SeatNo' => $collection->get('seat_name'),
                     'Fare' => (int)$collection->get('seat_fare'),
                     'SeatTypeId' => (int)$seatType[0], 
                     'IsAcSeat' => $IsAcBus
