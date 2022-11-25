@@ -779,6 +779,11 @@ class ChannelRepository
         $this->booking->where('transaction_id', $transactionId)->update($updateApiData);
 
       }
+      public function UpdateMantisAPIPnr($transactionId,$updatebookingDt){
+
+        $this->booking->where('transaction_id', $transactionId)->update($updatebookingDt);
+
+      }
 
       public function InsertTicketData($booking_id,$pnr,$ticket_info){
 

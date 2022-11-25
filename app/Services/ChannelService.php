@@ -238,7 +238,7 @@ class ChannelService
 
                 $intersect=[];
                 $res = $this->mantisTransformer->HoldSeats($seatIds,$sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$IsAcBus);
-            
+                
                 if(!$res["success"]){ 
                     return $res["Error"]["Msg"];
                 }
@@ -308,6 +308,7 @@ class ChannelService
                     
                     /////mantis holdId updated to booking table////////
                     $holdId = $res["data"]['HoldId'];
+                    Log::info($holdId);
                     $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
                     
                     $name = $records[0]->users->name;
@@ -455,7 +456,6 @@ class ChannelService
     public function pay($request,$clientRole)
     {
         try {
-          
             $booked = Config::get('constants.BOOKED_STATUS');
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
@@ -463,17 +463,14 @@ class ChannelService
             
             $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
             $customerId = $customerId[0];
-            //$busId = $request['bus_id'];
             $seatIds = $request['seat_id'];
             $razorpay_signature = $data['razorpay_signature'];
             $razorpay_payment_id = $data['razorpay_payment_id'];
             $razorpay_order_id = $data['razorpay_order_id'];
             $transationId = $data['transaction_id'];
-        
-            //$bookingRecord = $this->channelRepository->getBookingData($busId,$transationId);
-            
+           
             $records = $this->channelRepository->getBookingRecord($transationId);
-            $origin=$records[0]->origin;
+            $origin = $records[0]->origin;
 
             if($origin=='DOLPHIN') {
 
@@ -483,33 +480,65 @@ class ChannelService
 
                 if($res['Status']==1 && $res['PNRNO']){
 
-                   $updateApiData['pnr']=$res['PNRNO'];
-                   $updateApiData['api_pnr']=$res['PNRNO'];
-                   $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
-                   $this->channelRepository->UpdateAPIPnr($transationId,$updateApiData);
+                    $updateApiData['pnr']=$res['PNRNO'];
+                    $updateApiData['api_pnr']=$res['PNRNO'];
+                    $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
+                    $this->channelRepository->UpdateAPIPnr($transationId,$updateApiData);
 
-
-                   $bustype = 'NA';
+                    $bustype = 'NA';
                     $busTypeName = 'NA';
                     $sittingType = 'NA'; 
                     $conductor_number = 'NA';                  
-                
                     $seat_no = $bookingRecord[0]->bookingDetail->pluck('seat_name');                               
                     $busname = "DOLPHIN TOURS & TRAVELS";
                     $busNumber = '';
                     $busId= $bookingRecord[0]->bus_id;
                     $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
-
                     $pnr = $res['PNRNO'];
-
                 }else{
                     return 'Failed';
                 }
+            }
+            //////Mantis changes///////
+            if($origin=='MANTIS') {
 
-            }if($origin=='ODBUS') {
+                $bookingRecord = $records;
+                $holdId = $bookingRecord[0]->holdId;
+
+                $res = $this->mantisTransformer->BookSeat($records,$holdId);
+                Log::info($res);
+                Log::info($holdId);
+                if($res["success"]) 
+                {
+                    
+                    $updatebookingDt['pnr'] = $res["data"]["PNRNo"];
+                    $updatebookingDt['api_pnr'] = $res["data"]["PNRNo"];
+                    $updatebookingDt['tkt_no'] = $res["data"]["TicketNo"];;
+                    $this->channelRepository->UpdateMantisAPIPnr($transationId,$updatebookingDt);
+ 
+                    $conductor_number = 'NA';                  
+                    $seat_no = $bookingRecord[0]->bookingDetail->pluck('mantis_seat_name');                               
+                    
+                    $sourceId = $bookingRecord[0]->source_id;
+                    $destId = $bookingRecord[0]->destination_id;
+                    $jDate = $bookingRecord[0]->journey_dt;
+                    $busId = $bookingRecord[0]->bus_id;
+                    $busDetails = $this->mantisTransformer->searchBus($sourceId,$destId,$jDate,$busId);
+
+                    $busname = $busDetails['data']['Buses'][0]['CompanyName'];
+                    $busTypeName = $busDetails['data']['Buses'][0]['BusType']['IsAC'];
+                    $sittingType = $busDetails['data']['Buses'][0]['BusType']['Seating'];
+                    $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
+                    $busNumber = '';  
+                    $bustype = 'NA';
+                    $pnr = $res["data"]["PNRNo"];
+                }else{
+                        return $res["Error"]["Msg"];
+                }
+            }
+            if($origin=='ODBUS') {
                     $bookingRecord = $this->channelRepository->getBookingData($transationId);
-
-                                       
+                  
                     $bustype = $bookingRecord[0]->bus->BusType->busClass->class_name;
                     $busTypeName = $bookingRecord[0]->bus->BusType->name;
                     $sittingType = $bookingRecord[0]->bus->BusSitting->name; 
@@ -526,8 +555,6 @@ class ChannelService
                     $pnr = $bookingRecord[0]->pnr; 
 
             }
-
-           
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $bookingId = $bookingRecord[0]->id;                   
             $phone = $bookingRecord[0]->users->phone;
@@ -568,7 +595,6 @@ class ChannelService
                 $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
                 $coupon_discount=$bookingRecord[0]->coupon_discount;
                
-            
                 $smsData = array(
                 "seat_no" => $seat_no,
                 "passengerDetails" => $passengerDetails, 
@@ -604,14 +630,8 @@ class ChannelService
                 "sittingType" => $sittingType,
                 );
                 
-            
                 return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
                 ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin);
-
-           
-          
-            
-
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));

@@ -23,6 +23,8 @@ class MantisService
         $this->searchurl = 'https://api.iamgds.com/ota/Search';
         $this->charturl = 'https://api.iamgds.com/ota/Chart';
         $this->holdSeatsurl = 'https://tranapi.iamgds.com/ota/HoldSeats';
+        $this->bookSeatsurl = 'https://tranapi.iamgds.com/ota/BookSeats';
+        $this->searchBusurl = 'https://api.iamgds.com/ota/SearchBus';
         $this->http = $client;
         $this->headers = [
             'cache-control' => 'no-cache',
@@ -33,48 +35,13 @@ class MantisService
     public function getToken(string $uri = null)
     {
 
-        $token = '0B82B58A7B049961F3FE72104ADAEA95|50-S|202211281017||FFFF';
+        $token = '3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF';
                                       
         $response = Http::withHeaders([
             'Access-Token' => $token,
            // 'Content-Type' => 'application/json'
-            ])->post($this->holdSeatsurl,
-        [
-            "FromCityId"=> 4292,
-            "ToCityId"=> 4562,
-            "JourneyDate"=> "2022-11-28",
-            "BusId" => 1,
-            "PickUpID"=> "39436",  //>>>
-            "DropOffID"=> "750", // >>
-            "ContactInfo"=> [
-                "CustomerName"=> "swagatika",
-                "Email"=> "testbooking@travelyaari.com",
-                "Phone"=> "9916457575",
-                "Mobile"=> "9916457574"
-            ],
-            "Passengers"=> [
-                [
-                    "Name"=> "sonyyyyy",
-                    "Age"=> 23,       // >>>
-                    "Gender"=> "F",
-                    "SeatNo"=> "4",
-                    "Fare"=> 12,
-                    "SeatTypeId"=> 1, // >>>>
-                    //"IsAcSeat"=> true
-                ],
-                [
-                    "Name"=> "samoooo",
-                    "Age"=> 23,
-                    "Gender"=> "M",
-                    "SeatNo"=> "5",
-                    "Fare"=> 12,
-                    "SeatTypeId"=> 1,
-                    //"IsAcSeat"=> true
-                ]
-            ]
-            ]
-        
-    );  
+            ])->post($this->bookSeatsurl, ['HoldId' => 42758116
+            ]);  
          return $response->json();
                
           //return $response->throw()->json();
@@ -112,7 +79,7 @@ class MantisService
 
       $res = [];
       try{
-        $token = "79FC687F06C0493F65D579A22A3CE6E6|50-S|202211041512||FFFF";
+        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
             
         //$token = Cache::get('token');
         $response = Http::withToken($token)->get($this->cityurl);
@@ -151,7 +118,7 @@ class MantisService
     {
         $res = [];
         try{
-          $token = "A4879D4C82744A4C56EB66736E16013C|50-S|202211281435||FFFF";
+          $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
           $response = Http::withToken($token)->get($this->cityurl);
           //return $response;
           $cityLists[] = response()->json(json_decode($response)->data);
@@ -211,7 +178,7 @@ class MantisService
     public function search($s,$d,$dt) ////used for listing API
     {
        
-        $token = "A4879D4C82744A4C56EB66736E16013C|50-S|202211281435||FFFF";
+        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
         $result=[];
         $response = Http::withToken($token)->get($this->searchurl,[
                                                         "fromCityId"=> $s ,
@@ -226,7 +193,7 @@ class MantisService
     }
     public function chart($s,$d,$dt,$busId) 
     {
-        $token = "A4879D4C82744A4C56EB66736E16013C|50-S|202211281435||FFFF";
+        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
         $result=[];
         $response = Http::withToken($token)->get($this->charturl,[
                                                         "fromCityId"=> $s ,
@@ -241,17 +208,40 @@ class MantisService
 
     public function HoldSeats($bookingDet) 
     {
-        $token = "A4879D4C82744A4C56EB66736E16013C|50-S|202211281435||FFFF";
+        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
         $response = Http::withHeaders([
                         'Access-Token' => $token,
                     //'Content-Type' => 'application/json'
                         ])->post($this->holdSeatsurl, $bookingDet   
                                 );  
         return $response->json(); 
-           
-        //return $response->body();                                        
-        //return (object) json_decode($response);
     }
+    public function BookSeats($holdId) 
+    {
+        $token = '3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF';                           
+        $response = Http::withHeaders([
+            'Access-Token' => $token,
+           // 'Content-Type' => 'application/json'
+            ])->post($this->bookSeatsurl, ['HoldId' => (int)$holdId
+            ]); 
+         return $response->json();
+    }
+    public function searchBus($s,$d,$dt,$busId) ///used to get details of a Bus
+    {
+       
+        $token = "3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF";
+        $response = [];
+        $response = Http::withToken($token)->get($this->searchBusurl,[
+                                                        "fromCityId"=> $s ,
+                                                        "toCityId"=> $d,
+                                                        "journeyDate" =>$dt,
+                                                        "busId" =>$busId,
+                                                        //'headers' => $headers,
+                                                        //'verify'  => false,
+                                                        ]);                                             
+        return $response->json();  
+    }
+
 
     private function postResponse(string $uri = null, array $post_params = [])
     {

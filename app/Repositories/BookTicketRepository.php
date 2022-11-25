@@ -250,11 +250,9 @@ class BookTicketRepository
 
             }
             elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
-                
-                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
 
+                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
                 $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
-                
                 unset($bDetail['bus_seats_id']);
                 $bDetail['mantis_seat_name'] = $seat_name; 
                 $bDetail['seat_fare'] = $seat_fare;

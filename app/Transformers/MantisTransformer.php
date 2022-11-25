@@ -469,4 +469,27 @@ public function seatBerthArr($mantisSeatResult,$berthType){
         $res = $this->mantisService->HoldSeats($bookingDet);
         return $res;
     }
+
+    public function BookSeat($records,$holdId){
+       
+        $res= $this->mantisService->BookSeats($holdId);
+        return $res;
+       
+
+    }
+    public function searchBus($sourceId,$destId,$jDate,$busId){
+        
+        $srcResult = $this->listingRepository->getLocationResult($sourceId);
+        $destResult = $this->listingRepository->getLocationResult($destId);
+        $busDtls = [];
+
+        if($srcResult[0]->is_mantis == 1 && $destResult[0]->is_mantis == 1){
+
+            $mantis_source = $srcResult[0]->mantis_id;
+            $mantis_dest = $destResult[0]->mantis_id;
+            
+            $busDtls = $this->mantisService->searchBus($mantis_source,$mantis_dest,$jDate,$busId);
+            return  $busDtls;
+        }        
+    }
 }

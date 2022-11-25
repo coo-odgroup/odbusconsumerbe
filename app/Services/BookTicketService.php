@@ -188,9 +188,7 @@ class BookTicketService
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
                 $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId);   
-               
                 /////////////auto apply coupon//////////
-
             if($bookingInfo['origin'] == 'ODBUS'){ 
 
                 $bcollection = collect($bookingInfo);
