@@ -70,7 +70,7 @@ class MantisService
         try{
           //$token = "847AA0A10F6764104C7C762B42FD3BD0|50-S|202212051005||FFFF";
           $token = cache('token');
-          $token = Str::of($token)->trim('"');
+          $token = Str::replace('"', '', $token);
           $response = Http::withToken($token)->get($this->cityurl);
           $cityLists[] = response()->json(json_decode($response)->data);
           if($cityLists){
@@ -89,7 +89,7 @@ class MantisService
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $token = cache('token');
-        $token = Str::of($token)->trim('"');
+        $token = Str::replace('"', '', $token);
         $response = [];
         $response = Http::withToken($token)->get($this->searchurl,[
                                                         "fromCityId"=> $s ,
@@ -105,7 +105,7 @@ class MantisService
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $token = cache('token');
-        $token = Str::of($token)->trim('"');
+        $token = Str::replace('"', '', $token);
         $result=[];
         $response = Http::withToken($token)->get($this->charturl,[
                                                         "fromCityId"=> $s ,
@@ -122,7 +122,7 @@ class MantisService
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $token = cache('token');
-        $token = str_replace('"', '', $token);
+        $token = Str::replace('"', '', $token);
         $response = Http::withHeaders([
                         'Access-Token' => $token,
                     //'Content-Type' => 'application/json'
@@ -133,8 +133,8 @@ class MantisService
     public function BookSeats($holdId) 
     {
         //$token = '3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF';     
-        $token = cache('token');
-        $token = str_replace('"', '', $token);                      
+        $token = cache('token');   
+        $token = Str::replace('"', '', $token);                  
         $response = Http::withHeaders([
             'Access-Token' => $token,
            // 'Content-Type' => 'application/json'
@@ -146,7 +146,7 @@ class MantisService
     {  
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
         $token = cache('token');
-        $token = Str::of($token)->trim('"');
+        $token = Str::replace('"', '', $token);
         $response = [];
         $response = Http::withToken($token)->get($this->searchBusurl,[
                                                         "fromCityId"=> $s ,
