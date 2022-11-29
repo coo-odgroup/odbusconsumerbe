@@ -60,7 +60,7 @@ class MantisService
         $recvToken = $request ? $request->getBody()->getContents() : null;
         $status = $request ? $request->getStatusCode() : 500;
         if ($recvToken && $status === 200 && $recvToken !== 'null') {
-            Cache::add('token', $recvToken , $seconds = 86400);    
+            Cache::add('token', $recvToken , $seconds = 86400);   
         }   
     }
 
@@ -69,7 +69,12 @@ class MantisService
         $res = [];
         try{
           //$token = "847AA0A10F6764104C7C762B42FD3BD0|50-S|202212051005||FFFF";
-          $token = cache('token');
+          if (Cache::has('token')) {
+            $token = cache('token');
+          }else{
+            $this->getToken();
+            $token = cache('token');
+          }
           $token = Str::replace('"', '', $token);
           $response = Http::withToken($token)->get($this->cityurl);
           $cityLists[] = response()->json(json_decode($response)->data);
@@ -88,7 +93,12 @@ class MantisService
     public function search($s,$d,$dt) ////used for listing API
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
-        $token = cache('token');
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
         $token = Str::replace('"', '', $token);
         $response = [];
         $response = Http::withToken($token)->get($this->searchurl,[
@@ -104,7 +114,12 @@ class MantisService
     public function chart($s,$d,$dt,$busId) 
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
-        $token = cache('token');
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
         $token = Str::replace('"', '', $token);
         $result=[];
         $response = Http::withToken($token)->get($this->charturl,[
@@ -121,7 +136,12 @@ class MantisService
     public function HoldSeats($bookingDet) 
     {
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
-        $token = cache('token');
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
         $token = Str::replace('"', '', $token);
         $response = Http::withHeaders([
                         'Access-Token' => $token,
@@ -133,7 +153,12 @@ class MantisService
     public function BookSeats($holdId) 
     {
         //$token = '3FE2CD1A4D70A0346BA6C19F3EC8DE22|50-S|202212011228||FFFF';     
-        $token = cache('token');   
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }  
         $token = Str::replace('"', '', $token);                  
         $response = Http::withHeaders([
             'Access-Token' => $token,
@@ -145,7 +170,12 @@ class MantisService
     public function searchBus($s,$d,$dt,$busId) ///used to get details of a Bus
     {  
         //$token = "731A751C2570C5A5BA9824AF9B9BBA05|50-S|202212021127||FFFF";
-        $token = cache('token');
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
         $token = Str::replace('"', '', $token);
         $response = [];
         $response = Http::withToken($token)->get($this->searchBusurl,[
