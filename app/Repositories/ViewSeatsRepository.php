@@ -391,7 +391,7 @@ class ViewSeatsRepository
 
         //////////////////////special Fare calculations/////////////////////
         $bus = Bus::find($busId);	
-        $specialFares = $bus->specialFare()->where('date', $entry_date)->get();
+        $specialFares = $bus->specialFare()->where('date', $entry_date)->where('status',1)->get();
         
         $splSeaterFare=0;
         $splSleeperFare =0;
@@ -400,7 +400,7 @@ class ViewSeatsRepository
             $splSleeperFare = (int)$specialFares[0]->sleeper_price;
         }    
         ///////////////////////owner Fare calculations///////////////////////
-        $ownerFares = $bus->ownerfare()->where('date', $entry_date)->get();
+        $ownerFares = $bus->ownerfare()->where('date', $entry_date)->where('status',1)->get();
         $ownSeaterFare=0;
         $ownSleeperFare =0;
         if(count( $ownerFares) > 0){
@@ -408,7 +408,7 @@ class ViewSeatsRepository
             $ownSleeperFare = (int)$ownerFares[0]->sleeper_price;
         }  
         ///////////////////////Festive Fare calculations///////////////////////
-        $festiveFares = $bus->festiveFare()->where('date', $entry_date)->get();
+        $festiveFares = $bus->festiveFare()->where('date', $entry_date)->where('status',1)->get();
         $festiveSeaterFare=0;
         $festiveSleeperFare =0;
         if(count( $festiveFares) > 0){
@@ -416,5 +416,5 @@ class ViewSeatsRepository
             $festiveSleeperFare = (int)$festiveFares[0]->sleeper_price;
         }
         return [$splSeaterFare,$splSleeperFare,$ownSeaterFare,$ownSleeperFare,$festiveSeaterFare,$festiveSleeperFare];  
-}
+    }
 }
