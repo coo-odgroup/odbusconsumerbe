@@ -74,6 +74,15 @@ class BookTicketService
                 $destination = Location::where('id',$destinationID)->first()->name;
 
                 if($origin == 'ODBUS'){
+
+                    ////////// gender validation
+
+                	$rrr= $this->genderValidate($request,$clientRole,$clientId);
+
+                	if($rrr != null){
+                		return $rrr;
+                	}
+                    
                     $reqInfo= array(
                         "source" => $source,
                         "destination" => $destination,
@@ -215,6 +224,88 @@ class BookTicketService
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
-    }   
+    } 
+    
+    public function genderValidate($request,$clientRole,$clientId){
+    	$bookingInfo = $request['bookingInfo'];
+                ////////////////////////busId validation////////////////////////////////////
+                $sourceID = $bookingInfo['source_id'];
+                $destinationID = $bookingInfo['destination_id'];
+                $origin = $bookingInfo['origin'];
+                $ReferenceNumber = $bookingInfo['ReferenceNumber'];
+
+
+                	$arrvst['sourceId']=$sourceID;
+                	$arrvst['destinationId']=$destinationID;
+                	$arrvst['busId']=$bookingInfo['bus_id'];
+                	$arrvst['entry_date']=$bookingInfo['journey_date'];
+                	$arrvst['origin']=$origin;
+                	$arrvst['ReferenceNumber']=$ReferenceNumber;
+
+                	$seatArray=$this->viewSeatsService->getAllViewSeats($arrvst,$clientRole,$clientId);
+
+
+            ///////// logic for seat select gender restriction
+
+            $prevGender = null;
+            $genderRestrictSeatarray=[];
+
+
+            $seatIds = Arr::pluck($bookingInfo['bookingDetail'], 'bus_seats_id');
+
+            $selectedAray=[];
+
+            foreach($seatArray['lower_berth'] as $sat){ 
+            	foreach ($seatIds as $st) {
+             		if($sat['id']==$st){             			
+		              $selectedAray[]=$sat;
+                    }
+                }
+            }         	
+                foreach ($selectedAray as $k => $itm) { 
+                   foreach($seatArray['lower_berth'] as $at){ 
+
+                      if( $itm['colNumber'] == $at['colNumber'] && 
+		                  ($itm['rowNumber']- $at['rowNumber'] == -1 || $itm['rowNumber'] - $at['rowNumber'] == 1)  
+		                  && $at['seatText']!='' && $itm['id'] !=$at['id'] && $at['Gender']){ 
+
+	                        $sst=[
+	                          "seat_id" => $itm['id'],
+	                          "canSelect" => $at['Gender'],
+	                          "seat_name" => $itm['seatText']
+	                        ];
+
+
+                            $genderRestrictSeatarray[]=$sst;
+ 	
+		                }		                           
+
+		             }
+                }
+
+          if($genderRestrictSeatarray){
+          	foreach ($genderRestrictSeatarray as $value) {
+          		foreach ($bookingInfo['bookingDetail'] as $b) {
+          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='F' && $b['passenger_gender'] =='M' ){
+          				$msg= 'Male is not allowed for seat no '.$value['seat_name'];
+
+          				 return $arr=['status'=>'Gender Error','message' => $msg];
+          			}
+
+          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='M' && $b['passenger_gender'] =='F' ){
+          				 $msg= 'Female is not allowed for seat no '.$value['seat_name'];
+
+          				 return $arr=['status'=>'Gender Error','message' => $msg];
+          			}
+
+          		}
+          		
+          	}
+
+          }
+           
+           /////////////////////////////
+    }  
+   
    
 }
