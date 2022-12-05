@@ -492,4 +492,10 @@ public function seatBerthArr($mantisSeatResult,$berthType){
             return  $busDtls;
         }        
     }
+    public function isCancellable($pnrNo,$tktNo,$seats){
+        return $this->mantisService->isCancellable($pnrNo,$tktNo,$seats);
+    }
+    public function cancelSeats($pnrNo,$tktNo,$seats){
+        return $this->mantisService->cancelSeats($pnrNo,$tktNo,$seats);
+    }
 }

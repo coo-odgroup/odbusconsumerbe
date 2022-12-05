@@ -22,6 +22,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use DateTime;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 class CancelTicketRepository
@@ -39,9 +40,10 @@ class CancelTicketRepository
     protected $cancellationSlabInfo;
     protected $channelRepository; 
     protected $dolphinTransformer;
+    protected $mantisTransformer;
 
 
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository,Credentials $credentials,CustomerPayment $customerPayment,CancellationSlab $cancellationSlab,CancellationSlabInfo $cancellationSlabInfo,DolphinTransformer $dolphinTransformer)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail,ChannelRepository $channelRepository,Credentials $credentials,CustomerPayment $customerPayment,CancellationSlab $cancellationSlab,CancellationSlabInfo $cancellationSlabInfo,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -56,6 +58,7 @@ class CancelTicketRepository
         $this->cancellationSlab = $cancellationSlab;
         $this->cancellationSlabInfo = $cancellationSlabInfo;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     } 
     
@@ -75,18 +78,76 @@ class CancelTicketRepository
         return $this->channelRepository->sendAdminEmailTicketCancel($emailData);
      }
 
-    
-
     public function GetBooking($bookingId){
         return $this->booking->find($bookingId);
     }
 
     public function getPnrInfo($pnr){
-
-        return $this->booking->where("pnr",$pnr)->first();
-        
+        return $this->booking->where("pnr",$pnr)->first();    
     }
+    public function getSeatNames($bookingId){
+        return  BookingDetail::where("booking_id",$bookingId)->pluck('seat_name');       
+    }
+    public function MantisCancelTicket($phone,$pnr,$booked){
+        
+        $bookingDtls = $this->users->where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
+            $u->where([
+                ['booking.pnr', '=', $pnr],
+                ['status', '=', $booked],
+            ]);           
+            $u->with(["customerPayment" => function($b){
+                $b->where('payment_done',1);
+            }]);        
+              $u->with('bookingDetail'); 
+        }])->get();
+        $bus["bus_number"] = "";      
+        $bus["bus_description"]=""; 
+        $sourceId = $bookingDtls[0]->booking[0]->source_id;
+        $destId = $bookingDtls[0]->booking[0]->destination_id;
+        $busId = $bookingDtls[0]->booking[0]->bus_id;
+        $jDt = $bookingDtls[0]->booking[0]->journey_dt;
+        $busDetails = $this->mantisTransformer->searchBus($sourceId,$destId,$jDt,$busId);
+           
+        $bus["name"] = $busDetails['data']['Buses'][0]['CompanyName']; 
 
+        $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
+        $cancellationslabsInfo = [];
+        
+        if($cancellationslabs){
+            foreach($cancellationslabs as $p){
+                $c["duration"] = $p['Mins']/60;
+                $c["deduction"] = $p['Pct'];
+                /////
+                // $collection = collect($c["duration"]); 
+                // $collection->push(9999);
+                // $chunks = $collection->sliding(2);
+                // foreach($chunks as $chunk){
+                //     $c["duration"] = $chunk->implode('-');
+                // }
+                ////
+                $cancellationslabsInfo[] = $c;       
+            }         
+        } 
+
+        $bus["cancellationslabs"]["cancellation_slab_info"] = $cancellationslabsInfo;
+        $bus["bus_type"]["name"] = $busDetails['data']['Buses'][0]['BusType']['IsAC'];;
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"] = $busDetails['data']['Buses'][0]['BusType']['Seating'];
+        $bus["bus_contacts"]["phone"] = ""; 
+
+        $bookingDtls[0]->booking[0]['bus'] = $bus;
+        $bookingDetail = $bookingDtls[0]->booking[0]->bookingDetail;
+        
+        foreach($bookingDetail as $k => $bd){
+            $st["seatText"] = $bd->seat_name;  
+            $stx["seats"] = $st;            
+            $bookingDtls[0]->booking[0]['bookingDetail'][$k]["bus_seats"] = $stx;   
+        }
+        return $bookingDtls;
+    }
     public function DolphinCancelTicket($phone,$pnr,$booked){
 
         $ar= $this->users->where('phone',$phone)->with(["booking" => function($u) use($pnr,$booked){
@@ -250,7 +311,41 @@ class CancelTicketRepository
         );
         return $data;
     }
+    public function MantisCancelUpdate($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$refundAmount){
 
+        $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
+        $refunded = Config::get('constants.REFUNDED');
+       
+        $key = $this->credentials->first()->razorpay_key;
+        $secretKey = $this->credentials->first()->razorpay_secret;
+       
+        $api = new Api($key, $secretKey);
+        $payment = $api->payment->fetch($razorpay_payment_id);
+       
+        $paidAmount = $this->booking->where('id', $bookingId)->first()->total_fare;
+        $paymentStatus = $payment->status;
+        $refundStatus = $payment->refund_status;
+        $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
+        $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
+        $baseFare = $payableAmount - $transactionFees;
+       
+            if($refundStatus != null){
+                return 'refunded';
+            }
+            else{
+                $refundAmount = $refundAmount;
+                $data = array(
+                     'refundAmount' => $refundAmount,
+                     'paidAmount' => $paidAmount,
+                );              
+                $refundAmt = $refundAmount;
+                $smsData['refundAmount'] = $refundAmt;  
+                $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);
+                $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
+                $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
+                return $data;
+            } 
+       }
     public function DolphinCancelUpdate($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId,$refundAmount){
 
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');

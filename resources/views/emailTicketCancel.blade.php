@@ -237,7 +237,7 @@
                             <td  style="padding: 5px; font-size: 13px; font-family: Tahoma, sans-serif; color: #444; font-weight:normal; padding-left:5px; border: solid 1px #d1d1d1;">
                               <strong>Rs. {{$totalfare}} 
 
-                              @if($origin == 'DOLPHIN')
+                              @if($origin == 'DOLPHIN' || $origin == 'MANTIS')
                               <span>(Excluding the transaction & convenience charges)</span>
                              @endif
 

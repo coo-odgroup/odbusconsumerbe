@@ -506,11 +506,8 @@ class ChannelService
                 $holdId = $bookingRecord[0]->holdId;
 
                 $res = $this->mantisTransformer->BookSeat($records,$holdId);
-                Log::info($res);
-                Log::info($holdId);
                 if($res["success"]) 
-                {
-                    
+                {  
                     $updatebookingDt['pnr'] = $res["data"]["PNRNo"];
                     $updatebookingDt['api_pnr'] = $res["data"]["PNRNo"];
                     $updatebookingDt['tkt_no'] = $res["data"]["TicketNo"];;

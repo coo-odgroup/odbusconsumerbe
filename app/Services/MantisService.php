@@ -25,8 +25,8 @@ class MantisService
         $this->holdSeatsurl = 'https://tranapi.iamgds.com/ota/HoldSeats';
         $this->bookSeatsurl = 'https://tranapi.iamgds.com/ota/BookSeats';
         $this->searchBusurl = 'https://api.iamgds.com/ota/SearchBus';
-        $this->searchBusurl = 'https://api.iamgds.com/ota/SearchBus';
         $this->isCancellableurl = 'https://tranapi.iamgds.com/ota/IsCancellable';
+        $this->cancelSeatsurl = 'https://tranapi.iamgds.com/ota/CancelSeats';
         $this->http = $client;
         $this->headers = [
             'cache-control' => 'no-cache',
@@ -36,19 +36,19 @@ class MantisService
     
     public function getToken(string $uri = null)
     {
-        // $token = "B7B68FBEF53D880084F4C74C6EFA2175|50-S|202212051616||FFFF";
+        // $token = "6FA7D6F16D51FBC41F016F386B7E097C|50-S|202212061014||FFFF";
         // $response = [];
-        // $response = Http::withToken($token)->get($this->isCancellableurl,[
-        //                                                 "PNRNo"=> 270866049-248758,
-        //                                                 "TicketNo "=> 502223142,
-        //                                                 "seatNos " => 22,21,
-        //                                                 //'headers' => $headers,
-        //                                                 //'verify'  => false,
-        //                                                 ]);                                             
-        // return  $response->getStatusCode();   
+        // $response = Http::withHeaders([
+        //     'Access-Token' => $token,
+        //                     ])->post($this->cancelSeatsurl, [
+        //                         "PNR"=> "270866049-248758",
+        //                         "TicketNo"=> "502223142",
+        //                         "SeatNos"=> "22,21",
+        //                         ]); 
+        // Log::info($response->json());
+        // //dd($response);                                               
         // return $response->json();
-
-        ///////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////
         $request = Http::post($this->url, [
             'ClientId' => 50,
             'ClientSecret'=> 'd66de12fa3473a93415b02494253f088',
@@ -188,7 +188,45 @@ class MantisService
                                                         ]);                                             
         return $response->json();  
     }
-
+    public function isCancellable($pnrNo,$tktNo,$seats){
+        //$token = "6FA7D6F16D51FBC41F016F386B7E097C|50-S|202212061014||FFFF";
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
+        $token = Str::replace('"', '', $token);
+            $response = [];
+            $response = Http::withHeaders([
+                'Access-Token' => $token,
+                                ])->get($this->isCancellableurl,[
+                                    "PNRNo"=> $pnrNo,
+                                    "TicketNo"=> $tktNo,
+                                    "seatNos"=> $seats,
+                                    ]);                                                                    
+            return $response->json();
+    }
+    public function cancelSeats($pnrNo,$tktNo,$seats){
+       
+        //$token = "6FA7D6F16D51FBC41F016F386B7E097C|50-S|202212061014||FFFF";
+        if (Cache::has('token')) {
+            $token = cache('token');
+        }else{
+            $this->getToken();
+            $token = cache('token');
+        }
+        $token = Str::replace('"', '', $token);
+            $response = [];
+            $response = Http::withHeaders([
+                'Access-Token' => $token,
+                            ])->post($this->cancelSeatsurl, [
+                                "PNR"=> $pnrNo,
+                                "TicketNo"=> $tktNo,
+                                "SeatNos"=> $seats,
+                                ]);                                                                    
+            return $response->json();
+        }
 
     private function postResponse(string $uri = null, array $post_params = [])
     {
