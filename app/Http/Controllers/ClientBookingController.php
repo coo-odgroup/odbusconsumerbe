@@ -212,6 +212,11 @@ class clientBookingController extends Controller
           }elseif($response=='Bus_not_running'){
               return $this->errorResponse(Config::get('constants.BUS_NOT_RUNNING'),Response::HTTP_OK);
           }
+          elseif(isset($response['status']) && $response['status']=='Gender Error'){
+    
+            return $this->errorResponse($response['message'],Response::HTTP_OK);
+    
+        }
           elseif($response =='Invalid Param'){
     
             return $this->errorResponse("Invalid Origin",Response::HTTP_OK);
