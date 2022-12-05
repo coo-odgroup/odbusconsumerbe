@@ -27,6 +27,7 @@ class ApiReferenceRepository
         $apiReference->name = $request['name'];
         $apiReference->email = $request['email'];
         $apiReference->phone = $request['phone'];
+        $apiReference->company_name = $request['company_name'];
         $apiReference->save();
 
         $sendEmailTicket = $this->sendApiEmail($request['name'],$request['email'],$request['phone']); 
