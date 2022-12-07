@@ -525,7 +525,24 @@ class ChannelService
                     $busname = $busDetails['data']['Buses'][0]['CompanyName'];
                     $busTypeName = $busDetails['data']['Buses'][0]['BusType']['IsAC'];
                     $sittingType = $busDetails['data']['Buses'][0]['BusType']['Seating'];
-                    $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
+                    $cslabs = $busDetails['data']['Buses'][0]['Canc']; 
+                    $cancellationslabsInfo = [];
+                    $collectCancPol = collect([]);
+                    if($cslabs){
+                         foreach($cslabs as $cs){
+                            $cancDed["deduction"] = $cs['Pct'];
+                            $collectCancPol->push($cs['Mins']/60);
+                            $cancellationslabsInfo[] = $cancDed;       
+                    }   
+                    $collectCancPol->push(9999);
+                    $chunks = $collectCancPol->sliding(2);
+                    $i =0;
+                        foreach($chunks as $chunk){
+                            $cancellationslabsInfo[$i]["duration"] = $chunk->implode('-');
+                            $i++;
+                        }   
+                    }
+                    $cancellationslabs = json_decode(json_encode($cancellationslabsInfo));
                     $busNumber = '';  
                     $bustype = 'NA';
                     $pnr = $res["data"]["PNRNo"];
