@@ -900,7 +900,7 @@ class ListingService
 
         $mantisResult = [];
 
-        if( ($clientId!=213 && $operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null || $clientId!=213){
     
             $mantisShowRecords = [];
             $mantisShowSoldoutRecords = [];   
