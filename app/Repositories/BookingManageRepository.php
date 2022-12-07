@@ -27,6 +27,7 @@ use Carbon\Carbon;
 use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
+use Illuminate\Support\Str;
 
 
 
@@ -161,19 +162,21 @@ class BookingManageRepository
         $bookingDtls = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
             $u->where('booking.pnr', '=', $pnr); 
             $u->with("bookingDetail"); 
-              }])->get();
+              }])->get();    
         $sourceId = $bookingDtls[0]->booking[0]->source_id;
         $destId = $bookingDtls[0]->booking[0]->destination_id;
         $busId = $bookingDtls[0]->booking[0]->bus_id;
         $jDt = $bookingDtls[0]->booking[0]->journey_dt;
         $dropPoint = $bookingDtls[0]->booking[0]->dropping_point;
-        
+        $slice = Str::before($dropPoint, '|');
+        $slice = Str::of($slice)->trim();
         $busDetails = $this->mantisTransformer->searchBus($sourceId,$destId,$jDt,$busId);
         $bus["name"] = $busDetails['data']['Buses'][0]['CompanyName']; 
         $bus["bus_number"] = "";  
-        $dropDateTime = collect($busDetails['data']['Buses'][0]['Dropoffs'])->where('DropoffName',$dropPoint )->pluck('DropoffTime');  
+        $dropDateTime = collect($busDetails['data']['Buses'][0]['Dropoffs'])->where('DropoffName', $slice)->pluck('DropoffTime'); 
+        if($dropDateTime){
         $bookingDtls[0]->booking[0]['journey_end_dt'] = date('Y-m-d',strtotime($dropDateTime[0]));
-
+        }    
         $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
         $cancellationslabsInfo = [];
         $collectCancPol = collect([]);
