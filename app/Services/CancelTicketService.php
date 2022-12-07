@@ -67,7 +67,6 @@ class CancelTicketService
             $booked = Config::get('constants.BOOKED_STATUS');
 
             $pnr_dt = $this->cancelTicketRepository->getPnrInfo($pnr);
-            //return $pnr_dt; 
 
             if($pnr_dt->origin=='DOLPHIN'){
     

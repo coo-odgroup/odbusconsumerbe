@@ -112,26 +112,25 @@ class CancelTicketRepository
 
         $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
         $cancellationslabsInfo = [];
-        
+        $collectCancPol = collect([]);
         if($cancellationslabs){
-            foreach($cancellationslabs as $p){
-                $c["duration"] = $p['Mins']/60;
-                $c["deduction"] = $p['Pct'];
-                /////
-                // $collection = collect($c["duration"]); 
-                // $collection->push(9999);
-                // $chunks = $collection->sliding(2);
-                // foreach($chunks as $chunk){
-                //     $c["duration"] = $chunk->implode('-');
-                // }
-                ////
-                $cancellationslabsInfo[] = $c;       
-            }         
+            foreach($cancellationslabs as $cs){
+                $cancDed["deduction"] = $cs['Pct'];
+                $collectCancPol->push($cs['Mins']/60);
+                $cancellationslabsInfo[] = $cancDed;       
+            }   
+                $collectCancPol->push(9999);
+                $chunks = $collectCancPol->sliding(2);
+                $i =0;
+                foreach($chunks as $chunk){
+                    $cancellationslabsInfo[$i]["duration"] = $chunk->implode('-');
+                    $i++;
+                }   
         } 
 
         $bus["cancellationslabs"]["cancellation_slab_info"] = $cancellationslabsInfo;
         $bus["bus_type"]["name"] = $busDetails['data']['Buses'][0]['BusType']['IsAC'];;
-        $bus["bus_type"]["bus_class"]=[
+        $bus["bus_type"]["bus_class"] = [
             "class_name" => ""
         ];
 

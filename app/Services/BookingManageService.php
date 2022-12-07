@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Repositories\ChannelRepository;
 use App\Models\BusContacts;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 
@@ -31,15 +32,17 @@ class BookingManageService
     protected $user;  
     protected $channelRepository; 
     protected $dolphinTransformer;
+    protected $mantisTransformer;
 
 
-    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository,User $user,ChannelRepository $channelRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(BookingManageRepository $bookingManageRepository,CancelTicketRepository $cancelTicketRepository,User $user,ChannelRepository $channelRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bookingManageRepository = $bookingManageRepository;
         $this->cancelTicketRepository = $cancelTicketRepository;
         $this->channelRepository = $channelRepository;
         $this->user = $user;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }
     public function getJourneyDetails($request)
@@ -105,13 +108,44 @@ class BookingManageService
     public function getBookingDetails($request)
     {
         try {
-           
             $pnr = $request['pnr'];
             $mobile = $request['mobile'];
-    
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
 
-            if($pnr_dt->origin=='DOLPHIN'){
+            if($pnr_dt->origin=='MANTIS'){
+                
+                $booking_detail = $this->bookingManageRepository->getMantisBookingDetails($mobile,$pnr); 
+            
+                if(isset($booking_detail[0])){ 
+                    if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 
+                        $departureTime = $booking_detail[0]->booking[0]->boarding_time;
+                        $arrivalTime = $booking_detail[0]->booking[0]->dropping_time;
+                        $depTime = date("h:i A",strtotime($departureTime));
+                        $arrTime = date("h:i A",strtotime($arrivalTime)); 
+    
+                        $arr_time = new DateTime($arrivalTime);
+                        $dep_time = new DateTime($departureTime);
+                        $totalTravelTime = $dep_time->diff($arr_time);
+                        $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+                        $booking_detail[0]->booking[0]['source']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
+                        $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);  
+                        $booking_detail[0]->booking[0]['journeyDuration'] =  $totalJourneyTime;
+          
+                        $booking_detail[0]->booking[0]['created_date'] = date('Y-m-d',strtotime($booking_detail[0]->booking[0]['created_at']));           
+                        $booking_detail[0]->booking[0]['updated_date'] =   date('Y-m-d',strtotime($booking_detail[0]->booking[0]['updated_at']));                    
+                         
+                        return $booking_detail;                  
+                    }                
+                    else{                
+                         return "PNR_NOT_MATCH";                
+                    }
+                }            
+                else{            
+                    return "MOBILE_NOT_MATCH";            
+                }
+            }
+            elseif($pnr_dt->origin=='DOLPHIN'){
 
                 $booking_detail = $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr); 
 
@@ -245,11 +279,86 @@ class BookingManageService
             $pnr = $request['pnr'];
             $mobile = $request['mobile'];
 
-            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
+            if($pnr_dt->origin =='MANTIS'){
+                $b = $this->bookingManageRepository->getMantisBookingDetails($mobile,$pnr);
+                    if($b && isset($b[0])){
+                        $b = $b[0];  
+                        $source_data = $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
+                       $dest_data = $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
+                            $seat_arr = [];
+                            foreach($b->booking[0]->bookingDetail as $bd){                            
+                            $seat_arr = Arr::prepend($seat_arr, $bd->bus_seats['seats']['seatText']);
+                            }
+                            
+                        $body = [
+                                'name' => $b->name,
+                                'phone' => $b->phone,
+                                'email' => $b->email,
+                                'pnr' => $b->booking[0]->pnr,
+                                'bookingdate'=> $b->booking[0]->created_at,
+                                'journeydate' => $b->booking[0]->journey_dt ,
+                                'boarding_point'=> $b->booking[0]->boarding_point,
+                                'dropping_point' => $b->booking[0]->dropping_point,
+                                'departureTime'=> $b->booking[0]->boarding_time,
+                                'arrivalTime'=> $b->booking[0]->dropping_time,
+                                'seat_no' => $seat_arr,
+                                'busname'=> $b->booking[0]->bus['name'],
+                                'source'=> $source_data[0]->name,
+                                'destination'=> $dest_data[0]->name,
+                                'busNumber'=> "",
+                                'bustype' => $b->booking[0]->bus['bus_type']['name'],
+                                'busTypeName' => $b->booking[0]->bus['bus_type']['bus_class']['class_name'],
+                                'sittingType' => $b->booking[0]->bus['bus_sitting']['name'], 
+                                'conductor_number' => "NA",
+                                'passengerDetails' => $b->booking[0]->bookingDetail ,
+                                'totalfare'=> $b->booking[0]->total_fare,
+                                'discount'=> $b->booking[0]->coupon_discount,
+                                'payable_amount' => $b->booking[0]->payable_amount,
+                                'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
+                                'odbus_charges'=> $b->booking[0]->odbus_charges,
+                                'owner_fare'=> $b->booking[0]->owner_fare,
+                                'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
+                            ];
+                            $cancellationslabs = $b->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
 
-            if($pnr_dt->origin=='DOLPHIN'){
-
-
+                            $cancellationslabs = json_decode(json_encode($cancellationslabs));
+                            //return $cancellationslabs;
+                            $transactionFee = $b->booking[0]->transactionFee;
+                            $customer_gst_status = $b->booking[0]->customer_gst_status;
+                            $customer_gst_number = $b->booking[0]->customer_gst_number;
+                            $customer_gst_business_name = $b->booking[0]->customer_gst_business_name;
+                            $customer_gst_business_email = $b->booking[0]->customer_gst_business_email;
+                            $customer_gst_business_address = $b->booking[0]->customer_gst_business_address;
+                            $customer_gst_percent = $b->booking[0]->customer_gst_percent;
+                            $customer_gst_amount = $b->booking[0]->customer_gst_amount;
+                            $coupon_discount = $b->booking[0]->coupon_discount;
+                            $totalfare = $b->booking[0]->total_fare;
+                            $discount = $b->booking[0]->coupon_discount;
+                            $payable_amount = $b->booking[0]->payable_amount;
+                            $odbus_charges = $b->booking[0]->odbus_charges;
+                            $odbus_gst = $b->booking[0]->odbus_gst_charges;
+                            $owner_fare = $b->booking[0]->owner_fare;
+            
+                            if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
+                                $agent_number = $this->user->where('id',$b->booking[0]->user_id)->get();
+                                if(isset($agent_number[0])){
+                                    $body['agent_number'] = $agent_number[0]->phone;
+                                    $body['customer_comission'] = $b->booking[0]->customer_comission;
+                                }   
+                            }
+                            if($b->phone != ''){
+                                $sendSmsTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
+                            }
+                            // if($b->email != ''){
+                            //     $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+                            // }
+                            return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
+                        }else{
+                            return "Invalid request";   
+                        }
+            }
+            elseif($pnr_dt->origin=='DOLPHIN'){
                 $b= $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr);
 
                     if($b && isset($b[0])){
@@ -692,13 +801,86 @@ class BookingManageService
     public function cancelTicketInfo($request)
     {
         try {
-
         $pnr = $request['pnr'];
         $mobile = $request['mobile'];
 
         $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+        if($pnr_dt->origin =='MANTIS'){
 
-        if($pnr_dt->origin=='DOLPHIN'){
+            $booking_detail = $this->bookingManageRepository->MantisCancelTicketInfo($mobile,$pnr);
+            //return $booking_detail;
+             if(isset($booking_detail[0])){ 
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){                     
+                    $departureTime = $booking_detail[0]->booking[0]->boarding_time;
+                    $arrivalTime = $booking_detail[0]->booking[0]->dropping_time;
+                    $depTime = date("h:i A",strtotime($departureTime));
+                    $arrTime = date("h:i A",strtotime($arrivalTime)); 
+                    $arr_time = new DateTime($arrivalTime);
+                    $dep_time = new DateTime($departureTime);
+                    $totalTravelTime = $dep_time->diff($arr_time);
+                    $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+                    $emailData['journey_end_dt'] = $booking_detail[0]->booking[0]->journey_end_dt;   
+                    $jDate = $booking_detail[0]->booking[0]->journey_dt;
+                    $jDate = date("d-m-Y", strtotime($jDate));
+                    $boardTime =$booking_detail[0]->booking[0]->boarding_time; 
+                    $baseFare = $booking_detail[0]->booking[0]->total_fare;
+
+                    $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                    $current_date_time = Carbon::now()->toDateTimeString(); 
+
+                    $bookingDate = new DateTime($combinedDT);
+                    $cancelDate = new DateTime($current_date_time);                   
+
+                    $srcId = $booking_detail[0]->booking[0]->source_id;
+                    $desId = $booking_detail[0]->booking[0]->destination_id;
+                    $bookingId = $booking_detail[0]->booking[0]->id;
+                    $tktNo = $booking_detail[0]->booking[0]->tkt_no;
+                    $sourceName = Location::where('id',$srcId)->first()->name;
+                    $destinationName = Location::where('id',$desId)->first()->name;
+                    $emailData['source'] = $sourceName;
+                    $emailData['destination'] = $destinationName;
+                    $emailData['bookingDetails'] = $booking_detail;
+
+                    if($booking_detail[0]->booking[0]->status==2){
+                        $emailData['cancel_status'] = false;
+                    }else{
+                        $emailData['cancel_status'] = true;                        
+                    }
+                    if($booking_detail[0]->booking[0]->customerPayment != null){
+                        
+                        $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                        $collection = collect($seatArr);
+                        $seatNos = $collection->implode(',');
+                        $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);
+                        
+                        if($res["success"]){ 
+                            $emailData['refundAmount'] = $res['data']['RefundAmount'];
+                            $emailData['deductAmount'] = round($deductAmount = $booking_detail[0]->booking[0]->total_fare - $res['data']['RefundAmount'], 2);  
+                            $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];    
+                            $emailData['deductionPercentage'] = $res['data']['ChargePct'].'%';
+                            return $emailData;
+                            
+                        }elseif(!$res["success"]){ 
+                            return $res["error"];
+                        }
+                    }else{
+                        $emailData['refundAmount'] = 0;
+                        $emailData['deductionPercentage'] = "100%";
+                        $emailData['deductAmount'] =$booking_detail[0]->booking[0]->total_fare;
+                        $emailData['totalfare'] = $booking_detail[0]->booking[0]->total_fare;
+                        return $emailData;
+                    }                          
+                }    
+                else{                
+                    return "PNR_NOT_MATCH";                
+                }
+            }  
+            else{            
+                return "MOBILE_NOT_MATCH";            
+            }
+        }    
+        elseif($pnr_dt->origin=='DOLPHIN'){
 
             $booking_detail= $this->bookingManageRepository->DolphinCancelTicketInfo($mobile,$pnr);
 

@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 use DateTime;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 
@@ -45,10 +46,11 @@ class BookingManageRepository
     protected $busClass;
     protected $credentials;
     protected $customerPayment;
+    protected $mantisTransformer;
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,Users $users,
     BusSeats $busSeats,Booking $booking,BookingDetail $bookingDetail, Seats $seats,BusClass $busClass
-    ,BusType $busType,Credentials $credentials,CustomerPayment $customerPayment,DolphinTransformer $dolphinTransformer)
+    ,BusType $busType,Credentials $credentials,CustomerPayment $customerPayment,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -63,6 +65,7 @@ class BookingManageRepository
         $this->credentials = $credentials;
         $this->customerPayment = $customerPayment;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }   
     
@@ -153,7 +156,63 @@ class BookingManageRepository
 
     }
 
-    
+    public function getMantisBookingDetails($mobile,$pnr){
+
+        $bookingDtls = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+            $u->where('booking.pnr', '=', $pnr); 
+            $u->with("bookingDetail"); 
+              }])->get();
+        $sourceId = $bookingDtls[0]->booking[0]->source_id;
+        $destId = $bookingDtls[0]->booking[0]->destination_id;
+        $busId = $bookingDtls[0]->booking[0]->bus_id;
+        $jDt = $bookingDtls[0]->booking[0]->journey_dt;
+        $dropPoint = $bookingDtls[0]->booking[0]->dropping_point;
+        
+        $busDetails = $this->mantisTransformer->searchBus($sourceId,$destId,$jDt,$busId);
+        $bus["name"] = $busDetails['data']['Buses'][0]['CompanyName']; 
+        $bus["bus_number"] = "";  
+        $dropDateTime = collect($busDetails['data']['Buses'][0]['Dropoffs'])->where('DropoffName',$dropPoint )->pluck('DropoffTime');  
+        $bookingDtls[0]->booking[0]['journey_end_dt'] = date('Y-m-d',strtotime($dropDateTime[0]));
+
+        $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
+        $cancellationslabsInfo = [];
+        $collectCancPol = collect([]);
+        if($cancellationslabs){
+            foreach($cancellationslabs as $cs){
+                $cancDed["deduction"] = $cs['Pct'];
+                $collectCancPol->push($cs['Mins']/60);
+                $cancellationslabsInfo[] = $cancDed;       
+            }   
+                $collectCancPol->push(9999);
+                $chunks = $collectCancPol->sliding(2);
+                $i =0;
+                foreach($chunks as $chunk){
+                    $cancellationslabsInfo[$i]["duration"] = $chunk->implode('-');
+                    $i++;
+                }   
+        }  
+
+        $bus["cancellationslabs"]["cancellation_slab_info"] = $cancellationslabsInfo;
+        $bus["bus_type"]["name"] = $busDetails['data']['Buses'][0]['BusType']['IsAC'];;
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"] = $busDetails['data']['Buses'][0]['BusType']['Seating'];
+        $bus["bus_contacts"]["phone"] = ""; 
+
+        $bookingDtls[0]->booking[0]['bus'] = $bus;
+        $bookingDetail = $bookingDtls[0]->booking[0]->bookingDetail;
+        
+        foreach($bookingDetail as $k => $bd){
+            $st["seatText"] = $bd->seat_name;  
+            $stx["seats"] = $st;            
+            $bookingDtls[0]->booking[0]['bookingDetail'][$k]["bus_seats"] = $stx;   
+        }
+        return $bookingDtls;
+
+    }
+
 
     public function getDolphinBookingDetails($mobile,$pnr){
 
@@ -299,7 +358,62 @@ class BookingManageRepository
             return "Invalid request";   
         }
     }
+    public function MantisCancelTicketInfo($mobile,$pnr){
 
+        $bookingDtls = $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+         $u->where('booking.pnr', '=', $pnr); 
+         $u->with(["customerPayment" => function($b){
+             $b->where('payment_done',1);
+         }]);          
+         $u->with('bookingDetail');
+        }])->get();    
+
+        $bus["bus_number"] = "";      
+        $bus["bus_description"]=""; 
+        $sourceId = $bookingDtls[0]->booking[0]->source_id;
+        $destId = $bookingDtls[0]->booking[0]->destination_id;
+        $busId = $bookingDtls[0]->booking[0]->bus_id;
+        $jDt = $bookingDtls[0]->booking[0]->journey_dt;
+        $busDetails = $this->mantisTransformer->searchBus($sourceId,$destId,$jDt,$busId);
+           
+        $bus["name"] = $busDetails['data']['Buses'][0]['CompanyName']; 
+
+        $cancellationslabs = $busDetails['data']['Buses'][0]['Canc'];
+        $cancellationslabsInfo = [];
+        $collectCancPol = collect([]);
+        if($cancellationslabs){
+            foreach($cancellationslabs as $cs){
+                $cancDed["deduction"] = $cs['Pct'];
+                $collectCancPol->push($cs['Mins']/60);
+                $cancellationslabsInfo[] = $cancDed;       
+            }   
+                $collectCancPol->push(9999);
+                $chunks = $collectCancPol->sliding(2);
+                $i =0;
+                foreach($chunks as $chunk){
+                    $cancellationslabsInfo[$i]["duration"] = $chunk->implode('-');
+                    $i++;
+                }   
+        } 
+        $bus["cancellationslabs"]["cancellation_slab_info"] = $cancellationslabsInfo;
+        $bus["bus_type"]["name"] = $busDetails['data']['Buses'][0]['BusType']['IsAC'];;
+        $bus["bus_type"]["bus_class"]=[
+            "class_name" => ""
+        ];
+
+        $bus["bus_sitting"]["name"] = $busDetails['data']['Buses'][0]['BusType']['Seating'];
+        $bus["bus_contacts"]["phone"] = ""; 
+
+        $bookingDtls[0]->booking[0]['bus'] = $bus;
+        $bookingDetail = $bookingDtls[0]->booking[0]->bookingDetail;
+        
+        foreach($bookingDetail as $k => $bd){
+            $st["seatText"] = $bd->seat_name;  
+            $stx["seats"] = $st;            
+            $bookingDtls[0]->booking[0]['bookingDetail'][$k]["bus_seats"] = $stx;   
+        }
+        return $bookingDtls;
+     }
     public function DolphinCancelTicketInfo($mobile,$pnr){
 
         $ar= $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
@@ -551,17 +665,16 @@ class BookingManageRepository
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
-        $genderList ="";
+        $genderList = "";
         $passengerDetails = $data['passengerDetails'];
-
         foreach($passengerDetails as $pDetail){
             $nameList = "{$nameList},{$pDetail['passenger_name']}";
             $genderList = "{$genderList},{$pDetail['passenger_gender']}";
         } 
         $nameList = substr($nameList,1);
         $genderList = substr($genderList,1);
-         $busDetails = $data['busname'].'-'.$data['busNumber'];
-          $SmsGW = config('services.sms.otpservice');
+        $busDetails = $data['busname'].'-'.$data['busNumber'];
+        $SmsGW = config('services.sms.otpservice');
         if($SmsGW == 'textLocal'){
             //Environment Variables
             //$apiKey = config('services.sms.textlocal.key');
@@ -570,7 +683,7 @@ class BookingManageRepository
             $sender = config('services.sms.textlocal.senderid');
             $message = config('services.sms.textlocal.msgTicket');
             $apiKey = urlencode( $apiKey);
-             $receiver = urlencode($data['phone']);
+            $receiver = urlencode($data['phone']);
             //$message = str_replace("<PNR>",$data['PNR'],$message);
             $message = str_replace("<PNR>",$pnr,$message);
             $message = str_replace("<busdetails>",$busDetails,$message);
@@ -586,7 +699,7 @@ class BookingManageRepository
             $message = rawurlencode($message);
             $response_type = "json"; 
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            
+
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
             //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
@@ -595,9 +708,10 @@ class BookingManageRepository
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             $response = curl_exec($ch);
+            
             curl_close($ch);
             $response = json_decode($response);
-             
+            
             return $response;
            // $msgId = $response->messages[0]->id;  // Store msg id in DB
             //session(['msgId'=> $msgId]);
