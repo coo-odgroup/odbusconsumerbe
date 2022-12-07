@@ -67,12 +67,18 @@ class ListingService
         $mantisShowRecords = [];
         $mantisShowSoldoutRecords =[];
 
-        $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
-        //return $mantisResult;
-        $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
-        $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
+        if($clientId!=213){
+
+            $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
+            //return $mantisResult;
+            $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
+            $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
 
 
+
+        }
+
+        
 
         ///////////////////////////////////////////////////
 
@@ -894,7 +900,7 @@ class ListingService
 
         $mantisResult = [];
 
-        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
+        if( ($clientId!=213 && $operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
     
             $mantisShowRecords = [];
             $mantisShowSoldoutRecords = [];   
