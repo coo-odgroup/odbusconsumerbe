@@ -323,7 +323,6 @@ class BookingManageService
                             $cancellationslabs = $b->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
 
                             $cancellationslabs = json_decode(json_encode($cancellationslabs));
-                            //return $cancellationslabs;
                             $transactionFee = $b->booking[0]->transactionFee;
                             $customer_gst_status = $b->booking[0]->customer_gst_status;
                             $customer_gst_number = $b->booking[0]->customer_gst_number;
@@ -350,9 +349,9 @@ class BookingManageService
                             if($b->phone != ''){
                                 $sendSmsTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
                             }
-                            // if($b->email != ''){
-                            //     $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
-                            // }
+                            if($b->email != ''){
+                                $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+                            }
                             return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
                         }else{
                             return "Invalid request";   
