@@ -969,20 +969,13 @@ class BookingManageService
                         if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
                             return 'Ticket_already_cancelled';
                          }
-
                             $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
                             $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];   
                             
-                            $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];    
-
-                            // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                            // $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
-                            
-                            // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;   
+                            $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];     
 
                             $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                             return $emailData;
-
                     }else{
                         $emailData['refundAmount'] = 0;
                         $emailData['deductionPercentage'] = "100%";
@@ -1001,7 +994,6 @@ class BookingManageService
         }        
         else{
            $booking_detail  = $this->bookingManageRepository->cancelTicketInfo($mobile,$pnr);  
-           //return $booking_detail;
             if(isset($booking_detail[0])){ 
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
 
@@ -1148,7 +1140,6 @@ class BookingManageService
         Log::info($e->getMessage());
         throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
     }
-        //return $cancelTicketInfo;
     } 
     
     public function agentcancelTicketOTP($request)
@@ -1159,11 +1150,9 @@ class BookingManageService
         $booked = Config::get('constants.BOOKED_STATUS');
 
         $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
-
+           
         if($pnr_dt->origin=='DOLPHIN'){
-
             $booking_detail= $this->bookingManageRepository->DolphinCancelTicketInfo($phone,$pnr);
-
             if(isset($booking_detail[0])){ 
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){   
 
@@ -1171,8 +1160,6 @@ class BookingManageService
                     if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
                         return 'Ticket_already_cancelled';
                     }
-
-
                     $otp = rand(10000, 99999);
                     $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id); 
 
@@ -1180,13 +1167,6 @@ class BookingManageService
                     $emailData['deductAmount'] =$deductAmount=$dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];  
                     
                     $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];   
-
-
-                    // $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                    // $emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
-                    
-                    // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
-                    
                     $emailData['deductionPercentage'] = round((($deductAmount / $totalfare) * 100),1).'%';
                     return $emailData;
                 }else{
@@ -1194,12 +1174,38 @@ class BookingManageService
                 }
             }else{
                 return "MOBILE_NOT_MATCH"; 
-            }
-                     
+            }             
         }
-
+        elseif($pnr_dt->origin == 'MANTIS'){
+            $booking_detail = $this->bookingManageRepository->MantisCancelTicketInfo($phone,$pnr);
+            if(isset($booking_detail[0])){ 
+                if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 
+                    $bookingId = $booking_detail[0]->booking[0]->id;  
+                    $tktNo = $booking_detail[0]->booking[0]->tkt_no;
+                    $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                    $collection = collect($seatArr);
+                    $seatNos = $collection->implode(',');
+                    $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);  
+                    if($res["success"]){ 
+                        $otp = rand(10000, 99999);
+                        $sendOTP = $this->bookingManageRepository->OTP($phone,$pnr,$otp,$booking_detail[0]->booking[0]->id); 
+                        $emailData['refundAmount'] = $res['data']['RefundAmount'];
+                        $emailData['deductAmount'] =$deductAmount =  round($res['data']['TotalFare'] - $res['data']['RefundAmount'], 2);  
+                        $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];    
+                        $emailData['deductionPercentage'] = $res['data']['ChargePct'].'%';
+                        return $emailData;
+                            
+                    }elseif(!$res["success"]){ 
+                        return $res["error"];
+                    }
+                }else{
+                    return "PNR_NOT_MATCH";  
+                }
+            }else{
+                return "MOBILE_NOT_MATCH"; 
+            }             
+        }
         else{
-
             $booking_detail = $this->bookingManageRepository->agentCancelTicket($phone,$pnr,$booked); 
             //Booking exists for the PNR
                 if(isset($booking_detail[0])){ 
@@ -1285,7 +1291,6 @@ class BookingManageService
 
         if($pnr_dt->origin=='DOLPHIN'){
             $booking_detail= $this->bookingManageRepository->DolphinAgentCancelTicket($phone,$pnr,$booked);
-
             if(isset($booking_detail[0])){ 
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                     $dbOTP = $booking_detail[0]->booking[0]->cancel_otp;
@@ -1309,8 +1314,6 @@ class BookingManageService
                         $booking = $this->cancelTicketRepository->GetBooking($bookingId);
 
                         $cancellationslabs = $this->dolphinTransformer->GetCancellationPolicy();
-
-                        
                         $current_date_time = Carbon::now()->toDateTimeString(); 
      
                         $smsData = array(
@@ -1334,7 +1337,112 @@ class BookingManageService
                             'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
                             'cancelation_policy'=> $cancellationslabs
                         ); 
+                        $userId = $booking_detail[0]->booking[0]->user_id;
+                        $bookingId = $booking_detail[0]->booking[0]->id;
+                        $srcId = $booking_detail[0]->booking[0]->source_id;
+                        $desId = $booking_detail[0]->booking[0]->destination_id;
+                        $paidAmount = $booking_detail[0]->booking[0]->payable_amount;
+                        $customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
+                        $sourceName = Location::where('id',$srcId)->first()->name;
+                        $destinationName = Location::where('id',$desId)->first()->name;
+                        $data['source'] = $sourceName;
+                        $data['destination'] = $destinationName;
+                        $data['bookingDetails'] = $booking_detail;
 
+                        if($booking_detail[0]->booking[0]->status==2){
+                            $data['cancel_status'] = false;
+                        }else{
+                            $data['cancel_status'] = true;
+                        }
+                        $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
+                        if($dolphin_cancel_det['Status']==0){
+                            return 'Ticket_already_cancelled';
+                         }
+                         $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
+                         //$data['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
+                         $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
+                         $data['totalfare'] = $totalfare =  $dolphin_cancel_det['TotalFare'];
+                         $data['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1)."%";
+                         $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction,$pnr); 
+                         $smsData['refundAmount'] = $refundAmt; 
+                         $emailData['deductionPercentage'] = $deduction;
+                         $emailData['refundAmount'] = $refundAmt;
+                         $emailData['totalfare'] = $totalfare;
+                         $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                        if($emailData['email'] != ''){
+                            $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                        } 
+                        $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
+                    }else{
+                        return "INVALID_OTP";   
+                    }
+                }else{
+                    return "PNR_NOT_MATCH";   
+                }
+            }else{
+                return "MOBILE_NOT_MATCH";   
+            }
+        }
+        elseif($pnr_dt->origin == 'MANTIS'){
+            $tktNo = $pnr_dt->tkt_no;
+                $bookingId = $pnr_dt->id;
+                $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                $collection = collect($seatArr);
+                $seatNos = $collection->implode(',');
+                $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);
+               
+                 if($res["success"]){ 
+                    $booking_detail = $this->cancelTicketRepository->MantisCancelTicket($phone,$pnr,$booked);
+                    //return $booking_detail;
+                    if(isset($booking_detail[0])){         
+                        if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
+                            $dbOTP = $booking_detail[0]->booking[0]->cancel_otp;
+                            if($dbOTP == $recvOTP){
+                            $jDt = $booking_detail[0]->booking[0]->journey_dt;
+                            $jDate = date("d-m-Y", strtotime($jDt));
+                            $boardTime =$booking_detail[0]->booking[0]->boarding_time;
+                            $seat_arr = [];
+                            
+                            foreach($booking_detail[0]->booking[0]->bookingDetail as $bd){                            
+                            $seat_arr = Arr::prepend($seat_arr, $bd->bus_seats['seats']['seatText']);
+                            }
+                            $sourceId = $booking_detail[0]->booking[0]->source_id;
+                            $destId = $booking_detail[0]->booking[0]->destination_id;
+                            $busId = $booking_detail[0]->booking[0]->bus_id;
+                            $busname = $booking_detail[0]->booking[0]->bus['name'];
+                            $busNumber = ''; 
+                            $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                  
+                            $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
+                            $route = $sourceName .'-'. $destinationName;
+                            $userMailId = $booking_detail[0]->email;
+                            $bookingId =$booking_detail[0]->booking[0]->id;
+                           
+                            $cancellationslabs = $booking_detail[0]->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
+                            $cancellationslabs = json_decode(json_encode($cancellationslabs));
+                            $booking = $this->cancelTicketRepository->GetBooking($bookingId);
+                            $current_date_time = Carbon::now()->toDateTimeString(); 
+                            
+                            $smsData = array(
+                                'phone' => $phone,
+                                'PNR' => $pnr,
+                                'busdetails' => $busname.'-'.$busNumber,
+                                'doj' => $jDate, 
+                                'route' => $route,
+                                'seat' => $seat_arr
+                            );
+                            $emailData = array(
+                                'email' => $userMailId,
+                                'contactNo' => $phone,
+                                'pnr' => $pnr,
+                                'journeydate' => $jDate, 
+                                'route' => $route,
+                                'seat_no' => $seat_arr,
+                                'cancellationDateTime' => $current_date_time,
+                                'origin' => $pnr_dt->origin,
+                                'bus_name' => $busname,
+                                'transaction_fee' => $booking_detail[0]->booking[0]->transactionFee,
+                                'cancelation_policy'=> $cancellationslabs
+                            );  
 
                         $userId = $booking_detail[0]->booking[0]->user_id;
                         $bookingId = $booking_detail[0]->booking[0]->id;
@@ -1353,54 +1461,47 @@ class BookingManageService
                         }else{
                             $data['cancel_status'] = true;
                         }
+                       ///mantis cancel ticket api///////
+                       $mantis_cancel_res = $this->mantisTransformer->cancelSeats($pnr,$tktNo,$seatNos);
+                       //return $mantis_cancel_res;
+                       if(!$mantis_cancel_res["success"]){
+                           return $res["Error"]["Msg"];;
+                       }
+                       elseif($mantis_cancel_res["success"]){
+                        
+                        $emailData['refundAmount'] = $mantis_cancel_res['data']['RefundAmount'];
+                        
+                        $emailData['deductAmount'] = $deductAmount = $mantis_cancel_res['data']['ChargeAmt'];
+                        $emailData['totalfare'] = $totalfare = $mantis_cancel_res['data']['TotalFare'];      
+                        
+                        $emailData['deductionPercentage'] = $deduction = $mantis_cancel_res['data']['ChargePct'];
 
+                        $smsData['refundAmount'] = $refundAmt = $mantis_cancel_res['data']['RefundAmount'];
+                        $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction,$pnr);
 
-                        $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
-                        if($dolphin_cancel_det['Status']==0){
-                            return 'Ticket_already_cancelled';
-                         }
-
-
-
-                         $data['refundAmount'] = $refundAmt=$dolphin_cancel_det['RefundAmount'];
-                         //$data['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];   
-                         $data['deductAmount'] =$deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
-                    
-                         $data['totalfare'] = $totalfare =  $dolphin_cancel_det['TotalFare'];
-
-                    
-                         $data['deductionPercentage'] = $deduction=round((($deductAmount / $totalfare) * 100),1)."%";
-
-                         $agentWallet = $this->bookingManageRepository->updateCancelTicket($bookingId,$userId,$refundAmt, $deduction,$pnr); 
-
-                         $smsData['refundAmount'] = $refundAmt; 
-
-                         $emailData['deductionPercentage'] = $deduction;
-                         $emailData['refundAmount'] = $refundAmt;
-                         $emailData['totalfare'] = $totalfare;
-                 
-                         $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                        $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                         if($emailData['email'] != ''){
                             $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                         } 
-
                         $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
-
-
-
+                        }
+                            } 
+                            else{
+                                return "INVALID_OTP";   
+                            }
+                        }else{
+                            return "PNR_NOT_MATCH";   
+                        }
                     }else{
-                        return "INVALID_OTP";   
+                        return "MOBILE_NOT_MATCH";   
                     }
-                }else{
-                    return "PNR_NOT_MATCH";   
-                }
-            }else{
-                return "MOBILE_NOT_MATCH";   
             }
-        }else{
-
+            elseif(!$res["success"]){ 
+                return $res["error"];
+            }   
+        }
+        else{
         $booking_detail  = $this->bookingManageRepository->agentCancelTicket($phone,$pnr,$booked);  
-            //return $booking_detail;
                 if(isset($booking_detail[0])){ 
                     if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
                         $dbOTP = $booking_detail[0]->booking[0]->cancel_otp;
@@ -1475,9 +1576,6 @@ class BookingManageService
                             }else{
                                 $data['cancel_status'] = true;
                             }
-
-                           
-                    
                             foreach($cancelPolicies as $cancelPolicy){
                             $duration = $cancelPolicy->duration;
                             $deduction = $cancelPolicy->deduction;
@@ -1506,8 +1604,6 @@ class BookingManageService
                                     } 
 
                                     $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
-
-
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
                                     $busContactDetails = BusContacts::where('bus_id',$busId)
                                     ->where('status','1')
@@ -1517,10 +1613,7 @@ class BookingManageService
                                         $contact_number = collect($busContactDetails)->implode('phone',',');
                                         $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                                     }
-
-
                                 return $data;
-            
                             }elseif($min <= $interval && $interval <= $max){ 
                             
                                 $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
@@ -1542,8 +1635,6 @@ class BookingManageService
                                     }  
                                     
                                     $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
-
-
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
                                     $busContactDetails = BusContacts::where('bus_id',$busId)
                                     ->where('status','1')
@@ -1553,8 +1644,6 @@ class BookingManageService
                                         $contact_number = collect($busContactDetails)->implode('phone',',');
                                         $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                                     }
-                                    
-
                                 return $data;   
                             }
                         } 
@@ -1570,7 +1659,6 @@ class BookingManageService
                 return "MOBILE_NOT_MATCH";            
             }
         }
-      
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
