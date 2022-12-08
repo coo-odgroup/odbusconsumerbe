@@ -855,7 +855,7 @@ class BookingManageService
                         
                         if($res["success"]){ 
                             $emailData['refundAmount'] = $res['data']['RefundAmount'];
-                            $emailData['deductAmount'] = round($deductAmount = $booking_detail[0]->booking[0]->total_fare - $res['data']['RefundAmount'], 2);  
+                            $emailData['deductAmount'] =$deductAmount =  round($res['data']['TotalFare'] - $res['data']['RefundAmount'], 2);  
                             $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];    
                             $emailData['deductionPercentage'] = $res['data']['ChargePct'].'%';
                             return $emailData;
