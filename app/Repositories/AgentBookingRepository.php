@@ -22,6 +22,7 @@ use App\Services\ViewSeatsService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 
 
 class AgentBookingRepository
@@ -36,9 +37,9 @@ class AgentBookingRepository
     protected $viewSeatsService; 
     protected $channelRepository; 
     protected $dolphinTransformer;
+    protected $mantisTransformer;
 
-
-    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,DolphinTransformer $dolphinTransformer)
+    public function __construct(Bus $bus,TicketPrice $ticketPrice,Location $location,User $user,BusSeats $busSeats,Booking $booking,BusLocationSequence $busLocationSequence,ChannelRepository $channelRepository,ViewSeatsService $viewSeatsService,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -50,6 +51,7 @@ class AgentBookingRepository
         $this->busLocationSequence = $busLocationSequence;
         $this->viewSeatsService = $viewSeatsService;  
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }   
     
@@ -60,9 +62,7 @@ class AgentBookingRepository
         $agentInfo = $request['agentInfo'];
         $customerInfo = $request['customerInfo'];
         $bookingInfo = $request['bookingInfo'];
-        $defUserId = Config::get('constants.USER_ID');
-
-        
+        $defUserId = Config::get('constants.USER_ID');  
 
         $existingUser = Users::where('phone',$customerInfo['phone'])
                                     ->exists(); 
@@ -85,7 +85,7 @@ class AgentBookingRepository
                                   ->where('status','1')
                                   ->first()->id;
          $walletDetail = AgentWallet::where('user_id',$aId)->orderBy('id','DESC')->where("status",1)->limit(1)->get();
-         $walletBalance=0;
+         $walletBalance = 0;
 
         if(isset($walletDetail[0])){
             $walletBalance = $walletDetail[0]->balance;
@@ -152,11 +152,7 @@ class AgentBookingRepository
 
         if(isset($bookingInfo['booking_type'])){
             $booking->booking_type = $bookingInfo['booking_type'];
-        }
-
-
-       
-        
+        } 
         $odbusGstPercent=0;
         $odbusGstAmount=0;
 
@@ -171,10 +167,8 @@ class AgentBookingRepository
         }else{
             $odbusGstPercent = OdbusCharges::where('user_id',$defUserId)->first()->odbus_gst_charges;
         }
-
         $odbusGstAmount = $bookingInfo['owner_fare'] * $odbusGstPercent/100;
         
-
         $busOperator = BusOperator::where("id",$busOperatorId)->get();   
         
             if($busOperator[0]->need_gst_bill == $needGstBill){   
@@ -194,33 +188,25 @@ class AgentBookingRepository
             $booking->PickupID = $bookingInfo['PickupID'];
             $booking->DropID = $bookingInfo['DropID'];
 
-
         $agentCommissionByCustomer = AgentFee::get(); 
 
-      
         $comissionByCustomer = 0;
         if($agentCommissionByCustomer){
             foreach($agentCommissionByCustomer as $agentCom){
                 $priceFrom = $agentCom->price_from;
                 $priceTo = $agentCom->price_to;
                 if($bookingInfo['total_fare'] >= $priceFrom && $bookingInfo['total_fare']<= $priceTo){
-                    $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer
-
-                    //Log::info($comissionByCustomer);
-                                     
+                    $comissionByCustomer = $agentCom->max_comission;//maximum comission from customer                    
                     break;
                 }  
             }   
-
-        }
-                
+        }        
         $booking->created_by = $bookingInfo['created_by'];
         $booking->users_id = $userId;  
         if(isset($bookingInfo['booking_type'])=='Adjust'){           
         }else{
             $booking->customer_comission = $comissionByCustomer;
         }      
-        
         $agentId->booking()->save($booking);
 
         $seq_no_start=0;
@@ -231,10 +217,8 @@ class AgentBookingRepository
             //fetch the sequence from bus_locaton_sequence
                 $seq_no_start = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['source_id'])->first()->sequence;
                 $seq_no_end = $this->busLocationSequence->where('bus_id',$busId)->where('location_id',$bookingInfo['destination_id'])->first()->sequence;
-
         }
        
-        
         $bookingSequence = new BookingSequence;
         $bookingSequence->sequence_start_no = $seq_no_start;
         $bookingSequence->sequence_end_no = $seq_no_end;
@@ -259,15 +243,11 @@ class AgentBookingRepository
         $i=0;
        foreach ($bookingInfo['bookingDetail'] as $bDetail) {
 
-
             if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
 
                 unset($bDetail['bus_seats_id']);
-        
                 $collection= collect($bDetail);
-
                 $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
-
                 $bookingDetailModels[] = new BookingDetail($merged);
 
             }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
@@ -276,15 +256,22 @@ class AgentBookingRepository
                 $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
 
                 unset($bDetail['bus_seats_id']);
-
                 $bDetail['seat_name']= $seat_name; 
-               
                 $collection= collect($bDetail);
-
                 $bookingDetailModels[] = new BookingDetail($collection->toArray());
-
             }
-           
+            elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
+
+                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_dt'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+                
+                $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_dt'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+                
+                unset($bDetail['bus_seats_id']);
+                $bDetail['seat_name'] = $seat_name; 
+                $bDetail['seat_fare'] = $seat_fare;
+                $collection = collect($bDetail);
+                $bookingDetailModels[] = new BookingDetail($collection->toArray());
+            }
             $i++;
         }    
             $booking->bookingDetail()->saveMany($bookingDetailModels);      
@@ -292,12 +279,11 @@ class AgentBookingRepository
         }
         else{
                 $arr['note']="Your current wallet balance is ₹ ".$walletBalance." Kindly recharge your wallet to book tickets";
-                $arr['message']="less_balance";
+                $arr['message'] ="less_balance";
                 return $arr;
             } 
      }else{
          return 'AGENT_INVALID';
      }
     }
-
 }

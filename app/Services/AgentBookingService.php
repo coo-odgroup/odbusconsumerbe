@@ -40,12 +40,10 @@ class AgentBookingService
             $source = Location::where('id',$sourceID)->first()->name;
             $destination = Location::where('id',$destinationID)->first()->name;
 
-           // Log::info($request);
-
             $ReferenceNumber = $request['bookingInfo']['ReferenceNumber'];
             $origin = $request['bookingInfo']['origin'];
 
-            if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+            if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin !='MANTIS'){
                 return 'Invalid Origin';
             }else if($origin=='DOLPHIN'){
                 if($ReferenceNumber ==''){
