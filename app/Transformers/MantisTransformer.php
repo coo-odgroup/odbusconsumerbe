@@ -469,6 +469,67 @@ public function seatBerthArr($mantisSeatResult,$berthType){
         $res = $this->mantisService->HoldSeats($bookingDet);
         return $res;
     }
+    public function HoldSeatsClient($sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$clientId,$IsAcBus){
+
+        $srcResult = $this->listingRepository->getLocationResult($sourceId);
+        $destResult = $this->listingRepository->getLocationResult($destinationId);
+        if($srcResult[0]->is_mantis == 1 && $destResult[0]->is_mantis == 1){
+            $mantis_source_id = $srcResult[0]->mantis_id;
+            $mantis_dest_id = $destResult[0]->mantis_id;     
+        } 
+        $mantisSeatResult = [];
+        $mantisSeatresult = $this->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+        $seatR = [];
+        $lbcollection = [];
+        $ubcollection = [];
+            if (isset($mantisSeatresult['lower_berth'])){
+                $lbcollection = collect($mantisSeatresult['lower_berth']);
+            }
+            if (isset($mantisSeatresult['upper_berth'])){
+                $ubcollection = collect($mantisSeatresult['upper_berth']);
+            }
+            $seatR = $lbcollection->merge($ubcollection);
+        $passengers = [];
+        
+        if(!empty($records[0]->bookingDetail)){
+            foreach($records[0]->bookingDetail as $bdt){
+                $collection = collect($bdt);
+                $seatTxt = $collection->get('seat_name');
+                $seatType = $seatR->where('seatText', $seatTxt)->pluck('berthType');
+                $filtered = [
+                    'Name' => $collection->get('passenger_name'),
+                    'Age' => (int)$collection->get('passenger_age'),
+                    'Gender' => $collection->get('passenger_gender'),
+                    'SeatNo' => $collection->get('seat_name'),
+                    'Fare' => (int)$collection->get('seat_fare'),
+                    'SeatTypeId' => (int)$seatType[0], 
+                    'IsAcSeat' => $IsAcBus
+                ];
+                $passengers = Arr::prepend($passengers, $filtered);
+            }
+        }
+        $PickUpid = $records[0]->PickupID;
+        $DropOffid = $records[0]->DropID;
+
+        $bookingDet = [
+            'FromCityId' => $mantis_source_id,
+            'ToCityId' => $mantis_dest_id,
+            'JourneyDate' => $entry_date,
+            'BusId' => $records[0]->bus_id,
+            'PickUpID' => "$PickUpid",
+            'DropOffID' => "$DropOffid",
+            'ContactInfo' =>[
+                'CustomerName' => $records[0]->users->name,
+                'Email' => $records[0]->users->email,
+                'Phone' => $records[0]->users->phone,
+                'Mobile' => $records[0]->users->phone,
+            ],
+            'Passengers' => $passengers
+        ]; 
+        //return $bookingDet;
+        $res = $this->mantisService->HoldSeats($bookingDet);
+        return $res;
+    }
 
     public function BookSeat($records,$holdId){
        

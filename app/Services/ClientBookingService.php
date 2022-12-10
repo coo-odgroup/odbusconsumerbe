@@ -23,6 +23,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
+use App\Transformers\MantisTransformer;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
@@ -35,9 +36,10 @@ class ClientBookingService
     protected $commonRepository;
     protected $cancelTicketRepository;
     protected $dolphinTransformer;
-    protected $bookingManageRepository;    
+    protected $bookingManageRepository;  
+    protected $mantisTransformer;  
 
-    public function __construct(ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository,DolphinTransformer $dolphinTransformer)
+    public function __construct(ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->clientBookingRepository = $clientBookingRepository;
         $this->viewSeatsService = $viewSeatsService;
@@ -46,205 +48,183 @@ class ClientBookingService
         $this->cancelTicketRepository = $cancelTicketRepository;
         $this->bookingManageRepository = $bookingManageRepository;
         $this->dolphinTransformer = $dolphinTransformer;
+        $this->mantisTransformer = $mantisTransformer;
 
     }
     public function clientBooking($request,$clientRole,$clientId)
     {
         try {
-
             $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
             $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
-    
-           
-                if($origin !='DOLPHIN' && $origin != 'ODBUS' ){
+                if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
                     return 'Invalid Origin';
-                }else if($origin=='DOLPHIN'){
-    
+                }else if($origin == 'DOLPHIN'){
                     if($ReferenceNumber ==''){    
                         return 'ReferenceNumber_empty';
-    
                     }
                 }
-
-
                 if($origin == 'ODBUS'){
-
                     ////////// gender validation
-
-                	$rrr= $this->genderValidate($request,$clientRole,$clientId);
-
+                	$rrr = $this->genderValidate($request,$clientRole,$clientId);
                 	if($rrr != null){
                 		return $rrr;
                 	}
                 }
-
             $bookTicket = $this->clientBookingRepository->clientBooking($request,$clientRole,$clientId);
             return $bookTicket;
-
         } catch (Exception $e) {
-
             Log::info($e->getMessage());
-
-    
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-       
+        }  
     }   
 
-    public function seatBlock($request,$clientRole)
+    public function seatBlock($request,$clientRole,$clientId)
     {
         try {
-           
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');  
                 $transationId = $request['transaction_id']; 
-
-
                 $records = $this->channelRepository->getBookingRecord($transationId);
-                $origin=$records[0]->origin;
-
-            if($origin=='ODBUS') {
-                $bookingDetails = Booking::where('transaction_id', $transationId)
-                                        ->with(["bookingDetail" => function($b){
-                                            $b->with(["busSeats" => function($bs){
-                                                $bs->with(["seats" => function($s){ 
-                                                }]);
-                                            }]);    
-                                        }])
-                                        ->get();
-                
-                $busId = $bookingDetails[0]->bus_id; 
-                $sourceId = $bookingDetails[0]->source_id;
-                $destinationId = $bookingDetails[0]->destination_id;
-                $entry_date = $bookingDetails[0]->journey_dt;
-                
-                $seatIds = [];
-                foreach($bookingDetails[0]->bookingDetail as $bd){
-                    array_push($seatIds,$bd->busSeats->seats->id);              
-                }  
-                $data = array(
-                    'busId' => $busId,
-                    'sourceId' =>  $sourceId,
-                    'destinationId' => $destinationId,
-                    'entry_date' => $entry_date,
-                    'seatIds' => $seatIds,
-                ); 
-            
-            $routeDetails = TicketPrice::where('source_id', $sourceId)
-                            ->where('destination_id', $destinationId)
-                            ->where('bus_id', $busId)
-                            ->where('status','1')
-                            ->get();
-            /////////////seize time recheck////////////////////////
-            
-                //$CurrentDateTime = "2022-09-09 07:46:35";
-                $CurrentDateTime = Carbon::now();//->toDateTimeString();
-                if(isset($routeDetails[0])){
-                $seizedTime = $routeDetails[0]->seize_booking_minute;
-                $depTime = date("H:i:s", strtotime($routeDetails[0]->dep_time)); 
-                
-                $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
-                $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-                    if($depDateTime>=$CurrentDateTime){
-                        $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-                    }else{
-                        $diff_in_minutes = 0;
-                    }
-
-                     /////////////day wise seize time change////////////////////////////////
-                     $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$routeDetails[0]->id)
-                     ->where('seized_date', $entry_date)
-                     ->where('status', 1)
-                     ->get('seize_booking_minute');   
-
-                     if(!$dayWiseSeizeTime->isEmpty()){
-                         $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
-                         if($dWiseSeizeTime > $diff_in_minutes){
-                             return "BUS_SEIZED";
-                         }
-                     }
-                     elseif($seizedTime > $diff_in_minutes){
-                         return "BUS_SEIZED";
-                     }
-                   
-                }                             
-            ///////////////////////cancelled bus recheck////////////////////////            
-            $startJDay = $routeDetails[0]->start_j_days;
-            $ticketPriceId = $routeDetails[0]->id;
-
-            switch($startJDay){
-                case(1):
-                    $new_date = $entry_date;
-                    break;
-                case(2):
-                    $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
-                    break;
-                case(3):
-                    $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
-                    break;
-            }   
-            $cancelledBus = BusCancelled::where('bus_id', $busId)
-                                        ->where('status', '1')
-                                        ->with(['busCancelledDate' => function ($bcd) use ($new_date){
-                                        $bcd->where('cancelled_date',$new_date);
-                                        }])->get(); 
-           
-            $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
-
-            if(isset($busCancel) && $busCancel->isNotEmpty()){
-                return "BUS_CANCELLED";
-            }
-          /////////////////seat block recheck////////////////////////
-            $blockSeats = BusSeats::where('operation_date', $entry_date)
-                                    ->where('type',2)
-                                    ->where('bus_id',$busId)
-                                    ->where('status',1)
-                                    ->where('ticket_price_id',$ticketPriceId)
-                                    ->whereIn('seats_id',$seatIds)
-                                    ->get();                        
-            if(isset($blockSeats) && $blockSeats->isNotEmpty()){
-                return "SEAT_BLOCKED";
-            }
-        
-            $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($data);
-            
-            $intersect = collect($bookedHoldSeats)->intersect($seatIds);
-        }
-
-           elseif($origin=='DOLPHIN') {
-
-                $intersect=[];
-
-                $res= $this->dolphinTransformer->BlockSeat($records,$clientRole);
-
-                if($res['Status']!=1){
-                    return  $res['Message'];
+                $busId = $records[0]->bus_id;
+                $sourceId = $records[0]->source_id;
+                $destinationId = $records[0]->destination_id;
+                $entry_date = $records[0]->journey_dt;
+                $entry_date = date("Y-m-d", strtotime($entry_date));
+                $origin = $records[0]->origin;
+                if(isset($request['IsAcBus'])){
+                    $IsAcBus = $request['IsAcBus'];
+                }else{
+                     $IsAcBus = false;
                 }
-              }
 
-            $amount = $records[0]->total_fare;
+                if($origin == 'ODBUS') {
+                    $bookingDetails = Booking::where('transaction_id', $transationId)
+                                            ->with(["bookingDetail" => function($b){
+                                                $b->with(["busSeats" => function($bs){
+                                                    $bs->with(["seats" => function($s){ 
+                                                    }]);
+                                                }]);    
+                                            }])
+                                            ->get();
+                    $busId = $bookingDetails[0]->bus_id; 
+                    $sourceId = $bookingDetails[0]->source_id;
+                    $destinationId = $bookingDetails[0]->destination_id;
+                    $entry_date = $bookingDetails[0]->journey_dt;
+                    
+                    $seatIds = [];
+                    foreach($bookingDetails[0]->bookingDetail as $bd){
+                        array_push($seatIds,$bd->busSeats->seats->id);              
+                    }  
+                    $data = array(
+                        'busId' => $busId,
+                        'sourceId' =>  $sourceId,
+                        'destinationId' => $destinationId,
+                        'entry_date' => $entry_date,
+                        'seatIds' => $seatIds,
+                    ); 
+                    $routeDetails = TicketPrice::where('source_id', $sourceId)
+                                ->where('destination_id', $destinationId)
+                                ->where('bus_id', $busId)
+                                ->where('status','1')
+                                ->get();
+                    /////////////seize time recheck////////////////////////
+                
+                    //$CurrentDateTime = "2022-09-09 07:46:35";
+                    $CurrentDateTime = Carbon::now();//->toDateTimeString();
+                    if(isset($routeDetails[0])){
+                    $seizedTime = $routeDetails[0]->seize_booking_minute;
+                    $depTime = date("H:i:s", strtotime($routeDetails[0]->dep_time)); 
+                    
+                    $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+                    $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+                        if($depDateTime>=$CurrentDateTime){
+                            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+                        }else{
+                            $diff_in_minutes = 0;
+                        }
+                        /////////////day wise seize time change////////////////////////////////
+                        $dayWiseSeizeTime = BookingSeized::where('ticket_price_id',$routeDetails[0]->id)
+                        ->where('seized_date', $entry_date)
+                        ->where('status', 1)
+                        ->get('seize_booking_minute');   
 
-               
+                        if(!$dayWiseSeizeTime->isEmpty()){
+                            $dWiseSeizeTime = $dayWiseSeizeTime[0]->seize_booking_minute;
+                            if($dWiseSeizeTime > $diff_in_minutes){
+                                return "BUS_SEIZED";
+                            }
+                        }
+                        elseif($seizedTime > $diff_in_minutes){
+                            return "BUS_SEIZED";
+                        }
+                    }                             
+                    ///////////////////////cancelled bus recheck////////////////////////            
+                    $startJDay = $routeDetails[0]->start_j_days;
+                    $ticketPriceId = $routeDetails[0]->id;
+
+                    switch($startJDay){
+                        case(1):
+                            $new_date = $entry_date;
+                            break;
+                        case(2):
+                            $new_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                            break;
+                        case(3):
+                            $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
+                            break;
+                    }   
+                    $cancelledBus = BusCancelled::where('bus_id', $busId)
+                                                ->where('status', '1')
+                                                ->with(['busCancelledDate' => function ($bcd) use ($new_date){
+                                                $bcd->where('cancelled_date',$new_date);
+                                                }])->get(); 
+                
+                    $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
+                    if(isset($busCancel) && $busCancel->isNotEmpty()){
+                        return "BUS_CANCELLED";
+                    }
+                    /////////////////seat block recheck////////////////////////
+                    $blockSeats = BusSeats::where('operation_date', $entry_date)
+                                            ->where('type',2)
+                                            ->where('bus_id',$busId)
+                                            ->where('status',1)
+                                            ->where('ticket_price_id',$ticketPriceId)
+                                            ->whereIn('seats_id',$seatIds)
+                                            ->get();                        
+                    if(isset($blockSeats) && $blockSeats->isNotEmpty()){
+                        return "SEAT_BLOCKED";
+                    }
+                    $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($data);
+                    $intersect = collect($bookedHoldSeats)->intersect($seatIds);
+                }
+                elseif($origin=='DOLPHIN') {
+                        $intersect=[];
+                        $res= $this->dolphinTransformer->BlockSeat($records,$clientRole);
+                        if($res['Status']!=1){
+                            return  $res['Message'];
+                        }
+                    }
+                else if($origin =='MANTIS') {
+                        $intersect = [];
+
+                        $res = $this->mantisTransformer->HoldSeatsClient($sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$clientId,$IsAcBus);
+                        if(!$res["success"]){ 
+                            return $res["Error"]["Msg"];
+                        }
+                      }    
+            $amount = $records[0]->total_fare;  
             /////////////// calculate customer GST  (customet gst = (owner fare + service charge) - Coupon discount)
-
-            if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1)) {
-
+            if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1) || ($origin =='MANTIS' && $res["success"])) {
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
-
             if($request['customer_gst_status']== 1){
-
                     $update_customer_gst['customer_gst_status']=1;
                     $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
                     $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
                     $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
                     $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
-
                     $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
-
                     $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) ) *$masterSetting[0]->customer_gst)/100,2);
-
                     $amount = round($amount+$customer_gst_amount,2);
                     $update_customer_gst['payable_amount']=$amount;
-                    
                     $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
 
                 }else{
@@ -259,9 +239,6 @@ class ClientBookingService
                     $update_customer_gst['payable_amount']=$amount;    
                 }
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
-
-                Log::info($amount);
-
                 if(count($intersect)){
                     return "SEAT UN-AVAIL";
                 }else{
@@ -269,6 +246,10 @@ class ClientBookingService
                     $name = $records[0]->users->name; 
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)   
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+
+                    /////mantis holdId updated to booking table////////
+                    $holdId = $res["data"]['HoldId'];
+                    $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
 
                     $data = array(                        
                         'status' => "Success",
@@ -287,41 +268,44 @@ class ClientBookingService
     public function ticketConfirmation($request,$clientRole)
     {
         try {
-
             $records = $this->channelRepository->getBookingRecord($request['transaction_id']);
-
+            $transationId = $request['transaction_id'];
             $origin=$records[0]->origin;
-
             if($origin=='DOLPHIN') {
-
-                $res= $this->dolphinTransformer->BookSeat($records,$clientRole);
-
-                $bookingRecord= $records;
-
+                $res = $this->dolphinTransformer->BookSeat($records,$clientRole);
+                $bookingRecord = $records;
                 if($res['Status']==1 && $res['PNRNO']){
-
                    $updateApiData['api_pnr']=$res['PNRNO'];
                    $updateApiData['pnr']=$res['PNRNO'];
                    $updateApiData['bus_name']="DOLPHIN TOURS & TRAVELS";
                    $this->channelRepository->UpdateAPIPnr($request['transaction_id'],$updateApiData);                 
-
                 }else{
                     return 'Failed';
                 }
+            } 
+            //////Mantis changes///////
+            if($origin=='MANTIS') {
 
+                $bookingRecord = $records;
+                $holdId = $bookingRecord[0]->holdId;
+
+                $res = $this->mantisTransformer->BookSeat($records,$holdId);
+                if($res["success"]) 
+                {  
+                    $updatebookingDt['pnr'] = $res["data"]["PNRNo"];
+                    $updatebookingDt['api_pnr'] = $res["data"]["PNRNo"];
+                    $updatebookingDt['tkt_no'] = $res["data"]["TicketNo"];;
+                    $this->channelRepository->UpdateMantisAPIPnr($transationId,$updatebookingDt);
+                }else{
+                        return $res["Error"]["Msg"];
+                }
             }
-           
-            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
             return $bookTicket;
-
-            
-
         } catch (Exception $e) {
             Log::info($e->getMessage());   
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
-        }
-       
+        }   
     }  
     
     public function clientCancelTicket($request)////////admin panel use
@@ -330,14 +314,8 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
-
-            //$booking_detail = $this->clientBookingRepository->clientCancelTicket($phone,$pnr,$booked);
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
-           
             if(isset($booking_detail[0])){ 
-               
-                //if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){
-
                        $jDate =$booking_detail[0]->journey_dt;
                        $jDate = date("d-m-Y", strtotime($jDate));
                        $boardTime =$booking_detail[0]->boarding_time; 
@@ -386,10 +364,7 @@ class ClientBookingService
                        $bookingId = $booking_detail[0]->id;
                        $srcId = $booking_detail[0]->source_id;
                        $desId = $booking_detail[0]->destination_id;
-                       //$paidAmount = $booking_detail[0]->booking[0]->payable_amount;
                        $paidAmount = $booking_detail[0]->total_fare;
-                      
-                       //$customer_comission = $booking_detail[0]->booking[0]->customer_comission; 
                        $sourceName = Location::where('id',$srcId)->first()->name;
                        $destinationName = Location::where('id',$desId)->first()->name;
                        
@@ -487,16 +462,11 @@ class ClientBookingService
 
             if($pnr_dt->origin=='DOLPHIN'){    
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
-
-               
-    
                  if(isset($booking_detail[0])){ 
-                       
                             $dolphin_cancel_det= $this->dolphinTransformer->cancelTicketInfo($pnr_dt->api_pnr);                      
                              if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
                                 return 'Ticket_already_cancelled';
                              }
-    
                                 $emailData['cancel_status'] ="true";
                                 $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];                                
                                 $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
@@ -505,33 +475,51 @@ class ClientBookingService
                     else{                
                         return "INV_CLIENT";                
                     }
-            }        
+            }
+            elseif($pnr_dt->origin == 'MANTIS'){    
+                $booking_detail = $this->clientBookingRepository->MantisClientCancelTicketInfo($clientId,$pnr,$booked);
+                 if(isset($booking_detail[0])){ 
+                        $bookingId = $booking_detail[0]->id;
+                        $tktNo = $booking_detail[0]->tkt_no;
+                        $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                        $collection = collect($seatArr);
+                        $seatNos = $collection->implode(',');
+                        $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);
+                        if($res["success"]){ 
+                            $emailData['cancel_status'] ="true";
+                            $emailData['refundAmount'] = $res['data']['RefundAmount'];
+                            $emailData['deductAmount'] =$deductAmount =  round($res['data']['TotalFare'] - $res['data']['RefundAmount'], 2);  
+                            $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];    
+                            $emailData['deductionPercentage'] = $res['data']['ChargePct'].'%';
+                            return $emailData;   
+                        }elseif(!$res["success"]){ 
+                            return $res["error"];
+                        }
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }                    
             elseif($pnr_dt->origin=='ODBUS'){
-
-
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             if(isset($booking_detail[0])){ 
-               
                        $jDate =$booking_detail[0]->journey_dt;
                        $jDate = date("d-m-Y", strtotime($jDate));
                        $boardTime =$booking_detail[0]->boarding_time; 
-                    
                        $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
                        $current_date_time = Carbon::now()->toDateTimeString(); 
                        $bookingDate = new DateTime($combinedDT);
                        $cancelDate = new DateTime($current_date_time);
                        $interval = $bookingDate->diff($cancelDate);
                        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
-                      
+                
                        if($cancelDate >= $bookingDate || $interval < 12)
                        {
                        return "CANCEL_NOT_ALLOWED";
                        }
 
                        $userId = $booking_detail[0]->user_id;
-                       $paidAmount = $booking_detail[0]->total_fare;
-                       //$data['bookingDetails'] = $booking_detail;
-                       
+                       $paidAmount = $booking_detail[0]->total_fare; 
                        if($booking_detail[0]->status==2){
                            $data['cancel_status'] = false;
                        }else{
@@ -539,7 +527,6 @@ class ClientBookingService
                        }
                        
                        $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
-                      
                        foreach($cancelPolicies as $cancelPolicy){
                           $duration = $cancelPolicy->duration;
                           $deduction = $cancelPolicy->deduction;
@@ -559,11 +546,9 @@ class ClientBookingService
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt);
                               //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                              // $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
-                            
                               return $data;
           
                           }elseif($min <= $interval && $interval <= $max){ 
-                           
                               $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
                               $data['refundAmount'] = $refundAmt;
                              // $data['deductionPercentage'] = $deduction."%";
@@ -573,7 +558,6 @@ class ClientBookingService
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt);
                               //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                               //$data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
-                           
                               return $data;   
                           }
                       }                          
@@ -593,24 +577,15 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
-
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
-
 
             if($pnr_dt->origin=='DOLPHIN'){    
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
-
-               
-    
                  if(isset($booking_detail[0])){ 
-                       
                             $dolphin_cancel_det= $this->dolphinTransformer->cancelTicketInfo($pnr_dt->api_pnr);                      
                              if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
                                 return 'Ticket_already_cancelled';
                              }
-
-                            // Log::info($booking_detail[0]);
-    
                                 $emailData['cancel_status'] ="true";
                                 $emailData['refundAmount'] = (int)$dolphin_cancel_det['RefundAmount'];                                
                                 $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
@@ -619,81 +594,91 @@ class ClientBookingService
                     else{                
                         return "INV_CLIENT";                
                     }
-            }        
+            }
+            elseif($pnr_dt->origin == 'MANTIS'){    
+                $booking_detail = $this->clientBookingRepository->MantisClientCancelTicketInfo($clientId,$pnr,$booked);
+                 if(isset($booking_detail[0])){ 
+                        $bookingId = $booking_detail[0]->id;
+                        $tktNo = $booking_detail[0]->tkt_no;
+                        $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                        $collection = collect($seatArr);
+                        $seatNos = $collection->implode(',');
+                        $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);
+                        if($res["success"]){ 
+                            $emailData['cancel_status'] ="true";
+                            $emailData['refundAmount'] = $res['data']['RefundAmount'];
+                            $emailData['deductAmount'] =$deductAmount =  round($res['data']['TotalFare'] - $res['data']['RefundAmount'], 2);  
+                            $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];    
+                            $emailData['deductionPercentage'] = $res['data']['ChargePct'].'%';
+                            return $emailData;   
+                        }elseif(!$res["success"]){ 
+                            return $res["error"];
+                        }
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }            
             elseif($pnr_dt->origin=='ODBUS'){
-
-
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
-            if(isset($booking_detail[0])){ 
-               
-                       $jDate =$booking_detail[0]->journey_dt;
-                       $jDate = date("d-m-Y", strtotime($jDate));
-                       $boardTime =$booking_detail[0]->boarding_time; 
-                    
-                       $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
-                       $current_date_time = Carbon::now()->toDateTimeString(); 
-                       $bookingDate = new DateTime($combinedDT);
-                       $cancelDate = new DateTime($current_date_time);
-                       $interval = $bookingDate->diff($cancelDate);
-                       $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
-                      
-                       if($cancelDate >= $bookingDate || $interval < 12)
-                       {
-                       return "CANCEL_NOT_ALLOWED";
-                       }
-                      
-                       $paidAmount = $booking_detail[0]->total_fare;
-                       $userId = $booking_detail[0]->user_id;
-   
-                       if($booking_detail[0]->status==2){
-                           $data['cancel_status'] = false;
-                       }else{
-                           $data['cancel_status'] = true;
-                       }
-                       
-                       $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
-                      
-                       foreach($cancelPolicies as $cancelPolicy){
-                          $duration = $cancelPolicy->duration;
-                          $deduction = $cancelPolicy->deduction;
-                          $duration = explode("-", $duration, 2);
-                          $max= $duration[1];
-                          $min= $duration[0];
-       
-                          if( $interval > 999){
-                            
-                              $deduction = 10;//minimum deduction 
-                              $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
-                              $data['refundAmount'] = $refundAmt;
-                              $data['deductionPercentage'] = $deduction."%"; 
-                              $deductAmt = round($paidAmount-$refundAmt,2);
-                              $data['deductAmount'] = $deductAmt;
-                              $data['totalfare'] = $paidAmount;
-                              //$data['clientCancelCommission'] = $deductAmt/2; 
-                              //$data['odbusCancelCommission'] = $deductAmt/2; 
-                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
-                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
-                            
-                              return $data;
-          
-                          }elseif($min <= $interval && $interval <= $max){ 
-                           
-                              $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
-                              $data['refundAmount'] = $refundAmt;
-                              $data['deductionPercentage'] = $deduction."%";
-                              $deductAmt = round($paidAmount-$refundAmt,2);
-                              $data['deductAmount'] = $deductAmt;
-                              $data['totalfare'] = $paidAmount;
-                              $cancelComCal = $this->cancelCommission($userId,$deductAmt);
-                              $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
-                           
-                              return $data;   
-                          }
-                      }                          
-            }else{         
-                return "INV_CLIENT";            
+                if(isset($booking_detail[0])){ 
+                        $jDate =$booking_detail[0]->journey_dt;
+                        $jDate = date("d-m-Y", strtotime($jDate));
+                        $boardTime =$booking_detail[0]->boarding_time; 
+                        $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
+                        $current_date_time = Carbon::now()->toDateTimeString(); 
+                        $bookingDate = new DateTime($combinedDT);
+                        $cancelDate = new DateTime($current_date_time);
+                        $interval = $bookingDate->diff($cancelDate);
+                        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                        
+                        if($cancelDate >= $bookingDate || $interval < 12)
+                        {
+                        return "CANCEL_NOT_ALLOWED";
+                        }
+                        $paidAmount = $booking_detail[0]->total_fare;
+                        $userId = $booking_detail[0]->user_id;
+                        if($booking_detail[0]->status==2){
+                            $data['cancel_status'] = false;
+                        }else{
+                            $data['cancel_status'] = true;
+                        }
+                        $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
+                        foreach($cancelPolicies as $cancelPolicy){
+                            $duration = $cancelPolicy->duration;
+                            $deduction = $cancelPolicy->deduction;
+                            $duration = explode("-", $duration, 2);
+                            $max= $duration[1];
+                            $min= $duration[0];
+                            if( $interval > 999){
+                                $deduction = 10;//minimum deduction 
+                                $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
+                                $data['refundAmount'] = $refundAmt;
+                                $data['deductionPercentage'] = $deduction."%"; 
+                                $deductAmt = round($paidAmount-$refundAmt,2);
+                                $data['deductAmount'] = $deductAmt;
+                                $data['totalfare'] = $paidAmount;
+                                //$data['clientCancelCommission'] = $deductAmt/2; 
+                                //$data['odbusCancelCommission'] = $deductAmt/2; 
+                                $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                                $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                                $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
+                                return $data;
+                            }elseif($min <= $interval && $interval <= $max){ 
+                                $refundAmt = round($paidAmount * ((100-$deduction) / 100),2);
+                                $data['refundAmount'] = $refundAmt;
+                                $data['deductionPercentage'] = $deduction."%";
+                                $deductAmt = round($paidAmount-$refundAmt,2);
+                                $data['deductAmount'] = $deductAmt;
+                                $data['totalfare'] = $paidAmount;
+                                $cancelComCal = $this->cancelCommission($userId,$deductAmt);
+                                $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                                $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
+                                return $data;   
+                            }
+                        }                          
+                }else{         
+                    return "INV_CLIENT";            
             }
             }
         } catch (Exception $e) {
@@ -725,50 +710,74 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
-
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
-
             if($pnr_dt->origin=='DOLPHIN'){    
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
-            
                         if(isset($booking_detail[0])){ 
-
                             $userId = $booking_detail[0]->user_id;
-                                $bookingId = $booking_detail[0]->id;
-
-                            
+                            $bookingId = $booking_detail[0]->id;
                             $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
                             if($dolphin_cancel_det['Status']==0){
                                 return 'Ticket_already_cancelled';
                             }                        
-        
                                 $emailData['cancel_status'] ="true";
                                 $emailData['refundAmount'] = (int)$dolphin_cancel_det['RefundAmount'];                                
                                 $emailData['totalfare'] = $totalfare=$booking_detail[0]->payable_amount;  
-
-                              
-
                                 $data['refundAmount']=$refundAmt=$dolphin_cancel_det['RefundAmount'];
-
                                 $deductAmount =  $booking_detail[0]->payable_amount - $dolphin_cancel_det['RefundAmount'];
-
                                 $deduction=round((($deductAmount / $totalfare) * 100),1);
                                 $data['Percentage'] = $deduction;
                                 $data['deductAmount'] = $deductAmount;
                                 $data['totalfare'] = $totalfare;
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmount);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                                $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
-
-                                
-                                $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
-                                
+                                $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
+                                $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data);  
                                return $emailData;
                     }    
                     else{                
                         return "INV_CLIENT";                
                     }
-            }        
+            }
+            if($pnr_dt->origin=='MANTIS'){    
+                $booking_detail = $this->clientBookingRepository->MantisClientCancelTicketInfo($clientId,$pnr,$booked);
+                        if(isset($booking_detail[0])){ 
+                            $userId = $booking_detail[0]->user_id;
+                            $bookingId = $booking_detail[0]->id;
+                            $tktNo = $booking_detail[0]->tkt_no;
+                            $seatArr = $this->cancelTicketRepository->getSeatNames($bookingId);
+                            $collection = collect($seatArr);
+                            $seatNos = $collection->implode(',');
+                            $res = $this->mantisTransformer->isCancellable($pnr,$tktNo,$seatNos);
+                            if($res["success"]){ 
+                                $mantis_cancel_res = $this->mantisTransformer->cancelSeats($pnr,$tktNo,$seatNos); 
+                                if(!$mantis_cancel_res["success"]){
+                                    return $res["Error"]["Msg"];
+                                }
+                                elseif($mantis_cancel_res["success"]){
+                                    $emailData['cancel_status'] ="true";
+                                    $emailData['refundAmount'] = $mantis_cancel_res['data']['RefundAmount'];
+                                    $emailData['totalfare'] = $totalfare = $mantis_cancel_res['data']['TotalFare'];
+                                    $emailData['deductAmount'] = $deductAmount = $mantis_cancel_res['data']['ChargeAmt'];
+                                    $data['refundAmount'] = $refundAmt = $mantis_cancel_res['data']['RefundAmount'];
+                                    $data['Percentage'] = $deduction = $mantis_cancel_res['data']['ChargePct'];
+                                    $data['deductAmount'] = $deductAmount;
+                                    $data['totalfare'] = $totalfare;
+                                    $cancelComCal = $this->cancelCommission($userId,$deductAmount);
+                                    $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
+                                    $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit']; 
+                                    $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data);  
+                                    return $emailData;
+                                }    
+                            }
+                            elseif(!$res["success"]){ 
+                                return $res["error"];
+                            }     
+                    }    
+                    else{                
+                        return "INV_CLIENT";                
+                    }
+            }                
             elseif($pnr_dt->origin=='ODBUS'){
 
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);

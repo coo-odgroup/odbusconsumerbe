@@ -337,13 +337,14 @@ class clientBookingController extends Controller
         $user = JWTAuth::toUser($token); 
         $clientRole = $user->role_id;
         $seatBlockValidation = $this->seatBlockValidator->validate($data);
+        $clientId = $user->id;
   
         if ($seatBlockValidation->fails()) {
         $errors = $seatBlockValidation->errors();
         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
         } 
         try {
-            $response = $this->clientBookingService->seatBlock($request,$clientRole);
+            $response = $this->clientBookingService->seatBlock($request,$clientRole,$clientId);
 
             
           // Log::info($response);
