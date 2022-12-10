@@ -307,8 +307,13 @@ class ChannelService
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
                     
                     /////mantis holdId updated to booking table////////
-                    $holdId = $res["data"]['HoldId'];
-                    $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
+                    if($origin=='MANTIS'){
+
+                        $holdId = $res["data"]['HoldId'];
+                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
+                        
+                    }
+                   
                     
                     $name = $records[0]->users->name;
                     $receiptId = 'rcpt_'.$transationId;
