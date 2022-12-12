@@ -308,13 +308,9 @@ class ChannelService
                     
                     /////mantis holdId updated to booking table////////
                     if($origin=='MANTIS'){
-
                         $holdId = $res["data"]['HoldId'];
-                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
-                        
-                    }
-                   
-                    
+                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);   
+                    } 
                     $name = $records[0]->users->name;
                     $receiptId = 'rcpt_'.$transationId;
     
@@ -792,8 +788,10 @@ class ChannelService
                     $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission,$pnr);
 
                     /////mantis holdId updated to booking table////////
-                    $holdId = $res["data"]['HoldId'];
-                    $this->channelRepository->UpdateMantisHoldId($transactionId,$holdId);
+                    if($origin=='MANTIS'){
+                        $holdId = $res["data"]['HoldId'];
+                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);   
+                    } 
                     
                     $data = array(
                         'notifications' => $totalSeatsBookedByAgent->notification_heading,

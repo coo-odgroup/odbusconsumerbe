@@ -248,8 +248,10 @@ class ClientBookingService
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
                     /////mantis holdId updated to booking table////////
-                    $holdId = $res["data"]['HoldId'];
-                    $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);
+                    if($origin=='MANTIS'){
+                        $holdId = $res["data"]['HoldId'];
+                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);   
+                    } 
 
                     $data = array(                        
                         'status' => "Success",
