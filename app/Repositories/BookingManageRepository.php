@@ -639,15 +639,16 @@ class BookingManageRepository
         //return $agetWallet;
     }
 
-    public function refundPolicy($percentage,$razorpay_payment_id,$baseFare){
+    public function refundPolicy($percentage,$razorpay_payment_id,$baseFare,$paidAmount){
 
-        $key = $this->credentials->first()->razorpay_key;
-        $secretKey = $this->credentials->first()->razorpay_secret;
+        // $key = $this->credentials->first()->razorpay_key;
+        // $secretKey = $this->credentials->first()->razorpay_secret;
         
-        $api = new Api($key, $secretKey);
+        // $api = new Api($key, $secretKey);
         
-        $payment = $api->payment->fetch($razorpay_payment_id);
-        $paidAmount = $payment->amount;
+        // $payment = $api->payment->fetch($razorpay_payment_id);
+        // $paidAmount = $payment->amount;
+         $paidAmount = $paidAmount * 100;
         //$refundAmount = $paidAmount * ((100-$percentage) / 100);
         $refundAmount = $baseFare * ((100-$percentage) / 100);
         $data = array(

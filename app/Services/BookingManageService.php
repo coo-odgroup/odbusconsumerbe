@@ -1088,7 +1088,7 @@ class BookingManageService
                         if( $interval > 999){
                             
                             $deduction = 10;//minimum deduction
-                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
+                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare,$payableAmount);
                             //$refundAmt =  round($refund['refundAmount']/100,2);
                             $refundAmt =  round($refund['refundAmount'],2);
                             $paidAmt =  ($refund['paidAmount']/100);
@@ -1103,7 +1103,7 @@ class BookingManageService
         
                         }elseif($min <= $interval && $interval <= $max){ 
     
-                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare);
+                            $refund =  $this->bookingManageRepository->refundPolicy($deduction,$razorpay_payment_id,$baseFare,$payableAmount);
                             
                             //$refundAmt =  round(($refund['refundAmount']/100),2);
                             $refundAmt =  round($refund['refundAmount'],2);

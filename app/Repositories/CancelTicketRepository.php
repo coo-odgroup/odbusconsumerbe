@@ -391,25 +391,28 @@ class CancelTicketRepository
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
        
-        $key = $this->credentials->first()->razorpay_key;
-        $secretKey = $this->credentials->first()->razorpay_secret;
+        // $key = $this->credentials->first()->razorpay_key;
+        // $secretKey = $this->credentials->first()->razorpay_secret;
        
-        $api = new Api($key, $secretKey);
-        $payment = $api->payment->fetch($razorpay_payment_id);
+        // $api = new Api($key, $secretKey);
+        // $payment = $api->payment->fetch($razorpay_payment_id);
        
-        $paidAmount = $payment->amount;
-        $paymentStatus = $payment->status;
-        //$refundStatus = $payment['refund_status'];
-        $refundStatus = $payment->refund_status;
-        //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
-        //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
+        // $paidAmount = $payment->amount;
+        // $paymentStatus = $payment->status;
+       // $refundStatus = $payment->refund_status;
+
+       
+       $refundStatus = $this->booking->where('id', $bookingId)->first()->status;
+
         $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
         $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
         $baseFare = $payableAmount - $transactionFees;
         //$baseFare = $ownerFare + $odbusCharges; 
+
+        $paidAmount= $payableAmount ;
          
        // if($paymentStatus == 'captured'){
-            if($refundStatus != null){
+            if($refundStatus == 2){
                 return 'refunded';
             }
             else{
