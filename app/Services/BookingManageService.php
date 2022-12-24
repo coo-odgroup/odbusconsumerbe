@@ -280,6 +280,7 @@ class BookingManageService
             $mobile = $request['mobile'];
 
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
+
             if($pnr_dt->origin =='MANTIS'){
                 $b = $this->bookingManageRepository->getMantisBookingDetails($mobile,$pnr);
                     if($b && isset($b[0])){
@@ -459,6 +460,7 @@ class BookingManageService
            
              $b= $this->bookingManageRepository->getBookingDetails($mobile,$pnr);
 
+
             if($b && isset($b[0])){
                 $b=$b[0];
                 $seat_arr=[];
@@ -468,7 +470,7 @@ class BookingManageService
                 }  
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
-               
+
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -502,7 +504,7 @@ class BookingManageService
                 $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
 
                 $transactionFee=$b->booking[0]->transactionFee;
-    
+
                 $customer_gst_status=$b->booking[0]->customer_gst_status;
                 $customer_gst_number=$b->booking[0]->customer_gst_number;
                 $customer_gst_business_name=$b->booking[0]->customer_gst_business_name;
@@ -517,8 +519,6 @@ class BookingManageService
                 $odbus_charges = $b->booking[0]->odbus_charges;
                 $odbus_gst = $b->booking[0]->odbus_gst_charges;
                 $owner_fare = $b->booking[0]->owner_fare;
-
-
 
                 if($b->booking[0]->user_id !=0 && $b->booking[0]->user_id != null){
                     $agent_number= $this->user->where('id',$b->booking[0]->user_id)->get();

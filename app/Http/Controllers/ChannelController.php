@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
+use App\Services\BookingManageService;
 use App\Models\Users;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
+use App\Models\Booking;
 use App\AppValidator\MakePaymentValidator;
 use App\AppValidator\PaymentStatusValidator;
 use App\AppValidator\AgentWalletPaymentValidator;
@@ -28,22 +30,26 @@ class ChannelController extends Controller
 {
     use ApiResponser;
     protected $channelService;
+    protected $bookingManageService;    
     protected $channelRepository;  
     protected $customerPayment;
+    protected $booking;
     protected $makePaymentValidator;
     protected $paymentStatusValidator;
     protected $agentWalletPaymentValidator;
     protected $agentPaymentStatusValidator;
   
-    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator,MakePaymentValidator $makePaymentValidator,PaymentStatusValidator $paymentStatusValidator)
+    public function __construct(ChannelService $channelService,ChannelRepository $channelRepository,CustomerPayment $customerPayment,Booking $booking,AgentWalletPaymentValidator $agentWalletPaymentValidator,AgentPaymentStatusValidator $agentPaymentStatusValidator,MakePaymentValidator $makePaymentValidator,PaymentStatusValidator $paymentStatusValidator, BookingManageService $bookingManageService)
         {
             $this->channelService = $channelService;
             $this->channelRepository = $channelRepository;  
-            $this->customerPayment = $agentWalletPaymentValidator;
+            $this->customerPayment = $customerPayment;
+            $this->booking = $booking;
             $this->agentWalletPaymentValidator = $agentWalletPaymentValidator;
             $this->agentPaymentStatusValidator = $agentPaymentStatusValidator;
             $this->makePaymentValidator = $makePaymentValidator;
             $this->paymentStatusValidator = $paymentStatusValidator;
+            $this->bookingManageService = $bookingManageService;
         }
 
     public function testingEmail(Request $request) {
@@ -486,17 +492,44 @@ public function pay(Request $request){
     $post = file_get_contents('php://input');
     $res = json_decode($post);
     $response=$res->payload->payment->entity; 
-    
-    //$myfile = fopen("razorpaywebhook.txt", "a");
-   // fwrite($myfile, '\n'.$response->status."--".$response->id."--".$response->order_id."--".$response->error_description.'\n');
-    //fwrite($myfile, '\n Event - '.$res->event);
-    //fwrite($myfile, '\n Account ID - '.$res->account_id.'\n');
-   // fclose($myfile);
-    
+
+    Log::info($response->status);
+    Log::info($response->order_id);
+    Log::info($response->id);
+ 
+if($response->status == 'authorized' || $response->status =='captured'){
     $razorpay_status_updated_at= date("Y-m-d H:i:s");
-    $this->customerPayment->where('order_id', $response->order_id)
-                          ->update(['razorpay_status' => $response->status,
-                                    'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]);  
+    $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+
+    $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
+
+    if($rp->booking_id){
+
+        $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
+
+        if($booking_det->origin=='ODBUS'){
+            $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
+            //// call to emailsms api function to send to customer
+            $request['pnr']=$booking_det->pnr;
+            $request['mobile']=$booking_det->users->phone; 
+
+           
+
+           $res= $this->bookingManageService->emailSms($request);
+
+           Log::info($booking_det->pnr);
+           Log::info($res);
+
+        }
+
+        
+    }
+
+}
+    
+    // $razorpay_status_updated_at= date("Y-m-d H:i:s");
+    // $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_status' => $response->status,
+    //                                 'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]);  
   }
 /**
  * @OA\Post(
