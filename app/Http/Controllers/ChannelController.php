@@ -491,6 +491,9 @@ public function pay(Request $request){
     
     $post = file_get_contents('php://input');
     $res = json_decode($post);
+
+    if(isset($res->payload->payment)){
+   
     $response=$res->payload->payment->entity; 
 
     Log::info($response->status);
@@ -499,7 +502,7 @@ public function pay(Request $request){
  
 if($response->status == 'authorized' || $response->status =='captured'){
     $razorpay_status_updated_at= date("Y-m-d H:i:s");
-    $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+    $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
 
     $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
 
@@ -521,9 +524,10 @@ if($response->status == 'authorized' || $response->status =='captured'){
            Log::info($res);
 
         }
-
-        
+    }  
     }
+
+    
 
 }
     
