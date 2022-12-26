@@ -138,8 +138,6 @@ class ChannelService
                 }else{
                     $amount = $records[0]->payable_amount;
                 }
-
-
               if($origin=='ODBUS') {
 
                  ///////////////////////cancelled bus recheck////////////////////////
@@ -235,8 +233,37 @@ class ChannelService
                 }
               }
               else if($origin =='MANTIS') {
+                $clientId = 1;
+                $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+                //return $mantisSeatresult;
+                $seater = [];
+                $lbSleeper = [];
+                $ubSleeper = [];
+                $sleeper = [];
+               
+                if(isset($mantisSeatresult['lower_berth'])){
+                    $seater = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',1)->pluck('id');
 
+                    $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                }
+                if(isset($mantisSeatresult['upper_berth'])){
+                    $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                }
+                $sleeper = collect($lbSleeper)->merge(collect($ubSleeper));
+                
+                $data = array(
+                    'busId' => $busId,
+                    'sourceId' => $sourceId,
+                    'destinationId' => $destinationId,
+                    'seater' => $seater,
+                    'sleeper' => $sleeper,
+                    'entry_date' => $entry_date,
+                    'origin' => $origin,
+                );
+                $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+                //return $priceDetails;
                 $intersect=[];
+
                 $res = $this->mantisTransformer->HoldSeats($seatIds,$sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$IsAcBus);
     
                 if(!$res["success"]){ 
@@ -256,17 +283,23 @@ class ChannelService
                 $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
                 $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
                 $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
-    
-                $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
-    
-                $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
-    
-                $amount = round($amount+$customer_gst_amount,2);
-                $update_customer_gst['payable_amount']=$amount;
-                        
-                $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
-    
-                }else{
+                /////
+                if($origin =='MANTIS') {  
+                    $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
+                    $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
+                    }
+                /////
+                else{
+                    $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
+        
+                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
+        
+                    $amount = round($amount+$customer_gst_amount,2);
+                    $update_customer_gst['payable_amount']=$amount;
+                            
+                    $update_customer_gst['customer_gst_amount']=$customer_gst_amount; 
+                }   
+            }else{
     
                 $amount = round($amount - $records[0]->customer_gst_amount,2);
     
@@ -281,7 +314,6 @@ class ChannelService
                 }
     
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
-    
     
                 if($records && $records[0]->status == $seatHold){
                     $key= $this->channelRepository->getRazorpayKey();

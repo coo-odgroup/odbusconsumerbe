@@ -326,6 +326,7 @@ public function checkBlockedSeats($request)
 
 public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 {
+    
     $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
     $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
     $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
@@ -348,11 +349,12 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         //return $mantisSeatresult;
         $total_fare = 0;
         $additional_charge = 0;
-        
+        $total_base_fare = 0;
         if(!empty($seaterIds)){
             foreach($seaterIds as $sId){
                 $lbcollection = collect($mantisSeatresult['lower_berth']);
                 $total_fare += $lbcollection->where('id', $sId)->pluck('bus_seats.new_fare')[0];
+                $total_base_fare += $lbcollection->where('id', $sId)->pluck('bus_seats.mantis_base_fare')[0];
             }
           }
           if(!empty($sleeperIds)){
@@ -360,8 +362,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 /////need to check//////
                 $ubcollection = array_merge($mantisSeatresult['lower_berth'], $mantisSeatresult['upper_berth']);
                 $total_fare += collect($ubcollection)->where('id', $slId)->pluck('bus_seats.new_fare')[0];
-                //$ubcollection = collect($mantisSeatresult['upper_berth']);
-                //$total_fare += $ubcollection->where('id', $slId)->pluck('bus_seats.new_fare')[0];
+                $total_base_fare += $ubcollection->where('id', $sId)->pluck('bus_seats.mantis_base_fare')[0];
             }  
           }  
           
@@ -370,6 +371,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              $additional_charge = $mantis_data->additional_charge;
           }
          $seatWithPriceRecords[] = array(
+             "baseFare" => $total_base_fare,
              "ownerFare" => $total_fare,
              "odbus_charges_ownerFare" => $total_fare,
              "specialFare" => 0,

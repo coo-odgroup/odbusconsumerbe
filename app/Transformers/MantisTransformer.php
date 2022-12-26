@@ -224,6 +224,7 @@ class MantisTransformer
                     "ticket_price_id"=> 0,
                     "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
+                    "mantis_base_fare" => $seatFares[1]
                 ];
                 break;
             case '2':
@@ -232,14 +233,16 @@ class MantisTransformer
                     "seat_for" => "male",
                     "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
+                    "mantis_base_fare" => $seatFares[1]
                 ];
                 break;
             case '3':
                  $seaterArr['bus_seats'] = [
                     "ticket_price_id" => 0,
-                     "seat_for" => "female",
-                     "seats_id"=>$type+($j+1),
+                    "seat_for" => "female",
+                    "seats_id"=>$type+($j+1),
                     "new_fare"=> $seatFares[0],
+                    "mantis_base_fare" => $seatFares[1]
                 ];
                 break;
             case '-2':
