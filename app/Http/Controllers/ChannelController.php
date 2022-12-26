@@ -494,47 +494,40 @@ public function pay(Request $request){
 
     if(isset($res->payload->payment)){
    
-    $response=$res->payload->payment->entity; 
-
-    Log::info($response->status);
-    Log::info($response->order_id);
-    Log::info($response->id);
+    $response=$res->payload->payment->entity;     
+    Log::info($response->order_id."---".$response->status."---".$response->id);
  
-if($response->status == 'authorized' || $response->status =='captured'){
-    $razorpay_status_updated_at= date("Y-m-d H:i:s");
-    $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+    if($response->status == 'authorized' || $response->status =='captured'){
+                $razorpay_status_updated_at= date("Y-m-d H:i:s");
+                $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
 
-    $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
+                $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
 
-    if($rp->booking_id){
+                if($rp->booking_id){
+                    $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
-        $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
+                    Log::info($booking_det->origin);
 
-        if($booking_det->origin=='ODBUS'){
-            $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
-            //// call to emailsms api function to send to customer
-            $request['pnr']=$booking_det->pnr;
-            $request['mobile']=$booking_det->users->phone; 
+                    if($booking_det->origin=='ODBUS'){
+                        $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
+                        //// call to emailsms api function to send to customer
+                        
+                        // $request['pnr']=$booking_det->pnr;
+                        // $request['mobile']=$booking_det->users->phone;
+                        //$res= $this->bookingManageService->emailSms($request);
 
-           
-
-           $res= $this->bookingManageService->emailSms($request);
-
-           Log::info($booking_det->pnr);
-           Log::info($res);
-
-        }
-    }  
+                        $request['transaction_id']=$booking_det->transaction_id;
+                        $request['razorpay_payment_id']=$response->id;
+                        $request['razorpay_order_id']=$response->order_id;
+                        $request['razorpay_signature']='';
+                        $res = $this->channelService->pay(collect($request),1); // 1-> super admin
+                        Log::info($booking_det->pnr."----".$res);
+                    }
+                }  
     }
-
-    
-
 }
-    
-    // $razorpay_status_updated_at= date("Y-m-d H:i:s");
-    // $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_status' => $response->status,
-    //                                 'razorpay_status_updated_at' => $razorpay_status_updated_at, 'failed_reason' => $response->error_description]);  
-  }
+}
+
 /**
  * @OA\Post(
  *     path="/api/AgentWalletPayment",

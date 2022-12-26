@@ -459,11 +459,10 @@ class ChannelService
             $booked = Config::get('constants.BOOKED_STATUS');
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
-            $data = $request->all();
-            
+            $data = $request->all();            
             $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
             $customerId = $customerId[0];
-            $seatIds = $request['seat_id'];
+            //$seatIds = $request['seat_id'];
             $razorpay_signature = $data['razorpay_signature'];
             $razorpay_payment_id = $data['razorpay_payment_id'];
             $razorpay_order_id = $data['razorpay_order_id'];
@@ -620,6 +619,7 @@ class ChannelService
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
                 );
+
                 $emailData = array(
                 "pnr" => $pnr,
                 "seat_no" => $seat_no,
@@ -643,7 +643,7 @@ class ChannelService
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
                 );
-                
+ 
                 return $this->channelRepository->UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
                 ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin);
         } catch (Exception $e) {
