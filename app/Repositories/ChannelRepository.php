@@ -723,6 +723,8 @@ class ChannelRepository
       // Creates customer payment 
       $orderId = $order['id']; 
 
+      Log::info($bookingId."---".$receiptId."---".$orderId);
+
       $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId,'amount' =>$amount ,'name'=>$name]);
 
        return $orderId;
@@ -746,6 +748,8 @@ class ChannelRepository
         $user_pay->amount = $amount;
         $user_pay->order_id = $orderId;
          $user_pay->save();
+
+         Log::info($bookingId."---".$receiptId."---".$orderId);
 
          return $orderId;
 
