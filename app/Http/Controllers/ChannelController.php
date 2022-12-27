@@ -503,7 +503,7 @@ public function pay(Request $request){
 
                 $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
 
-                if($rp->booking_id){
+                if($rp && isset($rp->booking_id)){
                     $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
                     Log::info($booking_det->origin);

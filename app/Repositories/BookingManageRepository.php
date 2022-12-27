@@ -757,18 +757,24 @@ class BookingManageRepository
                     ->where("pnr",$pnr)
                     ->where("status",1)
                     ->with('users')
-                    ->with(["bus" => function($bs){
-                            $bs->with('cancellationslabs.cancellationSlabInfo');
-                            $bs->with('BusType.busClass');
-                            $bs->with('BusSitting');                
-                            $bs->with('busContacts');
-                           }
-                        ])
-                    ->with(["bookingDetail" => function($b){
-                                $b->with(["busSeats" => function($s){
-                                    $s->with("seats");
-                               }]);
-                           }])
                     ->get();
+
+        // return $this->booking
+        //             ->where("pnr",$pnr)
+        //             ->where("status",1)
+        //             ->with('users')
+        //             ->with(["bus" => function($bs){
+        //                     $bs->with('cancellationslabs.cancellationSlabInfo');
+        //                     $bs->with('BusType.busClass');
+        //                     $bs->with('BusSitting');                
+        //                     $bs->with('busContacts');
+        //                    }
+        //                 ])
+        //             ->with(["bookingDetail" => function($b){
+        //                         $b->with(["busSeats" => function($s){
+        //                             $s->with("seats");
+        //                        }]);
+        //                    }])
+        //             ->get();
      } 
 }
