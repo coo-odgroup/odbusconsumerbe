@@ -261,7 +261,6 @@ class ChannelService
                     'origin' => $origin,
                 );
                 $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
-                //return $priceDetails;
                 $intersect=[];
 
                 $res = $this->mantisTransformer->HoldSeats($seatIds,$sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$IsAcBus);
@@ -285,6 +284,7 @@ class ChannelService
                 $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
                 /////
                 if($origin =='MANTIS') {  
+                    $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
                     $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
                     $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
                     }
@@ -802,6 +802,33 @@ class ChannelService
                 }
             }
             else if($origin =='MANTIS'){
+                $clientId = 1;
+                $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+    
+                $seater = [];
+                $lbSleeper = [];
+                $ubSleeper = [];
+                $sleeper = [];
+               
+                if(isset($mantisSeatresult['lower_berth'])){
+                    $seater = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',1)->pluck('id');
+
+                    $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                }
+                if(isset($mantisSeatresult['upper_berth'])){
+                    $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('id', $seatIds)->where('berthType',2)->pluck('id');
+                }
+                $sleeper = collect($lbSleeper)->merge(collect($ubSleeper));
+                $data = array(
+                    'busId' => $busId,
+                    'sourceId' => $sourceId,
+                    'destinationId' => $destinationId,
+                    'seater' => $seater,
+                    'sleeper' => $sleeper,
+                    'entry_date' => $entry_date,
+                    'origin' => $origin,
+                );
+                $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
                 $intersect = [];
                 $res = $this->mantisTransformer->HoldSeats($seatIds,$sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$IsAcBus); 
                 if(!$res["success"]){ 
@@ -821,8 +848,15 @@ class ChannelService
 
                     /////mantis holdId updated to booking table////////
                     if($origin=='MANTIS'){
-                        $holdId = $res["data"]['HoldId'];
-                        $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);   
+                    /////      
+                    $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
+                    $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
+                    $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
+                    $this->channelRepository->updateCustomerGST($update_customer_gst,$transactionId);
+                    /////
+                    $holdId = $res["data"]['HoldId'];
+                    $this->channelRepository->UpdateMantisHoldId($transactionId,$holdId); 
+
                     } 
                     
                     $data = array(
