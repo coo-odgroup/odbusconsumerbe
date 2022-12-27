@@ -362,7 +362,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 /////need to check//////
                 $ubcollection = array_merge($mantisSeatresult['lower_berth'], $mantisSeatresult['upper_berth']);
                 $total_fare += collect($ubcollection)->where('id', $slId)->pluck('bus_seats.new_fare')[0];
-                $total_base_fare += $ubcollection->where('id', $sId)->pluck('bus_seats.mantis_base_fare')[0];
+                $total_base_fare += collect($ubcollection)->where('id', $slId)->pluck('bus_seats.mantis_base_fare')[0];
             }  
           }  
           
