@@ -204,6 +204,36 @@ class ClientBookingService
                         }
                     }
                 else if($origin =='MANTIS') {
+                        ////
+                        $seatTexts = $records[0]->bookingDetail->pluck('seat_name');
+                        $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+                        //return $mantisSeatresult;
+                        $seater = [];
+                        $lbSleeper = [];
+                        $ubSleeper = [];
+                        $sleeper = [];
+                    
+                        if(isset($mantisSeatresult['lower_berth'])){
+                            $seater = collect($mantisSeatresult['lower_berth'])->whereIn('seatText', $seatTexts)->where('berthType',1)->pluck('id');
+
+                            $lbSleeper = collect($mantisSeatresult['lower_berth'])->whereIn('seatText', $seatTexts)->where('berthType',2)->pluck('id');
+                        }
+                        if(isset($mantisSeatresult['upper_berth'])){
+                            $ubSleeper = collect($mantisSeatresult['upper_berth'])->whereIn('seatText', $seatTexts)->where('berthType',2)->pluck('id');
+                        }
+                        $sleeper = collect($lbSleeper)->merge(collect($ubSleeper));
+                        
+                        $data = array(
+                            'busId' => $busId,
+                            'sourceId' => $sourceId,
+                            'destinationId' => $destinationId,
+                            'seater' => $seater,
+                            'sleeper' => $sleeper,
+                            'entry_date' => $entry_date,
+                            'origin' => $origin,
+                        );
+                        $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+                        ////
                         $intersect = [];
 
                         $res = $this->mantisTransformer->HoldSeatsClient($sourceId,$destinationId,$entry_date,$busId,$records,$clientRole,$clientId,$IsAcBus);
@@ -216,6 +246,13 @@ class ClientBookingService
             if($origin=='ODBUS' || ($origin=='DOLPHIN' && $res['Status']==1) || ($origin =='MANTIS' && $res["success"])) {
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
             if($request['customer_gst_status']== 1){
+                if($origin =='MANTIS') { 
+                    $update_customer_gst['customer_gst_status'] = 1; 
+                    $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
+                    $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
+                    $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
+                    }
+                else{
                     $update_customer_gst['customer_gst_status']=1;
                     $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
                     $update_customer_gst['customer_gst_business_name']=$request['customer_gst_business_name'];
@@ -226,17 +263,17 @@ class ClientBookingService
                     $amount = round($amount+$customer_gst_amount,2);
                     $update_customer_gst['payable_amount']=$amount;
                     $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
-
-                }else{
-                    $amount = round($amount - $records[0]->customer_gst_amount,2);
-                    $update_customer_gst['customer_gst_status']=0;
-                    $update_customer_gst['customer_gst_number']=null;
-                    $update_customer_gst['customer_gst_business_name']=null;
-                    $update_customer_gst['customer_gst_business_email']=null;
-                    $update_customer_gst['customer_gst_business_address']=null;
-                    $update_customer_gst['customer_gst_percent']=0;                    
-                    $update_customer_gst['customer_gst_amount']=0;
-                    $update_customer_gst['payable_amount']=$amount;    
+                }
+            }else{
+                $amount = round($amount - $records[0]->customer_gst_amount,2);
+                $update_customer_gst['customer_gst_status']=0;
+                $update_customer_gst['customer_gst_number']=null;
+                $update_customer_gst['customer_gst_business_name']=null;
+                $update_customer_gst['customer_gst_business_email']=null;
+                $update_customer_gst['customer_gst_business_address']=null;
+                $update_customer_gst['customer_gst_percent']=0;                    
+                $update_customer_gst['customer_gst_amount']=0;
+                $update_customer_gst['payable_amount']=$amount;    
                 }
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
                 if(count($intersect)){
