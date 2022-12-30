@@ -501,6 +501,12 @@ class ChannelService
             $transationId = $data['transaction_id'];
            
             $records = $this->channelRepository->getBookingRecord($transationId);
+
+            if($records[0]->email_sms_status==1){
+                return "Payment Done";
+            }
+
+            
             $origin = $records[0]->origin;
 
             if($origin=='DOLPHIN') {
