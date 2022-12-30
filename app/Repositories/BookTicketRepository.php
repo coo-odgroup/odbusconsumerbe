@@ -241,8 +241,9 @@ class BookTicketRepository
             }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
                 // get real seat name from dolphin transformer
                 $ReferenceNumber=$bookingInfo['ReferenceNumber'];
+                //Log::info($ReferenceNumber.",".$bDetail['bus_seats_id'].",".$clientRole,$clientId);
                 $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
-
+                //Log::info($seat_name);
                 unset($bDetail['bus_seats_id']);
                 $bDetail['seat_name']= $seat_name; 
                 $collection= collect($bDetail);

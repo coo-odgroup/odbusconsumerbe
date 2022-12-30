@@ -408,11 +408,18 @@ class DolphinTransformer
     public function GetseatLayoutName($ReferenceNumber,$id,$clientRole,$clientId){
       $res= $this->seatLayout($ReferenceNumber,$clientRole,$clientId);
 
-      if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
+      $id=(int) $id;
+     
+      $key = array_search($id, array_column($res['lower_berth'], 'id'));
+      
+      if($key > -1){        
+       // Log::info($res['lower_berth'][$key]['seatText']);
         return $res['lower_berth'][$key]['seatText'];
       }
 
-      if($key = array_search($id, array_column($res['upper_berth'], 'id'))){
+      $key = array_search($id, array_column($res['upper_berth'], 'id'));
+
+      if($key > -1){   
         return $res['upper_berth'][$key]['seatText'];
       }
        
@@ -881,7 +888,7 @@ class DolphinTransformer
         $arr['PayableAmount']=$amount;
         $arr['TotalPassengers']=$TotalPassengers;    
         
-       // Log::info($arr);
+        //Log::info($arr);
 
         $res= $this->DolphinService->BlockSeat($arr);
 
@@ -1106,7 +1113,9 @@ class DolphinTransformer
 
         $bus_amenity=[];
 
-         if($key = array_search($RouteTimeID, array_column($amenity, 'RouteTimeID'))){
+        $key = array_search($RouteTimeID, array_column($amenity, 'RouteTimeID'));
+
+         if($key > -1 ){
 
           $list= explode('#',$amenity[$key]["Amenities"]);
 
@@ -1291,11 +1300,15 @@ class DolphinTransformer
 
         foreach($seatIds as $s){
 
-            if($key = array_search($s, array_column($seatResult['lower_berth'], 'id'))){
+            $key = array_search($s, array_column($seatResult['lower_berth'], 'id'));
+
+            if($key > -1){
                 $seater[]=$s;
             }
 
-            if($key = array_search($s, array_column($seatResult['upper_berth'], 'id'))){
+            $key2 = array_search($s, array_column($seatResult['upper_berth'], 'id'));
+            
+            if($key2 > -1){
                 $sleeper[]=$s;
             }
 
