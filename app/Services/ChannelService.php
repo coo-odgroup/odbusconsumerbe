@@ -1206,6 +1206,8 @@ class ChannelService
               $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
               $coupon_discount=$bookingRecord[0]->coupon_discount;
 
+              Log::info('ticket adjust');
+              
               $smsData = array(
                 "seat_no" => $seat_no,
                 "passengerDetails" => $passengerDetails, 
@@ -1217,6 +1219,11 @@ class ChannelService
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
                 );
+
+                Log::info('adjust sms');
+
+                Log::info($smsData);                
+
                 $emailData = array(
                 "pnr" => $pnr,
                 "seat_no" => $seat_no,
@@ -1239,7 +1246,12 @@ class ChannelService
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
-                );            
+                );  
+                
+                Log::info('adjust email');
+
+
+                Log::info($emailData);
         
             return $this->channelRepository->UpdateAdjustStatus($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
             ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin);

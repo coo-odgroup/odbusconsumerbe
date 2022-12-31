@@ -1107,7 +1107,14 @@ class DolphinTransformer
          $RouteID= $dolphinBusList[$key]['busId'];
          $RouteTimeID= $dolphinBusList[$key]['RouteTimeID'];
          $bus_description= $dolphinBusList[$key]['bus_description'];
-         $busName= $dolphinBusList[$key]['busName'];        
+         $busName= $dolphinBusList[$key]['busName'];  
+
+         $b_ar=explode("#",$dolphinBusList[$key]['BoardingPoints']);
+         if($dolphinBusList[$key]['DroppingPoints']){
+ 
+           $d_ar=explode("#",$dolphinBusList[$key]['DroppingPoints']);
+ 
+         }
 
         $amenity= $this->DolphinService->GetAmenities($CompanyID);  
 
@@ -1143,8 +1150,6 @@ class DolphinTransformer
          }        
 
 
-       
-
         $cancelpolicy=[];
 
         $cancelpolicyres= $this->DolphinService->GetCancellationPolicy();
@@ -1165,12 +1170,7 @@ class DolphinTransformer
         }
 
 
-        $b_ar=explode("#",$dolphinBusList[$key]['BoardingPoints']);
-        if($dolphinBusList[$key]['DroppingPoints']){
-
-          $d_ar=explode("#",$dolphinBusList[$key]['DroppingPoints']);
-
-        }
+       
 
         $boardingArray=[];
         $droppingArray=[];
