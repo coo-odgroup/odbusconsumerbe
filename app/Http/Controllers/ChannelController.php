@@ -508,8 +508,6 @@ public function pay(Request $request){
                 if($rp && isset($rp->booking_id)){
                     $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
-                    Log::info($booking_det->origin);
-
                     if($booking_det->origin=='ODBUS'){
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
                         //// call to emailsms api function to send to customer
