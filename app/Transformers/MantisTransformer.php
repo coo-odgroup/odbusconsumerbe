@@ -384,23 +384,33 @@ public function seatBerthArr($mantisSeatResult,$berthType){
         // if($res['lower_berth']){
         // return collect($res['lower_berth'])->whereIn('id', $id)->pluck('seatText');
         // }
-        if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
+
+        $key = array_search($id, array_column($res['lower_berth'], 'id'));
+
+        if($key > -1){
         return $res['lower_berth'][$key]['seatText'];
         }
 
-        if($key = array_search($id, array_column($res['upper_berth'], 'id'))){
-        return $res['upper_berth'][$key]['seatText'];
+        $key2 = array_search($id, array_column($res['upper_berth'], 'id'));
+
+        if($key2 > -1){
+        return $res['upper_berth'][$key2]['seatText'];
         }
     }  
 
     public function GetseatFare($sourceId,$destinationId,$journeyDate,$busId,$id,$clientRole,$clientId){
         $res = $this->MantisSeatLayout($sourceId,$destinationId,$journeyDate,$busId,$clientRole,$clientId);
-        if($key = array_search($id, array_column($res['lower_berth'], 'id'))){
+        
+        $key = array_search($id, array_column($res['lower_berth'], 'id'));
+
+        if($key > -1){
         return $res['lower_berth'][$key]['bus_seats']['new_fare'];
         }
 
-        if($key = array_search($id, array_column($res['upper_berth'], 'id'))){
-        return $res['upper_berth'][$key]['bus_seats']['new_fare'];
+        $key2 = array_search($id, array_column($res['upper_berth'], 'id'));
+
+        if($key2 > -1){    
+        return $res['upper_berth'][$key2]['bus_seats']['new_fare'];
         }
     }  
 

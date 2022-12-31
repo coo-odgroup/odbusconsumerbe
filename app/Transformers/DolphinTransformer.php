@@ -417,10 +417,10 @@ class DolphinTransformer
         return $res['lower_berth'][$key]['seatText'];
       }
 
-      $key = array_search($id, array_column($res['upper_berth'], 'id'));
+      $key2 = array_search($id, array_column($res['upper_berth'], 'id'));
 
-      if($key > -1){   
-        return $res['upper_berth'][$key]['seatText'];
+      if($key2 > -1){   
+        return $res['upper_berth'][$key2]['seatText'];
       }
        
 
