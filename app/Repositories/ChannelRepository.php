@@ -1344,7 +1344,7 @@ class ChannelRepository
                                   'payment_done' => $paymentDone
                               ]);
 
-           Log::info('adjust ticket: '.$bookingId);                   
+          // Log::info('adjust ticket: '.$bookingId);                   
 
            //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 

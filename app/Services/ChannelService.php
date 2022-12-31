@@ -1100,7 +1100,7 @@ class ChannelService
            
             //$busId = $request['bus_id'];
             //$seatIds = $request['seat_id'];
-            $razorpay_signature = $data['razorpay_signature'];
+            $razorpay_signature = (isset($data['razorpay_signature'])) ? '' : '';
             $razorpay_payment_id = $data['razorpay_payment_id'];
             $razorpay_order_id = $data['razorpay_order_id'];
             $transationId = $data['transaction_id'];
@@ -1206,7 +1206,7 @@ class ChannelService
               $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
               $coupon_discount=$bookingRecord[0]->coupon_discount;
 
-              Log::info('ticket adjust');
+              //Log::info('ticket adjust');
               
               $smsData = array(
                 "seat_no" => $seat_no,
@@ -1220,9 +1220,9 @@ class ChannelService
                 "conductor_number" => $conductor_number,
                 );
 
-                Log::info('adjust sms');
+                //Log::info('adjust sms');
 
-                Log::info($smsData);                
+               // Log::info($smsData);                
 
                 $emailData = array(
                 "pnr" => $pnr,
@@ -1248,10 +1248,10 @@ class ChannelService
                 "sittingType" => $sittingType,
                 );  
                 
-                Log::info('adjust email');
+               // Log::info('adjust email');
 
 
-                Log::info($emailData);
+                //Log::info($emailData);
         
             return $this->channelRepository->UpdateAdjustStatus($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone
             ,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin);

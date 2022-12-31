@@ -457,6 +457,7 @@ public function pay(Request $request){
 }
 
  public function UpdateAdjustStatus(Request $request){
+   
     $data = $request->all();
     $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
 
@@ -470,6 +471,7 @@ public function pay(Request $request){
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
     }  
         try{
+           
             $response = $this->channelService->UpdateAdjustStatus($request,$clientRole);
             //return $response; 
             If($response == 'Payment Done'){
