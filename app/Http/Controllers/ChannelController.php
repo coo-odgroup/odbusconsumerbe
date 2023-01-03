@@ -508,7 +508,7 @@ public function pay(Request $request){
                 if($rp && isset($rp->booking_id)){
                     $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
-                    if($booking_det->origin=='ODBUS'){
+                   // if($booking_det->origin=='ODBUS'){
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
                         //// call to emailsms api function to send to customer
                         
@@ -522,7 +522,7 @@ public function pay(Request $request){
                         $request['razorpay_signature']='';
                         $res = $this->channelService->pay(collect($request),1); // 1-> super admin
                         Log::info($booking_det->pnr."----".$res);
-                    }
+                   // }
                 }  
     }
 }
