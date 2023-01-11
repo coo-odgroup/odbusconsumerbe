@@ -667,7 +667,6 @@ class ListingRepository
                 }else{
                     $location = $this->location->find($toLocation[0]->id);
                     $updateData['name']=$data['ToCity'];
-                    $updateData['synonym']=$data['ToCity'];
                     $updateData['is_dolphin']=1;
                     $updateData['dolphin_id']=$data['ToCityID'];
                     $location=$this->LocationModel($updateData,$location);
@@ -734,8 +733,7 @@ class ListingRepository
                        $locationAdded++;   
                    }else{
                        $location = $this->location->find($loc[0]->id);
-                       $updateData['name'] = $data->City;    
-                       $updateData['synonym'] = $data->City; 
+                       $updateData['name'] = $data->City;  
                        $updateData['is_mantis'] = 1;
                        $updateData['mantis_id'] = $data->CityId;
                        $location=$this->LocModel($updateData,$location);
