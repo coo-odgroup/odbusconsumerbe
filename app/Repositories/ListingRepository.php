@@ -628,8 +628,7 @@ class ListingRepository
                 if(count($fromLocation) == 0)
                 {
                     $location = new $this->location;
-                    $insertData['name']=$data['FromCity'];  
-                    $insertData['synonym']=$data['FromCity'];  
+                    $insertData['name']=$data['FromCity']; 
                     $insertData['is_dolphin']=1;
                     $insertData['dolphin_id']=$data['FromCityID'];
                     $location=$this->LocationModel($insertData,$location);
@@ -640,8 +639,7 @@ class ListingRepository
                     
                 }else{
                     $location = $this->location->find($fromLocation[0]->id);
-                    $updateData['name']=$data['FromCity'];    
-                    $updateData['synonym']=$data['FromCity']; 
+                    $updateData['name']=$data['FromCity']; 
                     $updateData['is_dolphin']=1;
                     $updateData['dolphin_id']=$data['FromCityID'];
                     $location=$this->LocationModel($updateData,$location);
@@ -656,8 +654,7 @@ class ListingRepository
                 if(count($toLocation) == 0)
                 {
                     $location = new $this->location;
-                    $insertData['name']=$data['ToCity'];
-                    $insertData['synonym']=$data['ToCity'];                    
+                    $insertData['name']=$data['ToCity'];                   
                     $insertData['is_dolphin']=1;
                     $insertData['dolphin_id']=$data['ToCityID'];
                     $location=$this->LocationModel($insertData,$location);
@@ -695,7 +692,6 @@ class ListingRepository
 
       $location->name = $data['name'];
       $location->url = $url;
-      $location->synonym = $data['synonym'];
       $location->is_dolphin = $data['is_dolphin'];
       $location->status = 1;
       $location->dolphin_id = $data['dolphin_id'];
@@ -724,7 +720,6 @@ class ListingRepository
                    {
                        $location = new $this->location;
                        $insertData['name'] = $data->City;  
-                       $insertData['synonym'] = $data->City;  
                        $insertData['is_mantis'] = 1;
                        $insertData['mantis_id'] = $data->CityId;
                        $location=$this->LocModel($insertData,$location);
@@ -754,7 +749,6 @@ class ListingRepository
 
         $location->name = $data['name'];
         $location->url = $url;
-        $location->synonym = $data['synonym'];
         $location->is_mantis = $data['is_mantis'];
         $location->status = 1;
         $location->mantis_id = $data['mantis_id'];
