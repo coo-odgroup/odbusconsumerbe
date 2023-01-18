@@ -425,43 +425,22 @@ class ClientBookingRepository
 
         if($origin=='ODBUS'){
   
-        $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                                ->select('pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time')
-                               ->with(['users'=> function($u){
-                                  $u->select('name','email','phone');   
-                               }])
+        $bookingDetails = $this->booking->where('transaction_id', $transactionId)                               
+                                ->with('users')
                                ->with(["bus" => function($bs){
-                                $bs->select('name','bus_number','bus_type_id','bus_sitting_id','cancellationslabs_id');
                                 $bs->with(['cancellationslabs'=> function($c){
-                                    $c->select('rule_name','cancellation_policy_desc');
-                                    $c->with(['cancellationSlabInfo' => function($cs){
-                                        $cs->select('cancellation_slab_id','duration','deduction');
-                                        }]);
+                                    $c->with('cancellationSlabInfo');
                                     }]);
                                 $bs->with(['BusType' => function($bt){
-                                $bt->select('bus_class_id','name');
-                                $bt->with(['busClass' => function($bc){
-                                   $bc->select('class_name');
-                                   }]);
+                                   $bt->with('busClass');
                                  }]);
-                                $bs->with(['BusSitting'=> function($bst){
-                                    $bst->select('name');
-                                     }]);                
-                                $bs->with(['busContacts' => function($bc){
-                                    $bc->select('phone');
-                                     }]);               
+                                $bs->with('BusSitting');                
+                                $bs->with('busContacts');               
                                 }])
-                                ->with(["bookingDetail" => function($b){
-                                    $b->select('passenger_name','passenger_gender',);
-                                    $b->with(["busSeats" => function($bs){
-                                        //$bs->select('seats_id');
-                                        $bs->with(["seats" => function($s){
-                                            $s->select('seatText');  
-                                        }]);
-                                    }]);    
+                                ->with(["bookingDetail" => function($bk){
+                                    $bk->with('busSeats');    
                                 }])
                               ->with(['clientWallet' => function($cw){
-                                $cw->select('balance');
                                 $cw->orderBy('id','DESC');
                                 $cw->where("status",1);
                                 $cw->limit(1);
@@ -471,16 +450,10 @@ class ClientBookingRepository
 
              if($origin=='DOLPHIN' || $origin=='MANTIS'){
                     $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                    ->select('id','pnr','users_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','bus_number','bus_name')
-                   ->with(['users'=> function($u){
-                      $u->select('id','name','email','phone');   
-                   }])
+                   ->with('users')
                    ->with('bus')
-                    ->with(["bookingDetail" => function($b){
-                        $b->select('id','booking_id','passenger_name','passenger_gender','seat_name');
-                    }])
+                    ->with('bookingDetail')
                   ->with(['clientWallet' => function($cw){
-                    $cw->select('id','booking_id','balance');
                     $cw->orderBy('id','DESC');
                     $cw->where("status",1);
                     $cw->limit(1);
@@ -495,50 +468,53 @@ class ClientBookingRepository
 
         if($origin=='ODBUS'){
        
-        $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
-        $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
-        $seat_no = $busSeatsDetails->pluck('seats.seatText');
-        $passengerDetails = $bookingRecord[0]->bookingDetail;
-        $busname = $bookingDetails[0]->bus->name;
-        $busNumber = $bookingDetails[0]->bus->bus_number;
-        $conductor_number = $bookingDetails[0]->bus->busContacts->phone;
-        $journeydate = $bookingDetails[0]->journey_dt;
-        $routedetails = $srcName.'-'.$destName;
-        $departureTime = $bookingDetails[0]->boarding_time;
-        $departureTime = date("H:i:s",strtotime($departureTime));
-        $arrivalTime = $bookingDetails[0]->dropping_time;
-        $bookingdate = $bookingRecord[0]->created_at;
-        $bookingdate = date("d-m-Y", strtotime($bookingdate));
-        $boarding_point = $bookingDetails[0]->boarding_point;
-        $dropping_point = $bookingDetails[0]->dropping_point;
-        $bustype = $bookingDetails[0]->bus->BusType->busClass->class_name;
-        $busTypeName = $bookingDetails[0]->bus->BusType->name;
-        $sittingType = $bookingDetails[0]->bus->BusSitting->name;
-        $name = $bookingDetails[0]->users->name;
-        $phone = $bookingDetails[0]->users->phone;
-        $email = $bookingDetails[0]->users->email;
-        $cancellationslabs = $bookingDetails[0]->bus->cancellationslabs->cancellationSlabInfo; 
-        $transactionFee = $bookingRecord[0]->transactionFee;
-        $customer_gst_status=$bookingRecord[0]->customer_gst_status;
-        $customer_gst_number=$bookingRecord[0]->customer_gst_number;
-        $customer_gst_business_name=$bookingRecord[0]->customer_gst_business_name;
-        $customer_gst_business_email=$bookingRecord[0]->customer_gst_business_email;
-        $customer_gst_business_address=$bookingRecord[0]->customer_gst_business_address;
-        $customer_gst_percent=$bookingRecord[0]->customer_gst_percent;
-        $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
-        $coupon_discount=$bookingRecord[0]->coupon_discount;
-       
-        $smsData = array(
-            "seat_no" => $seat_no,
-            "passengerDetails" => $passengerDetails, 
-            "busname" => $busname,
-            "busNumber" => $busNumber,
-            "journeydate" => $journeydate,
-            "routedetails" => $routedetails,
-            "departureTime" => $departureTime,
-            "phone" => $phone,
-            "conductor_number" => $conductor_number,
-          );
+            $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
+            $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
+            $seat_no = $busSeatsDetails->pluck('seats.seatText');
+            $passengerDetails = $bookingRecord[0]->bookingDetail;
+            $busname = $bookingDetails[0]->bus->name;
+            $busNumber = $bookingDetails[0]->bus->bus_number;
+            $conductor_number = $bookingDetails[0]->bus->busContacts->phone;
+            $journeydate = $bookingDetails[0]->journey_dt;
+            $routedetails = $srcName.'-'.$destName;
+            $departureTime = $bookingDetails[0]->boarding_time;
+            $departureTime = date("H:i:s",strtotime($departureTime));
+            $arrivalTime = $bookingDetails[0]->dropping_time;
+            $bookingdate = $bookingRecord[0]->created_at;
+            $bookingdate = date("d-m-Y", strtotime($bookingdate));
+            $boarding_point = $bookingDetails[0]->boarding_point;
+            $dropping_point = $bookingDetails[0]->dropping_point;
+            $bustype = $bookingDetails[0]->bus->BusType->busClass->class_name;
+            $busTypeName = $bookingDetails[0]->bus->BusType->name;
+            $sittingType = $bookingDetails[0]->bus->BusSitting->name;
+            $name = $bookingDetails[0]->users->name;
+            $phone = $bookingDetails[0]->users->phone;
+            $email = $bookingDetails[0]->users->email;
+            $cancellationslabs = $bookingDetails[0]->bus->cancellationslabs->cancellationSlabInfo; 
+            $transactionFee = $bookingRecord[0]->transactionFee;
+            $customer_gst_status=$bookingRecord[0]->customer_gst_status;
+            $customer_gst_number=$bookingRecord[0]->customer_gst_number;
+            $customer_gst_business_name=$bookingRecord[0]->customer_gst_business_name;
+            $customer_gst_business_email=$bookingRecord[0]->customer_gst_business_email;
+            $customer_gst_business_address=$bookingRecord[0]->customer_gst_business_address;
+            $customer_gst_percent=$bookingRecord[0]->customer_gst_percent;
+            $customer_gst_amount=$bookingRecord[0]->customer_gst_amount;
+            $coupon_discount=$bookingRecord[0]->coupon_discount;
+        
+            $smsData = array(
+                "seat_no" => $seat_no,
+                "passengerDetails" => $passengerDetails, 
+                "busname" => $busname,
+                "busNumber" => $busNumber,
+                "journeydate" => $journeydate,
+                "routedetails" => $routedetails,
+                "departureTime" => $departureTime,
+                "phone" => $phone,
+                "conductor_number" => $conductor_number,
+            );
+
+          
+
           $emailData = array(
             "pnr" => $pnr,
             "seat_no" => $seat_no,
@@ -563,6 +539,9 @@ class ClientBookingRepository
             "sittingType" => $sittingType,
            );
 
+          
+          
+
          /////////////////send email to odbus admin////////
 
         //$this->channelRepository->sendAdminEmailTicket($amount,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
@@ -579,7 +558,7 @@ class ClientBookingRepository
          
             //$sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);
             
-            if(isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+            if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
 
             $msgId = $sendSmsCMO->messages[0]->id;
             $status = $sendSmsCMO->status;
@@ -609,7 +588,7 @@ class ClientBookingRepository
     }
         $bal['wallet_balance'] = $bookingDetails[0]->clientWallet[0]->balance;
         $bal['final_pnr'] = $bookingRecord[0]->pnr; 
-       
+
         return $bal;        
     }
 

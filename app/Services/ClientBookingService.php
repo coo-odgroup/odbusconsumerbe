@@ -339,6 +339,7 @@ class ClientBookingService
                         return $res["Error"]["Msg"];
                 }
             }
+           
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
             return $bookTicket;
         } catch (Exception $e) {
