@@ -729,7 +729,14 @@ class ClientBookingService
     
     public function cancelCommission($userId,$deductAmt){
         $clientCancelComPer =0;
-        $clientCancelComPer = ClientFeeSlab::where('user_id',$userId)->first()->cancellation_commission;
+        $clientCancelCom = ClientFeeSlab::where('user_id',$userId)->first();
+
+        $clientCancelComPer = 0;
+
+        if($clientCancelCom){
+            $clientCancelComPer = $clientCancelCom->cancellation_commission;
+        }
+        
         if($clientCancelComPer == 0){
             $OdbusCancelProfit = $deductAmt;
             $clientCancelProfit = 0; 
