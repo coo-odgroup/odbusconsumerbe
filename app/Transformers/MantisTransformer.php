@@ -45,6 +45,8 @@ class MantisTransformer
         $destResult = $this->listingRepository->getLocationID($request['destination']);
         $entry_date = date("Y-m-d", strtotime($request['entry_date']));
 
+        $mantisresult=[];
+
         if($srcResult[0]->is_mantis==1 && $destResult[0]->is_mantis==1){
 
             $mantis_source = $srcResult[0]->mantis_id;
