@@ -92,6 +92,8 @@ public function clientLogin(Request $request){
   }
   try {
 
+    $data['status']=1;
+
     if (! $token = auth()->attempt($data)) {
       return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
   }
@@ -99,6 +101,9 @@ public function clientLogin(Request $request){
   User::where('id', $loginClient['user']->id)->update(['client_access_token' => $token ]);
   // User::where('client_id', $request['client_id'])->update(['client_access_token' => $token ]);
   //return $this->successResponse($loginClient,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
+
+
+
   return $this->successResponse($token,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
 }
   catch (Exception $e) {
@@ -194,7 +199,7 @@ public function clienDetails() {
 
       $response = $this->userService->login($request);
       switch($response){
-          case('un_registered_agent'):   //Agent is not registered
+          case('un_registered_agent'):   //User is not registered
               return $this->errorResponse(Config::get('constants.UNREGISTERED'),Response::HTTP_OK);
           break;
           case('pwd_mismatch'):     //Password Mismatch
