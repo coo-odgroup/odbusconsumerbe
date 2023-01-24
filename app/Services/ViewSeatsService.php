@@ -70,6 +70,7 @@ class ViewSeatsService
             }
         }else if($origin=='ODBUS'){
 
+
         $user_id = Bus::where('id', $busId)->first()->user_id;
 
         $miscfares = $this->viewSeatsRepository->miscFares($busId,$journeyDate);
