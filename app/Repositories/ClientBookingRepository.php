@@ -266,13 +266,13 @@ class ClientBookingRepository
                 foreach($clientCommissions as $clientCom){
                     $startFare = $clientCom->starting_fare;
                     $uptoFare = $clientCom->upto_fare;
-                    if($priceDetails[0]['totalFare'] >= $startFare && $priceDetails[0]['totalFare']<= $uptoFare){
+                    if($priceDetails[0]['ownerFare'] >= $startFare && $priceDetails[0]['ownerFare']<= $uptoFare){
                         $clientComission = $clientCom->commision;
                         break;
                     }  
                 }   
             } 
-            $clientComAmount = round($clientComission/100 * $priceDetails[0]['totalFare'],2);
+            $clientComAmount = round($clientComission/100 * $priceDetails[0]['ownerFare'],2);
             $booking->client_comission = $clientComAmount;
             $booking->client_percentage = $clientComission;
                         

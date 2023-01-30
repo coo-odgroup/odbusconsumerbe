@@ -451,7 +451,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                     $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
                 }
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $total_fare + $gst,
+                   "totalFare" => number_format($total_fare + $gst,2),
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
                    "gst" => $gst
@@ -593,7 +593,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
         }
         $seatWithPriceRecords[] = array(
-            "totalFare" => $newSeatFare + $gst,
+            "totalFare" => number_format($newSeatFare + $gst, 2),
             "baseFare" => $odbus_charges_ownerFare ,
             "serviceCharge" => $newSeatFare - $odbus_charges_ownerFare,
             "gst" => $gst
@@ -608,7 +608,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             "festiveFare" => $totalFestiveFare,
             "odbusServiceCharges" => $service_charges,
             "transactionFee" => $transactionFee,
-            "totalFare" => $totalFare
+            "totalFare" => number_format($totalFare,2)
             );    
     }
     return $seatWithPriceRecords;
@@ -1065,7 +1065,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 "festiveFare" => $totalFestiveFare,
                 "odbusServiceCharges" => $service_charges + $client_service_charges,
                 //"transactionFee" => $transactionFee,
-                "totalFare" => $newSeatFare + $gst,
+                "totalFare" => number_format($newSeatFare + $gst, 2),
                 "gst" => $gst
                 ); 
     
