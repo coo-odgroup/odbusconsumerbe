@@ -828,6 +828,7 @@ class ClientBookingService
             elseif($pnr_dt->origin=='ODBUS'){
 
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
+            
             if(isset($booking_detail[0])){ 
                
                        $jDate =$booking_detail[0]->journey_dt;
@@ -853,6 +854,7 @@ class ClientBookingService
                        $interval = $bookingDate->diff($cancelDate);
                        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
                        
+                       $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
                        $smsData = array(
                            'phone' => $phone,
                            'PNR' => $pnr,
@@ -868,7 +870,11 @@ class ClientBookingService
                            'journeydate' => $jDate, 
                            'route' => $route,
                            'seat_no' => $seat_arr,
-                           'cancellationDateTime' => $current_date_time
+                           'cancellationDateTime' => $current_date_time,
+                           'origin' => $booking_detail[0]->origin,
+                            'bus_name' => $busName,
+                            'transaction_fee' => $booking_detail[0]->transactionFee,
+                           'cancelation_policy'=> $cancelPolicies
                        );
                        
                        if($cancelDate >= $bookingDate || $interval < 12)
@@ -968,7 +974,7 @@ class ClientBookingService
                               //$sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
                                } 
 
-                               //$this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+                               $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
 
                               ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -977,7 +983,7 @@ class ClientBookingService
                                                                 ->get('phone');
                              if($busContactDetails->isNotEmpty()){
                               $contact_number = collect($busContactDetails)->implode('phone',',');
-                              //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                              $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                              }
                               unset($data['bookingDetails'][0]->bus->cancellationslabs); 
                               unset($data['bookingDetails'][0]->bus->cancellationslabs_id);  
