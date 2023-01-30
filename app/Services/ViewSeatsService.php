@@ -16,6 +16,7 @@ use App\Models\SpecialFare;
 use App\Models\ClientFeeSlab;
 use App\Models\BusSpecialFare;
 use App\Models\OwnerFare;
+use App\Models\User;
 use App\Models\BusOwnerFare;
 use App\Transformers\DolphinTransformer;
 use App\Models\IncomingApiCompany;
@@ -328,7 +329,7 @@ public function checkBlockedSeats($request)
 public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 {
     
-    $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+    $clientRoleId = Config::get('constants.CLIENT_ROLE_ID'); 
     $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
     $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
     $busId = $request['busId'];
@@ -337,6 +338,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     $entry_date = $request['entry_date'];
     $entry_date = date("Y-m-d", strtotime($entry_date));
     //$busOperatorId = $request['busOperatorId'];
+    $clientDetails = User::where('id', $clientId)->first();
     $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
     $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
 
@@ -443,10 +445,16 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                } 
                $client_service_charges = ($addCharge/100 * $dolphinFare);
               // $newSeatFare = $dolphinFare + $client_service_charges;
+              $hasGst = $clientDetails->has_gst;
+                $gst = 0;
+                if($hasGst == 1){
+                    $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
+                }
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $total_fare,
+                   "totalFare" => $total_fare + $gst,
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
+                   "gst" => $gst
                    ); 
            }else{ 
 
@@ -577,12 +585,18 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 }  
             }   
         } 
+        $hasGst = $clientDetails->has_gst;
         $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
         $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
+        $gst = 0;
+        if($hasGst == 1){
+            $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
+        }
         $seatWithPriceRecords[] = array(
-            "totalFare" => $newSeatFare,
+            "totalFare" => $newSeatFare + $gst,
             "baseFare" => $odbus_charges_ownerFare ,
             "serviceCharge" => $newSeatFare - $odbus_charges_ownerFare,
+            "gst" => $gst
             ); 
     }else{
         $seatWithPriceRecords[] = array(
@@ -920,6 +934,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $entry_date = date("Y-m-d", strtotime($entry_date));
         
         //$busOperatorId = $request['busOperatorId'];
+        $clientDetails = User::where('id', $clientId)->first();
         $user_id = Bus::where('id', $busId)->first()->user_id;
     
         $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
@@ -1028,8 +1043,13 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                     }  
                 }   
             } 
+        $hasGst = $clientDetails->has_gst;
+        $gst = 0;
         $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
         $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
+        if($hasGst == 1){
+            $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
+        }
     
         //$odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
         //$gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
@@ -1045,7 +1065,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 "festiveFare" => $totalFestiveFare,
                 "odbusServiceCharges" => $service_charges + $client_service_charges,
                 //"transactionFee" => $transactionFee,
-                "totalFare" => $newSeatFare
+                "totalFare" => $newSeatFare + $gst,
+                "gst" => $gst
                 ); 
     
         return $seatWithPriceRecords;

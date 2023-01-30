@@ -228,6 +228,7 @@ class ClientBookingRepository
             $booking->app_type = 'CLNTWEB';
             $booking->owner_fare = $priceDetails[0]['ownerFare'];
             $booking->total_fare = $priceDetails[0]['totalFare'];
+            $booking->client_gst = $priceDetails[0]['gst'];
             $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
             $booking->additional_special_fare = $priceDetails[0]['specialFare'];
             $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
@@ -378,7 +379,8 @@ class ClientBookingRepository
         $bookingId = $bookingRecord[0]->id; 
         $pnr = $bookingRecord[0]->pnr;
         $comissionAmount = $bookingRecord[0]->client_comission;             
-        $amount = $bookingRecord[0]->total_fare;
+        //$amount = $bookingRecord[0]->total_fare;//client commission as per ownerfare on 30thJan 2023
+        $amount = $bookingRecord[0]->owner_fare;
         $discount = $bookingRecord[0]->coupon_discount;
         $payable_amount = $bookingRecord[0]->total_fare;
         $odbus_charges = $bookingRecord[0]->odbus_charges;
