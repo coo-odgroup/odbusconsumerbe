@@ -373,6 +373,20 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
           if($mantis_data){
              $additional_charge = $mantis_data->additional_charge;
           }
+
+          if($clientRole == $clientRoleId){
+
+            $total_fare = $total_fare + round($total_fare * ($additional_charge/100));
+
+          $seatWithPriceRecords[] = array(
+            "totalFare" => $total_fare,
+            "baseFare" => $total_base_fare ,
+            "serviceCharge" => $total_fare - $total_base_fare,
+            "gst" => 0
+            ); 
+
+        }else{
+
          $seatWithPriceRecords[] = array(
              "baseFare" => $total_base_fare,
              "ownerFare" => $total_fare,
@@ -382,8 +396,11 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              "festiveFare" => 0,
              "odbusServiceCharges" => 0,
              "transactionFee" => round($total_fare * ($additional_charge/100)), 
-             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100))
+             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)),
+             "gst" => 0
              );
+
+        }
             return $seatWithPriceRecords;
     }else if($origin=='DOLPHIN'){
 
@@ -474,7 +491,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
                 "transactionFee" => round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
-                "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)) // 10% extra as per santosh
+                "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
+                "gst" => 0
                 );
             }  
 
@@ -1083,6 +1101,73 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         return $seatWithPriceRecords;
         
     }
+
+
+     //////////////////used for client API booking///////////////
+
+ public function MantisPriceCalculation($request,$clientRole,$clientId)
+ {
+    $clientDetails = User::where('id', $clientId)->first();
+
+    $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+    $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
+    $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
+    $busId = $request['busId'];
+    $sourceId = $request['sourceId'];
+    $destinationId = $request['destinationId'];
+    $entry_date = $request['entry_date'];
+    $entry_date = date("Y-m-d", strtotime($entry_date));
+    //$busOperatorId = $request['busOperatorId'];
+      
+        $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
+
+        $seatWithPriceRecords=[];
+
+        $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId,$destinationId,$entry_date,$busId,$clientRole,$clientId);
+        //return $mantisSeatresult;
+        $total_fare = 0;
+        $additional_charge = 0;
+        $total_base_fare = 0;
+        if(!empty($seaterIds)){
+            foreach($seaterIds as $sId){
+                $lbcollection = collect($mantisSeatresult['lower_berth']);
+                $total_fare += $lbcollection->where('id', $sId)->pluck('bus_seats.new_fare')[0];
+                $total_base_fare += $lbcollection->where('id', $sId)->pluck('bus_seats.mantis_base_fare')[0];
+            }
+          }
+          if(!empty($sleeperIds)){
+            foreach($sleeperIds as $slId){
+                /////need to check//////
+                $ubcollection = array_merge($mantisSeatresult['lower_berth'], $mantisSeatresult['upper_berth']);
+                $total_fare += collect($ubcollection)->where('id', $slId)->pluck('bus_seats.new_fare')[0];
+                $total_base_fare += collect($ubcollection)->where('id', $slId)->pluck('bus_seats.mantis_base_fare')[0];
+            }  
+          }  
+          
+          $mantis_data = IncomingApiCompany::where("name","MANTIS")->first();
+          if($mantis_data){
+             $additional_charge = $mantis_data->additional_charge;
+          }
+
+          $seatWithPriceRecords[] = array(
+             "baseFare" => $total_base_fare,
+             "ownerFare" => $total_fare,
+             "odbus_charges_ownerFare" => $total_fare,
+             "specialFare" => 0,
+             "addOwnerFare" => 0,
+             "festiveFare" => 0,
+             "odbusServiceCharges" => 0,
+             "transactionFee" => round($total_fare * ($additional_charge/100)), 
+             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)),
+             "gst" => 0
+             );
+
+        return $seatWithPriceRecords;  
+
+     
+ }
+
+    
 
     //////////////////used for ODBUS booking PRICE CALCULATION ///////////////
 

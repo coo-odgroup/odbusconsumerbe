@@ -167,7 +167,7 @@ class ClientBookingRepository
                 'entry_date' => $entry_date,
                 'origin' => $bookingInfo['origin'],
             );
-            $priceDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+            $priceDetails = $this->viewSeatsService->MantisPriceCalculation($data,$clientRole,$clientId);
         }
         $cId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
