@@ -803,6 +803,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
 
  public function DolphinPriceCalculation($request,$clientRole,$clientId)
  {
+    $clientDetails = User::where('id', $clientId)->first();
 
     $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
     $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
@@ -899,10 +900,19 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 
               }
 
+
+              $gst = 0;
+
+              $hasGst = $clientDetails->has_gst;
+        
+              if($hasGst == 1){
+                  $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
+              }
+
               
               // $newSeatFare = $dolphinFare + $client_service_charges;
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $total_fare,
+                   "totalFare" => $total_fare + $gst,
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
                    "ownerFare" => $owner_fare, // actual dolphin fare
@@ -911,6 +921,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                     "addOwnerFare" => 0,
                     "festiveFare" => 0,
                     "odbusServiceCharges" => 0,
+                    "gst" => $gst
                    ); 
 
         return $seatWithPriceRecords;  
