@@ -379,8 +379,7 @@ class ClientBookingRepository
         $bookingId = $bookingRecord[0]->id; 
         $pnr = $bookingRecord[0]->pnr;
         $comissionAmount = $bookingRecord[0]->client_comission;             
-        //$amount = $bookingRecord[0]->total_fare;//client commission as per ownerfare on 30thJan 2023
-        $amount = $bookingRecord[0]->owner_fare;
+        $amount = $bookingRecord[0]->total_fare;
         $discount = $bookingRecord[0]->coupon_discount;
         $payable_amount = $bookingRecord[0]->total_fare;
         $odbus_charges = $bookingRecord[0]->odbus_charges;
