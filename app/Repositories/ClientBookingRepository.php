@@ -261,18 +261,22 @@ class ClientBookingRepository
             $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                                     ->where('status', '1')
                                                     ->get(); 
+       
+          
+            $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);   
+
             $clientComission = 0;
             if($clientCommissions){
                 foreach($clientCommissions as $clientCom){
                     $startFare = $clientCom->starting_fare;
                     $uptoFare = $clientCom->upto_fare;
-                    if($priceDetails[0]['ownerFare'] >= $startFare && $priceDetails[0]['ownerFare']<= $uptoFare){
+                    if($PDetails[0]['baseFare'] >= $startFare && $PDetails[0]['baseFare']<= $uptoFare){
                         $clientComission = $clientCom->commision;
                         break;
                     }  
                 }   
             } 
-            $clientComAmount = round($clientComission/100 * $priceDetails[0]['ownerFare'],2);
+            $clientComAmount = round($clientComission/100 * $PDetails[0]['baseFare'],2);
             $booking->client_comission = $clientComAmount;
             $booking->client_percentage = $clientComission;
                         
