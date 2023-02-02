@@ -114,8 +114,21 @@ class ClientBookingRepository
                     'seater' => $seater,
                     'sleeper' => $sleeper,
                     'entry_date' => $entry_date,
+                    'origin' => $bookingInfo['origin']
                 );
                 $priceDetails = $this->viewSeatsService->getPriceCalculation($data,$clientId);
+
+                $data = array(
+                    'busId' => $busId,
+                    'sourceId' => $sourceId,
+                    'destinationId' => $destinationId,
+                    'seater' => $seater->toArray(),
+                    'sleeper' => $sleeper->toArray(),
+                    'entry_date' => $entry_date,
+                    'origin' => $bookingInfo['origin']
+                );
+
+                $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId); 
         }    
         if($bookingInfo['origin'] =='DOLPHIN'){
             $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
@@ -133,6 +146,19 @@ class ClientBookingRepository
                 'origin' => $bookingInfo['origin'],
             );
             $priceDetails = $this->viewSeatsService->DolphinPriceCalculation($data,$clientRole,$clientId);
+
+            $data = array(
+                'busId' => $busId,
+                'sourceId' => $sourceId,
+                'destinationId' => $destinationId,
+                'seater' => $seater->toArray(),
+                'sleeper' => $sleeper->toArray(),
+                'entry_date' => $entry_date,
+                'origin' => $bookingInfo['origin']
+            );
+
+            $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId); 
+
         }
         if($bookingInfo['origin'] =='MANTIS'){
             $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
@@ -168,6 +194,19 @@ class ClientBookingRepository
                 'origin' => $bookingInfo['origin'],
             );
             $priceDetails = $this->viewSeatsService->MantisPriceCalculation($data,$clientRole,$clientId);
+
+            $data = array(
+                'busId' => $busId,
+                'sourceId' => $sourceId,
+                'destinationId' => $destinationId,
+                'seater' => $seater->toArray(),
+                'sleeper' => $sleeper->toArray(),
+                'entry_date' => $entry_date,
+                'origin' => $bookingInfo['origin']
+            );
+
+            $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId); 
+
         }
         $cId = $this->user->where('id',$bookingInfo['user_id'])
                                 ->where('status','1')
@@ -263,7 +302,7 @@ class ClientBookingRepository
                                                     ->get(); 
        
           
-            $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId);   
+              
 
             $clientComission = 0;
             if($clientCommissions){
