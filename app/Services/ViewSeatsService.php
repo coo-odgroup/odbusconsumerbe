@@ -708,20 +708,32 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 "destinationID"=>$destinationId,
                 "entry_date"=>$journey_date
             ];
+
+           
+
              $dolphinBusList= $this->dolphinTransformer->Filter($arr,$clientRole,$clientId);
 
              $dolphinBusList=(isset($dolphinBusList['regular'])) ? $dolphinBusList['regular'] : [];
 
-            // Log::info($dolphinBusList);
+             
 
              $key = array_search($ReferenceNumber, array_column($dolphinBusList, 'ReferenceNumber'));
+
+             $b_ar=[];
              
-              $b_ar=explode("#",$dolphinBusList[$key]['BoardingPoints']);
-              if($dolphinBusList[$key]['DroppingPoints']){
+             if($key > -1){
+             
+                $b_ar=explode("#",$dolphinBusList[$key]['BoardingPoints']);
+                
+                if($dolphinBusList[$key]['DroppingPoints']){
+  
+                  $d_ar=explode("#",$dolphinBusList[$key]['DroppingPoints']);
+  
+                }
 
-                $d_ar=explode("#",$dolphinBusList[$key]['DroppingPoints']);
+             }
 
-              }
+            
              
 
              if($b_ar){
