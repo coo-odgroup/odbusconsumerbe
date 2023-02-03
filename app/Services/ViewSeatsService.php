@@ -396,7 +396,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              "festiveFare" => 0,
              "odbusServiceCharges" => 0,
              "transactionFee" => round($total_fare * ($additional_charge/100)), 
-             "totalFare" => (float) $total_fare + round($total_fare * ($additional_charge/100)),
+             "totalFare" => (float) ($total_fare + round($total_fare * ($additional_charge/100))),
              "gst" => 0
              );
 
