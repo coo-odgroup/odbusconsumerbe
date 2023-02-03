@@ -396,7 +396,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              "festiveFare" => 0,
              "odbusServiceCharges" => 0,
              "transactionFee" => round($total_fare * ($additional_charge/100)), 
-             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)),
+             "totalFare" => (float) $total_fare + round($total_fare * ($additional_charge/100)),
              "gst" => 0
              );
 
@@ -491,7 +491,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
                 "transactionFee" => round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
-                "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
+                "totalFare" => (float) $total_fare + round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
                 "gst" => 0
                 );
             }  
@@ -626,7 +626,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             "festiveFare" => $totalFestiveFare,
             "odbusServiceCharges" => $service_charges,
             "transactionFee" => $transactionFee,
-            "totalFare" => number_format($totalFare,2)
+            "totalFare" => (float) number_format($totalFare,2)
             );    
     }
     return $seatWithPriceRecords;
