@@ -302,20 +302,20 @@ class ClientBookingRepository
                                                     ->get(); 
        
           
-              
+            $actual_fare_for_commission=  $PDetails[0]['totalFare'] - $PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
 
             $clientComission = 0;
             if($clientCommissions){
                 foreach($clientCommissions as $clientCom){
                     $startFare = $clientCom->starting_fare;
                     $uptoFare = $clientCom->upto_fare;
-                    if($PDetails[0]['baseFare'] >= $startFare && $PDetails[0]['baseFare']<= $uptoFare){
+                    if($actual_fare_for_commission >= $startFare && $actual_fare_for_commission <= $uptoFare){
                         $clientComission = $clientCom->commision;
                         break;
                     }  
                 }   
             } 
-            $clientComAmount = round($clientComission/100 * $PDetails[0]['baseFare'],2);
+            $clientComAmount = round($clientComission/100 * $actual_fare_for_commission,2);
             $booking->client_comission = $clientComAmount;
             $booking->client_percentage = $clientComission;
                         
