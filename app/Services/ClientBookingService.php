@@ -617,15 +617,20 @@ class ClientBookingService
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
-            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
+            $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
+            
+            if($pnr_dt->status==2){
+                return 'Ticket_already_cancelled';
+             }
 
             if($pnr_dt->origin=='DOLPHIN'){    
                 $booking_detail= $this->clientBookingRepository->DolphinClientCancelTicketInfo($clientId,$pnr,$booked);
                  if(isset($booking_detail[0])){ 
                             $dolphin_cancel_det= $this->dolphinTransformer->cancelTicketInfo($pnr_dt->api_pnr);                      
-                             if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
-                                return 'Ticket_already_cancelled';
-                             }
+                            //  if($dolphin_cancel_det['RefundAmount']==0 && $dolphin_cancel_det['TotalFare']==0){
+                            //     return 'Ticket_already_cancelled';
+                            //  }
+
                                 $emailData['cancel_status'] ="true";
                                 $emailData['refundAmount'] = (int)$dolphin_cancel_det['RefundAmount'];                                
                                 $emailData['totalfare'] = $booking_detail[0]->payable_amount; 
