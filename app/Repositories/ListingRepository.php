@@ -90,13 +90,21 @@ class ListingRepository
 
      public function getLocation($searchValue)
      {        
-         return $this->location
-         ->where('name', 'like', '%' .$searchValue . '%')
-         ->where('status','1')  
-         ->orWhere('synonym', 'like', '%' .$searchValue . '%')
-         ->orderBy('name','ASC')
-         ->where('status','1')  
-         ->get(['id','name','synonym','url']);
+        //  return $this->location
+        //  ->where('name', 'like', '%' .$searchValue . '%')
+        //  ->where('status','1')  
+        //  ->orWhere('synonym', 'like', '%' .$searchValue . '%')
+        //  ->orderBy('name','ASC')
+        //  ->where('status','1')  
+        //  ->get(['id','name','synonym','url']);
+
+         return  DB::table('location as l')
+            ->leftJoin('state as s', 'l.state_id', '=', 's.id')
+            ->where('l.name', 'like', '%' .$searchValue . '%')
+            ->where('l.status','1')  
+            ->orWhere('l.synonym', 'like', '%' .$searchValue . '%')
+            ->orderBy('l.name','ASC')
+            ->get(['l.id','l.name','l.synonym','l.url','l.state_id','s.state_name']);
      }
 
 
