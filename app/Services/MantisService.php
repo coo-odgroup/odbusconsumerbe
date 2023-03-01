@@ -50,8 +50,10 @@ class MantisService
         // return $response->json();
         //////////////////////////////////////
         $request = Http::post($this->url, [
-            'ClientId' => 50,
-            'ClientSecret'=> 'd66de12fa3473a93415b02494253f088',
+           // 'ClientId' => 50,
+            //'ClientSecret'=> 'd66de12fa3473a93415b02494253f088',
+             'ClientId' => 10283,
+            'ClientSecret'=> '19ba1582c07fb005ee45ee873c4357ff',
             'timeout'         => 30,
             'connect_timeout' => true,
             'http_errors'     => true,
