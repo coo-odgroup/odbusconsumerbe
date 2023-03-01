@@ -477,8 +477,8 @@ public function seatBerthArr($mantisSeatResult,$berthType){
             'ContactInfo' =>[
                 'CustomerName' => $records[0]->users->name,
                 'Email' => $records[0]->users->email,
-                'Phone' => $records[0]->users->phone,
-                'Mobile' => $records[0]->users->phone,
+                'Phone' => '9583918888',//$records[0]->users->phone,
+                'Mobile' => '9583918888',//$records[0]->users->phone,
             ],
             'Passengers' => $passengers
         ]; 
@@ -538,8 +538,8 @@ public function seatBerthArr($mantisSeatResult,$berthType){
             'ContactInfo' =>[
                 'CustomerName' => $records[0]->users->name,
                 'Email' => $records[0]->users->email,
-                'Phone' => $records[0]->users->phone,
-                'Mobile' => $records[0]->users->phone,
+                'Phone' => '9583918888',//$records[0]->users->phone,
+                'Mobile' => '9583918888',//$records[0]->users->phone,
             ],
             'Passengers' => $passengers
         ]; 
