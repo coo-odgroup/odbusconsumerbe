@@ -67,7 +67,7 @@ class ListingService
         $mantisShowRecords = [];
         $mantisShowSoldoutRecords =[];
 
-        if($clientId!=213){
+        if($clientId!=372){ // (Mantis Id - 213 in Test env ) (Mantis Id - 372 in Live env )
 
             $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
             //return $mantisResult;
@@ -319,6 +319,10 @@ class ListingService
 
 
             $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
+
+             //Log::info($busId);
+            //Log::info($sourceID.'-'.$destinationID.'-'.$busId.'-'.$entry_date);
+
             if(isset($routeCoupon[0]))
             {                           
                $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
@@ -354,7 +358,11 @@ class ListingService
             //     $busCouponCode =[];
             // } 
 
+
+
             $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
+
+
             
             //$CouponRecords = collect($busCouponCode);
             $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
@@ -365,6 +373,9 @@ class ListingService
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
             //$bookingDate = "2022-06-06";
+
+            
+
             foreach($CouponRecords as $key => $coupon){
                 
                 $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
@@ -900,7 +911,7 @@ class ListingService
 
         $mantisResult = [];
 
-        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null || $clientId!=213){
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null || $clientId!=372){  //213 in test env
     
             $mantisShowRecords = [];
             $mantisShowSoldoutRecords = [];   
