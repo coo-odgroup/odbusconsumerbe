@@ -53,6 +53,7 @@ class ClientBookingService
     }
     public function clientBooking($request,$clientRole,$clientId)
     {
+
         try {
             $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
             $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
@@ -66,6 +67,7 @@ class ClientBookingService
                 if($origin == 'ODBUS'){
                     ////////// gender validation
                 	$rrr = $this->genderValidate($request,$clientRole,$clientId);
+                    
                 	if($rrr != null){
                 		return $rrr;
                 	}
@@ -80,6 +82,7 @@ class ClientBookingService
 
     public function seatBlock($request,$clientRole,$clientId)
     {
+
         try {
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');  
                 $transationId = $request['transaction_id']; 
@@ -306,6 +309,8 @@ class ClientBookingService
  
     public function ticketConfirmation($request,$clientRole)
     {
+
+
         try {
             $records = $this->channelRepository->getBookingRecord($request['transaction_id']);
             $transationId = $request['transaction_id'];

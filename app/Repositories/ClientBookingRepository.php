@@ -84,6 +84,8 @@ class ClientBookingRepository
         $destination = Location::where('id',$destinationId)->first()->name;
         $clientDetail = User::where('id', $clientId)->first();
 
+        
+
         $bookingDetail = $request['bookingInfo']['bookingDetail'];////////in request passing seats_id with key as bus_seats_id
 	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
         if($bookingInfo['origin']== 'ODBUS'){ // dolphin related changes
@@ -100,6 +102,9 @@ class ClientBookingRepository
                 "user_id" => Null
             ); 
             $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
+
+           
+
             if($busRecords){
             $busRecords->pluck('busId');
             $validBus = $busRecords->pluck('busId')->contains($busId);
@@ -129,6 +134,7 @@ class ClientBookingRepository
                 );
 
                 $PDetails = $this->viewSeatsService->getPriceOnSeatsSelection($data,$clientRole,$clientId); 
+
         }    
         if($bookingInfo['origin'] =='DOLPHIN'){
             $bookingDetail = $request['bookingInfo']['bookingDetail'];//in request passing seats_id with key as bus_seats_id
@@ -213,7 +219,9 @@ class ClientBookingRepository
                                 ->first('id');
                               
         $existingUser = Users::where('phone',$customerInfo['phone'])
-                                    ->exists(); 
+                                    ->exists();         
+                                   
+
         if($existingUser==true){
             $userId = Users::where('phone',$customerInfo['phone'])
                                   ->first()->id;
@@ -234,7 +242,7 @@ class ClientBookingRepository
             $arr['message']="less_balance";
             return $arr;
         } 
-        if($walletBalance >= $priceDetails[0]['totalFare']){
+        if($walletBalance >= (int)$priceDetails[0]['totalFare']){
             //Save Booking 
                 $booking = new $this->booking;
             do {
@@ -302,7 +310,7 @@ class ClientBookingRepository
                                                     ->get(); 
        
           
-            $actual_fare_for_commission=  $PDetails[0]['totalFare'] - $PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
+            $actual_fare_for_commission=  (int)$PDetails[0]['totalFare'] - (int)$PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
 
             $clientComission = 0;
             if($clientCommissions){

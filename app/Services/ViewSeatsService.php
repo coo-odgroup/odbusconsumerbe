@@ -1106,7 +1106,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 "festiveFare" => $totalFestiveFare,
                 "odbusServiceCharges" => $service_charges + $client_service_charges,
                 //"transactionFee" => $transactionFee,
-                "totalFare" => number_format($newSeatFare + $gst, 2),
+                "totalFare" => round($newSeatFare + $gst, 2),
                 "gst" => $gst
                 ); 
     

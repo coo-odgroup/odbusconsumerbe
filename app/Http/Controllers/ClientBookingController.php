@@ -186,6 +186,7 @@ class clientBookingController extends Controller
         
         $advDays = OdbusCharges::where('user_id', '1')->first()->advance_days_show;
         $token = JWTAuth::getToken();
+        
         $user = JWTAuth::toUser($token);
         $data = $request->all();
         $clientRole = $user->role_id;

@@ -723,7 +723,7 @@ class ChannelRepository
       // Creates customer payment 
       $orderId = $order['id']; 
 
-      Log::info($bookingId."---".$receiptId."---".$orderId);
+      //Log::info($bookingId."---".$receiptId."---".$orderId);
 
       $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId,'amount' =>$amount ,'name'=>$name]);
 

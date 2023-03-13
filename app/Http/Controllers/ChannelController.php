@@ -497,7 +497,7 @@ public function pay(Request $request){
     if(isset($res->payload->payment)){
    
     $response=$res->payload->payment->entity;     
-    Log::info($response->order_id."---".$response->status."---".$response->id);
+    //Log::info($response->order_id."---".$response->status."---".$response->id);
  
     if($response->status == 'authorized' || $response->status =='captured'){
                 $razorpay_status_updated_at= date("Y-m-d H:i:s");
@@ -521,7 +521,7 @@ public function pay(Request $request){
                         $request['razorpay_order_id']=$response->order_id;
                         $request['razorpay_signature']='';
                         $res = $this->channelService->pay(collect($request),1); // 1-> super admin
-                        Log::info($booking_det->pnr."----".$res);
+                        //Log::info($booking_det->pnr."----".$res);
                    // }
                 }  
     }
