@@ -918,7 +918,7 @@ class ChannelRepository
         $agetWallet->amount = $amount;
         $agetWallet->transaction_type = 'd';
         $agetWallet->booking_id = $bookingId;
-        $agetWallet->balance = $walletBalance [0]->balance - $amount;
+        $agetWallet->balance = $walletBalance[0]->balance - $amount;
         $agetWallet->user_id = $agentId;
         $agetWallet->created_by = $agentName;
         $agetWallet->status = 1;
@@ -927,7 +927,7 @@ class ChannelRepository
         
         $agetWallet->save();
 
-        $newBalance = $walletBalance [0]->balance - $amount;
+        $newBalance = $walletBalance[0]->balance - $amount;
         $notification = new Notification;
         $notification->notification_heading = "New Balance is Rs.$newBalance After deduction of Amount of Rs.$amount for PNR.$pnr";
         $notification->notification_details = "New Balance is Rs.$newBalance After deduction of Amount of Rs.$amount for PNR.$pnr";
