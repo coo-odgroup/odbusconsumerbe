@@ -749,7 +749,7 @@ class ChannelRepository
         $user_pay->order_id = $orderId;
          $user_pay->save();
 
-         Log::info($bookingId."---".$receiptId."---".$orderId);
+         //Log::info($bookingId."---".$receiptId."---".$orderId);
 
          return $orderId;
 
