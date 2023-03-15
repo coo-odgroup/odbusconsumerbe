@@ -95,13 +95,15 @@ class PopularRepository
 
     public function getBus($sid,$did){ 
 
-        return $this->ticketPrice->with('bus')
-        ->where([
-            ['source_id', '=', $sid],
-            ['destination_id', '=', $did],
-        ])
-        ->where("status",1)
-        ->get();
+        return DB::select("SELECT b.name,b.bus_number from ticket_price t left join bus b on t.bus_id=b.id where t.status=1 AND t.source_id=$sid AND t.destination_id=$did");
+
+        // return $this->ticketPrice->with('bus')
+        // ->where([
+        //     ['source_id', '=', $sid],
+        //     ['destination_id', '=', $did],
+        // ])
+        // ->where("status",1)
+        // ->get();
        
     }
 

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
 use App\Services\DolphinService;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 use InvalidArgumentException;
@@ -194,13 +197,32 @@ class PopularService
        
     }
 
+    if(isset($request['page_no']) && isset($request['per_page'])){
 
+        $page_no = $request['page_no'] ;
+       $per_page= $request['per_page'] ;
 
-    
+       $data= $this->customPaginate($allRoutes,$per_page,$page_no)->withPath('/api/allRoutes');
 
-        return $allRoutes;
+       return $data;
 
     }
+
+    return $allRoutes;
+       
+      
+
+      
+
+    }
+
+    public function customPaginate($items, $perPage, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
     public function allOperators(Request $request)
     {
 
