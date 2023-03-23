@@ -110,7 +110,7 @@ class ListingRepository
             ->orderBy('l.name','ASC')            
             ->get(['l.id','l.name','l.synonym','l.url','l.state_id','s.state_name']);
 
-            $queries = DB::getQueryLog();
+            //$queries = DB::getQueryLog();
            // Log::info($queries);
             return $list;
      }
