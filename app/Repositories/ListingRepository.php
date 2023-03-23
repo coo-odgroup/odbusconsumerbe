@@ -98,14 +98,21 @@ class ListingRepository
         //  ->where('status','1')  
         //  ->get(['id','name','synonym','url']);
 
-         return  DB::table('location as l')
+       // DB::connection()->enableQueryLog();
+
+         $list=  DB::table('location as l')
             ->leftJoin('state as s', 'l.state_id', '=', 's.id')
-            ->where('l.name', 'like', '%' .$searchValue . '%')
             ->where('l.status','1')  
-            ->orWhere('l.synonym', 'like', '%' .$searchValue . '%')
-            ->orderBy('l.name','ASC')
-            ->where('status','1')  
+            ->Where(function ($query) use ($searchValue) {
+                $query->where('l.name', 'like', '%' .$searchValue . '%')
+                      ->orWhere('l.synonym', 'like', '%' .$searchValue . '%');
+            })            
+            ->orderBy('l.name','ASC')            
             ->get(['l.id','l.name','l.synonym','l.url','l.state_id','s.state_name']);
+
+            $queries = DB::getQueryLog();
+           // Log::info($queries);
+            return $list;
      }
 
 
