@@ -104,6 +104,7 @@ class ListingRepository
             ->where('l.status','1')  
             ->orWhere('l.synonym', 'like', '%' .$searchValue . '%')
             ->orderBy('l.name','ASC')
+            ->where('status','1')  
             ->get(['l.id','l.name','l.synonym','l.url','l.state_id','s.state_name']);
      }
 
