@@ -67,7 +67,7 @@ class ListingService
         $mantisShowRecords = [];
         $mantisShowSoldoutRecords =[];
 
-        if($clientId!=372){ // (Mantis Id - 213 in Test env ) (Mantis Id - 372 in Live env )
+        if($clientId!=372 && $clientId!=44 ){ // (Mantis Id - 213 in Test env ) (Mantis Id - 372 in Live env )
 
             $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
             //return $mantisResult;
@@ -911,7 +911,7 @@ class ListingService
 
         $mantisResult = [];
 
-        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null || $clientId!=372){  //213 in test env
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('Mantis',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null || $clientId!=372 || $clientId!=44){  //213 in test env
     
             $mantisShowRecords = [];
             $mantisShowSoldoutRecords = [];   
