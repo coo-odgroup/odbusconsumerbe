@@ -443,6 +443,7 @@ class ListingService
             $misBaseFare = $baseFare + $totalMiscfares; 
             $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
             $odbusServiceCharges = 0;
+            $startingFromPrice = $ticketPriceRecords->base_seat_fare;
             foreach($ticketFareSlabs as $ticketFareSlab){
 
                 $startingFare = $ticketFareSlab->starting_fare;
@@ -453,7 +454,7 @@ class ListingService
                     $startingFromPrice = round($misBaseFare + $odbusServiceCharges);
                 }     
             }  
-            //$startingFromPrice = $ticketPriceRecords->base_seat_fare;
+           
             $departureTime = $ticketPriceRecords->dep_time;
             $arrivalTime = $ticketPriceRecords->arr_time;
             $depTime = date("H:i",strtotime($departureTime));
