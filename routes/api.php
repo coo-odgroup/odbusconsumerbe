@@ -64,7 +64,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
    // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
   
-
+     
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -135,8 +135,13 @@ Route::post('/GenerateFailedTicket', [ChannelController::class, 'generateFailedT
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 
 Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
-Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
-Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);
+
+Route::group(['excluded_middleware' => 'throttle:api'], function() {
+   Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
+   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);         
+});
+
+
 Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket']);
 Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
