@@ -18,6 +18,7 @@ use App\Models\BookingDetail;
 use App\Jobs\SendEmailTicketJob;
 use App\Models\Credentials;
 use App\Models\ClientFeeSlab;
+use App\Repositories\ViewSeatsRepository;
 
 
 
@@ -31,18 +32,18 @@ class DolphinTransformer
     protected $DolphinService;
     protected $booking;
     protected $credentials;
-
+    protected $viewSeatsRepository;    
+    
 
    
-    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService,Booking $booking,Credentials $credentials)
+    public function __construct(ListingRepository $listingRepository,DolphinService $DolphinService,Booking $booking,Credentials $credentials,ViewSeatsRepository $viewSeatsRepository)
     {
 
         $this->listingRepository = $listingRepository;
         $this->DolphinService = $DolphinService;
         $this->booking = $booking;
         $this->credentials = $credentials;
-
-
+        $this->viewSeatsRepository = $viewSeatsRepository;
         
     }
 
@@ -1093,6 +1094,8 @@ class DolphinTransformer
         $journey_date = $request['journey_date'];
         $ReferenceNumber=$request['ReferenceNumber'];
 
+        $destination_row=$this->viewSeatsRepository->getLocationName($destinationId);
+        $destination_name=$destination_row[0]->name;
 
         $arr=[
             "sourceID"=>$sourceId,

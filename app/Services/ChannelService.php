@@ -1261,5 +1261,16 @@ class ChannelService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }    
     } 
+
+    public function NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status){
+        
+        try{
+          return $this->channelRepository->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status);
+        }
+        catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }  
+    }
    
 }

@@ -508,7 +508,16 @@ public function pay(Request $request){
                 if($rp && isset($rp->booking_id)){
                     $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
+
+                    $crt=strtotime($booking_det->created_at);
+                    $now=strtotime(date("Y-m-d H:i:s"));
+
+                    $diff=round(abs($crt - $now) / 60);
+
+
                    // if($booking_det->origin=='ODBUS'){
+                    if($diff <= 10){
+
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
                         //// call to emailsms api function to send to customer
                         
@@ -523,6 +532,13 @@ public function pay(Request $request){
                         $res = $this->channelService->pay(collect($request),1); // 1-> super admin
                         //Log::info($booking_det->pnr."----".$res);
                    // }
+                    }else{
+                        Log::info("Payment receive late. So Not updateing the status");
+                        Log::info($booking_det->pnr);
+                        Log::info($response->order_id."---".$response->status."---".$response->id);
+                        $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$response->order_id,$response->id,$response->status);
+                      
+                    }
                 }  
     }
 }

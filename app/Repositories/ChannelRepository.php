@@ -10,6 +10,7 @@ use App\Jobs\SendEmailJob;
 use App\Jobs\SendEmailTicketJob;
 use App\Jobs\SendAdminEmailTicketJob;
 use App\Jobs\SendEmailTicketCancelJob;
+use App\Jobs\NotifyToAdminForDelayPaymentFromRazorpayHook;
 use App\Jobs\SendAdminEmailTicketCancelJob;
 use App\Mail\SendEmailOTP;
 use Razorpay\Api\Api;
@@ -1425,6 +1426,12 @@ class ChannelRepository
       }
           return "Payment Done";
      
+    }
+
+
+    public function NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status) {
+        
+      NotifyToAdminForDelayPaymentFromRazorpayHook::dispatch($booking_detail,$order_id,$payament_id,$status);
     }
 
 }
