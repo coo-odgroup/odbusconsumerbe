@@ -1004,7 +1004,7 @@ class DolphinTransformer
                         if(isset($res['CoachNo']) && $l->dolphin_sms_email==0){
 
                             /////////// send dolphin sms 
-                            Log::info($l->users->phone);
+                            //Log::info($l->users->phone);
                             $data['phone']=$l->users->phone;
                             $data['name']=$l->users->name;
                             $data['pnr']=$l->pnr;

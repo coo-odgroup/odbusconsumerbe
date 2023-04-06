@@ -1015,6 +1015,8 @@ class ClientBookingService
 
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
 
+           // Log::info($pnr_dt);
+
             if($pnr_dt->origin=='DOLPHIN'){
 
                 $booking_detail = $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr); 
@@ -1084,6 +1086,8 @@ class ClientBookingService
             }else{
 
             $booking_detail = $this->clientBookingRepository->bookingDetails($mobile,$pnr); 
+
+           // Log::info($booking_detail);
 
             if(isset($booking_detail[0])){ 
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 
@@ -1155,14 +1159,30 @@ class ClientBookingService
             $response['bus_name']=$booking_detail[0]->booking[0]->bus['name'];
             $response['bus_number']=$booking_detail[0]->booking[0]->bus['bus_number'];
             $response['cancellationslabs']=$booking_detail[0]->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
+            $response['bus_contact_detail']=$booking_detail[0]->booking[0]->pickup_details;
          }
 
          if(is_object($booking_detail[0]->booking[0]->bus)){
             $response['bus_name']=$booking_detail[0]->booking[0]->bus->name;
             $response['bus_number']=$booking_detail[0]->booking[0]->bus->bus_number;
-            $response['cancellationslabs']=$booking_detail[0]->booking[0]->bus->cancellationslabs->cancellation_slab_info;
+
+            $cancellationslabsInfo=[];
+
+        if($booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo){
+            foreach($booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo as $p){
+   
+                $plc["duration"]=$p->duration;
+                $plc["deduction"]=(int)$p->deduction;
+
+                $cancellationslabsInfo[]=$plc;       
+            }         
+           } 
+
+            $response['cancellationslabs']=$cancellationslabsInfo;
+            $response['bus_contact_detail']=$booking_detail[0]->booking[0]->bus->busContacts->phone;
          }
-        
+
+       
         
          $response['journeyDuration']=$booking_detail[0]->booking[0]->journeyDuration;
 
