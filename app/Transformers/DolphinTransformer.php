@@ -1001,7 +1001,7 @@ class DolphinTransformer
                         $ar['ReportingTime']=(isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
                         $main[]=$ar; 
 
-                        if(isset($res['CoachNo']) && $l->dolphin_sms_email==0){
+                        if(isset($res['CoachNo']) && $l->dolphin_sms_email==0 && $l->app_type != 'CLNTWEB'){
 
                             /////////// send dolphin sms 
                             //Log::info($l->users->phone);
