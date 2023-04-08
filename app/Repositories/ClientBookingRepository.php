@@ -311,6 +311,11 @@ class ClientBookingRepository
        
           
             $actual_fare_for_commission=  (int)$PDetails[0]['totalFare'] - (int)$PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
+            Log::info($actual_fare_for_commission);
+
+            $actual_fare_for_commission= (int)$actual_fare_for_commission;
+
+            Log::info($actual_fare_for_commission);
 
             $clientComission = 0;
             if($clientCommissions){
@@ -319,6 +324,7 @@ class ClientBookingRepository
                     $uptoFare = $clientCom->upto_fare;
                     if($actual_fare_for_commission >= $startFare && $actual_fare_for_commission <= $uptoFare){
                         $clientComission = $clientCom->commision;
+                        Log::info($clientComission);
                         break;
                     }  
                 }   
