@@ -348,6 +348,7 @@ class ClientBookingService
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
             return $bookTicket;
         } catch (Exception $e) {
+            Log::info("ticket confirmation api");   
             Log::info($e->getMessage());   
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }   

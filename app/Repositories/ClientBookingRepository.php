@@ -425,8 +425,10 @@ class ClientBookingRepository
         $bookingRecord = $this->booking->where('transaction_id', $transactionId)
                                         //->where('status', $seatHold)
                                        ->with('bookingDetail')
-                                       ->get();     
-                                                       
+                                       ->get(); 
+
+         Log::info($transactionId);
+
         $origin = $bookingRecord[0]->origin;  
         $busId = $bookingRecord[0]->bus_id;  
         $sourceId = $bookingRecord[0]->source_id;
