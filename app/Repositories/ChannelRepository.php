@@ -20,6 +20,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
 use App\Models\Bus;
+use App\Models\User;
 use App\Models\Credentials;
 use App\Models\AgentWallet;
 use App\Models\PrintTicket;
@@ -40,6 +41,7 @@ class ChannelRepository
 {
     protected $gatewayInformation;
     protected $users;
+    protected $user;
     protected $customerPayment;
     protected $booking;
     protected $bookingDetail;
@@ -47,10 +49,11 @@ class ChannelRepository
     protected $credentials;
     protected $manageSms;
 
-    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail,ManageSms $manageSms)
+    public function __construct(GatewayInformation $gatewayInformation,Users $users,CustomerPayment $customerPayment,Booking $booking,BusSeats $busSeats,Credentials $credentials,BookingDetail $bookingDetail,ManageSms $manageSms,User $user)
     {
         $this->gatewayInformation = $gatewayInformation; 
         $this->users = $users;
+        $this->user = $user;
         $this->customerPayment = $customerPayment;
         $this->booking = $booking;
         $this->busSeats = $busSeats;
@@ -969,6 +972,18 @@ class ChannelRepository
         $totalAgentComission =  $currentSeatCount * $comissionPerSeat;
         $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
         $afterTdsComission = $totalAgentComission - $tds;
+
+        /// By Lima 10 April,2023, 1:30 PM no commision logic /////////
+
+        $AgentData=$this->user->where('id',$agentId)->first(); 
+
+        if($AgentData->agent_type==3){
+          $totalAgentComission =0;
+          $afterTdsComission =0;
+          $tds =0;
+        }
+
+        /////////////////////////////////////////////////
 
         DB::transaction(function () use ($bookingId,$seatHold,$appliedComission,$totalAgentComission,$tds,$afterTdsComission){
           
