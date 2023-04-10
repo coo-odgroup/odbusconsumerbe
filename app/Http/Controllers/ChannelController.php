@@ -500,8 +500,7 @@ public function pay(Request $request){
     //Log::info($response->order_id."---".$response->status."---".$response->id);
  
     if($response->status == 'authorized' || $response->status =='captured'){
-                $razorpay_status_updated_at= date("Y-m-d H:i:s");
-                $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+                
 
                 $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
 
@@ -517,6 +516,10 @@ public function pay(Request $request){
 
                    // if($booking_det->origin=='ODBUS'){
                     if($diff <= 10){
+
+                        $razorpay_status_updated_at= date("Y-m-d H:i:s");
+
+                       $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
 
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
                         //// call to emailsms api function to send to customer
