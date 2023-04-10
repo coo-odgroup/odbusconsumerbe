@@ -1786,6 +1786,72 @@
                 ]
             }
         },
+        "/api/TicketDetails": {
+            "post": {
+                "tags": [
+                    "TicketDetails API(API Ticket Details)"
+                ],
+                "summary": "Booking Details",
+                "description": "Booking Details",
+                "operationId": "9cb5ddf909f6337b93b02dbca4779f4d",
+                "parameters": [
+                    {
+                        "name": "pnr",
+                        "in": "query",
+                        "description": "pnr number",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "ODM5163863"
+                        }
+                    },
+                    {
+                        "name": "mobile",
+                        "in": "query",
+                        "description": "mobile number",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": "9090909090"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "get all Booking details of a customer"
+                    },
+                    "206": {
+                        "description": "Validation error: Not a valid pnr or Mobile number"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized access"
+                    },
+                    "404": {
+                        "description": "No record found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "502": {
+                        "description": "Bad gateway"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    },
+                    "504": {
+                        "description": "Gateway timeout"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/ClientCancelTicketinfo": {
             "post": {
                 "tags": [

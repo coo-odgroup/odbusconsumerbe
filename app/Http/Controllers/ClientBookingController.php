@@ -658,7 +658,46 @@ class clientBookingController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
        }      
     } 
-    ///////////Ticket details(client use)////////////
+    
+     /**
+     * @OA\Post(
+     *     path="/api/TicketDetails",
+     *     tags={"TicketDetails API"},
+     *     description="Ticket Details",
+     *     summary="Ticket Details",
+     *     @OA\Parameter(
+     *          name="pnr",
+     *          description="pnr number",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *              example="ODCL59164"
+     *          )
+     *      ),
+     *     @OA\Parameter(
+     *          name="mobile",
+     *          description="mobile number",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="integer",
+     *              example="8908965606"
+     *          )
+     *      ),
+     *  @OA\Response(response="200", description="get all Booking details of a customer"),
+     *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
+     *  @OA\Response(response=400, description="Bad request"),
+     *  @OA\Response(response=401, description="Unauthorized access"),
+     *  @OA\Response(response=404, description="No record found"),
+     *  @OA\Response(response=500, description="Internal server error"),
+     *  @OA\Response(response=502, description="Bad gateway"),
+     *  @OA\Response(response=503, description="Service unavailable"),
+     *  @OA\Response(response=504, description="Gateway timeout"),
+     *     security={{ "apiAuth": {} }}
+     * )
+     * 
+     */
     public function ticketDetails(Request $request) {     
 
       $data = $request->all();
