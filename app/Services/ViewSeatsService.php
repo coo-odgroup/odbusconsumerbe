@@ -468,7 +468,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                     $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
                 }
                $seatWithPriceRecords[] = array(
-                   "totalFare" => number_format($total_fare + $gst,2),
+                   "totalFare" => $total_fare + $gst,
                    "baseFare" => $total_fare - $client_service_charges ,
                    "serviceCharge" => $client_service_charges,
                    "gst" => $gst
@@ -611,7 +611,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
         }
         $seatWithPriceRecords[] = array(
-            "totalFare" => number_format($newSeatFare + $gst, 2),
+            "totalFare" => $newSeatFare + $gst,
             "baseFare" => $odbus_charges_ownerFare ,
             "serviceCharge" => $newSeatFare - $odbus_charges_ownerFare,
             "gst" => $gst

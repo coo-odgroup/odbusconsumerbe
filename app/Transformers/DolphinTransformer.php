@@ -523,14 +523,14 @@ class DolphinTransformer
 
                                    // for($j=0;$j<count($sleeper[0])-1;$j++){
 
-                                if($blankcount<=4){
-                                    for($j=0;$j<5;$j++){
+                                if($blankcount<=3){
+                                    for($j=0;$j<4;$j++){
 
                                         $blank=[
                                             "id"=> $st_id,
                                             "bus_seat_layout_id"=> 0,
                                             "seat_class_id"=> 4,
-                                            "berthType"=> 1,
+                                            "berthType"=> 2,
                                             "seatText"=> '',
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           
@@ -559,16 +559,16 @@ class DolphinTransformer
 
                                 else if(count($dd)==2){
 
-                                    if($blankcount<=4){  
+                                    if($blankcount<=3){  
 
                                     //for($j=0;$j<count($sleeper[0])-1;$j++){
-                                    for($j=0;$j<5;$j++){
+                                    for($j=0;$j<4;$j++){
 
                                         $blank=[
                                             "id"=>$st_id,//'',
                                             "bus_seat_layout_id"=>0,
                                             "seat_class_id"=> 4,
-                                            "berthType"=> 1,
+                                            "berthType"=> 2,
                                             "seatText"=> '',
                                             "rowNumber"=> $i,
                                             "colNumber"=> $j                           

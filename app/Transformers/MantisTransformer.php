@@ -87,6 +87,8 @@ class MantisTransformer
         $mantisesult['regular'] = [];
         $mantisresult['soldout'] = [];
         $mantisresult = [];
+
+       // 
     
         if (!empty($data->data->Buses)){
             foreach($data->data->Buses as $bus)
@@ -174,14 +176,15 @@ class MantisTransformer
                     "reviews"=> []
                 );
                 
-                $mantisesult['regular'][] = $busarr;
+                //$mantisesult['regular'][] = $busarr;
                 if($bus->BusStatus->Availability>0){
                     $mantisesult['regular'][] = $busarr;
                 }else{
                     $mantisesult['soldout'][] = $busarr;
                 }
             }   
-        }  
+        } 
+
         return $mantisesult;
     }
 
