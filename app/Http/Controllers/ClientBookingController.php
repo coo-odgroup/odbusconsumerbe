@@ -190,8 +190,8 @@ class clientBookingController extends Controller
         $user = JWTAuth::toUser($token);
         $data = $request->all();
 
-        Log::info("clientBooking");
-        Log::info($data);
+        // Log::info("clientBooking");
+        // Log::info($data);
 
         $clientRole = $user->role_id;
         $clientId = $user->id;
@@ -339,8 +339,8 @@ class clientBookingController extends Controller
     {   
         $data = $request->all();
 
-        Log::info("seatBlock");
-        Log::info($data);
+        // Log::info("seatBlock");
+        // Log::info($data);
 
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token); 
@@ -437,8 +437,8 @@ class clientBookingController extends Controller
 
         $data = $request->all();
 
-        Log::info("ticketConfirmation");
-        Log::info($data);
+        // Log::info("ticketConfirmation");
+        // Log::info($data);
         
         $ticketConfValidation = $this->ticketConfirmValidator->validate($data);
 
@@ -702,8 +702,8 @@ class clientBookingController extends Controller
 
       $data = $request->all();
 
-      Log::info("ticketDetails");
-      Log::info($data);
+      // Log::info("ticketDetails");
+      // Log::info($data);
 
       $bookingManageValidator = $this->bookingManageValidator->validate($data);
 

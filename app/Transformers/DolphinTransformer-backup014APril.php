@@ -501,9 +501,9 @@ class DolphinTransformer
                      $st_id=1;  
 
                     if($sleeper){ 
+                     
                       foreach($sleeper as $i => $dd){ 
                             foreach($dd as $k => $d){
-
                                 $seat_class_id ='';
 
                                 if($d['RowSpan']==2 && $d['ColumnSpan']==0){
@@ -518,7 +518,7 @@ class DolphinTransformer
                                     $seat_class_id = 4;
                                 }
 
-                                if($i==2){ // this logic is for 1/2 sleeper
+                                if($i==2 && count($dd) > 2){ // this logic is for 1/2 sleeper
 
                                     $blank_row_flag=true;
 
@@ -526,12 +526,12 @@ class DolphinTransformer
 
                                    // for($j=0;$j<count($sleeper[0])-1;$j++){
 
-                                    if(count($sleeper[1]) == 1){
+                                    if($row1==3){
                                         $cnt1=3;
-                                        $cnt2=4;                                                                                                              
-                                    } else{                                      
+                                        $cnt2=4;                                        
+                                    } else{
                                         $cnt1=4;
-                                        $cnt2=5; 
+                                        $cnt2=5;
                                     }    
 
                                     if($blankcount<=$cnt1){
@@ -567,7 +567,54 @@ class DolphinTransformer
                                     ];
                                 }
 
-                                else{
+
+                                else if(count($dd)==2){
+                                      
+                                    Log::info(count($dd));
+
+                                     if($row1==3){
+
+                                        $cnt1=3;
+                                        $cnt2=4;
+                                        
+                                    } else{
+                                        $cnt1=4;
+                                        $cnt2=5;
+                                    }     
+       
+                                if($blankcount<=$cnt1){
+                                    for($j=0;$j<$cnt2;$j++){
+                                      
+                                        $blank=[
+                                            "id"=>$st_id,//'',
+                                            "bus_seat_layout_id"=>0,
+                                            "seat_class_id"=> 4,
+                                            "berthType"=> 2,
+                                            "seatText"=> '',
+                                            "rowNumber"=> $i,
+                                            "colNumber"=> $j                           
+                                        ]; 
+
+                                        $blankcount++;
+            
+                                    array_push($UpperberthArr,$blank); 
+
+                                    $st_id++;  
+                                    }
+                                }
+
+
+                                    $ar=[
+                                        "id"=>$st_id,// $d['SeatNo'],
+                                        "bus_seat_layout_id"=> 0,
+                                        "seat_class_id"=> $seat_class_id,
+                                        "berthType"=> 2,
+                                        "seatText"=> ($seat_class_id==4) ? '' : $d['SeatNo'],
+                                        "rowNumber"=> $i,
+                                        "colNumber"=> count($sleeper[0])-1                           
+                                    ];                                 
+        
+                                }else{
 
                                     if($blank_row_flag){
                                         $i= $i+1;

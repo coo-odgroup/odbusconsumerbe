@@ -144,7 +144,7 @@ class BookingManageRepository
         }
         }
 
-        Log::info($ins." email has been sent");
+        //Log::info($ins." email has been sent");
 
         
     }
