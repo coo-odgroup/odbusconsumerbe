@@ -112,6 +112,10 @@ class BookingManageService
             $mobile = $request['mobile'];
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
 
+            if(empty($pnr_dt)){
+                return 'PNR_NOT_MATCH';
+            }
+
             if($pnr_dt->origin=='MANTIS'){
                 
                 $booking_detail = $this->bookingManageRepository->getMantisBookingDetails($mobile,$pnr); 
