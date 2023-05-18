@@ -108,7 +108,7 @@ class BookingManageRepository
 
         $dd= $this->booking->where("transaction_id",$trans_id)->first();
 
-       return $dd->pnr;
+       return $dd;
         
     }
 
