@@ -926,7 +926,7 @@ class ListingService
 
         $dolphinresult=[];
 
-        if( ($operatorId != null && count($operatorId)!=0 && in_array('Dolphin',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){
+        if( ($operatorId != null && count($operatorId)!=0 && in_array('111111',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){ // 111111 used as dolphon operator id
 
             $DolPhinshowRecords = [];
             $DolPhinShowSoldoutRecords =[];   
@@ -1203,7 +1203,7 @@ class ListingService
         }else{
 
             $DolphinBusOperator[]=[
-                "id"=>"Dolphin",
+                "id"=>111111,
                 "operator_name"=> "Dolphin",
                 "organisation_name"=>"Dolphin"
             ];
