@@ -159,6 +159,7 @@ class MantisTransformer
                     "startingFromPrice"=> implode(".", $bus->BusStatus->BaseFares), 
                     "departureTime"=> date("H:i",strtotime($bus->DeptTime)),
                     "arrivalTime"=> date("H:i",strtotime($bus->ArrTime)),
+                    "bookingCloseTime" =>'',
                     "totalJourneyTime"=> $totalJourneyTime, 
                     "amenity"=> [],
                     "safety"=> [],

@@ -240,6 +240,7 @@ class DolphinTransformer
                  "startingFromPrice"=> $seat_price ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
                  "departureTime"=> date("H:i",strtotime($data['CityTime'])),
                  "arrivalTime"=> date("H:i",strtotime($ArrivalTime)),
+                 "bookingCloseTime" =>'',
                  "totalJourneyTime"=> $duration, 
                  "amenity"=> [],
                  "safety"=> [],
@@ -376,6 +377,7 @@ class DolphinTransformer
                  "startingFromPrice"=> $seat_price ,  // NonAcSeatRate,NonAcSleeperRate,AcSeatRate,AcSleeperRate
                  "departureTime"=> date("H:i",strtotime($v['CityTime'])),
                  "arrivalTime"=> date("H:i",strtotime($ArrivalTime)),
+                 "bookingCloseTime" =>'',
                  "totalJourneyTime"=> $duration, 
                  "amenity"=> [],
                  "safety"=> [],
