@@ -559,7 +559,12 @@ class BookingManageController extends Controller
 
     public function GetPnr($trans_id){     
       $result = $this->bookingManageService->GetPnr($trans_id);   
-      return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+      if($result=='notfound'){
+        return $this->errorResponse("Booking not found",Response::HTTP_PARTIAL_CONTENT);
+      }else{
+        return $this->successResponse($result,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK); 
+      }
+     
     }
 
     

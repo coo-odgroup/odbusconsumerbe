@@ -106,7 +106,7 @@ class BookingManageRepository
 
     public function GetPnr($trans_id){
 
-        $dd= $this->booking->where("transaction_id",$trans_id)->first();
+        $dd= $this->booking->where("transaction_id",$trans_id)->where('status',1)->first();
 
        return $dd;
         

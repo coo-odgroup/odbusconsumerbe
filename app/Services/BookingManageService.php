@@ -1731,7 +1731,12 @@ class BookingManageService
     }
 
     public function GetPnr($trans_id){
-      return  $pnr = $this->bookingManageRepository->GetPnr($trans_id);
+       $detail = $this->bookingManageRepository->GetPnr($trans_id);
+       if($detail){
+            return $detail;
+       }else{
+            return 'notfound';
+       }
     }
 
     public function FeedbackCronJob(){
