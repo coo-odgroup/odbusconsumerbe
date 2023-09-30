@@ -39,6 +39,7 @@ class CommonRepository
                             ->where("end_date",">=",$today)
                             ->select('id','user_id','heading','occassion','category','url',
                              'banner_img','banner_image','alt_tag')
+                            ->orderBy('id','DESC')
                             ->get();
         
     }
