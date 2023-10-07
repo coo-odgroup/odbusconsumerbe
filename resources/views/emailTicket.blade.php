@@ -813,6 +813,15 @@ border: 0;
                       </tr>
                       @else
                     @endif
+
+                    @if($add_festival_fare > 0 || $add_special_fare > 0)
+                    <tr>
+                      <td class="text-left">Convenience Fee</td>
+                      <td class="text-right"><b>+₹{{$add_festival_fare + $add_special_fare}}</b></td>
+                      </tr>
+                      @else
+                    @endif
+                    
                       <tr>
                         <td>Transaction Fee</td>
                         <td>+₹{{$transactionFee}}</td>
@@ -825,13 +834,7 @@ border: 0;
                       @else
                     @endif
 
-                    @if($add_festival_fare > 0 || $add_special_fare > 0)
-                    <tr>
-                      <td class="text-left">Convenience Fee</td>
-                      <td class="text-right"><b>+₹{{$add_festival_fare + $add_special_fare}}</b></td>
-                      </tr>
-                      @else
-                    @endif
+                   
 
                       <tr>
                         <td><strong>Total Fare</strong></td>
