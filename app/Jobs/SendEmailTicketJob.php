@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use DB;
 use PDF;
 
 
@@ -67,10 +68,19 @@ class SendEmailTicketJob implements ShouldQueue
     protected $customer_gst_amount;
     protected $coupon_discount;
     protected $p_names;
+    protected $add_festival_fare;
+    protected $add_special_fare;
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
+        ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
+
+        $bk_dtl=DB::table('booking')->where('pnr', $email_pnr)->first();
+        $this->add_festival_fare = $bk_dtl->additional_festival_fare;
+        $this->add_special_fare = $bk_dtl->additional_special_fare;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         $this->name = $request['name'];
         $this->to = $request['email'];
         $this->bookingdate = date('d-m-Y',strtotime($request['bookingdate']));
@@ -204,7 +214,9 @@ class SendEmailTicketJob implements ShouldQueue
             'customer_comission'=> $this->customer_comission,
             'qrcode_image_path' => $this->qrcode_image_path ,
             'cancelation_policy' => $this->cancelation_policy,
-            'p_names' => $this->p_names,            
+            'p_names' => $this->p_names, 
+            'add_festival_fare' => $this->add_festival_fare, 
+            'add_special_fare' => $this->add_special_fare
         ];
 
         //Log::info($data);
@@ -219,6 +231,7 @@ class SendEmailTicketJob implements ShouldQueue
             //->subject(config('services.email.subjectTicket'));
             ->subject($this->subject);
         });
+        
       
         // check for failures
         if (Mail::failures()) {
