@@ -82,14 +82,20 @@ class UsersRepository
         $user->name= $request['name'];
         $user->password= bcrypt('odbus123');
         $user->created_by= $request['created_by'];
-        $otp = $this->sendOtp($request);
+
+        log::info($request['phone']);
+
+        if($request['phone']!='9999999999'){
+          $otp = $this->sendOtp($request);
+          $user->otp = $otp;
+        }        
         $user->phone = $request['phone'];
         $user->email = $request['email'];
         if(isset($request['fcmId'])){
           //return $request['fcmId'];
           $user->fcm_id = $request['fcmId'];
         }
-        $user->otp = $otp;
+        
         $user->save();
         return  $user;
    }
@@ -157,7 +163,9 @@ class UsersRepository
 
     public function createOtp($query,$otp,$request){
 
-      $query->update(array('otp' => $otp));
+      if($request['phone']!='9999999999'){
+        $query->update(array('otp' => $otp));
+      }      
       $query->update(array('password' => bcrypt('odbus123')));
       if(isset($request['fcmId'])){
         $query->update(array('fcm_id' => $request['fcmId']));

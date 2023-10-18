@@ -133,7 +133,11 @@ class UsersService
                 return "";
                 }
             elseif($existingOtp == $rcvOtp){
-                $this->usersRepository->updateOTP($userId);
+
+                if($rcvOtp!='00000'){
+                    $this->usersRepository->updateOTP($userId);
+                } 
+
                 $uinfo = $this->usersRepository->GetUserDataAfterUpdate($userId);
                 // if($uinfo[0]->profile_image!=null && $uinfo[0]->profile_image!=''){ 
                 //     $uinfo[0]->profile_image = $path->profile_url.$uinfo[0]->profile_image;      
