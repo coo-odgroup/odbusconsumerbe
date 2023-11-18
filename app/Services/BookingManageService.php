@@ -675,10 +675,12 @@ class BookingManageService
                 'cancelation_policy' => $cancellationslabs,
                 'p_names' => $pp_names, 
                 'agent_number'=> $agent_number,
-                'customer_comission' => $customer_comission           
+                'customer_comission' => $customer_comission  ,
+                'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
+                'add_special_fare' => $b->booking[0]->additional_special_fare          
             ];
 
-          
+          log::info($data);
     
         } else{
 
@@ -786,10 +788,12 @@ class BookingManageService
                 'cancelation_policy' => $cancellationslabs,
                 'p_names' => $pp_names,  
                 'agent_number'=> $agent_number,
-                'customer_comission' => $customer_comission        
+                'customer_comission' => $customer_comission,
+                'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
+                'add_special_fare' => $b->booking[0]->additional_special_fare        
             ];
 
-
+              //  Log::info( $data );
            
         } 
 

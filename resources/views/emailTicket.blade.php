@@ -797,7 +797,7 @@ border: 0;
                     <tbody>
                       <tr>
                         <td>Base Fare</td>
-                        <td>₹{{$owner_fare + $odbus_charges}}</td>
+                        <td>₹{{$owner_fare + $odbus_charges + $customer_comission}}</td>
                       </tr>
                       @if($coupon_discount > 0)
                     <tr>
@@ -827,10 +827,10 @@ border: 0;
                         <td>+₹{{$transactionFee}}</td>
                       </tr>
                       @if($customer_comission > 0)
-                    <tr>
+                    {{-- <tr>
                       <td class="text-left">Commission</td>
                       <td class="text-right"><b>+₹{{$customer_comission}}</b></td>
-                      </tr>
+                      </tr> --}}
                       @else
                     @endif
 

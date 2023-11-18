@@ -566,7 +566,7 @@ p{
                     <tbody>
                       <tr>
                         <td>Base Fare</td>
-                        <td>Rs {{$owner_fare + $odbus_charges}}</td>
+                        <td>Rs {{$owner_fare + $odbus_charges + $customer_comission}}</td>
                       </tr>
                       @if($coupon_discount > 0)
                     <tr>
@@ -582,15 +582,24 @@ p{
                       </tr>
                       @else
                     @endif
+
+                    @if($add_festival_fare > 0 || $add_special_fare > 0)
+                    <tr>
+                      <td class="text-left">Convenience Fee</td>
+                      <td class="text-right"><b>+Rs {{$add_festival_fare + $add_special_fare}}</b></td>
+                      </tr>
+                      @else
+                    @endif
+
                       <tr>
                         <td>Transaction Fee</td>
                         <td>+ Rs {{$transactionFee}}</td>
                       </tr>
                       @if($customer_comission > 0)
-                    <tr>
+                    {{-- <tr>
                       <td class="text-left">Commission</td>
                       <td class="text-right"><b>+ Rs {{$customer_comission}}</b></td>
-                      </tr>
+                      </tr> --}}
                       @else
                     @endif
                       <tr>
