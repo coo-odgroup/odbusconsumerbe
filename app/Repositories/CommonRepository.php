@@ -37,7 +37,7 @@ class CommonRepository
                             ->where("status",1)
                             ->where("start_date","<=",$today)
                             ->where("end_date",">=",$today)
-                            ->select('id','user_id','heading','occassion','category','url',
+                            ->select('id','user_id','start_time','end_time','heading','occassion','category','url',
                              'banner_img','banner_image','alt_tag')
                             ->orderBy('id','DESC')
                             ->get();

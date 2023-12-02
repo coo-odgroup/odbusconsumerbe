@@ -40,11 +40,33 @@ class HomepageService
             $banner_image ='';
             $common_data =[];
             $social_media =[];
+           // log::info($banner);
 
-            if($banner && isset($banner[0]) && $banner[0]->banner_image){
+            $current_time=date("Y-m-d H:i:s");
 
-                $banner= $banner[0];
-                $banner_image =  $path->banner_url.$banner->banner_image;
+           // log::info($current_time);
+
+            if($banner){  // && isset($banner[0]) && $banner[0]->banner_image
+
+                foreach($banner as $b){
+
+                    //log::info($b->start_time."----".$b->end_time);
+
+                    $current_time=strtotime($current_time);
+                    $start_time=strtotime($b->start_time);
+                    $end_time=strtotime($b->end_time);
+
+                    log::info($start_time."<=".$current_time.">=".$end_time);
+
+                    if($start_time <= $current_time && $current_time <= $end_time){
+                        $banner_image =  $path->banner_url.$b->banner_image;
+                    }
+                   
+                }               
+            }
+
+            if($banner_image==''){
+                $banner_image = $path->banner_url.$banner[count($banner)-1]->banner_image;
             }
 
             if($common && isset($common[0])){
