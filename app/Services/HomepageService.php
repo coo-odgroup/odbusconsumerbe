@@ -56,7 +56,7 @@ class HomepageService
                     $start_time=strtotime($b->start_time);
                     $end_time=strtotime($b->end_time);
 
-                    log::info($start_time."<=".$current_time.">=".$end_time);
+                   // log::info($start_time."<=".$current_time.">=".$end_time);
 
                     if($start_time <= $current_time && $current_time <= $end_time){
                         $banner_image =  $path->banner_url.$b->banner_image;
