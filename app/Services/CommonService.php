@@ -61,6 +61,10 @@ class CommonService
                     $common_data->og_image = $path->og_image_url.$common_data->og_image;
                   }
 
+                  if($common_data->popup_image!=''){
+                    $common_data->popup_image = $path->og_image_url.$common_data->popup_image;
+                  }
+
             }
 
             if($socialMedia && isset($socialMedia[0])){
