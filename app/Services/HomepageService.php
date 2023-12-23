@@ -40,7 +40,10 @@ class HomepageService
             $banner_image ='';
             $common_data =[];
             $social_media =[];
-           // log::info($banner);
+            
+             // log::info($banner);
+             // log::info($socialMedia);
+             // log::info($common);
 
             $current_time=date("Y-m-d H:i:s");
 
@@ -66,7 +69,11 @@ class HomepageService
             }
 
             if($banner_image==''){
-                $banner_image = $path->banner_url.$banner[count($banner)-1]->banner_image;
+
+                if(count($banner)!=0){
+                     $banner_image = $path->banner_url.$banner[count($banner)-1]->banner_image;
+                }
+               
             }
 
             if($common && isset($common[0])){
@@ -95,6 +102,8 @@ class HomepageService
             }
 
             $offer = $this->offerRepository->offers($request);
+
+
            
             if($offer){
                 foreach($offer as $o){
@@ -112,6 +121,8 @@ class HomepageService
 
             $routenames = $this->popularRepository->getRoutes();
 
+
+
             foreach($routenames as $route){
             $srcId = $route->source_id;
             $destId = $route->destination_id;
@@ -128,7 +139,7 @@ class HomepageService
             $busIds = $this->popularRepository->getBusIds();
 
             if($busIds->isEmpty()){
-               return [];
+               $topOperators=[];
             }
             else{
                 foreach($busIds as $busId){
@@ -153,13 +164,18 @@ class HomepageService
            
             $getLocationName = $this->listingRepository->getLocation($request['locationName']);  
 
+            log::Info($getLocationName);
+
             $data['locationName'] = $getLocationName;
             $data['banner_image'] = $banner_image;
             $data['common'] = $common_data;
             $data['socialMedia'] = $social_media; 
             $data['offers'] = $offer; 
             $data['popularRoutes'] = $popularRoutes;   
-            $data['topOperators'] = $topOperators;               
+            $data['topOperators'] = $topOperators;   
+
+            
+
             return $data;
 
         } catch (Exception $e) {
