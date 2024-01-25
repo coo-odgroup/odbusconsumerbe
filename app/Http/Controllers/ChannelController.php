@@ -52,10 +52,10 @@ class ChannelController extends Controller
             $this->bookingManageService = $bookingManageService;
         }
 
-    public function testingEmail(Request $request) {
+    public function testingEmail() {
 
-            $to = $request['email'];
-            $name = $request['name'];
+            $to = "mohantylima71@gmail.com";
+            $name = "Lima";
     
             $res= TestingEmailJob::dispatch($to, $name);
 
