@@ -382,21 +382,30 @@ class ListingService
                 switch($type){
                     case(1):    //Coupon available on journey date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                                          ->where('status', 1)
                                                         ->where('from_date', '<=', $entry_date)
                                                         ->where('to_date', '>=', $entry_date)->all();
                         if(isset($selCouponRecords)){  
                                     $CouponDetails = $selCouponRecords[0]
-                                                    ->where('coupon_code',$coupon)->get();
+                                                    ->where('coupon_code',$coupon)
+                                                    ->where('status', 1)
+                                                        ->where('from_date', '<=', $entry_date)
+                                                        ->where('to_date', '>=', $entry_date)->get();
                         } 
                         $appliedCoupon->push($coupon);                             
                         break;
                     case(2):    //Coupon available on booking date
                         $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                                         ->where('status', 1)
                                                         ->where('from_date', '<=', $bookingDate)
                                                         ->where('to_date', '>=', $bookingDate)->all();
                          if(isset($selCouponRecords)){  
                                     $CouponDetails = $selCouponRecords[0]
-                                                    ->where('coupon_code',$coupon)->get();
+                                                    ->where('coupon_code',$coupon)
+                                                    ->where('status', 1)
+                                                        ->where('from_date', '<=', $bookingDate)
+                                                        ->where('to_date', '>=', $bookingDate)
+                                                        ->get();
                         } 
                         $appliedCoupon->push($coupon);                                                               
                         break;      
