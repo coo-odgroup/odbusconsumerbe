@@ -45,9 +45,9 @@ class SendFeedbackEmailJob implements ShouldQueue
             ->subject($this->subject);
         });
       
-        if (Mail::failures()) {
-            return new Error(Mail::failures()); 
-        }
+        // if (Mail::failures()) {
+        //     return new Error(Mail::failures()); 
+        // }
 
     }
 }

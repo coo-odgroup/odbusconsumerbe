@@ -246,14 +246,8 @@ class CancelTicketRepository
         
         $smsData['refundAmount'] = 0;
 
-        $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
-              
-        if($emailData['email'] != ''){
-            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
-        } 
-        ////////////// send to admin /////////////
-
-        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+        $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);             
+       
 
         ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -264,6 +258,15 @@ class CancelTicketRepository
             $contact_number = collect($busContactDetails)->implode('phone',',');
             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
         }
+
+
+        if($emailData['email'] != ''){
+            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+        } 
+        ////////////// send to admin /////////////
+
+        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+
 
         $data = array(
              'refundAmount' => 0,
@@ -287,12 +290,7 @@ class CancelTicketRepository
 
         $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
               
-        if($emailData['email'] != ''){
-            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
-        } 
-        ////////////// send to admin /////////////
-
-        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
+        
 
         ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
         $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -303,6 +301,14 @@ class CancelTicketRepository
             $contact_number = collect($busContactDetails)->implode('phone',',');
             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
         }
+
+
+        if($emailData['email'] != ''){
+            $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
+        } 
+        ////////////// send to admin /////////////
+
+        $this->channelRepository->sendAdminEmailTicketCancel($emailData);
 
         $data = array(
              'refundAmount' => $booking->total_fare,

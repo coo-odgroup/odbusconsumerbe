@@ -448,12 +448,15 @@ class BookingManageService
                                     $body['customer_comission'] = $b->booking[0]->customer_comission;
                                 }   
                             }
-                            if($b->email != ''){
-                                $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
-                            }
+                           
                             if($b->phone != ''){
                                 $sendEmailTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
                             }
+
+                            if($b->email != ''){
+                                $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+                            }
+
                             return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
                         }else{
                             return "Invalid request";   
@@ -531,12 +534,15 @@ class BookingManageService
                         $body['customer_comission'] = $b->booking[0]->customer_comission;
                     }   
                 }
-                if($b->email != ''){
-                    $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
-                }
+
                 if($b->phone != ''){
                     $sendEmailTicket = $this->bookingManageRepository->sendSmsTicket($body,$b->booking[0]->pnr); 
                 }
+                
+                if($b->email != ''){
+                    $sendEmailTicket = $this->bookingManageRepository->sendEmailTicket($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$body,$b->booking[0]->pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount); 
+                }
+               
                 return "Email & SMS has been sent to ".$b->email." & ".$b->phone;
             }else{
                 return "Invalid request";   

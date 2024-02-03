@@ -207,11 +207,11 @@ class SendAdminEmailTicketJob implements ShouldQueue
             ->subject($this->subject);
         });
         
-        // check for failures
-        if (Mail::failures()) {
-            return new Error(Mail::failures()); 
-            //return "Email failed";
-        }
+        // // check for failures
+        // if (Mail::failures()) {
+        //     return new Error(Mail::failures()); 
+        //     //return "Email failed";
+        // }
 
     }
 }

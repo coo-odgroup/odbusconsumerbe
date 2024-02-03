@@ -355,11 +355,7 @@ class CancelTicketService
                             $emailData['totalfare'] = $paidAmount;
                             
                             $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                            if($emailData['email'] != ''){
-                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                            } 
-
-                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+                           
 
                              ////////////////////////////CMO SMS SEND ON TICKET CANCEL//////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -370,6 +366,13 @@ class CancelTicketService
                                  $contact_number = collect($busContactDetails)->implode('phone',',');
                                  $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                              }
+
+                             if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            } 
+
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+
                             return $refund;
                         }
                         elseif($min <= $interval && $interval <= $max){ 
@@ -384,11 +387,7 @@ class CancelTicketService
                             $emailData['totalfare'] = $paidAmount;
                            
                             $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                            if($emailData['email'] != ''){
-                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                            } 
-
-                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);  
+                            
 
                              ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -399,6 +398,13 @@ class CancelTicketService
                                  $contact_number = collect($busContactDetails)->implode('phone',',');
                                  $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                              }
+
+                             if($emailData['email'] != ''){
+                                $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
+                            } 
+
+                            $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
+                            
                             return $refund;    
                         }
                     } 
