@@ -120,6 +120,10 @@ class OfferRepository
         $appliedCoupon = collect([]);
         $date = Carbon::now();
         $bookingDate = $date->toDateString();
+
+        // log::info($bookingDate);
+        // log::info($jDate);
+
         foreach($CouponRecords as $key => $coupon){
         
             $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
@@ -127,17 +131,20 @@ class OfferRepository
                 case(1):    //Coupon available on journey date
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                                 ->where('from_date', '<=', $jDate)
-                                ->where('to_date', '>=', $jDate)->all();           
+                                ->where('to_date', '>=', $jDate)
+                                ->where('status', 1)
+                                ->all();           
                     break;
                 case(2):    //Coupon available on booking date
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                     ->where('from_date', '<=', $bookingDate)
-                    ->where('to_date', '>=', $bookingDate)->all();
+                    ->where('to_date', '>=', $bookingDate)
+                    ->where('status', 1)
+                    ->all();
                     break;      
             }
             if($dateInRange){
-                $appliedCoupon->push($coupon);
-                
+                $appliedCoupon->push($coupon);                
             }
         } 
         $couponExists = $appliedCoupon->contains($requestedCouponCode);
@@ -149,15 +156,30 @@ class OfferRepository
             return "inval_coupon";
         } 
 
-        $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
-                                                  ->where('bus_id',$busId)
-                                                  ->get(); 
+        // $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+        //                                           ->where('bus_id',$busId)
+        //                                           ->get(); 
+        switch($type){
+        case(1):    //Coupon available on journey date
+            $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+                                                    ->where('bus_id',$busId)
+                                                    ->where('from_date', '<=', $jDate)
+                                                    ->where('to_date', '>=', $jDate)
+                                                     ->where('status', 1)
+                                                    ->get(); 
 
-        // $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
-        //                         ->where('status','1')->get();
+            break;
+        case(2):    //Coupon available on booking date
 
-                                
-        //Log::info($couponDetails);                           
+            $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
+            ->where('bus_id',$busId)
+            ->where('from_date', '<=', $bookingDate)
+            ->where('to_date', '>=', $bookingDate)
+            ->where('status', 1)
+            ->get(); 
+            break;      
+    }  
+    
         $maxRedeemCount = $couponDetails[0]->max_redeem;
         
         if($couponCount < $maxRedeemCount){     
@@ -165,10 +187,15 @@ class OfferRepository
                 $couponType = $couponDetails[0]->type;  ///type:1 for percentage and 2 for amount
                 $maxDiscount = $couponDetails[0]->max_discount_price;
                 
+                log::info($maxDiscount);
+                log::info($couponType);
+
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;
                    
                     $discount = ($totalFare*($percentage))/100;
+
+                   
                     
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
