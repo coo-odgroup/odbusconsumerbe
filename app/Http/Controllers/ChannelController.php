@@ -507,7 +507,8 @@ public function pay(Request $request){
                 if($rp && isset($rp->booking_id)){
                     $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
-
+                    if($booking_det->status!=1){
+                    
                     $crt=strtotime($booking_det->created_at);
                     $now=strtotime(date("Y-m-d H:i:s"));
 
@@ -536,13 +537,12 @@ public function pay(Request $request){
                         //Log::info($booking_det->pnr."----".$res);
                    // }
                     }else{
-                        Log::info("Payment receive late. So Not updateing the status");
-                        Log::info($booking_det->pnr);
-                        Log::info($response->order_id."---".$response->status."---".$response->id);
+                        Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$response->order_id."---".$response->status."---".$response->id);
                         $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$response->order_id,$response->id,$response->status);
                       
-                    }
-                }  
+                    }    
+                }
+            }  
     }
 }
 }
