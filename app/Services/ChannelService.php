@@ -291,13 +291,17 @@ class ChannelService
                 /////
                 else{
                     $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
+
+                    if($records[0]->customer_gst_amount==0){
+                        $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
         
-                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
+                        $amount = round($amount+$customer_gst_amount,2);
+                        $update_customer_gst['payable_amount']=$amount;
+                                
+                        $update_customer_gst['customer_gst_amount']=$customer_gst_amount; 
+                    }
         
-                    $amount = round($amount+$customer_gst_amount,2);
-                    $update_customer_gst['payable_amount']=$amount;
-                            
-                    $update_customer_gst['customer_gst_amount']=$customer_gst_amount; 
+                    
                 }   
             }else{
     

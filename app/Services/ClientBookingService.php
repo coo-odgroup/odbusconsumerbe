@@ -262,10 +262,13 @@ class ClientBookingService
                     $update_customer_gst['customer_gst_business_email']=$request['customer_gst_business_email'];
                     $update_customer_gst['customer_gst_business_address']=$request['customer_gst_business_address'];
                     $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
-                    $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) ) *$masterSetting[0]->customer_gst)/100,2);
-                    $amount = round($amount+$customer_gst_amount,2);
-                    $update_customer_gst['payable_amount']=$amount;
-                    $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
+                  
+                    if($records[0]->customer_gst_amount==0){
+                        $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) ) *$masterSetting[0]->customer_gst)/100,2);
+                        $amount = round($amount+$customer_gst_amount,2);
+                        $update_customer_gst['payable_amount']=$amount;
+                        $update_customer_gst['customer_gst_amount']=$customer_gst_amount;
+                    }
                 }
             }else{
                 $amount = round($amount - $records[0]->customer_gst_amount,2);
