@@ -56,6 +56,8 @@ class NotificationService
        //curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
        curl_setopt($ch, CURLOPT_URL, env('FCM_GOOGLE_URL'));
        curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Set timeout to 30 seconds
+
        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

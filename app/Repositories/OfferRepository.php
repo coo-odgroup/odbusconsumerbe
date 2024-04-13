@@ -187,8 +187,8 @@ class OfferRepository
                 $couponType = $couponDetails[0]->type;  ///type:1 for percentage and 2 for amount
                 $maxDiscount = $couponDetails[0]->max_discount_price;
                 
-                log::info($maxDiscount);
-                log::info($couponType);
+                //log::info($maxDiscount);
+                //log::info($couponType);
 
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;

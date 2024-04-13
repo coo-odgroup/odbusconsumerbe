@@ -164,7 +164,7 @@ class HomepageService
            
             $getLocationName = $this->listingRepository->getLocation($request['locationName']);  
 
-            log::Info($getLocationName);
+            //log::Info($getLocationName);
 
             $data['locationName'] = $getLocationName;
             $data['banner_image'] = $banner_image;

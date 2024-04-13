@@ -324,7 +324,7 @@ class ClientBookingRepository
                     $uptoFare = $clientCom->upto_fare;
                     if($actual_fare_for_commission >= $startFare && $actual_fare_for_commission <= $uptoFare){
                         $clientComission = $clientCom->commision;
-                        Log::info($clientComission);
+                       // Log::info($clientComission);
                         break;
                     }  
                 }   
@@ -427,7 +427,7 @@ class ClientBookingRepository
                                        ->with('bookingDetail')
                                        ->get(); 
 
-         Log::info($transactionId);
+        // Log::info($transactionId);
 
         $origin = $bookingRecord[0]->origin;  
         $busId = $bookingRecord[0]->bus_id;  
@@ -694,7 +694,7 @@ class ClientBookingRepository
                                     ['status', '=', $booked], 
                                     ['user_id', '=', $clientId],  
                                     ])
-                ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare')
+                ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare','client_gst')
                ->with(['users'=> function($u){
                   $u->select('id','name','email','phone');   
                }])

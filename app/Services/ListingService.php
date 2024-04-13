@@ -67,7 +67,7 @@ class ListingService
         $mantisShowRecords = [];
         $mantisShowSoldoutRecords =[];
 
-        if($clientId!=372 && $clientId!=44 ){ // (Mantis Id - 213 in Test env ) (Mantis Id - 372 in Live env )
+        if($clientId!=372 && $clientId!=44 ){ 
 
             $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
             //return $mantisResult;
@@ -444,15 +444,53 @@ class ListingService
                     ->where('destination_id', $destinationID)
                     ->first(); 
             $ticketPriceId = $ticketPriceRecords->id;
+
+            //////// get bus seat wise fare to calculate logic for lowest bus fare
+            $get_bus_seat_new_fare=BusSeats::where('ticket_price_id',$ticketPriceId)->where('new_fare','>',0)->where('status',1)->select(\DB::raw("MIN(new_fare) AS StartFrom"))->first();
+
+            $start_price_arr=[];
+
+            if($get_bus_seat_new_fare->StartFrom){
+                $new_start_from=$get_bus_seat_new_fare->StartFrom;
+                array_push($start_price_arr,$new_start_from);
+            }
+            
+            ///////////////////////////////////////////////////////////////////////////////
             ////owner/special/festive fare with service charges added to base fare////////////
+
+            
            
-            $baseFare = $ticketPriceRecords->base_seat_fare; 
+            $seatPrice = $ticketPriceRecords->base_seat_fare;
+            $sleeperPrice = $ticketPriceRecords->base_sleeper_fare;
+
+            if($seatPrice>0){
+                array_push($start_price_arr,$seatPrice);
+            }
+
+            if($sleeperPrice>0){
+                array_push($start_price_arr,$sleeperPrice);
+            }
+           
+            $startingFromPrice = $baseFare = min($start_price_arr);
+
+            // if($seatPrice<$sleeperPrice){
+            //     $startingFromPrice =$seatPrice;
+            //     $baseFare = $ticketPriceRecords->base_seat_fare; 
+            // }else{
+            //     $startingFromPrice =$sleeperPrice;
+            //     $baseFare = $ticketPriceRecords->base_sleeper_fare; 
+            // }
+
+
+           
             $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
             $totalMiscfares = $miscfares[0]+$miscfares[2]+$miscfares[4];
             $misBaseFare = $baseFare + $totalMiscfares; 
             $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
             $odbusServiceCharges = 0;
-            $startingFromPrice = $ticketPriceRecords->base_seat_fare;
+            
+
+           
             foreach($ticketFareSlabs as $ticketFareSlab){
 
                 $startingFare = $ticketFareSlab->starting_fare;
@@ -752,6 +790,10 @@ class ListingService
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];
+
+           
+                
+
             if($clientRole == $clientRoleId){
 
                 /////client extra service charge added to seatfare////////////////

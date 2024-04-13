@@ -492,7 +492,7 @@ class ChannelService
     public function pay($request,$clientRole)
     {
 
-        log::info("booking updated by - ".$clientRole);
+        //log::info("booking updated by - ".$clientRole);
         
         try {
             $booked = Config::get('constants.BOOKED_STATUS');

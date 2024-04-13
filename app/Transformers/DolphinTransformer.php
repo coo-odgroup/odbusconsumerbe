@@ -904,7 +904,7 @@ class DolphinTransformer
        
         $res= $this->DolphinService->BookSeat($arr);
 
-        Log::info($res);
+        //Log::info($res);
 
        return $res;
        
@@ -945,6 +945,8 @@ class DolphinTransformer
             
             $ch = curl_init($textLocalUrl);   
             curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Set timeout to 30 seconds
+
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);

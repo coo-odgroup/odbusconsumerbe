@@ -226,6 +226,11 @@ class BookingManageService
                     ->where('source_id', $booking_detail[0]->booking[0]->source_id)
                     ->where('destination_id', $booking_detail[0]->booking[0]->destination_id)
                     ->get(); 
+
+                    $ticketPrice = TicketPrice::where('bus_id', $booking_detail[0]->booking[0]->bus_id)->first(); 
+
+                    $booking_detail[0]->booking[0]['main_source'] =$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
+                    $booking_detail[0]->booking[0]['main_destination']  =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
     
                     $departureTime = $ticketPriceRecords[0]->dep_time;
                     $arrivalTime = $ticketPriceRecords[0]->arr_time;
@@ -686,7 +691,7 @@ class BookingManageService
                 'add_special_fare' => $b->booking[0]->additional_special_fare          
             ];
 
-          log::info($data);
+          //log::info($data);
     
         } else{
 
