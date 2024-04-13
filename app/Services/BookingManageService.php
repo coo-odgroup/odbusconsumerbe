@@ -483,7 +483,7 @@ class BookingManageService
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
 
-               $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+               $ticketPrice= DB::table('ticket_price')->where('bus_id', $b->booking[0]->bus_id)->first();
             
             $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
             $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);

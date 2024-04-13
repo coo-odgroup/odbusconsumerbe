@@ -291,19 +291,26 @@ class BookingManageRepository
       
         if($b && isset($b[0])){
 
+            $main_source='';
+            $main_destination='';
+
             $b=$b[0];
             $seat_arr=[];
             $seat_no='';
             foreach($b->booking[0]->bookingDetail as $bd){
                 array_push($seat_arr,$bd->busSeats->seats->seatText);                 
             } 
+
+            if($b->booking[0]->origin=='ODBUS') {
             
-            $ticketPrice=DB::table('ticket_price')->where('pnr', $request['pnr'])->first();
+            $ticketPrice=DB::table('ticket_price')->where('bus_id', $b->booking[0]->bus_id)->first();
             
             $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
             $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
 
-            $main_destination=
+            }
+
+            
             $body = [
                 'name' => $b->name,
                 'phone' => $b->phone,

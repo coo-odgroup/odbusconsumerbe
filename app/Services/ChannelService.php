@@ -613,10 +613,15 @@ class ChannelService
 
                     $pnr = $bookingRecord[0]->pnr; 
 
-                    $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
+
             
                     $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
                     $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+
+                    Log::Info($main_source);
+                    Log::Info($main_destination);
+        
         
                     
 
@@ -1007,13 +1012,14 @@ $main_destination='';
 
                     $pnr=$bookingRecord[0]->pnr; 
 
-                    
-$ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
+
 
 $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
 $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
-
-
+Log::Info($main_source);
+                Log::Info($main_destination);
+    
 
             }
             $passengerDetails = $bookingRecord[0]->bookingDetail;
@@ -1195,12 +1201,15 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 $busId= $bookingRecord[0]->bus->id;
                 $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
                 $pnr = $bookingRecord[0]->pnr; 
+                $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
 
-                
-                $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
 
                 $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
                 $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+
+                Log::Info($main_source);
+                Log::Info($main_destination);
+    
 
           }
 
