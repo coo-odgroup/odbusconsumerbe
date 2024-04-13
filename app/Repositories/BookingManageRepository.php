@@ -296,7 +296,14 @@ class BookingManageRepository
             $seat_no='';
             foreach($b->booking[0]->bookingDetail as $bd){
                 array_push($seat_arr,$bd->busSeats->seats->seatText);                 
-            }            
+            } 
+            
+            $ticketPrice=DB::table('ticket_price')->where('pnr', $request['pnr'])->first();
+            
+            $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
+            $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
+
+            $main_destination=
             $body = [
                 'name' => $b->name,
                 'phone' => $b->phone,
@@ -310,8 +317,8 @@ class BookingManageRepository
                 'arrivalTime'=> $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
                 'busname'=> $b->booking[0]->bus->name,
-                'source'=> $b->booking[0]->source[0]->name,
-                'destination'=> $b->booking[0]->destination[0]->name,
+                'source'=> $main_source,  // changed on 13 April,2024
+                'destination'=> $main_destination, // changed on 13 April,2024
                 'busNumber'=> $b->booking[0]->bus->bus_number,
                 'bustype' => $b->booking[0]->bus->busType->name,
                 'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
@@ -764,7 +771,7 @@ class BookingManageRepository
                     ->with('users')
                     ->get();
 
-                    Log::Info($data);
+                  //  Log::Info($data);
 
                     return $data;
 

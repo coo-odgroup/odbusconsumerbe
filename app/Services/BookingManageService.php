@@ -483,6 +483,11 @@ class BookingManageService
                $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
                $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
 
+               $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+            
+            $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
+            $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
+
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -496,8 +501,10 @@ class BookingManageService
                     'arrivalTime'=> $b->booking[0]->dropping_time,
                     'seat_no' => $seat_arr,
                     'busname'=> $b->booking[0]->bus->name,
-                    'source'=> $source_data[0]->name,
-                    'destination'=> $dest_data[0]->name,
+                    // 'source'=> $source_data[0]->name,
+                    // 'destination'=> $dest_data[0]->name,
+                    'source'=> $main_source,  // changed on 13 April,2024
+                'destination'=> $main_destination, // changed on 13 April,2024
                     'busNumber'=> $b->booking[0]->bus->bus_number,
                     'bustype' => $b->booking[0]->bus->busType->name,
                     'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
