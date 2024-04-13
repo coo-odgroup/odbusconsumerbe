@@ -506,7 +506,8 @@ class ChannelService
             $razorpay_payment_id = $data['razorpay_payment_id'];
             $razorpay_order_id = $data['razorpay_order_id'];
             $transationId = $data['transaction_id'];
-           
+            $main_source='';
+            $main_destination='';
             $records = $this->channelRepository->getBookingRecord($transationId);
 
             if($records[0]->email_sms_status==1){
@@ -612,6 +613,13 @@ class ChannelService
 
                     $pnr = $bookingRecord[0]->pnr; 
 
+                    $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+            
+                    $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
+                    $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+        
+                    
+
             }
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $bookingId = $bookingRecord[0]->id;                   
@@ -619,8 +627,12 @@ class ChannelService
             $email = $bookingRecord[0]->users->email;
             $name = $bookingRecord[0]->users->name;
             $journeydate = $bookingRecord[0]->journey_dt;
+
+           
+
             $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
             $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
+
             $routedetails = $source.'-'.$destination;
             $boarding_point = $bookingRecord[0]->boarding_point;
             $departureTime = $bookingRecord[0]->boarding_time;
@@ -682,8 +694,8 @@ class ChannelService
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
-                "source" => $source,
-                "destination" => $destination,
+                "source" => ($main_source =='') ? $source : $main_source,
+                "destination" =>($main_destination =='') ? $destination : $main_destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
@@ -896,6 +908,9 @@ class ChannelService
 
             $records = $this->channelRepository->getBookingRecord($transationId);
             $origin = $records[0]->origin;
+
+            $main_source='';
+$main_destination='';
           
             if($origin=='DOLPHIN') {
                
@@ -992,6 +1007,14 @@ class ChannelService
 
                     $pnr=$bookingRecord[0]->pnr; 
 
+                    
+$ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+
+$main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
+$main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+
+
+
             }
             $passengerDetails = $bookingRecord[0]->bookingDetail;
             $bookingId = $bookingRecord[0]->id;                   
@@ -1062,9 +1085,9 @@ class ChannelService
                 "dropping_point" => $dropping_point,
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
-                "conductor_number" => $conductor_number,
-                "source" => $source,
-                "destination" => $destination,
+                "conductor_number" => $conductor_number,                
+                "source" => ($main_source =='') ? $source : $main_source,
+                "destination" =>($main_destination =='') ? $destination : $main_destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
@@ -1104,6 +1127,9 @@ class ChannelService
             
             $customerId = $this->channelRepository->GetCustomerPaymentId($data['razorpay_order_id']);
             $customerId = $customerId[0];
+
+            $main_source='';
+            $main_destination='';
            
             //$busId = $request['bus_id'];
             //$seatIds = $request['seat_id'];
@@ -1169,6 +1195,13 @@ class ChannelService
                 $busId= $bookingRecord[0]->bus->id;
                 $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
                 $pnr = $bookingRecord[0]->pnr; 
+
+                
+                $ticketPrice= DB::table('ticket_price')->where('pnr', $pnr)->first();
+
+                $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
+                $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+
           }
 
 
@@ -1247,9 +1280,9 @@ class ChannelService
                 "dropping_point" => $dropping_point,
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
-                "conductor_number" => $conductor_number,
-                "source" => $source,
-                "destination" => $destination,
+                "conductor_number" => $conductor_number,                
+                "source" => ($main_source =='') ? $source : $main_source,
+                "destination" =>($main_destination =='') ? $destination : $main_destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
