@@ -704,7 +704,7 @@ border: 0;
                     <tbody>
                       <tr>
                         <td>Journey Date: {{$journeydate}}</td>
-                        <td>Bus Route: {{$source}}-{{$destination}}</td>
+                        <td>Bus Route: {{$routedetails}}</td>
                       </tr>
                       <tr>
                         <!-- <td>Deparature Timing: {{date("g:iA", strtotime($departureTime))}}</td>
@@ -860,6 +860,9 @@ border: 0;
                     @endforeach  
                     </tbody>
                   </table>
+
+                  <p style="color: red;font-weight:bold">You are requested to call conductor no before 1 hour and reach on the boarding points before 15 min of bus departure.</p>
+
                   <h3>TERMS & CONDITIONS</h3>
                   <p style="font-size: 14px"><strong>Are Not Odbus Responsibilities</strong></p>
 <ol>

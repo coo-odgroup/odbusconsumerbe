@@ -618,11 +618,6 @@ class ChannelService
             
                     $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
                     $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
-
-                    Log::Info($main_source);
-                    Log::Info($main_destination);
-        
-        
                     
 
             }

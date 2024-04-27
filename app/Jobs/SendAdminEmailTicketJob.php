@@ -63,6 +63,8 @@ class SendAdminEmailTicketJob implements ShouldQueue
     protected $customer_gst_amount;
     protected $coupon_discount;
     protected $p_names;
+    protected $routedetails;
+    
 
     
 
@@ -84,6 +86,8 @@ class SendAdminEmailTicketJob implements ShouldQueue
         $this->busname = $request['busname'];
         $this->source = $request['source'];
         $this->destination = $request['destination'];
+        $this->routedetails = $request['routedetails'];
+        
         $this->busNumber = $request['busNumber'];
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
@@ -167,6 +171,7 @@ class SendAdminEmailTicketJob implements ShouldQueue
             'busname'=> $this->busname,
             'source'=> $this->source,
             'destination'=> $this->destination,
+            'routedetails'=> $this->routedetails,            
             'busNumber'=> $this->busNumber,
             'bustype' => $this->bustype,
             'busTypeName' => $this->busTypeName,

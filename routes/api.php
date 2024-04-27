@@ -167,7 +167,7 @@ Route::get('/testing', [ChannelController::class, 'testing']);
 Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);
 Route::post('/ClientCancelTicketInfo', [ClientBookingController::class, 'clientCancelTicketInfo']);
 
-Route::get('/UpdateExternalApiLocation', [ListingController::class, 'UpdateExternalApiLocation']);
+Route::get('/UpdateDolphinApiLocation', [ListingController::class, 'UpdateExternalApiLocation']);
 Route::get('/countries', [SoapController::class, 'getCountries']);
 Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy']);
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);

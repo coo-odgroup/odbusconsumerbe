@@ -70,6 +70,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $p_names;
     protected $add_festival_fare;
     protected $add_special_fare;
+    protected $routedetails;
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
@@ -93,6 +94,8 @@ class SendEmailTicketJob implements ShouldQueue
         $this->busname = $request['busname'];
         $this->source = $request['source'];
         $this->destination = $request['destination'];
+        $this->routedetails = $request['routedetails'];
+        
         $this->busNumber = $request['busNumber'];
         $this->bustype = $request['bustype'];
         $this->busTypeName = $request['busTypeName'];
@@ -186,6 +189,7 @@ class SendEmailTicketJob implements ShouldQueue
             'busname'=> $this->busname,
             'source'=> $this->source,
             'destination'=> $this->destination,
+            'routedetails'=>$this->routedetails,
             'busNumber'=> $this->busNumber,
             'bustype' => $this->bustype,
             'busTypeName' => $this->busTypeName,

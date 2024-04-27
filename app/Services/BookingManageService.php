@@ -488,6 +488,13 @@ class BookingManageService
             $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
             $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
 
+            if($main_source!='' && $main_destination!=''){
+                $routedetails=$main_source.'-'.$main_destination;
+            }else{
+                $routedetails= $source_data[0]->name.'-'.$dest_data[0]->name;
+            }
+
+
                $body = [
                     'name' => $b->name,
                     'phone' => $b->phone,
@@ -501,10 +508,8 @@ class BookingManageService
                     'arrivalTime'=> $b->booking[0]->dropping_time,
                     'seat_no' => $seat_arr,
                     'busname'=> $b->booking[0]->bus->name,
-                    // 'source'=> $source_data[0]->name,
-                    // 'destination'=> $dest_data[0]->name,
-                    'source'=> $main_source,  // changed on 13 April,2024
-                'destination'=> $main_destination, // changed on 13 April,2024
+                    'source'=> $source_data[0]->name,
+                    'destination'=> $dest_data[0]->name,                    
                     'busNumber'=> $b->booking[0]->bus->bus_number,
                     'bustype' => $b->booking[0]->bus->busType->name,
                     'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
@@ -517,7 +522,7 @@ class BookingManageService
                     'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                     'odbus_charges'=> $b->booking[0]->odbus_charges,
                     'owner_fare'=> $b->booking[0]->owner_fare,
-                    'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
+                    'routedetails' => $routedetails
                 ];
 
                 $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
