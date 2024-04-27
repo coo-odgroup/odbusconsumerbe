@@ -489,7 +489,7 @@ class BookingManageService
             $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
 
             if($main_source!='' && $main_destination!=''){
-                $routedetails=$main_source.'-'.$main_destination;
+                $routedetails=$main_source[0]->name.'-'.$main_destination[0]->name;
             }else{
                 $routedetails= $source_data[0]->name.'-'.$dest_data[0]->name;
             }
@@ -721,7 +721,17 @@ class BookingManageService
            $source_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->source_id);
            $dest_data= $this->bookingManageRepository->GetLocationName($b->booking[0]->destination_id);
            
-         
+           $ticketPrice= DB::table('ticket_price')->where('bus_id', $b->booking[0]->bus_id)->first();
+            
+           $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
+           $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
+
+           if($main_source!='' && $main_destination!=''){
+               $routedetails=$main_source[0]->name.'-'.$main_destination[0]->name;
+           }else{
+               $routedetails= $source_data[0]->name.'-'.$dest_data[0]->name;
+           }
+           
 
             $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
 
@@ -813,7 +823,8 @@ class BookingManageService
                 'agent_number'=> $agent_number,
                 'customer_comission' => $customer_comission,
                 'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
-                'add_special_fare' => $b->booking[0]->additional_special_fare        
+                'add_special_fare' => $b->booking[0]->additional_special_fare,
+                'routedetails' => $routedetails       
             ];
 
               //  Log::info( $data );

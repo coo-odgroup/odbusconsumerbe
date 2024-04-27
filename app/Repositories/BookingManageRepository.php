@@ -305,10 +305,19 @@ class BookingManageRepository
             
             $ticketPrice=DB::table('ticket_price')->where('bus_id', $b->booking[0]->bus_id)->first();
             
-            $main_source=$this->bookingManageRepository->GetLocationName($ticketPrice->source_id);
-            $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
+            $main_source=$this->GetLocationName($ticketPrice->source_id);
+            $main_destination =$this->GetLocationName($ticketPrice->destination_id);
 
             }
+
+            if($main_source!='' && $main_destination!=''){
+                $main_source=$main_source[0]->name;
+                $main_destination=$main_destination[0]->name;
+            }else{
+                $main_source= $b->booking[0]->source[0]->name;
+                $main_destination=$b->booking[0]->destination[0]->name ;   
+            }
+
 
             
             $body = [
