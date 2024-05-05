@@ -25,6 +25,8 @@ use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 Use hash_hmac;
 use JWTAuth;
+use App\Mail\SendPdfEmail;
+use Illuminate\Support\Facades\Mail;
 
 class ChannelController extends Controller
 {
@@ -55,9 +57,13 @@ class ChannelController extends Controller
     public function testingEmail() {
 
             $to = "mohantylima71@gmail.com";
-            $name = "Lima";
+            $name = "Lima"; 
+           // $pdfPath = public_path('ticketpdf/ODW6340039.pdf');
+            //$res=Mail::to($to)->send(new SendPdfEmail($pdfPath));
+
     
-            $res= TestingEmailJob::dispatch($to, $name);
+             $res= TestingEmailJob::dispatch($to, $name);
+            // print_r($res);
 
             return $this->successResponse($res,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
  

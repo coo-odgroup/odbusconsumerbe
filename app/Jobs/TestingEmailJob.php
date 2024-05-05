@@ -11,6 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+use App\Mail\SendPdfEmail;
 
 class TestingEmailJob implements ShouldQueue
 {
@@ -24,11 +26,13 @@ class TestingEmailJob implements ShouldQueue
     protected $to;
     protected $name;
     protected $subject;
+    protected $file;
     public function __construct($to, $name)
     {
         $this->to = $to;
         $this->name = $name;
         $this->subject = 'testing';
+        $this->file=public_path('ticketpdf/ODW6340039.pdf');
         
     }
 
@@ -42,20 +46,20 @@ class TestingEmailJob implements ShouldQueue
         $data = [
             'name' => $this->name,
         ];
+
         
       Mail::send('test', $data, function ($messageNew) {
-            $messageNew->from(config('mail.contact.address'))
-            ->to($this->to)
+           $messageNew->attach($this->file)->to($this->to)
             ->subject($this->subject);
         });
         
         // check for failures
-        // if (Mail::failures()) {
-        //     return new Error(Mail::failures()); 
-        //     //return "Email failed";
-        // }else{
-        //     return 'success';
-        // }
+        if (Mail::failures()) {
+            return new Error(Mail::failures()); 
+            //return "Email failed";
+        }else{
+            return 'success';
+        }
 
     }
 }

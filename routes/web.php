@@ -5,6 +5,7 @@ use App\Http\Controllers\BotManController;
 use App\Http\Controllers\SoapController;
 use App\Http\Controllers\BookingManageController;
 use App\Http\Controllers\HTMLPDFController;
+use App\Http\Controllers\ChannelController;
 
 
 /*
@@ -32,5 +33,12 @@ Route::get('qr-code-g', function () {
   return view('qrCode');
     
 });
+
+Route::get('gst', function () {
+return view('Gst');
+  
+});
+
+Route::get('/TestingEmail', [ChannelController::class, 'testingEmail']); 
 
 Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downlaodTicket']);

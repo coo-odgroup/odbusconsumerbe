@@ -71,6 +71,9 @@ class SendEmailTicketJob implements ShouldQueue
     protected $add_festival_fare;
     protected $add_special_fare;
     protected $routedetails;
+    protected $ticketpdf;
+    protected $gstpdf;
+    protected $gst_name;
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
@@ -162,6 +165,55 @@ class SendEmailTicketJob implements ShouldQueue
 
         $this->p_names=$pp_names;
 
+        $this->ticketpdf=public_path('ticketpdf/'.$this->email_pnr.'.pdf');
+
+        $this->gst_name='';
+
+        if($customer_gst_status==1){
+
+        $gst_name='OB-000082.pdf';
+        $updated_at=date('Y-m-d H:i');
+
+        $invoice=DB::table('booking')->where('status',1)->where('gst_invoice_no','!=',null)->orderby('updated_at','desc')->first();// check if any invoice no added
+
+        $pnr_invoice=DB::table('booking')->where('pnr',$email_pnr)->first();// check if any invoice no added
+
+        if($pnr_invoice->gst_invoice_no!=''){
+            $gst_name=$pnr_invoice->gst_invoice_no;
+        }
+
+        else if($invoice && $pnr_invoice->gst_invoice_no==''){
+            $nm=str_replace("OB-","",$invoice->gst_invoice_no);
+            $nm=str_replace(".pdf","",$nm);
+            $nm=ltrim("$nm",0);
+            $gst_name=(int)$nm+1;
+
+            if($gst_name<100){
+                $gst_name='OB-0000'.$gst_name.'.pdf';
+            }
+            else if($gst_name<1000){
+                $gst_name='OB-000'.$gst_name.'.pdf';
+            }
+            else if($gst_name<10000){
+                $gst_name='OB-00'.$gst_name.'.pdf';
+            }
+            else if($gst_name<100000){
+                $gst_name='OB-0'.$gst_name.'.pdf';
+            }
+            else if($gst_name<1000000){
+                $gst_name='OB-'.$gst_name.'.pdf';
+            }
+
+        }
+        DB::table('booking')->where('pnr', $this->email_pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
+
+        $this->gst_name=$gst_name;
+
+        $this->gstpdf=public_path('gst/'.$gst_name);
+
+    }
+
+
        
     }
 
@@ -220,21 +272,42 @@ class SendEmailTicketJob implements ShouldQueue
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names, 
             'add_festival_fare' => $this->add_festival_fare, 
-            'add_special_fare' => $this->add_special_fare
+            'add_special_fare' => $this->add_special_fare,
+            'gst_name' => str_replace('.pdf','',$this->gst_name)
         ];
 
-        //Log::info($data);
+       // Log::info($data);
 
-       // $pdf = PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
+       
+        PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
+       
+       
+       
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
         //dd($this->subject);
-        Mail::send('emailTicket', $data, function ($messageNew) {
-            $messageNew->to($this->to)
-            //->subject(config('services.email.subjectTicket'));
-            ->subject($this->subject);
-        });
+        if($this->customer_gst_status==0){
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->to($this->to)
+                ->subject($this->subject);
+            });
+        }
+
+        /////////////// pdf attach ///////////////////////
+
+        else if($this->customer_gst_status==1){
+            PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
+
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->gstpdf)->to($this->to)
+                ->subject($this->subject);
+            });
+
+        }
+
+       
+
         
       
         // // check for failures

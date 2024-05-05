@@ -177,7 +177,7 @@ Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisA
 
 Route::get('/GetToken', [MantisController::class, 'getToken']);
 
-Route::get('/TestingEmail', [ChannelController::class, 'testingEmail']); 
+
 
 
 
