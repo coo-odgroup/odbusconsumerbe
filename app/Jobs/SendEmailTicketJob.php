@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 use DB;
 use PDF;
+use App\Models\Bus;
+use App\Models\Booking;
+use App\Models\BusType;
+use App\Models\BusClass;
 
 
 
@@ -74,13 +78,23 @@ class SendEmailTicketJob implements ShouldQueue
     protected $ticketpdf;
     protected $gstpdf;
     protected $gst_name;
+    protected $bus_sitting;
+    protected $bus_type;
+    
 
     public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
         ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
 
-        $bk_dtl=DB::table('booking')->where('pnr', $email_pnr)->first();
+        $bk_dtl=Booking::with(["bus" => function($bs){
+            $bs->with('BusType.busClass');
+            $bs->with('BusSitting');  
+          } ] )->where('pnr', $email_pnr)->first();
+
+          $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
+          $this->bus_type = $bk_dtl->bus->BusType->name;
+
         $this->add_festival_fare = $bk_dtl->additional_festival_fare;
         $this->add_special_fare = $bk_dtl->additional_special_fare;
 
@@ -272,8 +286,11 @@ class SendEmailTicketJob implements ShouldQueue
             'cancelation_policy' => $this->cancelation_policy,
             'p_names' => $this->p_names, 
             'add_festival_fare' => $this->add_festival_fare, 
-            'add_special_fare' => $this->add_special_fare,
-            'gst_name' => str_replace('.pdf','',$this->gst_name)
+            'add_special_fare' => $this->add_special_fare, 
+            'bus_type' => $this->bus_type,
+            'bus_sitting' => $this->bus_sitting,
+            'gst_name' => str_replace('.pdf','',$this->gst_name),
+            
         ];
 
        // Log::info($data);
