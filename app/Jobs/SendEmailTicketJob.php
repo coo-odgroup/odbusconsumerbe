@@ -226,14 +226,9 @@ class SendEmailTicketJob implements ShouldQueue
         $this->gst_name=$gst_name;
 
         $this->gstpdf=public_path('gst/'.$gst_name);
-
-        $this->email_pdf= public_path('ticketpdf/'.$this->email_pnr.'.pdf');
-       
-         
-
     }
 
-
+    $this->email_pdf= public_path('ticketpdf/'.$this->email_pnr.'.pdf');
        
     }
 
@@ -247,7 +242,7 @@ class SendEmailTicketJob implements ShouldQueue
     {
         
         $rr=explode('-to-',$this->routedetails);
-        log::info($rr);
+       // log::info($rr);
 
         $data = [
             'name' => $this->name,
@@ -302,7 +297,7 @@ class SendEmailTicketJob implements ShouldQueue
             
         ];
 
-       // Log::info($data);
+       // Log::info($this->email_pdf);
 
        
         PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
