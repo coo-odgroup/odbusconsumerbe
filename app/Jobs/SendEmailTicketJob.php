@@ -306,12 +306,6 @@ class SendEmailTicketJob implements ShouldQueue
                 $messageNew->attach($this->email_pdf)->to($this->to)
                 ->subject($this->subject);
             });
-
-            Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->to("mohantylima71@gmail.com")
-                ->subject($this->subject);
-            });
-
         }
 
         else if($this->customer_gst_status==1){
@@ -321,12 +315,6 @@ class SendEmailTicketJob implements ShouldQueue
                 $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
                 ->subject($this->subject);
             });
-
-            Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to("mohantylima71@gmail.com")
-                ->subject($this->subject);
-            });
-
         }
 
        

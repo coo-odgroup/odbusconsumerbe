@@ -222,10 +222,6 @@ class SendAdminEmailTicketJob implements ShouldQueue
                 ->subject($this->subject);
             });
 
-            Mail::send('AdminemailTicket', $data, function ($messageNew) {
-                $messageNew->to('mohantylima71@gmail.com')
-                ->subject($this->subject);
-            });
         }
 
         else{
@@ -233,11 +229,6 @@ class SendAdminEmailTicketJob implements ShouldQueue
             $gst='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
             Mail::send('AdminemailTicket', $data, function ($messageNew) {
                 $messageNew->attach($gst)->to('booking@odbus.in')
-                ->subject($this->subject);
-            });
-
-            Mail::send('AdminemailTicket', $data, function ($messageNew) {
-                $messageNew->attach($gst)->to('mohantylima71@gmail.com')
                 ->subject($this->subject);
             });
         }
