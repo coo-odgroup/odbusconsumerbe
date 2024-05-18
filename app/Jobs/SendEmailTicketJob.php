@@ -247,6 +247,7 @@ class SendEmailTicketJob implements ShouldQueue
     {
         
         $rr=explode('-to-',$this->routedetails);
+        log::info($rr);
 
         $data = [
             'name' => $this->name,

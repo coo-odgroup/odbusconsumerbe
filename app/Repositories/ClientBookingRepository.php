@@ -536,7 +536,7 @@ class ClientBookingRepository
             $busNumber = $bookingDetails[0]->bus->bus_number;
             $conductor_number = $bookingDetails[0]->bus->busContacts->phone;
             $journeydate = $bookingDetails[0]->journey_dt;
-            $routedetails = $srcName.'-'.$destName;
+            $routedetails = $srcName.'-to-'.$destName;
             $departureTime = $bookingDetails[0]->boarding_time;
             $departureTime = date("H:i:s",strtotime($departureTime));
             $arrivalTime = $bookingDetails[0]->dropping_time;

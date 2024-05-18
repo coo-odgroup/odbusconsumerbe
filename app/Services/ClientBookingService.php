@@ -902,7 +902,7 @@ class ClientBookingService
                        $busNumber = $booking_detail[0]->bus->bus_number;
                        $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->source_id);                   
                        $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->destination_id);
-                       $route = $sourceName .'-'. $destinationName;
+                       $route = $sourceName .'-to-'. $destinationName;
                        $userMailId = $booking_detail[0]->users->email;
                        $phone = $booking_detail[0]->users->phone;
                        $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
