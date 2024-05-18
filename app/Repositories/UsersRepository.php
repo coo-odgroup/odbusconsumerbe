@@ -83,7 +83,7 @@ class UsersRepository
         $user->password= bcrypt('odbus123');
         $user->created_by= $request['created_by'];
 
-        log::info($request['phone']);
+        //log::info($request['phone']);
 
         if($request['phone']!='9999999999'){
           $otp = $this->sendOtp($request);
