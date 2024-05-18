@@ -75,16 +75,16 @@ class SendEmailTicketJob implements ShouldQueue
     protected $add_festival_fare;
     protected $add_special_fare;
     protected $routedetails;
-    protected $ticketpdf;
-    protected $gstpdf;
-    protected $email_pdf;
+    protected $ticketpdf; 
+    protected $email_pdf; 
     
+    protected $gstpdf;    
     protected $gst_name;
     protected $bus_sitting;
     protected $bus_type;
     
 
-    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $email_pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
+    public function __construct($totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request, $pnr,$cancelation_policy,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount)
 
     {
         ///////// get additional festival fare & special fare (oct , 7,2023 changes made by Lima)
@@ -92,7 +92,7 @@ class SendEmailTicketJob implements ShouldQueue
         $bk_dtl=Booking::with(["bus" => function($bs){
             $bs->with('BusType.busClass');
             $bs->with('BusSitting');  
-          } ] )->where('pnr', $email_pnr)->first();
+          } ] )->where('pnr', $pnr)->first();
 
           $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
           $this->bus_type = $bk_dtl->bus->BusType->name;
@@ -151,20 +151,20 @@ class SendEmailTicketJob implements ShouldQueue
 ///////////////////////////
         $this->customer_comission =  (isset($request['customer_comission'])) ? $request['customer_comission'] : 0;
     
-        $this->email_pnr= $email_pnr;
+        $this->email_pnr= $pnr;
 
        $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
 
-       $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$this->email_pnr;
+       $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$pnr;
 
        //Log::info($this->qrCodeText);
 
         \QrCode::size(500)
         ->format('png')
-        ->generate($this->qrCodeText, public_path('qrcode/'.$this->email_pnr.'.png')); 
+        ->generate($this->qrCodeText, public_path('qrcode/'.$pnr.'.png')); 
 
         $this->subject ='';
-        $this->qrcode_image_path = url('public/qrcode/'.$this->email_pnr.'.png');
+        $this->qrcode_image_path = url('public/qrcode/'.$pnr.'.png');
 
 
         $p_name=[];
@@ -181,7 +181,8 @@ class SendEmailTicketJob implements ShouldQueue
 
         $this->p_names=$pp_names;
 
-        $this->ticketpdf=public_path('ticketpdf/'.$this->email_pnr.'.pdf');
+        $this->ticketpdf=public_path('ticketpdf/'.$pnr.'.pdf');
+        $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$pnr.'.pdf'; 
 
         $this->gst_name='';
 
@@ -192,7 +193,7 @@ class SendEmailTicketJob implements ShouldQueue
 
         $invoice=DB::table('booking')->where('status',1)->where('gst_invoice_no','!=',null)->orderby('updated_at','desc')->first();// check if any invoice no added
 
-        $pnr_invoice=DB::table('booking')->where('pnr',$email_pnr)->first();// check if any invoice no added
+        $pnr_invoice=DB::table('booking')->where('pnr',$pnr)->first();// check if any invoice no added
 
         if($pnr_invoice->gst_invoice_no!=''){
             $gst_name=$pnr_invoice->gst_invoice_no;
@@ -221,15 +222,13 @@ class SendEmailTicketJob implements ShouldQueue
             }
 
         }
-        DB::table('booking')->where('pnr', $this->email_pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
+        DB::table('booking')->where('pnr', $pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
 
         $this->gst_name=$gst_name;
 
-        $this->gstpdf=public_path('gst/'.$gst_name);
+        $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$gst_name;
     }
-
-    $this->email_pdf= public_path('ticketpdf/'.$this->email_pnr.'.pdf');
-       
+ 
     }
 
     /**
@@ -242,8 +241,7 @@ class SendEmailTicketJob implements ShouldQueue
     {
         
         $rr=explode('-to-',$this->routedetails);
-       // log::info($rr);
-
+      
         $data = [
             'name' => $this->name,
             'pnr' => $this->email_pnr,
@@ -297,23 +295,24 @@ class SendEmailTicketJob implements ShouldQueue
             
         ];
 
-       // Log::info($this->email_pdf);
-
        
-        PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
-       
-         
+        PDF::loadView('htmlPdf',$data)->save($this->ticketpdf);
+ 
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
         //dd($this->subject);
-        if($this->customer_gst_status==0){
+        if($this->customer_gst_status==0){   
             Mail::send('emailTicket', $data, function ($messageNew) {
                 $messageNew->attach($this->email_pdf)->to($this->to)
                 ->subject($this->subject);
             });
-        }
 
-        /////////////// pdf attach ///////////////////////
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->email_pdf)->to("mohantylima71@gmail.com")
+                ->subject($this->subject);
+            });
+
+        }
 
         else if($this->customer_gst_status==1){
             PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
@@ -323,10 +322,15 @@ class SendEmailTicketJob implements ShouldQueue
                 ->subject($this->subject);
             });
 
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to("mohantylima71@gmail.com")
+                ->subject($this->subject);
+            });
+
         }
 
        
-
+       
         
       
         // // check for failures

@@ -211,7 +211,7 @@ class SendAdminEmailTicketJob implements ShouldQueue
         $bk_dtl=Booking::with(["bus" => function($bs){
             $bs->with('BusType.busClass');
             $bs->with('BusSitting');  
-          } ] )->where('pnr', $email_pnr)->first();
+          } ] )->where('pnr', $this->email_pnr)->first();
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
