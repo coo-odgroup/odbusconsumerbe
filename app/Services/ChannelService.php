@@ -633,7 +633,7 @@ class ChannelService
             $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
             $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
 
-            $routedetails = $source.'-'.$destination;
+            $routedetails = $source.'-to-'.$destination;
             $boarding_point = $bookingRecord[0]->boarding_point;
             $departureTime = $bookingRecord[0]->boarding_time;
             $dropping_point = $bookingRecord[0]->dropping_point;

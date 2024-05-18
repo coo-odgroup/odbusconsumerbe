@@ -328,7 +328,7 @@ class BookingManageService
                                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                                 'owner_fare'=> $b->booking[0]->owner_fare,
-                                'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
+                                'routedetails' => $source_data[0]->name."-to-".$dest_data[0]->name 
                             ];
                             $cancellationslabs = $b->booking[0]->bus['cancellationslabs']['cancellation_slab_info'];
 
@@ -410,7 +410,7 @@ class BookingManageService
                                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                                 'owner_fare'=> $b->booking[0]->owner_fare,
-                                'routedetails' => $source_data[0]->name."-".$dest_data[0]->name 
+                                'routedetails' => $source_data[0]->name."-to-".$dest_data[0]->name 
                             ];
 
                           //  return $body;
@@ -1561,7 +1561,7 @@ class BookingManageService
                             $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
                             $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
                             $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
-                            $route = $sourceName .'-'. $destinationName;
+                            $route = $sourceName .'-to-'. $destinationName;
                             $userMailId =$booking_detail[0]->email;
 
                             $combinedDT = date('Y-m-d H:i:s', strtotime("$jDate $boardTime"));
