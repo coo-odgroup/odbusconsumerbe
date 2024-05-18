@@ -77,6 +77,8 @@ class SendEmailTicketJob implements ShouldQueue
     protected $routedetails;
     protected $ticketpdf;
     protected $gstpdf;
+    protected $email_pdf;
+    
     protected $gst_name;
     protected $bus_sitting;
     protected $bus_type;
@@ -225,6 +227,10 @@ class SendEmailTicketJob implements ShouldQueue
 
         $this->gstpdf=public_path('gst/'.$gst_name);
 
+        $this->email_pdf= public_path('ticketpdf/'.$this->email_pnr.'.pdf');
+       
+         
+
     }
 
 
@@ -240,7 +246,7 @@ class SendEmailTicketJob implements ShouldQueue
     public function handle()
     {
         
-
+        $rr=explode('-to-',$this->routedetails);
 
         $data = [
             'name' => $this->name,
@@ -256,6 +262,8 @@ class SendEmailTicketJob implements ShouldQueue
             'source'=> $this->source,
             'destination'=> $this->destination,
             'routedetails'=>$this->routedetails,
+            'start'=>$rr[0],
+            'end'=>$rr[1],
             'busNumber'=> $this->busNumber,
             'bustype' => $this->bustype,
             'busTypeName' => $this->busTypeName,
@@ -298,15 +306,13 @@ class SendEmailTicketJob implements ShouldQueue
        
         PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$this->email_pnr.'.pdf');
        
-       
-       
-             
+         
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
         //dd($this->subject);
         if($this->customer_gst_status==0){
             Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->to($this->to)
+                $messageNew->attach($this->email_pdf)->to($this->to)
                 ->subject($this->subject);
             });
         }
@@ -317,7 +323,7 @@ class SendEmailTicketJob implements ShouldQueue
             PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
 
             Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->gstpdf)->to($this->to)
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
                 ->subject($this->subject);
             });
 

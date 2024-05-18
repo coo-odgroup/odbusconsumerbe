@@ -9,6 +9,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use App\Models\Bus;
+use App\Models\Booking;
+use App\Models\BusType;
+use App\Models\BusClass;
 
 class SendAdminEmailTicketJob implements ShouldQueue
 {
@@ -203,14 +207,29 @@ class SendAdminEmailTicketJob implements ShouldQueue
         ];
 
         //Log::info($data);
+
+        $bk_dtl=Booking::with(["bus" => function($bs){
+            $bs->with('BusType.busClass');
+            $bs->with('BusSitting');  
+          } ] )->where('pnr', $email_pnr)->first();
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
        
-        Mail::send('AdminemailTicket', $data, function ($messageNew) {
-            $messageNew->to('booking@odbus.in')
-            ->subject($this->subject);
-        });
+        if($this->customer_gst_status==0){
+            Mail::send('AdminemailTicket', $data, function ($messageNew) {
+                $messageNew->to('booking@odbus.in')
+                ->subject($this->subject);
+            });
+        }
+
+        else{
+            Mail::send('AdminemailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->email_pnr.'.pdf')->attach($bk_dtl->gst_invoice_no)->to('booking@odbus.in')
+                ->subject($this->subject);
+            });
+        }
+       
         
         // // check for failures
         // if (Mail::failures()) {

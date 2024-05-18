@@ -489,9 +489,9 @@ class BookingManageService
             $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
 
             if($main_source!='' && $main_destination!=''){
-                $routedetails=$main_source[0]->name.'-'.$main_destination[0]->name;
+                $routedetails=$main_source[0]->name.'-to-'.$main_destination[0]->name;
             }else{
-                $routedetails= $source_data[0]->name.'-'.$dest_data[0]->name;
+                $routedetails= $source_data[0]->name.'-to-'.$dest_data[0]->name;
             }
 
 
@@ -727,9 +727,9 @@ class BookingManageService
            $main_destination =$this->bookingManageRepository->GetLocationName($ticketPrice->destination_id);
 
            if($main_source!='' && $main_destination!=''){
-               $routedetails=$main_source[0]->name.'-'.$main_destination[0]->name;
+               $routedetails=$main_source[0]->name.'-to-'.$main_destination[0]->name;
            }else{
-               $routedetails= $source_data[0]->name.'-'.$dest_data[0]->name;
+               $routedetails= $source_data[0]->name.'-to-'.$dest_data[0]->name;
            }
            
 

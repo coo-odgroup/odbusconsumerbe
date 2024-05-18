@@ -27,12 +27,14 @@ class TestingEmailJob implements ShouldQueue
     protected $name;
     protected $subject;
     protected $file;
+    protected $gst;
     public function __construct($to, $name)
     {
         $this->to = $to;
         $this->name = $name;
         $this->subject = 'testing';
         $this->file=public_path('ticketpdf/ODW6340039.pdf');
+        $this->gst=public_path('gst/OB-000082.pdf');
         
     }
 
@@ -49,7 +51,7 @@ class TestingEmailJob implements ShouldQueue
 
         
       Mail::send('test', $data, function ($messageNew) {
-           $messageNew->attach($this->file)->to($this->to)
+           $messageNew->attach($this->file)->attach($this->gst)->to($this->to)
             ->subject($this->subject);
         });
         
