@@ -113,7 +113,12 @@ class SendEmailTicketJob implements ShouldQueue
         $this->busname = $request['busname'];
         $this->source = $request['source'];
         $this->destination = $request['destination'];
-        $this->routedetails = $request['routedetails'];
+        if(!isset($request['routedetails'])){
+            $this->routedetails = $request['source'].'-to-'.$request['destination'];
+        }else{
+            $this->routedetails = $request['routedetails'];
+        }
+        
         
         $this->busNumber = $request['busNumber'];
         $this->bustype = $request['bustype'];
