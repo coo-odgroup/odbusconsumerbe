@@ -347,7 +347,7 @@ class BookingManageRepository
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
-                'routedetails' => $b->booking[0]->source[0]->name."-".$b->booking[0]->destination[0]->name    
+                'routedetails' => $b->booking[0]->source[0]->name."-to-".$b->booking[0]->destination[0]->name    
             ];
 
 
