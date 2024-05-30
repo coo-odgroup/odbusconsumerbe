@@ -1105,6 +1105,12 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
                 "customer_comission" => $customer_comission,
+                'totalfare'=> $totalfare,
+                'discount'=> $discount,
+                'payable_amount'=> $payable_amount,
+                'odbus_gst'=> $odbus_gst,
+                'odbus_charges'=> $odbus_charges,
+                'owner_fare'=> $owner_fare
             );
             return $this->channelRepository->UpdateAgentPaymentInfo($paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$bookedStatusFailed,$transationId,$pnr,$busId,$booked,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin);
             
@@ -1308,6 +1314,12 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
+                'totalfare'=> $totalfare,
+                'discount'=> $discount,
+                'payable_amount'=> $payable_amount,
+                'odbus_gst'=> $odbus_gst,
+                'odbus_charges'=> $odbus_charges,
+                'owner_fare'=> $owner_fare
                 );  
                 
                // Log::info('adjust email');
