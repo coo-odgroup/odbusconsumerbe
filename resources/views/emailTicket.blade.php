@@ -148,7 +148,7 @@ p{
                                       </tbody></table>
                                     </div>
                                     <div style="padding-left:23px;border-left:1px dotted #e9e9e9;margin-left:12px;padding-bottom:12px;padding-right:12px;color:#666666;font-weight:500">
-                                      {{substr($boarding_point, 0, strpos($boarding_point, "|")-1)}} , {{$conductor_number}}
+                                      {{$boarding_point}} , {{$conductor_number}}
                                     </div>
                                   </td>
                                 </tr>
@@ -171,7 +171,7 @@ p{
                                         </tr>
                                       </tbody></table>
                                       <div style="padding-left:36px;padding-right:12px;color:#666666;font-weight:500">
-                                        {{substr($dropping_point, 0, strpos($dropping_point, "|")-1)}}
+                                        {{$dropping_point}}
                                       </div>
                                     </div>
                                   </td>

@@ -41,4 +41,4 @@ return view('Gst');
 
 Route::get('/TestingEmail', [ChannelController::class, 'testingEmail']); 
 
-Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downlaodTicket']);
+Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downloadTicket']);

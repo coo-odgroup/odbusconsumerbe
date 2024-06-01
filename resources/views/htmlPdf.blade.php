@@ -722,8 +722,8 @@ border: 0;
                         <td>To: {{$destination}}</td>
                       </tr>
                       <tr>
-                        <td>Boarding At :{{$source}} ({{substr($boarding_point, 0, strpos($boarding_point, "|")-1)}})</td>
-                        <td>Droping At :{{$destination}} ({{substr($dropping_point, 0, strpos($dropping_point, "|")-1)}})</td>
+                        <td>Boarding At :{{$source}} ({{$boarding_point}})</td>
+                        <td>Droping At :{{$destination}} ({{$dropping_point}})</td>
                       </tr>
                       <tr>
                         <td>Passenger Mobile No: {{$customer_number}}</td>

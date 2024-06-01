@@ -572,7 +572,7 @@ class BookingManageService
         //return $emailSms;
     } 
 
-    public function downlaodTicket($pnr){
+    public function downloadTicket($pnr){
 
         $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr); 
 
