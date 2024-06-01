@@ -1193,7 +1193,7 @@ class ChannelRepository
       $journeydate = $bookingDetails[0]->journey_dt;
       $source = Location::where('id',$bookingDetails[0]->source_id)->first()->name;
       $destination = Location::where('id',$bookingDetails[0]->destination_id)->first()->name;
-      $routedetails = $source.'-to-'.$destination;
+      $routedetails = $source.' To '.$destination;
       $boarding_point = $bookingDetails[0]->boarding_point;
       $departureTime = $bookingDetails[0]->boarding_time;
       $dropping_point = $bookingDetails[0]->dropping_point;

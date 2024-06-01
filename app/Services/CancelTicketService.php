@@ -86,7 +86,7 @@ class CancelTicketService
                         $busId = $booking_detail[0]->booking[0]->bus_id;
                         $sourceName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);                   
                          $destinationName =$this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
-                          $route = $sourceName .'-to-'. $destinationName;
+                          $route = $sourceName .' To '. $destinationName;
                         $userMailId =$booking_detail[0]->email;
                         $bookingId =$booking_detail[0]->booking[0]->id;
 

@@ -114,7 +114,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->source = $request['source'];
         $this->destination = $request['destination'];
         if(!isset($request['routedetails'])){
-            $this->routedetails = $request['source'].'-to-'.$request['destination'];
+            $this->routedetails = $request['source'].' To '.$request['destination'];
         }else{
             $this->routedetails = $request['routedetails'];
         }
@@ -245,7 +245,7 @@ class SendEmailTicketJob implements ShouldQueue
     public function handle()
     {
         
-        $rr=explode('-to-',$this->routedetails);
+        $rr=explode(' To ',$this->routedetails);
       
         $data = [
             'name' => $this->name,
@@ -318,6 +318,13 @@ class SendEmailTicketJob implements ShouldQueue
 
             Mail::send('emailTicket', $data, function ($messageNew) {
                 $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
+                ->subject($this->subject);
+            });
+
+            /// send copy to mailto:reports@odbus.in
+
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('reports@odbus.in')
                 ->subject($this->subject);
             });
         }
