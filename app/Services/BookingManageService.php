@@ -703,7 +703,7 @@ class BookingManageService
                 'add_special_fare' => $b->booking[0]->additional_special_fare
             ];
 
-          log::info($data);
+          //log::info($data);
     
         } else{
 
