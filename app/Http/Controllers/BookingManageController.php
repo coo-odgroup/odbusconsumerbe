@@ -372,8 +372,11 @@ class BookingManageController extends Controller
     {
 
         $data= $this->bookingManageService->downloadTicket($pnr);  
+
+      $pdf = PDF::loadView('htmlPdf',$data);
       PDF::loadView('htmlPdf',$data)->save(public_path().'/ticketpdf/'.$pnr.'.pdf');
 
+       // $pdf = PDF::loadView('htmlPdf');
         return $pdf->download($pnr.'.pdf');
     }
 
