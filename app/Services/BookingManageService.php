@@ -655,7 +655,7 @@ class BookingManageService
                 }   
             }
             
-           
+            $routedetails= $source_data[0]->name.' To '.$dest_data[0]->name;
           
             $data = [
                 'name' => $b->name,
@@ -700,7 +700,8 @@ class BookingManageService
                 'agent_number'=> $agent_number,
                 'customer_comission' => $customer_comission  ,
                 'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
-                'add_special_fare' => $b->booking[0]->additional_special_fare
+                'add_special_fare' => $b->booking[0]->additional_special_fare,
+                'routedetails' => $routedetails 
             ];
 
           //log::info($data);
