@@ -416,7 +416,7 @@ class ClientBookingService
                        $paidAmount = $booking_detail[0]->total_fare;
                        $client_comission = $booking_detail[0]->client_comission;
                        $paid_amount_without_gst=$paidAmount-$booking_detail[0]->client_gst;
-                       Log::Info("line 419- ".$paid_amount_without_gst);
+                      // Log::Info("line 419- ".$paid_amount_without_gst);
                        $sourceName = Location::where('id',$srcId)->first()->name;
                        $destinationName = Location::where('id',$desId)->first()->name;
                        
@@ -584,7 +584,7 @@ class ClientBookingService
                        $paidAmount = $booking_detail[0]->total_fare; 
                        $client_comission = $booking_detail[0]->client_comission;
                        $paid_amount_without_gst=$paidAmount-$booking_detail[0]->client_gst;
-                       Log::Info("line 587- ".$paid_amount_without_gst);
+                       //Log::Info("line 587- ".$paid_amount_without_gst);
                        if($booking_detail[0]->status==2){
                            $data['cancel_status'] = false;
                        }else{
@@ -715,7 +715,7 @@ class ClientBookingService
                         $client_commission = $booking_detail[0]->client_commission;
                         $paid_amount_without_gst=$paidAmount- $booking_detail[0]->client_gst;
 
-                        Log::Info("line 718- ".$paid_amount_without_gst);
+                        //Log::Info("line 718- ".$paid_amount_without_gst);
 
                         $userId = $booking_detail[0]->user_id;
                         if($booking_detail[0]->status==2){
@@ -748,8 +748,8 @@ class ClientBookingService
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
 
-                                Log::Info("line 748");
-                                Log::Info($data);
+                               // Log::Info("line 748");
+                               // Log::Info($data);
                                 return $data;
                             }elseif($min <= $interval && $interval <= $max){ 
                                 $data['totalfare'] = $paidAmount;
@@ -764,8 +764,8 @@ class ClientBookingService
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];  
-                                Log::Info("line 764");
-                                Log::Info($data);
+                                //Log::Info("line 764");
+                                //Log::Info($data);
 
                                 return $data;   
                             }
@@ -998,8 +998,8 @@ class ClientBookingService
                                }
                               $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
 
-                              Log::Info("line 998");
-                              Log::Info($data);
+                             // Log::Info("line 998");
+                             // Log::Info($data);
 
                               ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -1034,8 +1034,8 @@ class ClientBookingService
                             
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
 
-                              Log::Info("line 1035");
-                              Log::Info($data);
+                             // Log::Info("line 1035");
+                             // Log::Info($data);
                               
                               $smsData['refundAmount'] = $refundAmt; 
                               $emailData['deductionPercentage'] = $deduction;
