@@ -94,8 +94,8 @@ class SendEmailTicketJob implements ShouldQueue
             $bs->with('BusSitting');  
           } ] )->where('pnr', $pnr)->first();
 
-          $this->bus_sitting = $bk_dtl->bus->BusSitting->name;
-          $this->bus_type = $bk_dtl->bus->BusType->name;
+          $this->bus_sitting = ($bk_dtl->bus) ? $bk_dtl->bus->BusSitting->name : '';
+          $this->bus_type = ($bk_dtl->bus) ? $bk_dtl->bus->BusType->name  : '';
 
         $this->add_festival_fare = $bk_dtl->additional_festival_fare;
         $this->add_special_fare = $bk_dtl->additional_special_fare;
@@ -325,6 +325,11 @@ class SendEmailTicketJob implements ShouldQueue
 
             Mail::send('emailTicket', $data, function ($messageNew) {
                 $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('reports@odbus.in')
+                ->subject($this->subject);
+            });
+
+            Mail::send('emailTicket', $data, function ($messageNew) {
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('mohantylima71@gmail.com')
                 ->subject($this->subject);
             });
         }

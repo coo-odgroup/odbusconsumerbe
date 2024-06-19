@@ -132,6 +132,9 @@ class BookingManageService
                         $totalTravelTime = $dep_time->diff($arr_time);
                         $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
+                        $booking_detail[0]->booking[0]['main_source'] =$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
+                        $booking_detail[0]->booking[0]['main_destination']  =$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
+                        
                         $booking_detail[0]->booking[0]['source']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
                         $booking_detail[0]->booking[0]['destination']=$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);  
                         $booking_detail[0]->booking[0]['journeyDuration'] =  $totalJourneyTime;
@@ -183,6 +186,8 @@ class BookingManageService
                         $totalTravelTime = $dep_time->diff($arr_time);
                         $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
 
+                        $booking_detail[0]->booking[0]['main_source'] =$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->source_id);
+                        $booking_detail[0]->booking[0]['main_destination']  =$this->bookingManageRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
     
                         switch($jdays)
                         {
