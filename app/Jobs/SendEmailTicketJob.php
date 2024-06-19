@@ -328,10 +328,10 @@ class SendEmailTicketJob implements ShouldQueue
                 ->subject($this->subject);
             });
 
-            Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('mohantylima71@gmail.com')
-                ->subject($this->subject);
-            });
+            // Mail::send('emailTicket', $data, function ($messageNew) {
+            //     $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('mohantylima71@gmail.com')
+            //     ->subject($this->subject);
+            // });
         }
 
        
