@@ -712,7 +712,7 @@ class ClientBookingService
                         return "CANCEL_NOT_ALLOWED";
                         }
                         $paidAmount = $booking_detail[0]->total_fare;
-                        $client_commission = $booking_detail[0]->client_commission;
+                        $client_commission = $booking_detail[0]->client_comission;
                         $paid_amount_without_gst=$paidAmount- $booking_detail[0]->client_gst;
 
                         //Log::Info("line 718- ".$paid_amount_without_gst);
@@ -816,7 +816,7 @@ class ClientBookingService
                         if(isset($booking_detail[0])){ 
                             $userId = $booking_detail[0]->user_id;
 
-                            $client_commission = $booking_detail[0]->client_commission;
+                            $client_commission = $booking_detail[0]->client_comission;
 
                             $bookingId = $booking_detail[0]->id;
                             $dolphin_cancel_det= $this->dolphinTransformer->ConfirmCancellation($pnr_dt->api_pnr);                      
@@ -846,7 +846,7 @@ class ClientBookingService
                 $booking_detail = $this->clientBookingRepository->MantisClientCancelTicketInfo($clientId,$pnr,$booked);
                         if(isset($booking_detail[0])){ 
                             $userId = $booking_detail[0]->user_id;
-                            $client_commission = $booking_detail[0]->client_commission;
+                            $client_commission = $booking_detail[0]->client_comission;
 
                             $bookingId = $booking_detail[0]->id;
                             $tktNo = $booking_detail[0]->tkt_no;
@@ -944,7 +944,7 @@ class ClientBookingService
                        $srcId = $booking_detail[0]->source_id;
                        $desId = $booking_detail[0]->destination_id;
                        $paidAmount = $booking_detail[0]->total_fare;
-                       $client_commission = $booking_detail[0]->client_commission;
+                       $client_commission = $booking_detail[0]->client_comission;
                        $paid_amount_without_gst = $paidAmount - $booking_detail[0]->client_gst;
 
                        $sourceName = Location::where('id',$srcId)->first()->name;
@@ -1291,7 +1291,7 @@ class ClientBookingService
                 $sourceID = $bookingInfo['source_id'];
                 $destinationID = $bookingInfo['destination_id'];
                 $origin = $bookingInfo['origin'];
-                $ReferenceNumber = $bookingInfo['ReferenceNumber'];
+                $ReferenceNumber = (isset($bookingInfo['ReferenceNumber'])) ? $bookingInfo['ReferenceNumber'] : '';
 
 
                 	$arrvst['sourceId']=$sourceID;
