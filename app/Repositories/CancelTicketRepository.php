@@ -443,12 +443,20 @@ class CancelTicketRepository
                 $refundAmt = $refundAmount;
                 $paidAmount = $paidAmount/100;
                 $smsData['refundAmount'] = $refundAmt;
+
+                Log::Info('line 447');
+                Log::Info($bookingCancelled);
   
                 $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $refundAmt, 'deduction_percent' => $percentage]);      
                 
+                Log::Info($percentage);
+
+
                 $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
 
                 $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
+
+                Log::Info($percentage);
 
                 // $sendsms = $this->channelRepository->sendSmsTicketCancel($smsData);
               
