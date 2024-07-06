@@ -34,10 +34,10 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 
+//Route::group(['middleware' => ['checkIp']], function() {
+
 Route::group(['middleware' => ['jwt.verify']], function() {
-
-Route::group(['middleware' => ['checkIp']], function() {
-
+   
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
@@ -146,7 +146,8 @@ Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEma
 Route::get('/FeedbackCronJob', [BookingManageController::class, 'FeedbackCronJob']);
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
 Route::get('/GetToken', [MantisController::class, 'getToken']);
-});
+
+//});
 
 
 

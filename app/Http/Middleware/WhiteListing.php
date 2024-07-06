@@ -5,26 +5,23 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\Response;
 
 class WhiteListing
 {
-    
-    public $allowedIps = ['192.168.29.242:8080','127.0.0.1'];
-
-    //,'157.41.151.8'
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
+    use ApiResponser;  
+    public $allowedIps = ['49.37.112.51','139.59.63.18','127.0.0.1','testing.odbus.co.in'];
     public function handle(Request $request, Closure $next)
     {
-       $server_ip= $_SERVER["HTTP_HOST"];
+        $ip= $_SERVER["REMOTE_ADDR"];
 
-        if (!in_array($server_ip, $this->allowedIps)) { 
-            return abort(401,'you are not authorized to access the api.Contact support@odbus.in.');
+       Log::Info($ip);
+
+        if (!in_array($ip, $this->allowedIps)) {           
+           return $this->errorResponse(Config::get('constants.CLIENT_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+
         }
     
         return $next($request);
