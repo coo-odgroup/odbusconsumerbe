@@ -34,37 +34,9 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-// Route::group([
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-// ], function ($router) {
-//     Route::post('/signup', [JwtAuthController::class, 'register']);
-//     Route::post('/signin', [JwtAuthController::class, 'login']);
-//     Route::get('/user', [JwtAuthController::class, 'user']);
-//     Route::post('/token-refresh', [JwtAuthController::class, 'refresh']);
-//     Route::post('/signout', [JwtAuthController::class, 'signout']);
-// });
-
-
-//Route::middleware(['checkIp'])->group(function () {});
-
 Route::group(['middleware' => ['jwt.verify']], function() {
 
-   // Route::group(['middleware' => ['checkIp', 'log.route']], function() {
-  
-     
+Route::group(['middleware' => ['checkIp']], function() {
 
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
@@ -146,6 +118,8 @@ Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCance
 Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
 Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
 Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
+Route::get('/WalletBalance', [ClientBookingController::class, 'walletBalance']);
+
 Route::post('/GetFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('/CityPair', [PopularController::class, 'CityPair']);
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
@@ -154,8 +128,6 @@ Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
 Route::post('/apiReference', [ApiReferenceController::class, 'apiReference']);
 Route::get('/GetPnr/{trans_id}', [BookingManageController::class, 'GetPnr']);
 
-
-//});
 });
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
@@ -173,9 +145,8 @@ Route::get('/DolphinCancelPolicy', [SoapController::class, 'DolphinCancelPolicy'
 Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEmailSms']);
 Route::get('/FeedbackCronJob', [BookingManageController::class, 'FeedbackCronJob']);
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
-
-
 Route::get('/GetToken', [MantisController::class, 'getToken']);
+});
 
 
 
