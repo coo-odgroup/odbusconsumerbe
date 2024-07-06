@@ -535,10 +535,13 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                        
                         if($tkt->new_fare == 0 ){
                             if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
+                       
                                 $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+
                             }
-                            else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
-                                $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+                            else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){                     
+                              $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
+
                             }
                             array_push($PriceDetail,$tkt);
                         }
@@ -547,6 +550,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                             $totalOwnFare +=$miscfares[2];
                             $totalFestiveFare +=$miscfares[4];
                             $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
+
                         }
                         else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
                             $totalSplFare +=$miscfares[1];
@@ -568,6 +572,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                                 $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
                                 $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
                                 $service_charges += $odbusServiceCharges;
+
                                 }     
                             } 
                         $odbus_charges_ownerFare +=$tkt->new_fare; 
