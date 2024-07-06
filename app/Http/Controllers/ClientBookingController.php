@@ -14,6 +14,7 @@ use App\AppValidator\ClientBookingValidator;
 use App\AppValidator\SeatBlockValidator;
 use App\AppValidator\TicketConfirmValidator;
 use App\AppValidator\ClientCancelTicketValidator;
+use App\AppValidator\WalletBalanceValidator;
 use App\AppValidator\ClientCancelTktValidator;
 use App\AppValidator\BookingManageValidator;
 use App\Models\OdbusCharges;
@@ -726,4 +727,33 @@ class clientBookingController extends Controller
          return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
       }      
     } 
+
+    public function walletBalance(Request $request){
+
+      $data = $request->only([
+        'ClientId'
+      ]);   
+  
+
+      $walletBalanceValidator = WalletBalanceValidator::validate($data);
+
+      if ($walletBalanceValidator->fails()) {
+      $errors = $walletBalanceValidator->errors();
+      return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+      } 
+      
+      try {
+        $response =  $this->clientBookingService->walletBalance($data);  
+        if($response=='Unauthorized'){
+          return $this->errorResponse(Config::get('constants.CLIENT_UNAUTHORIZED'),Response::HTTP_UNAUTHORIZED);
+        }else{
+          return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        }
+       
+      }
+      catch (Exception $e) {    
+         return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
+      }     
+      
+    }
 }

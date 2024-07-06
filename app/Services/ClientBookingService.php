@@ -13,6 +13,7 @@ use App\Models\BusCancelled;
 use App\Models\BookingSeized;
 use App\Models\Booking;
 use App\Models\BusSeats;
+use App\Models\User;
 use App\Models\ClientFeeSlab;
 use App\Models\Location;
 use App\Models\BusContacts;
@@ -1365,5 +1366,20 @@ class ClientBookingService
            
            /////////////////////////////
     }   
+
+    public function walletBalance($request){
+
+        $ClientId=$request['ClientId'];
+
+        if(Auth()->user()->client_id ==  $ClientId){
+           $res=DB::table('client_wallet as c')->leftJoin('user as u','c.user_id','=','c.id')->where('u.client_id',$ClientId)->first();
+
+            return $res;
+
+        }else{
+            return "Unauthorized";
+        }
+
+    }
    
 }
