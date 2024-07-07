@@ -184,6 +184,8 @@ class ViewSeatsService
                                     $percentage = $ticketFareSlab->odbus_commision;
                                     $odbusServiceCharges = round($base_sleeper_fare * ($percentage/100));
                                     $ub->busSeats->ticket_price->base_sleeper_fare = round($base_sleeper_fare + $odbusServiceCharges);
+
+                                    $ub->busSeats->ticket_price->base_seat_fare =0;
                                     }     
                                 }
                             if($ub->busSeats->new_fare > 0){
@@ -237,6 +239,8 @@ class ViewSeatsService
                                     $percentage = $ticketFareSlab->odbus_commision;
                                     $odbusServiceCharges = round($base_seat_fare * ($percentage/100));
                                     $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
+
+                                    $lb->busSeats->ticket_price->base_sleeper_fare = 0;
                                     }     
                                 }
 
@@ -541,8 +545,14 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                             }
                             else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){                     
                               $tkt->new_fare = $busWithTicketPrice->base_sleeper_fare;
-
+                                
+                              //Log::Info('sleeper fare - '.$tkt->new_fare);
                             }
+
+                           // Log::Info($busWithTicketPrice);
+
+
+                            
                             array_push($PriceDetail,$tkt);
                         }
                         if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
@@ -563,11 +573,17 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                         ////////// add odbus service chanrges to seat fare
 
                         $odbusServiceCharges = 0;
+
+                        
+                       // Log::Info('price'.$seat_fare);
+
                         foreach($ticketFareSlabs as $ticketFareSlab){
                 
                             $startingFare = $ticketFareSlab->starting_fare;
                             $uptoFare = $ticketFareSlab->upto_fare;
                             if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
+
+
                                 $percentage = $ticketFareSlab->odbus_commision;
                                 $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
                                 $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
@@ -575,6 +591,9 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
                                 }     
                             } 
+
+                           // Log::Info($tkt->new_fare);
+
                         $odbus_charges_ownerFare +=$tkt->new_fare; 
                     }                         
                 }       

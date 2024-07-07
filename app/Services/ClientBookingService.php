@@ -1372,7 +1372,7 @@ class ClientBookingService
         $ClientId=$request['ClientId'];
 
         if(Auth()->user()->client_id ==  $ClientId){
-           $res=DB::table('client_wallet as c')->leftJoin('user as u','c.user_id','=','c.id')->where('u.client_id',$ClientId)->first();
+           $res=DB::table('client_wallet as c')->select('c.balance')->leftJoin('user as u','c.user_id','=','u.id')->where('u.client_id',$ClientId)->orderBy('c.id','DESC')->limit(1)->first();
 
             return $res;
 

@@ -358,7 +358,7 @@ class ViewSeatsRepository
         
     $ticketFareRecord = $this->ticketFareSlab->where('user_id', $user_id)->get();
         if(isset($ticketFareRecord[0])){
-            return $this->ticketFareSlab->where('user_id', $user_id)->get();
+            return $ticketFareRecord;
         }else{
             return $this->ticketFareSlab->where('user_id', $defUserId)->get();
         }  

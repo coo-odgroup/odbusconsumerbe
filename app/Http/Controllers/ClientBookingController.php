@@ -369,7 +369,8 @@ class clientBookingController extends Controller
   
            }elseif($response=='SEAT UN-AVAIL'){
   
-              return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+             // return $this->successResponse($response,Config::get('constants.HOLD'),Response::HTTP_OK);
+              return $this->errorResponse(Config::get('constants.HOLD'),Response::HTTP_OK);
               
            }elseif($response=='BUS_CANCELLED'){
   
