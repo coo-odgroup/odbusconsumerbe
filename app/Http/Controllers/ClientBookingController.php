@@ -703,10 +703,6 @@ class clientBookingController extends Controller
     public function ticketDetails(Request $request) {     
 
       $data = $request->all();
-
-      // Log::info("ticketDetails");
-      // Log::info($data);
-
       $bookingManageValidator = $this->bookingManageValidator->validate($data);
 
       if ($bookingManageValidator->fails()) {
@@ -717,8 +713,8 @@ class clientBookingController extends Controller
         $response =  $this->clientBookingService->ticketDetails($request);  
         if($response == 'PNR_NOT_MATCH'){
           return $this->errorResponse(Config::get('constants.PNR_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
-        }elseif($response == 'MOBILE_NOT_MATCH'){
-          return $this->errorResponse(Config::get('constants.MOBILE_NOT_MATCH'),Response::HTTP_PARTIAL_CONTENT);
+        }elseif($response == 'RECORD_NOT_FOUND'){
+          return $this->errorResponse(Config::get('constants.RECORD_NOT_FOUND'),Response::HTTP_PARTIAL_CONTENT);
         }         
         else{
           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);

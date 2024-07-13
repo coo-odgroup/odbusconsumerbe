@@ -1086,7 +1086,7 @@ class ClientBookingService
 
            // Log::info($pnr_dt);
 
-            if($pnr_dt->origin=='DOLPHIN'){
+            if($pnr_dt && $pnr_dt->origin=='DOLPHIN'){
 
                 $booking_detail = $this->bookingManageRepository->getDolphinBookingDetails($mobile,$pnr); 
 
@@ -1203,7 +1203,8 @@ class ClientBookingService
                 }
             }            
             else{            
-                return "MOBILE_NOT_MATCH";            
+               // return "MOBILE_NOT_MATCH";            
+                return "RECORD_NOT_FOUND";            
             }
          }
 
@@ -1221,7 +1222,17 @@ class ClientBookingService
          $response['dropping_time']=$booking_detail[0]->booking[0]->dropping_time;
          $response['origin']=$booking_detail[0]->booking[0]->origin;
          $response['status']=$booking_detail[0]->booking[0]->status;
-         $response['booking_status']=($booking_detail[0]->booking[0]->status==1) ? 'Confirmed' : 'Cancelled';
+         if($booking_detail[0]->booking[0]->status==1){
+            $response['booking_status']='Confirmed';
+         }  
+         elseif($booking_detail[0]->booking[0]->status==2){
+            $response['booking_status']='Cancelled';
+         } 
+
+         elseif($booking_detail[0]->booking[0]->status==0){
+            $response['booking_status']='Pending';
+         } 
+         
          $response['total_fare']=$booking_detail[0]->booking[0]->payable_amount;
 
          if(is_array($booking_detail[0]->booking[0]->bus)){

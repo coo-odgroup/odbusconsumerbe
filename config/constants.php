@@ -57,6 +57,7 @@ return [
     'OPERATOR_NOT_FOUND' => 'Operator is not available',
     'PNR_NOT_MATCH'=> "PNR does not match",
     'MOBILE_NOT_MATCH'=> "Mobile no doesn't match",
+    'RECORD_NOT_FOUND' =>"Record is not available",
     'CANCEL_NOT_ALLOWED' =>'Cancellation is not allowed',
     'USER_INVALID' => 'Invalid User ID',
     'UNREGISTERED' => 'Agent is not registered',
