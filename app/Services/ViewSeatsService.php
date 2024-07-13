@@ -623,6 +623,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 $uptoFare = $clientCom->upto_fare;
                 if($odbus_charges_ownerFare >= $startFare && $odbus_charges_ownerFare <= $uptoFare){
                     $addCharge = $clientCom->addationalcharges;
+                    //Log::Info($addCharge);
                     break;
                 }  
             }   
@@ -637,7 +638,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         $seatWithPriceRecords[] = array(
             "totalFare" => $newSeatFare + $gst,
             "baseFare" => $odbus_charges_ownerFare ,
-            "serviceCharge" => $newSeatFare - $odbus_charges_ownerFare,
+            "serviceCharge" => round($newSeatFare - $odbus_charges_ownerFare,2),
             "gst" => $gst
             ); 
     }else{
