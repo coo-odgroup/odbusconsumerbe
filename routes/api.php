@@ -108,10 +108,10 @@ Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail'])
 
 Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
 
-Route::group(['excluded_middleware' => 'throttle:api'], function() {
+//Route::group(['excluded_middleware' => 'throttle:api'], function() {
    Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
    Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);         
-});
+//});
 
 
 Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket']);
