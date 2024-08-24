@@ -82,10 +82,8 @@ class UserController extends Controller
  */
 public function clientLogin(Request $request){  
 
-  $data = $request->all();
-                                                 
-  $clientValidation = $this->clientValidator->validate($data);
-
+  $data = $request->all();                                                 
+  $clientValidation = ClientValidator::validate($data);
   if ($clientValidation->fails()) {
     $errors = $clientValidation->errors();
     return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
@@ -97,17 +95,17 @@ public function clientLogin(Request $request){
     if (! $token = auth()->attempt($data)) {
       return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
   }
-  $loginClient =  $this->createNewToken($token);
+  $loginClient =  self::createNewToken($token);
   User::where('id', $loginClient['user']->id)->update(['client_access_token' => $token ]);
   // User::where('client_id', $request['client_id'])->update(['client_access_token' => $token ]);
   //return $this->successResponse($loginClient,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
 
 
 
-  return $this->successResponse($token,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
+  return ApiResponser::successResponse($token,Config::get('constants.CLIENT_TOKEN'),Response::HTTP_OK);
 }
   catch (Exception $e) {
-   return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+   return ApiResponser::errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
 } 
 }
 protected function createNewToken($token){

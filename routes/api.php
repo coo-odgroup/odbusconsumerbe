@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JwtAuthController;
@@ -132,7 +131,21 @@ Route::get('/CheckWalletBalance', [ClientBookingController::class, 'walletBalanc
 
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
+
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
+
+Route::post('/Auth', function (Request $request) {
+   
+      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+      $request = new Request([
+         'client_id' => $arrParam->client_id,
+         'password' => $arrParam->password,
+     ]);
+      return UserController::clientLogin($request);
+   
+});
+
+
 Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
