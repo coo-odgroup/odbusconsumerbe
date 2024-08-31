@@ -418,6 +418,7 @@ class ClientBookingRepository
     public function ticketConfirmation($request)
     {
         $SmsGW = config('services.sms.otpservice');
+        $defUserId = Config::get('constants.USER_ID');
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
         $booked = Config::get('constants.BOOKED_STATUS');
         $transactionId = $request['transaction_id'];
@@ -617,8 +618,11 @@ class ClientBookingRepository
             $contact_number = collect($busContactDetails)->implode('phone',',');
          
             $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);
+
+            $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
+
             
-            if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)){
+            if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
 
             $msgId = $sendSmsCMO->messages[0]->id;
             $status = $sendSmsCMO->status;

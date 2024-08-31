@@ -67,16 +67,12 @@ class ListingService
         $mantisShowRecords = [];
         $mantisShowSoldoutRecords =[];
 
-        if($clientId!=372 && $clientId!=44 ){ 
+        // if($clientId!=372 && $clientId!=44 ){ 
 
-            $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); // getting Mantis buslist
-            //return $mantisResult;
-            $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
-            $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
-
-
-
-        }
+        //     $mantisResult = $this->mantisTransformer->BusLists($request,$clientRole,$clientId); 
+        //     $mantisShowRecords = (isset($mantisResult['regular'])) ? $mantisResult['regular'] : [];
+        //     $mantisShowSoldoutRecords = (isset($mantisResult['soldout'])) ? $mantisResult['soldout'] : [];
+        // }
 
         
 
@@ -87,8 +83,7 @@ class ListingService
 
          //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
 
-            $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId); // getting dolphin buslist
-
+            $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId);
             $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
             $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
         // }

@@ -468,10 +468,6 @@ class ClientBookingService
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
                             
-                              //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                               if($emailData['email'] != ''){
-                              // $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               }   
                               return $data;
           
                           }elseif($min <= $interval && $interval <= $max){ 
@@ -497,10 +493,6 @@ class ClientBookingService
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
                           
-                              //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                               if($emailData['email'] != ''){
-                              //$sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               }    
                               return $data;   
                           }
                       }                          
@@ -805,6 +797,8 @@ class ClientBookingService
 
     public function clientTicketCancel($request)////////client panel use
     {
+        $defUserId = Config::get('constants.USER_ID');
+
         try {        
             $pnr = $request['pnr'];
             $clientId = $request['user_id'];
@@ -991,14 +985,7 @@ class ClientBookingService
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
                             
-                              //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                              if($emailData['email'] != ''){
-                              // $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               }
                               $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
-
-                             // Log::Info("line 998");
-                             // Log::Info($data);
 
                               ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
                              $busContactDetails = BusContacts::where('bus_id',$busId)
@@ -1007,7 +994,12 @@ class ClientBookingService
                              ->get('phone');
                             if($busContactDetails->isNotEmpty()){
                             $contact_number = collect($busContactDetails)->implode('phone',',');
+                            $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
+
+            
+                         if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
                             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                         }
                             }  
                             unset($data['bookingDetails'][0]->bus->cancellationslabs); 
                             unset($data['bookingDetails'][0]->bus->cancellationslabs_id);   
@@ -1041,11 +1033,6 @@ class ClientBookingService
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
                           
-                              //$sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                               if($emailData['email'] != ''){
-                              //$sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);  
-                               } 
-
                                $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData); 
 
                               ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////////
@@ -1055,7 +1042,14 @@ class ClientBookingService
                                                                 ->get('phone');
                              if($busContactDetails->isNotEmpty()){
                               $contact_number = collect($busContactDetails)->implode('phone',',');
-                              $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+
+                              $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
+
+            
+                         if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
+                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                         }
+                             
                              }
                               unset($data['bookingDetails'][0]->bus->cancellationslabs); 
                               unset($data['bookingDetails'][0]->bus->cancellationslabs_id);  
