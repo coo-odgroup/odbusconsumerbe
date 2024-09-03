@@ -695,10 +695,10 @@ class ClientBookingRepository
     { 
         return $this->booking->where([
                                     ['pnr', '=', $pnr],
-                                    ['status', '=', $booked], 
+                                    ['status', '!=', 0], 
                                     ['user_id', '=', $clientId],  
                                     ])
-                ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare','client_gst')
+                ->select('id','pnr','users_id','user_id','bus_id','source_id','destination_id','client_comission','journey_dt','boarding_point','dropping_point','boarding_time','dropping_time','total_fare','client_gst','status','deduction_percent','refund_amount')
                ->with(['users'=> function($u){
                   $u->select('id','name','email','phone');   
                }])

@@ -365,7 +365,12 @@ class ClientBookingService
             $clientId = $request['user_id'];
             $booked = Config::get('constants.BOOKED_STATUS');
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
+
             if(isset($booking_detail[0])){ 
+
+                if($booking_detail[0]->status==2){
+                    return "Ticket_already_cancelled";
+                }
                        $jDate =$booking_detail[0]->journey_dt;
                        $jDate = date("d-m-Y", strtotime($jDate));
                        $boardTime =$booking_detail[0]->boarding_time; 
@@ -557,7 +562,13 @@ class ClientBookingService
             }                    
             elseif($pnr_dt->origin=='ODBUS'){
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
+           
             if(isset($booking_detail[0])){ 
+
+                if($booking_detail[0]->status==2){
+                    return "Ticket_already_cancelled";
+                }
+
                        $jDate =$booking_detail[0]->journey_dt;
                        $jDate = date("d-m-Y", strtotime($jDate));
                        $boardTime =$booking_detail[0]->boarding_time; 
@@ -689,7 +700,14 @@ class ClientBookingService
             }            
             elseif($pnr_dt->origin=='ODBUS'){
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
+
+           // dd($clientId,$pnr,$booked);
                 if(isset($booking_detail[0])){ 
+
+                    if($booking_detail[0]->status==2){
+                        return "Ticket_already_cancelled";
+                    }
+
                         $jDate =$booking_detail[0]->journey_dt;
                         $jDate = date("d-m-Y", strtotime($jDate));
                         $boardTime =$booking_detail[0]->boarding_time; 
@@ -881,6 +899,10 @@ class ClientBookingService
             $booking_detail = $this->clientBookingRepository->clientCancelTicket($clientId,$pnr,$booked);
             
             if(isset($booking_detail[0])){ 
+
+                if($booking_detail[0]->status==2){
+                    return "Ticket_already_cancelled";
+                }
                
                        $jDate =$booking_detail[0]->journey_dt;
                        $jDate = date("d-m-Y", strtotime($jDate));
@@ -1219,6 +1241,10 @@ class ClientBookingService
          }  
          elseif($booking_detail[0]->booking[0]->status==2){
             $response['booking_status']='Cancelled';
+            $response['deduction_percent']=$booking_detail[0]->booking[0]->deduction_percent;
+            $response['refund_amount']=$booking_detail[0]->booking[0]->refund_amount;
+            $response['cancel_comission']=$booking_detail[0]->booking[0]->client_comission;
+            
          } 
 
          elseif($booking_detail[0]->booking[0]->status==0){

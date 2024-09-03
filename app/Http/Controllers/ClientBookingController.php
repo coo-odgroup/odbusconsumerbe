@@ -588,6 +588,11 @@ class clientBookingController extends Controller
         try {
             $response = $this->clientBookingService->clientCancelTicketInfos($data);  
             switch($response){
+
+              case('Ticket_already_cancelled'):
+                return $this->errorResponse("Ticket Already cancelled. Please contact Odbus Support Team",Response::HTTP_PARTIAL_CONTENT);
+                break;
+                
               case('INV_CLIENT'):
                 return $this->errorResponse(Config::get('constants.INVALID_CLIENT'),Response::HTTP_PARTIAL_CONTENT);
                 break;
