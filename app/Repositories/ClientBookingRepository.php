@@ -753,7 +753,7 @@ class ClientBookingRepository
 
         $clientDetails =  ClientWallet::where('user_id',$userId)->orderBy('id','DESC')->where("status",1)->limit(1)->get(); 
     
-        if($data['ClientCancelCommission'] != 0){
+        if($data['ClientCancelCommission'] > 0){
             
             $transactionId = date('YmdHis') . gettimeofday()['usec'];
             $clientWallet = new ClientWallet();
