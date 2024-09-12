@@ -351,6 +351,7 @@ class ClientBookingService
             }
            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
+           //// paytm driver api call
             return $bookTicket;
         } catch (Exception $e) {
             Log::info("ticket confirmation api");   
@@ -1226,7 +1227,7 @@ class ClientBookingService
          $response['name']=$booking_detail[0]->name;
          $response['email']=$booking_detail[0]->email;
          $response['phone']=$booking_detail[0]->phone;
-         $response['transaction_id']=$booking_detail[0]->transaction_id;
+         $response['transaction_id']=$booking_detail[0]->booking[0]->transaction_id;
          $response['pnr']=$booking_detail[0]->booking[0]->pnr;
          $response['journey_dt']=$booking_detail[0]->booking[0]->journey_dt;
          $response['source']=$booking_detail[0]->booking[0]->source[0]->name;
