@@ -59,7 +59,7 @@ class OfferRepository
         $bookingDetails = Booking::where('transaction_id',$transactionId)->get();
         $totalFare = 0;
         if(isset($bookingDetails[0])){
-            $totalFare = ($bookingDetails[0]->owner_fare) + ($bookingDetails[0]->odbus_charges);
+            $totalFare = ($bookingDetails[0]->owner_fare) + ($bookingDetails[0]->odbus_charges) + ($bookingDetails[0]->additional_owner_fare) + ($bookingDetails[0]->additional_special_fare) + ($bookingDetails[0]->additional_festival_fare); // added additional fare on 23-sep-2024::lima Mohanty (due to calculation issue)
         }
     
         $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon

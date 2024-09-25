@@ -6,6 +6,8 @@ use App\Http\Controllers\SoapController;
 use App\Http\Controllers\BookingManageController;
 use App\Http\Controllers\HTMLPDFController;
 use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\ClientBookingController;
+
 
 
 /*
@@ -42,3 +44,4 @@ return view('Gst');
 Route::get('/TestingEmail', [ChannelController::class, 'testingEmail']); 
 
 Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downloadTicket']);
+Route::get('PaytmdriverDetailApi', [ClientBookingController::class,'PaytmdriverDetailApi']);

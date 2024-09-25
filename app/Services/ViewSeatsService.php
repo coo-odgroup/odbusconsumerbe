@@ -81,7 +81,10 @@ class ViewSeatsService
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
        
-        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+         /////// 15-sep-2024 :: date wise fare slab
+            //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+            $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
+            
         
         if (sizeof($bookingIds)){
             $blockedSeats=array();
@@ -175,7 +178,8 @@ class ViewSeatsService
 
                             /////////// add odbus gst to seat fare
 
-                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                            //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                            $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -251,7 +255,8 @@ class ViewSeatsService
 
                                  /////////// add odbus gst to seat fare
 
-                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           // $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -519,7 +524,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
     }
 
-    $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+    //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+    $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
 
     $ownerFare=0;
     $odbus_charges_ownerFare=0;
@@ -1013,7 +1019,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         if($sleeperIds){
             $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
         }
-        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+       // $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+       $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
     
         $ownerFare=0;
         $odbus_charges_ownerFare=0;
@@ -1231,7 +1238,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         if($sleeperIds){
             $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
         }
-        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+      //  $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+
+      $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
     
         $ownerFare=0;
         $odbus_charges_ownerFare=0;
@@ -1349,7 +1358,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
     
-        $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+       // $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+       $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
         
         if (sizeof($bookingIds)){
             $blockedSeats=array();
@@ -1414,7 +1424,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
                             /////////// add odbus gst to seat fare
     
-                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           // $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
+
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;
@@ -1477,7 +1489,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
                                  /////////// add odbus gst to seat fare
     
-                            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                            //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+                           $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
+
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
                                 $startingFare = $ticketFareSlab->starting_fare;

@@ -763,4 +763,51 @@ class clientBookingController extends Controller
       }     
       
     }
+
+   public function PaytmdriverDetailApi(){
+    
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://travel-dev.paytm.com/bus/boardingpoints/v1/driver/details',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>'{
+        "providerId": 68,
+        "operatorId": "39",
+        "journeyDate": "2024-09-15",
+        "tripId": "848",
+        "isGpsAvailable": false,
+        "gpsUrl": "",
+        "info": {
+            "driverInfo": [
+                {
+                    "driverName": "DILDAR",
+                    "phoneNumbers": [
+                        9938223666
+                    ]
+                }
+            ],
+            "vehicleNumber": "OD 02 AD 9657"
+        }
+    }',
+      CURLOPT_HTTPHEADER => array(
+        'bus-ek: odbus',
+        'bus-es: 6632596ff74049b8ad8c4a923e4a76c9',
+        'Content-Type: application/json'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    echo $response;
+    
+  }
 }

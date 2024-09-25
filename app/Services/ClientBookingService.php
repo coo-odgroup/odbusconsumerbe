@@ -352,6 +352,8 @@ class ClientBookingService
            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
            //// paytm driver api call
+
+           
             return $bookTicket;
         } catch (Exception $e) {
             Log::info("ticket confirmation api");   

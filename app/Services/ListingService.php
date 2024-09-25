@@ -481,7 +481,10 @@ class ListingService
             $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
             $totalMiscfares = $miscfares[0]+$miscfares[2]+$miscfares[4];
             $misBaseFare = $baseFare + $totalMiscfares; 
-            $ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
+            /////// 15-sep-2024 :: date wise fare slab
+            //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);           
+            $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
+            
             $odbusServiceCharges = 0;
             
 
