@@ -352,6 +352,10 @@ class ClientBookingService
            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
            //// paytm driver api call
+            if($records[0]->user_id==env('PAYTM_ID')){
+                PaytmdriverCallBackAPI($records[0]->pnr); 
+            }
+           
 
            
             return $bookTicket;
@@ -1102,7 +1106,6 @@ class ClientBookingService
 
             $pnr_dt = $this->bookingManageRepository->getPnrInfo($pnr);
 
-           // Log::info($pnr_dt);
 
             if($pnr_dt && $pnr_dt->origin=='DOLPHIN'){
 
@@ -1173,8 +1176,6 @@ class ClientBookingService
             }else{
 
             $booking_detail = $this->clientBookingRepository->bookingDetails($mobile,$pnr); 
-
-           // Log::info($booking_detail);
 
             if(isset($booking_detail[0])){ 
                 if(isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])){ 

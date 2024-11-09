@@ -38,4 +38,59 @@ function getTicketFareslab($busId,$jrdate){
     return $ticketFareRecord;
 }
 
+function PaytmdriverCallBackAPI($pnr){
+    $bd=DB::select("select b.*,bs.name as bus_name,bs.bus_operator_id,bs.bus_number,bc.phone from 
+    booking b 
+    left join bus bs on b.bus_id=bs.id 
+    left join bus_contacts bc on b.bus_id=bc.bus_id 
+    where b.pnr='$pnr' and bc.status=1 and bc.type=2");
+    $bd=$bd[0];
+    $body='{
+        "providerId":68 , 
+        "operatorId": "'.$bd->bus_operator_id.'",
+        "journeyDate": "'.$bd->journey_dt.'",
+        "tripId": "'.$bd->bus_id.'",
+        "isGpsAvailable": false,
+        "gpsUrl": "",
+        "info": {
+            "driverInfo": [
+                {
+                    "driverName": "'.$bd->bus_name.'",
+                    "phoneNumbers": [
+                        "'.$bd->phone.'"
+                    ]
+                }
+            ],
+            "vehicleNumber": "'.$bd->bus_number.'"
+        }
+    }';
+
+    //echo $body;exit;
+
+    $curl = curl_init();
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => env('PAYTM_DRIVER_API_URL'),
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS =>$body,
+      CURLOPT_HTTPHEADER => array(
+        'bus-ek: odbus',
+        'bus-es: 6632596ff74049b8ad8c4a923e4a76c9',
+        'Content-Type: application/json'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    Log::Info("driver call back API");
+    Log::Info($response);
+}
+
 ?>

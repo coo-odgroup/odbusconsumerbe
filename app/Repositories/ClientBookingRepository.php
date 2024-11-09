@@ -30,7 +30,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
-
+use DB;
 
 class ClientBookingRepository
 {
@@ -778,8 +778,9 @@ class ClientBookingRepository
     //////ticketDetails(client use)//////////////
     public function bookingDetails($mobile,$pnr)
     { 
-      return $this->users->where('phone',$mobile)->with(["booking" => function($u) use($pnr){
-        $u->where('booking.pnr', '=', $pnr);            
+        
+      $data= Users::where('phone',$mobile)->with(["booking" => function($u) use($pnr){
+        $u->where('booking.pnr', $pnr);            
         $u->with(["bus" => function($bs){
             $bs->with('cancellationslabs.cancellationSlabInfo');
             $bs->with('BusType.busClass');
@@ -792,6 +793,10 @@ class ClientBookingRepository
               }]);
             }]); 
           }])->get();
+
+         
+           return $data;
+
     }
 
 }

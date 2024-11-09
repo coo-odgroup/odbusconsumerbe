@@ -58,9 +58,15 @@ class OfferRepository
         $selCouponRecords = Coupon::where('status','1')->get();
         $bookingDetails = Booking::where('transaction_id',$transactionId)->get();
         $totalFare = 0;
+                           
+        Log::info($bookingDetails[0]->owner_fare.'---'.$bookingDetails[0]->odbus_charges.'---'.$bookingDetails[0]->additional_owner_fare.'---'.$bookingDetails[0]->additional_special_fare.'---'.$bookingDetails[0]->additional_festival_fare);                                      
+                                                
+
         if(isset($bookingDetails[0])){
             $totalFare = ($bookingDetails[0]->owner_fare) + ($bookingDetails[0]->odbus_charges) + ($bookingDetails[0]->additional_owner_fare) + ($bookingDetails[0]->additional_special_fare) + ($bookingDetails[0]->additional_festival_fare); // added additional fare on 23-sep-2024::lima Mohanty (due to calculation issue)
         }
+
+        //Log::info($totalFare);
     
         $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
                                 ->where('destination_id', $destId)
@@ -188,7 +194,9 @@ class OfferRepository
                 $maxDiscount = $couponDetails[0]->max_discount_price;
                 
                 //log::info($maxDiscount);
-                //log::info($couponType);
+               
+
+                //dd($couponType);
 
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;
@@ -205,20 +213,23 @@ class OfferRepository
                             "discount" => $discount,
                             "payableAmount" => $payableAmount 
                         );
+
+                      //Log::info($totalAmount.'-----'.$payableAmount);
+
+
                         Booking::where('users_id', $userId)->where('transaction_id', $transactionId)
                                                             ->update([
                                                                 'coupon_code' => $requestedCouponCode,
                                                                 'coupon_discount' => $discount,
                                                                 'payable_amount' => $payableAmount
                                                             ]);
-                    // Log::info('11111');                                   
-                    // Log::info($couponRecords);                                      
-                                                            
+                   
                         return $couponRecords;
                     }else{
                         $discount = $maxDiscount;
                         $totalAmount = $totalFare - $maxDiscount;
-                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2);
+                      
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,

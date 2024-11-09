@@ -231,9 +231,18 @@ class ViewSeatsService
                         if(collect($lb)->has(['bus_seats'])){                  
                         // if(isset($lb->busSeats)){                           
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
-                            $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
 
+                            if($lb->seat_class_id==2 && $lb->berthType==1){ // added by Lima 29-sep-2024
+
+                                $lb->busSeats->ticket_price->base_seat_fare =  $lb->busSeats->ticket_price->base_sleeper_fare + $miscfares[1]+$miscfares[3]+$miscfares[5];
+
+                            }else{
+                                $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+                                
+                            }
+                           
                             $base_seat_fare=$lb->busSeats->ticket_price->base_seat_fare;
+                           
                             /////////// add odbus gst to seat fare
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){
@@ -242,6 +251,8 @@ class ViewSeatsService
                                 if($startingFare <= $base_seat_fare && $uptoFare >= $base_seat_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
                                     $odbusServiceCharges = round($base_seat_fare * ($percentage/100));
+                                   // Log::Info($base_seat_fare);
+
                                     $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
 
                                     $lb->busSeats->ticket_price->base_sleeper_fare = 0;
@@ -523,7 +534,6 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     if($sleeperIds){
         $ticket_new_fare[] = $this->viewSeatsRepository->newFare($sleeperIds,$busId,$busWithTicketPrice->id);   
     }
-
     //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
     $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
 
@@ -537,6 +547,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
     if(count($ticket_new_fare) > 0){
         foreach($ticket_new_fare as $tktprc){
+
             foreach($tktprc as $tkt){
                 if( $tkt->type==2 || ($tkt->type==null && $tkt->operation_date != null )){
                     // do nothing (this logic is to avoid extra seat block , seat block seats )
@@ -546,7 +557,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                         if($tkt->new_fare == 0 ){
                             if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
                        
-                                $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare : $busWithTicketPrice->base_seat_fare;
 
                             }
                             else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){                     
@@ -562,10 +573,11 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                             array_push($PriceDetail,$tkt);
                         }
                         if($seaterIds && in_array($tkt->seats_id,$seaterIds)){
-                            $totalSplFare +=$miscfares[0];
-                            $totalOwnFare +=$miscfares[2];
-                            $totalFestiveFare +=$miscfares[4];
-                            $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
+                            $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
+                            $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
+                            $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
+                            $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
+                           ; 
 
                         }
                         else if($sleeperIds && in_array($tkt->seats_id,$sleeperIds)){
@@ -650,7 +662,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     }else{
         $seatWithPriceRecords[] = array(
             "PriceDetail" => $PriceDetail,
-            "ownerFare" => $ownerFare,
+            "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
             "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
             "specialFare" => $totalSplFare,
             "addOwnerFare" => $totalOwnFare,
@@ -660,6 +672,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             "totalFare" => (float) $totalFare
             );    
     }
+    Log::info($seatWithPriceRecords);
     return $seatWithPriceRecords;
    }
     
@@ -1046,8 +1059,10 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
      
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
-                                    $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
-                                    $baseFare = $busWithTicketPrice->base_seat_fare;
+                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare : $busWithTicketPrice->base_seat_fare;
+
+                                   // $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare: $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
@@ -1060,11 +1075,17 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                             
                             if($collectionSeater && $collectionSeater->contains($tkt->seats_id)){
                                
-                                $totalSplFare +=$miscfares[0];
-                                $totalOwnFare +=$miscfares[2];
-                                $totalFestiveFare +=$miscfares[4];
-                                $ownerFare += $baseFare+$miscfares[2];
-                                $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
+                                $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
+                                $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
+                                $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
+                                if($tkt->seat_class_id==2 && $tkt->berthType==1){
+                                    $ownerFare += $baseFare+ $miscfares[3];
+                                }else{
+                                    $ownerFare += $baseFare+ $miscfares[2];
+                                }
+                                
+                                $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
+                               ; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){
                                 
@@ -1131,7 +1152,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" => $ownerFare,
+                "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
                 "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
                 "specialFare" => $totalSplFare,
                 "addOwnerFare" => $totalOwnFare,
@@ -1266,8 +1287,11 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
      
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
-                                    $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
-                                    $baseFare = $busWithTicketPrice->base_seat_fare;
+
+                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare : $busWithTicketPrice->base_seat_fare;
+
+                                   // $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare: $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
@@ -1280,11 +1304,17 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
 
                             if($collectionSeater && $collectionSeater->contains($tkt->seats_id)){
                                
-                                $totalSplFare +=$miscfares[0];
-                                $totalOwnFare +=$miscfares[2];
-                                $totalFestiveFare +=$miscfares[4];
-                                $ownerFare += $baseFare+$miscfares[2];
-                                $tkt->new_fare +=$miscfares[0]+$miscfares[2]+$miscfares[4]; 
+                                $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
+                                $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
+                                $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
+                                if($tkt->seat_class_id==2 && $tkt->berthType==1){
+                                    $ownerFare += $baseFare+ $miscfares[3];
+                                }else{
+                                    $ownerFare += $baseFare+ $miscfares[2];
+                                }
+                                
+                                $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
+                               ; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){ 
                                 $totalSplFare +=$miscfares[1];
@@ -1324,7 +1354,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" => $ownerFare,
+                "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
                 "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
                 "specialFare" => $totalSplFare,
                 "addOwnerFare" => $totalOwnFare,
@@ -1440,7 +1470,6 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                             if($ub->busSeats->new_fare > 0){
                                 $ub->busSeats->new_fare +=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
                                 $new_fare=$ub->busSeats->new_fare;
-    
                                 /////////// add odbus gst to seat fare
                             $odbusServiceCharges = 0;
                             foreach($ticketFareSlabs as $ticketFareSlab){

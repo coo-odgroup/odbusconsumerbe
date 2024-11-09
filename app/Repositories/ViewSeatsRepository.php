@@ -343,12 +343,12 @@ class ViewSeatsRepository
 
     public function newFare($seat_ids,$busId,$ticket_price_id){
 
-        return  $this->busSeats
-        ->whereIn('seats_id', $seat_ids)
-        ->where('bus_id', $busId)
-        ->where('ticket_price_id', $ticket_price_id)
-        ->where('status','1') 
-        ->select('id','seats_id','new_fare','ticket_price_id','type','duration','operation_date') 
+        return  DB::table('bus_seats as b')->leftJoin('seats as s','b.seats_id','=','s.id')
+        ->whereIn('b.seats_id', $seat_ids)
+        ->where('b.bus_id', $busId)
+        ->where('b.ticket_price_id', $ticket_price_id)
+        ->where('b.status','1') 
+        ->select('b.id','b.seats_id','b.new_fare','b.ticket_price_id','b.type','b.duration','b.operation_date','s.seat_class_id','s.berthType') 
         ->get();
 
     }
