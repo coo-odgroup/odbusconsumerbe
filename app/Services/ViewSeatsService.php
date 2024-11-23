@@ -485,7 +485,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
               $hasGst = $clientDetails->has_gst;
                 $gst = 0;
                 if($hasGst == 1){
-                    $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
+                    $gst = ($total_fare * 5)/105;////gst calculation 5% on 30th JAN 2023
                 }
                $seatWithPriceRecords[] = array(
                    "totalFare" => $total_fare + $gst,
@@ -651,7 +651,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
         $gst = 0;
         if($hasGst == 1){
-            $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
+            $gst = ($newSeatFare * 5)/105;////gst calculation 5% on 30th JAN 2023
         }
         $seatWithPriceRecords[] = array(
             "totalFare" => $newSeatFare + $gst,
@@ -980,7 +980,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
               $hasGst = $clientDetails->has_gst;
         
               if($hasGst == 1){
-                  $gst = $total_fare * 0.05;////gst calculation 5% on 30th JAN 2023
+                  $gst = ($total_fare * 5)/105;////gst calculation 5% on 30th JAN 2023
               }
 
               
@@ -1142,7 +1142,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $client_service_charges = ($addCharge/100 * $odbus_charges_ownerFare);
         $newSeatFare = $odbus_charges_ownerFare + $client_service_charges;
         if($hasGst == 1){
-            $gst = $newSeatFare * 0.05;////gst calculation 5% on 30th JAN 2023
+            $gst = ($newSeatFare * 5)/105;////gst calculation 5% on 30th JAN 2023
         }
     
         //$odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
