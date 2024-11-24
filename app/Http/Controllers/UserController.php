@@ -86,14 +86,16 @@ public function clientLogin(Request $request){
   $clientValidation = ClientValidator::validate($data);
   if ($clientValidation->fails()) {
     $errors = $clientValidation->errors();
-    return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    return self::errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
   }
   try {
 
     $data['status']=1;
 
+   // dd($data);
+
     if (! $token = auth()->attempt($data)) {
-      return $this->errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
+      return self::errorResponse(Config::get('constants.WRONG_CREDENTIALS'),Response::HTTP_UNPROCESSABLE_ENTITY );
   }
   $loginClient =  self::createNewToken($token);
   User::where('id', $loginClient['user']->id)->update(['client_access_token' => $token ]);
