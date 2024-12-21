@@ -308,14 +308,16 @@ class ClientBookingRepository
             $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
                                                     ->where('status', '1')
                                                     ->get(); 
-            //Log::info($PDetails);
+           // Log::info($PDetails);
           
-            $actual_fare_for_commission=  (int)$PDetails[0]['totalFare'] - (int)$PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
+            $actual_fare_for_commission=  $PDetails[0]['totalFare'] - $PDetails[0]['gst']; // changes in 8 Feb,2023(as per santosh)
             //Log::info($actual_fare_for_commission);
 
-            $actual_fare_for_commission= (int)$actual_fare_for_commission;
+            $actual_fare_for_commission= $actual_fare_for_commission;
 
             //Log::info($actual_fare_for_commission);
+           //Log::info($actual_fare_for_commission);
+           // Log::info($clientCommissions);
 
             $clientComission = 0;
             if($clientCommissions){
@@ -324,12 +326,12 @@ class ClientBookingRepository
                     $uptoFare = $clientCom->upto_fare;
                     if($actual_fare_for_commission >= $startFare && $actual_fare_for_commission <= $uptoFare){
                         $clientComission = $clientCom->commision;
-                       // Log::info($clientComission);
+                        //Log::info($clientComission);
                         break;
                     }  
                 }   
             } 
-            $clientComAmount = round($clientComission/100 * $actual_fare_for_commission,2);
+            $clientComAmount = round( ($actual_fare_for_commission/100) * $clientComission ,2);
             $booking->client_comission = $clientComAmount;
             $booking->client_percentage = $clientComission;
                         
@@ -771,7 +773,7 @@ class ClientBookingRepository
             $clientWallet->save(); 
         }
         
-        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $data['refundAmount'], 'deduction_percent' => $data['Percentage'], 'odbus_cancel_profit' => $data['OdbusCancelCommission']]);             
+        $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $data['refundAmount'], 'deduction_percent' => $data['Percentage'],'deduction_amount' => $data['deductAmount'], 'odbus_cancel_profit' => $data['OdbusCancelCommission']]);             
         
         return $clientWallet;
     }

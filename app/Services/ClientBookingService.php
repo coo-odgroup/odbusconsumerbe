@@ -462,15 +462,12 @@ class ClientBookingService
                               $data['totalfare'] = $paidAmount;
                               $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%";
-                              $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
+                              $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
                               $data['deductAmount'] = $deductAmt;
-                              //$data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                             // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                              $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ; //+ $GstOnCancelCharge
-                              $gstOnRefund=($refundAmt* 5)/105;  // 5% GST on Refund amount
-                              $refundAmt = $refundAmt + $gstOnRefund;
-
+                            
+                              $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                              $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                              $refundAmt = round(($refundAmt + $gstOnRefund),2);  
                               $data['refundAmount'] = $refundAmt;
 
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
@@ -491,15 +488,12 @@ class ClientBookingService
                                $data['totalfare'] = $paidAmount;
                               $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%";
-                              $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
+                              $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
                               $data['deductAmount'] = $deductAmt;
-                             // $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                             // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                             $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  //+ $GstOnCancelCharge
-
-                             $gstOnRefund=($refundAmt** 5)/105; // 5% GST on Refund amount
-                             $refundAmt = $refundAmt + $gstOnRefund;
+                            
+                              $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                              $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                              $refundAmt = round(($refundAmt + $gstOnRefund),2);  
 
                               $data['refundAmount'] = $refundAmt;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
@@ -622,45 +616,28 @@ class ClientBookingService
                             
                               $deduction = 10;//minimum deduction 
                               $data['totalfare'] = $paidAmount;
-                              $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
+                              $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
                               $data['deductAmount'] = $deductAmt;
-                             // $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                             // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                             $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  // + $GstOnCancelCharge
-
-                             $gstOnRefund=($refundAmt* 5)/105;  // 5% GST on Refund amount
-                             $refundAmt = $refundAmt + $gstOnRefund;
-
-                             $data['refundAmount'] = $refundAmt;
-                             
-                             // $data['deductionPercentage'] = $deduction."%"; 
-                              //$deductAmt = round($paid_amount_without_gst-$refundAmt,2);
-                              //$data['deductAmount'] = $deductAmt;
-                              
+                              $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                              $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                              $refundAmt = round(($refundAmt + $gstOnRefund),2);  
+                             $data['refundAmount'] = $refundAmt;                             
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
-                              //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                             // $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
-                             
-                             Log::info($data);
+                            
                               return $data;
           
                           }elseif($min <= $interval && $interval <= $max){ 
                             $data['totalfare'] = $paidAmount;
-                            $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
-                            $data['deductAmount'] = $deductAmt;
-                           // $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                           // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                           $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  // + $GstOnCancelCharge
-                           $gstOnRefund=($refundAmt* 5)/105; // 5% GST on Refund amount
-                           $refundAmt = $refundAmt + $gstOnRefund;
-
+                            $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
+                            $data['deductAmount'] = $deductAmt;                          
+                          
+                            $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                            $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                            $refundAmt = round(($refundAmt + $gstOnRefund),2);  
                             $data['refundAmount'] = $refundAmt;
 
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
-                              //$data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              //$data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];          
+                                    
                               return $data;   
                           }
                       }                          
@@ -769,47 +746,30 @@ class ClientBookingService
                                 $deduction = 10;//minimum deduction 
                                 $data['totalfare'] = $paidAmount;
                                 $data['deductionPercentage'] = $deduction."%";
-                                $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
-                                $data['deductAmount'] = $deductAmt;
-                              //$data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                             // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                             $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  // + $GstOnCancelCharge
-
-                             $gstOnRefund=($refundAmt* 5)/105;  // 5% GST on Refund amount
-                             $refundAmt = $refundAmt + $gstOnRefund;
-
-                              $data['refundAmount'] = $refundAmt;
-                                //$data['clientCancelCommission'] = $deductAmt/2; 
-                                //$data['odbusCancelCommission'] = $deductAmt/2; 
+                                $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
+                                $data['deductAmount'] = $deductAmt;                             
+                                $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                                $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                                $refundAmt = round(($refundAmt + $gstOnRefund),2);  
+                                $data['refundAmount'] = $refundAmt;
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
 
-                               // Log::Info("line 748");
-                               // Log::Info($data);
                                 return $data;
                             }elseif($min <= $interval && $interval <= $max){ 
                                 $data['totalfare'] = $paidAmount;
                                 $data['deductionPercentage'] = $deduction."%";
-                                $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
-                                $data['deductAmount'] = $deductAmt;
-                              //  $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-  
-                               // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                               $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  // + $GstOnCancelCharge
-
-                               $gstOnRefund=($refundAmt* 5)/105;  // 5% GST on Refund amount
-                               $refundAmt = $refundAmt + $gstOnRefund;
-                               
+                                $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
+                                $data['deductAmount'] = $deductAmt;                             
+                                $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                                $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                                $refundAmt = round(($refundAmt + $gstOnRefund),2);                              
                                 $data['refundAmount'] = $refundAmt;
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];  
-                                //Log::Info("line 764");
-                                //Log::Info($data);
-
-                                return $data;   
+                                 return $data;   
                             }
                         }                          
                 }else{         
@@ -1020,15 +980,11 @@ class ClientBookingService
                               $data['totalfare'] = $paidAmount;
                               $data['Percentage'] = $deduction;
                               $data['deductionPercentage'] = $deduction."%";
-                              $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
+                              $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
                               $data['deductAmount'] = $deductAmt;
-                             // $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                             // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                             $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  // + $GstOnCancelCharge
-
-                             $gstOnRefund=($refundAmt* 5)/105; // 5% GST on Refund amount
-                             $refundAmt = $refundAmt + $gstOnRefund;
+                              $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                                $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                                $refundAmt = round(($refundAmt + $gstOnRefund),2); 
 
                               $data['refundAmount'] = $refundAmt;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
@@ -1067,14 +1023,12 @@ class ClientBookingService
                             $data['totalfare'] = $paidAmount;
                             $data['Percentage'] = $deduction;
                             $data['deductionPercentage'] = $deduction."%";
-                            $deductAmt = round($paid_amount_without_gst*($deduction/100),2);
+                            $deductAmt = round(($paid_amount_without_gst/100)*$deduction,2);
                             $data['deductAmount'] = $deductAmt;
-                           // $data['GstOnCancelCharge'] =$GstOnCancelCharge= $deductAmt * (5/100); // 5% gst on deduct amount
-
-                           // $refundAmt = round($paid_amount_without_gst * ((100-$deduction) / 100),2);
-                           $refundAmt = round(($paid_amount_without_gst - $deductAmt),1) ;  //+ $GstOnCancelCharge
-                           $gstOnRefund=($refundAmt* 5)/105;  // 5% GST on Refund amount
-                           $refundAmt = $refundAmt + $gstOnRefund;
+                         
+                            $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
+                            $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                            $refundAmt = round(($refundAmt + $gstOnRefund),2);  
 
                             $data['refundAmount'] = $refundAmt;
                               //$data['cancelCommission'] = $deductAmt/2; 
