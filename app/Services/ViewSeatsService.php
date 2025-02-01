@@ -72,8 +72,9 @@ class ViewSeatsService
         }else if($origin=='ODBUS'){
 
 
-        $user_id = Bus::where('id', $busId)->first()->user_id;
-
+        $busDet = Bus::where('id', $busId)->first();
+        $lower_sleeper_extra_fare =$busDet->lower_sleeper_extra_fare ;
+        $user_id =$busDet->user_id ;
         $miscfares = $this->viewSeatsRepository->miscFares($busId,$journeyDate);
 
         $requestedSeq = $this->viewSeatsRepository->busLocationSequence($sourceId,$destinationId,$busId);
@@ -172,7 +173,8 @@ class ViewSeatsService
                         // if(isset($ub->busSeats)){
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
 
-                            $ub->busSeats->ticket_price->base_sleeper_fare+=$miscfares[1]+ $miscfares[3]+ $miscfares[5];
+                            $ub->busSeats->ticket_price->base_sleeper_fare+=$miscfares[1]+ $miscfares[3]+ $miscfares[5];                           
+
                             
                             $base_sleeper_fare=$ub->busSeats->ticket_price->base_sleeper_fare;
 
@@ -233,8 +235,9 @@ class ViewSeatsService
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
 
                             if($lb->seat_class_id==2 && $lb->berthType==1){ // added by Lima 29-sep-2024
-
-                                $lb->busSeats->ticket_price->base_seat_fare =  $lb->busSeats->ticket_price->base_sleeper_fare + $miscfares[1]+$miscfares[3]+$miscfares[5];
+                               
+                                $lb->busSeats->ticket_price->base_seat_fare =  $lb->busSeats->ticket_price->base_sleeper_fare + $miscfares[1]+$miscfares[3]+$miscfares[5] + $lower_sleeper_extra_fare;
+                          
 
                             }else{
                                 $lb->busSeats->ticket_price->base_seat_fare+=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
@@ -260,7 +263,8 @@ class ViewSeatsService
                                 }
 
                             if($lb->busSeats->new_fare > 0){
-                                $lb->busSeats->new_fare +=$miscfares[0]+ $miscfares[2]+ $miscfares[4];
+                              $lb->busSeats->new_fare += ($lb->seat_class_id==2 && $lb->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5] + $lower_sleeper_extra_fare )  : ($miscfares[0]+$miscfares[2]+$miscfares[4]); 
+
 
                                $new_fare= $lb->busSeats->new_fare;
 
@@ -522,7 +526,9 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
         }
     }else if($origin=='ODBUS'){
 
-    $user_id = Bus::where('id', $busId)->first()->user_id;
+    $busDet = Bus::where('id', $busId)->first();
+    $user_id =  $busDet->user_id; 
+    $lower_sleeper_extra_fare=$busDet->lower_sleeper_extra_fare; 
 
     $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
 
@@ -576,7 +582,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                             $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
                             $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
                             $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
-                            $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
+                            $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5] + $lower_sleeper_extra_fare)  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
                            ; 
 
                         }
@@ -584,10 +590,11 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                             $totalSplFare +=$miscfares[1];
                             $totalOwnFare +=$miscfares[3];
                             $totalFestiveFare +=$miscfares[5];
-                            $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
+                            $tkt->new_fare += $miscfares[1]+$miscfares[3]+$miscfares[5]; 
                         }
                         $seat_fare=$tkt->new_fare;
                         $ownerFare +=$tkt->new_fare;
+
                         ////////// add odbus service chanrges to seat fare
 
                         $odbusServiceCharges = 0;
@@ -1020,7 +1027,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         
         //$busOperatorId = $request['busOperatorId'];
         $clientDetails = User::where('id', $clientId)->first();
-        $user_id = Bus::where('id', $busId)->first()->user_id;
+        $busDet = Bus::where('id', $busId)->first();
+        $user_id =  $busDet->user_id; 
+        $lower_sleeper_extra_fare=$busDet->lower_sleeper_extra_fare; 
     
         $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
     
@@ -1059,10 +1068,10 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
      
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
-                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare : $busWithTicketPrice->base_seat_fare;
+                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare + $lower_sleeper_extra_fare: $busWithTicketPrice->base_seat_fare;
 
                                    // $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
-                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare: $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare + $lower_sleeper_extra_fare : $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
@@ -1084,7 +1093,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                     $ownerFare += $baseFare+ $miscfares[2];
                                 }
                                 
-                                $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
+                                $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5] )  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
                                ; 
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){
@@ -1248,7 +1257,11 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $entry_date = $request['entry_date'];
      
         $entry_date = date("Y-m-d", strtotime($entry_date));
-        $user_id = Bus::where('id', $busId)->first()->user_id;
+
+        $busDet = Bus::where('id', $busId)->first();
+        $user_id =  $busDet->user_id; 
+        $lower_sleeper_extra_fare=$busDet->lower_sleeper_extra_fare; 
+
         $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
     
         $busWithTicketPrice = $this->viewSeatsRepository->busWithTicketPrice($sourceId, $destinationId,$busId);
@@ -1288,10 +1301,10 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 if($collectionSeater && $collectionSeater->contains($tkt->seats_id))
                                 {
 
-                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare : $busWithTicketPrice->base_seat_fare;
+                                    $tkt->new_fare =($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare + $lower_sleeper_extra_fare: $busWithTicketPrice->base_seat_fare;
 
                                    // $tkt->new_fare = $busWithTicketPrice->base_seat_fare;
-                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare: $busWithTicketPrice->base_seat_fare;
+                                    $baseFare = ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $busWithTicketPrice->base_sleeper_fare + $lower_sleeper_extra_fare: $busWithTicketPrice->base_seat_fare;
                                 }
     
                                 else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id))
@@ -1314,7 +1327,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 }
                                 
                                 $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
-                               ; 
+                               ;  // extra fare  + $lower_sleeper_extra_fare should not add :: 12-jan-2025
+
                             }
                             else if($collectionSleeper && $collectionSleeper->contains($tkt->seats_id)){ 
                                 $totalSplFare +=$miscfares[1];
@@ -1340,6 +1354,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                     $service_charges += $odbusServiceCharges;
                                     }     
                                 } 
+
+                               // Log::info('new fare - '.$tkt->new_fare);
                             $odbus_charges_ownerFare +=$tkt->new_fare; 
                         }                        
                     }       
@@ -1351,7 +1367,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
         $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
         $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
-    
+       
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
                 "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),

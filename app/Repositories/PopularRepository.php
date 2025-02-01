@@ -44,7 +44,7 @@ class PopularRepository
         ->whereDate('created_at', '>', Carbon::now()->subDays(30))
         ->groupBy('source_id', 'destination_id')
         ->orderBy('count', 'DESC')
-        ->limit(10)
+        ->limit(25)
         ->get();
     }
  
