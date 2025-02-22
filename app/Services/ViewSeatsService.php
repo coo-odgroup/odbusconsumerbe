@@ -171,6 +171,19 @@ class ViewSeatsService
                       foreach($viewSeat['upper_berth'] as &$ub){
                         if(collect($ub)->has(['bus_seats'])){
                         // if(isset($ub->busSeats)){
+
+                        $data = array(
+                            'busId' => $busId,
+                            'sourceId' => $sourceId,
+                            'destinationId' => $destinationId,
+                            'seater' => [],
+                            'sleeper' => [$ub->id],
+                            'entry_date' => $journeyDate,
+                            'origin' => $origin
+                        );
+        
+                        $ub->busSeats->PDetails = $this->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+
                             $ub->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
 
                             $ub->busSeats->ticket_price->base_sleeper_fare+=$miscfares[1]+ $miscfares[3]+ $miscfares[5];                           
@@ -231,7 +244,21 @@ class ViewSeatsService
                     if(isset($viewSeat['lower_berth'])){          
                       foreach($viewSeat['lower_berth'] as &$lb){    
                         if(collect($lb)->has(['bus_seats'])){                  
-                        // if(isset($lb->busSeats)){                           
+                        // if(isset($lb->busSeats)){ 
+                        
+                        $data = array(
+                            'busId' => $busId,
+                            'sourceId' => $sourceId,
+                            'destinationId' => $destinationId,
+                            'seater' => [$lb->id],
+                            'sleeper' => [],
+                            'entry_date' => $journeyDate,
+                            'origin' => $origin
+                        );
+        
+                        $lb->busSeats->PDetails = $this->getPriceOnSeatsSelection($data,$clientRole,$clientId);
+
+
                             $lb->busSeats->ticket_price = $this->viewSeatsRepository->busWithTicketPrice($sourceId,$destinationId,$busId);
 
                             if($lb->seat_class_id==2 && $lb->berthType==1){ // added by Lima 29-sep-2024
