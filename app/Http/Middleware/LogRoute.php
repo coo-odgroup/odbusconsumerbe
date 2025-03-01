@@ -34,25 +34,25 @@ class LogRoute
         $user = JWTAuth::toUser($token);
 
 
-        //if (app()->environment('local')) {
-            // $log = [
-            //     'URI' => $request->getUri(),
-            //     'METHOD' => $request->getMethod(),
-            //     'REQUEST_BODY' => $request->all(),
-            //     'RESPONSE' => $response->getContent()
-            // ];
+        if (app()->environment('local')) {
+            $log = [
+                'URI' => $request->getUri(),
+                'METHOD' => $request->getMethod(),
+                'REQUEST_BODY' => $request->all(),
+                'RESPONSE' => $response->getContent()
+            ];
 
-            // $api_log = new $this->apilog();
-            // $api_log->url = $request->getUri();
-            // $api_log->method = $request->getMethod();
-            // $api_log->request_body = json_encode($request->all());
-            // $api_log->response = json_encode($request->getContent());
-            // $api_log->user_id = $user->id;
-            // $api_log->user_name = $user->name;
-            // $api_log->save(); 
+            $api_log = new $this->apilog();
+            $api_log->url = $request->getUri();
+            $api_log->method = $request->getMethod();
+            $api_log->request_body = json_encode($request->all());
+            $api_log->response = json_encode($request->getContent());
+            $api_log->user_id = $user->id;
+            $api_log->user_name = $user->name;
+            $api_log->save(); 
 
             //Log::info(json_encode($log));
-        //}
+        }
 
         $response->headers->set('Access-Control-Allow-Origin' , '*');
         $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');

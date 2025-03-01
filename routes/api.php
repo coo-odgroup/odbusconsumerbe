@@ -105,18 +105,18 @@ Route::post('/downloadapp', [PopularController::class, 'downloadApp']);
 Route::post('/GenerateFailedTicket', [ChannelController::class, 'generateFailedTicket']);
 Route::get('/getPnrDetail/{pnr}', [BookingManageController::class, 'pnrDetail']);
 
-Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking']);
+Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking'])->middleware(LogRoute::class);
 
 //Route::group(['excluded_middleware' => 'throttle:api'], function() {
-   Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock']);
-   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation']);         
+   Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock'])->middleware(LogRoute::class);
+   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation'])->middleware(LogRoute::class);;         
 //});
 
 
-Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket']);
-Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos']);
-Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel']);
-Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails']);
+Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket'])->middleware(LogRoute::class);;
+Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos'])->middleware(LogRoute::class);;
+Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel'])->middleware(LogRoute::class);;
+Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails'])->middleware(LogRoute::class);;
 Route::post('/GetFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('/CityPair', [PopularController::class, 'CityPair']);
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);
@@ -124,7 +124,7 @@ Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
 Route::post('/apiReference', [ApiReferenceController::class, 'apiReference']);
 Route::get('/GetPnr/{trans_id}', [BookingManageController::class, 'GetPnr']);
-Route::get('/CheckWalletBalance', [ClientBookingController::class, 'walletBalance']);
+Route::get('/CheckWalletBalance', [ClientBookingController::class, 'walletBalance'])->middleware(LogRoute::class);;
 
 });
 

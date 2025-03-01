@@ -466,20 +466,22 @@ class ClientBookingService
                               $data['deductAmount'] = $deductAmt;
                             
                               $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
-                              $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
+                              $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount 12
                               $refundAmt = round(($refundAmt + $gstOnRefund),2);  
                               $data['refundAmount'] = $refundAmt;
 
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
                               $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                               $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
+                              $data['gstOnRefund'] = $gstOnRefund;
                               
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
                              
                               $smsData['refundAmount'] = $refundAmt;     
-                              $emailData['deductionPercentage'] = $deduction;
+                              $emailData['deductionPercentage'] = $deduction; // 20%
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
+                             
                             
                               return $data;
           
@@ -498,7 +500,8 @@ class ClientBookingService
                               $data['refundAmount'] = $refundAmt;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
                               $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];            
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];  
+                              $data['gstOnRefund'] = $gstOnRefund;         
                             
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
 
@@ -506,6 +509,7 @@ class ClientBookingService
                               $emailData['deductionPercentage'] = $deduction;
                               $emailData['refundAmount'] = $refundAmt;
                               $emailData['totalfare'] = $paidAmount;
+                              
                           
                               return $data;   
                           }
@@ -621,7 +625,8 @@ class ClientBookingService
                               $refundAmt = round(($paid_amount_without_gst - $deductAmt),2) ;  
                               $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
                               $refundAmt = round(($refundAmt + $gstOnRefund),2);  
-                             $data['refundAmount'] = $refundAmt;                             
+                             $data['refundAmount'] = $refundAmt;   
+                             $data['gstOnRefund'] = $gstOnRefund;                          
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
                             
                               return $data;
@@ -635,6 +640,7 @@ class ClientBookingService
                             $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
                             $refundAmt = round(($refundAmt + $gstOnRefund),2);  
                             $data['refundAmount'] = $refundAmt;
+                            $data['gstOnRefund'] = $gstOnRefund;
 
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_comission);
                                     
@@ -752,6 +758,7 @@ class ClientBookingService
                                 $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
                                 $refundAmt = round(($refundAmt + $gstOnRefund),2);  
                                 $data['refundAmount'] = $refundAmt;
+                                $data['gstOnRefund'] = $gstOnRefund;
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
@@ -766,6 +773,7 @@ class ClientBookingService
                                 $gstOnRefund=round($refundAmt * 0.05 ,2);  // 5% GST on Refund amount
                                 $refundAmt = round(($refundAmt + $gstOnRefund),2);                              
                                 $data['refundAmount'] = $refundAmt;
+                                $data['gstOnRefund'] = $gstOnRefund;
                                 $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                                 $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
                                 $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];  
@@ -989,8 +997,8 @@ class ClientBookingService
                               $data['refundAmount'] = $refundAmt;
                               $cancelComCal = $this->cancelCommission($userId,$deductAmt,$client_commission);
                               $data['OdbusCancelCommission'] = $cancelComCal['OdbusCancelProfit']; 
-                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];
-
+                              $data['ClientCancelCommission'] = $cancelComCal['clientCancelProfit'];                            
+                              $data['gstOnRefund'] = $gstOnRefund;
                               $clientWallet = $this->clientBookingRepository->updateClientCancelTicket($bookingId,$userId,$data); 
                              
                               $smsData['refundAmount'] = $refundAmt;     
@@ -1031,6 +1039,8 @@ class ClientBookingService
                             $refundAmt = round(($refundAmt + $gstOnRefund),2);  
 
                             $data['refundAmount'] = $refundAmt;
+                            $data['gstOnRefund'] = $gstOnRefund;
+
                               //$data['cancelCommission'] = $deductAmt/2; 
                               
                               
