@@ -46,7 +46,7 @@ class LogRoute
             $api_log->url = $request->getUri();
             $api_log->method = $request->getMethod();
             $api_log->request_body = json_encode($request->all());
-            $api_log->response = json_encode($request->getContent());
+            $api_log->response = json_encode($response->getContent());
             $api_log->user_id = $user->id;
             $api_log->user_name = $user->name;
             $api_log->save(); 

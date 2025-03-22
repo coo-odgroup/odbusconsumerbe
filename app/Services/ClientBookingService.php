@@ -1376,13 +1376,13 @@ class ClientBookingService
           if($genderRestrictSeatarray){
           	foreach ($genderRestrictSeatarray as $value) {
           		foreach ($bookingInfo['bookingDetail'] as $b) {
-          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='F' && $b['passenger_gender'] =='M' ){
+          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='F' &&($b['passenger_gender'] =='M' || $b['passenger_gender'] =='male' || $b['passenger_gender'] =='Male') ){
           				$msg= 'Male is not allowed for seat no '.$value['seat_name'];
 
           				 return $arr=['status'=>'Gender Error','message' => $msg];
           			}
 
-          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='M' && $b['passenger_gender'] =='F' ){
+          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='M' && ($b['passenger_gender'] =='F' || $b['passenger_gender'] =='female' || $b['passenger_gender'] =='Female' ) ){
           				 $msg= 'Female is not allowed for seat no '.$value['seat_name'];
 
           				 return $arr=['status'=>'Gender Error','message' => $msg];
