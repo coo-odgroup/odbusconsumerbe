@@ -257,7 +257,7 @@ class UsersController extends Controller
       {
          return $this->successResponse($response,Config::get('constants.OTP_GEN'),Response::HTTP_OK);
       }else{
-        return $this->successResponse($response,Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+        return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
       }
   }
    catch (Exception $e) {
@@ -815,5 +815,92 @@ public function refreshToken() {
     catch (Exception $e) {
       return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
     }        
-  }  
+  } 
+  
+  
+  public function loginweb(Request $request){  
+
+    $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+    $request['phone']= $data['phone']=isset($arrParam->phone) ? $arrParam->phone :null;
+    $request['email']=$data['email']=isset($arrParam->email) ? $arrParam->email:null;
+
+    $LoginValidation = $this->loginValidator->validate($data);
+    
+    if ($LoginValidation->fails()) {
+      return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+    
+      // $errors = $LoginValidation->errors();
+      // return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+    }
+    try {
+      $response = $this->usersService->login($request);
+      if($response!='un_registered')
+      {
+         return $this->successResponse(encryptResponse($response),Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+      }else{
+        return $this->errorResponse(Config::get('constants.UN_REGISTERED'),Response::HTTP_OK);
+      }
+  }
+   catch (Exception $e) {
+    return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+  }        
+
+}
+
+
+public function verifyOtpweb(Request $request) 
+   {
+    
+    $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+    $request['otp']=$arrParam->otp;
+    $request['userId']=$arrParam->userId;
+
+    $verify = $this->usersService->verifyOtp($request);
+    if($verify == ''){
+      return $this->errorResponse(Config::get('constants.OTP_NULL'),Response::HTTP_OK);
+    }elseif($verify == 'Inval OTP'){
+     return $this->errorResponse(Config::get('constants.OTP_INVALID'),Response::HTTP_OK);
+    }
+    elseif($verify == 'Invalid User ID'){
+      return $this->errorResponse(Config::get('constants.USER_INVALID'),Response::HTTP_OK);
+     }
+    else{
+    return $this->successResponse(encryptResponse($verify),Config::get('constants.VERIFIED'),Response::HTTP_OK);
+    }
+   }
+
+
+   public function Registerweb(Request $request) {
+
+    $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+    $request['name']=$arrParam->name;
+    $request['email']=$arrParam->email;
+    $request['phone']=$arrParam->phone;
+    $request['created_by']=$arrParam->created_by;
+    
+
+      $data = $request->only([
+        'name','email','phone','created_by'
+       ]);  
+      
+       $usersValidation = $this->usersValidator->validate($data);
+     
+       if ($usersValidation->fails()) {
+         $errors = $usersValidation->errors();
+         return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
+       }
+       try {
+         $response = $this->usersService->Register($request);
+         if($response!='Existing User')
+         {
+            return $this->successResponse(encryptResponse($response),Config::get('constants.OTP_GEN'),Response::HTTP_OK);
+         }else{
+            return $this->errorResponse(encryptResponse($response),Response::HTTP_OK);
+         }
+       }
+       catch (Exception $e) {
+         return $this->errorResponse($e->getMessage(),Response::HTTP_PARTIAL_CONTENT);
+       }        
+   } 
+
 }

@@ -82,6 +82,11 @@ Route::delete('/DeleteReview/{id}/{userId}', [ReviewController::class, 'deleteRe
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
 Route::post('/Login', [UsersController::class, 'login']); 
+////////// craeted on 22-march-2025 (for encrypt related security issue resolved)
+Route::post('/Registerweb', [UsersController::class, 'Registerweb']);
+Route::post('/VerifyOtpweb', [UsersController::class, 'verifyOtpweb']);
+Route::post('/Loginweb', [UsersController::class, 'loginweb']); 
+
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 //Route::put('/updateProfile/{userId}/{token}', [UsersController::class, 'updateProfile']);
 Route::post('/updateProfile', [UsersController::class, 'updateProfile']);
