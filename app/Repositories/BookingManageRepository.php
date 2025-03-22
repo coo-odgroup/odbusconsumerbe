@@ -333,8 +333,8 @@ class BookingManageRepository
                 'arrivalTime'=> $b->booking[0]->dropping_time,
                 'seat_no' => $seat_arr,
                 'busname'=> $b->booking[0]->bus->name,
-                'source'=> $main_source,  // changed on 13 April,2024
-                'destination'=> $main_destination, // changed on 13 April,2024
+                'source'=> $b->booking[0]->source[0]->name,  // changed on 13 April,2024
+                'destination'=> $b->booking[0]->destination[0]->name, // changed on 13 April,2024
                 'busNumber'=> $b->booking[0]->bus->bus_number,
                 'bustype' => $b->booking[0]->bus->busType->name,
                 'busTypeName' => $b->booking[0]->bus->busType->busClass->class_name,
@@ -347,7 +347,7 @@ class BookingManageRepository
                 'odbus_gst'=> $b->booking[0]->odbus_gst_amount,
                 'odbus_charges'=> $b->booking[0]->odbus_charges,
                 'owner_fare'=> $b->booking[0]->owner_fare,
-                'routedetails' => $b->booking[0]->source[0]->name.' To '.$b->booking[0]->destination[0]->name    
+                'routedetails' => $main_source.' To '.$main_destination// $b->booking[0]->source[0]->name.' To '.$b->booking[0]->destination[0]->name    
             ];
 
 

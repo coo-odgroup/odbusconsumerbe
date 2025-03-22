@@ -706,7 +706,11 @@ class BookingManageService
                 'customer_comission' => $customer_comission  ,
                 'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
                 'add_special_fare' => $b->booking[0]->additional_special_fare,
-                'routedetails' => $routedetails 
+                'routedetails' => $routedetails ,
+                'bus_sitting' => $b->booking[0]->bus['bus_sitting']['name'],
+                'bus_type' =>  $b->booking[0]->bus['bus_type']['name'],
+                'start'=>$source_data[0]->name,
+                'end'=>$dest_data[0]->name
             ];
 
           //log::info($data);
@@ -784,7 +788,7 @@ class BookingManageService
                     $customer_comission = $b->booking[0]->customer_comission;
                 }   
             }
-           
+            $rr=explode(' To ',$routedetails);
           
             $data = [
                 'name' => $b->name,
@@ -830,7 +834,11 @@ class BookingManageService
                 'customer_comission' => $customer_comission,
                 'add_festival_fare' => $b->booking[0]->additional_festival_fare, 
                 'add_special_fare' => $b->booking[0]->additional_special_fare,
-                'routedetails' => $routedetails       
+                'routedetails' => $routedetails   ,                
+                'bus_sitting' =>$b->booking[0]->bus->busSitting->name  ,
+                'bus_type' =>   $b->booking[0]->bus->busType->name,
+                'start'=>$rr[0],
+                'end'=>$rr[1],
             ];
 
               //  Log::info( $data );
