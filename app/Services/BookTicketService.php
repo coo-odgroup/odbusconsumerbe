@@ -123,7 +123,7 @@ class BookTicketService
                     );
                    
                     $priceDetails = $this->viewSeatsService->getPriceCalculationOdbus($data,$clientId);
-                    //Log::Info($priceDetails);
+                   // Log::Info($priceDetails);
                 }
 
                 /////////// get seat price for dolphin

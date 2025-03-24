@@ -59,7 +59,7 @@ class OfferRepository
         $bookingDetails = Booking::where('transaction_id',$transactionId)->get();
         $totalFare = 0;
                            
-        Log::info($bookingDetails[0]->owner_fare.'---'.$bookingDetails[0]->odbus_charges.'---'.$bookingDetails[0]->additional_owner_fare.'---'.$bookingDetails[0]->additional_special_fare.'---'.$bookingDetails[0]->additional_festival_fare);                                      
+       // Log::info($bookingDetails[0]->owner_fare.'---'.$bookingDetails[0]->odbus_charges.'---'.$bookingDetails[0]->additional_owner_fare.'---'.$bookingDetails[0]->additional_special_fare.'---'.$bookingDetails[0]->additional_festival_fare);                                      
                                                 
 
         if(isset($bookingDetails[0])){

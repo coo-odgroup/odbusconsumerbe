@@ -1114,6 +1114,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
                                 $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
                                 $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
+
+                                $baseFare=$tkt->new_fare;
+                                
                                 if($tkt->seat_class_id==2 && $tkt->berthType==1){
                                     $ownerFare += $baseFare+ $miscfares[3];
                                 }else{
@@ -1347,12 +1350,13 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[1] : $miscfares[0];
                                 $totalOwnFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[3] : $miscfares[2];
                                 $totalFestiveFare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? $miscfares[5] : $miscfares[4];
+
+                                $baseFare=$tkt->new_fare;
                                 if($tkt->seat_class_id==2 && $tkt->berthType==1){
                                     $ownerFare += $baseFare+ $miscfares[3];
                                 }else{
                                     $ownerFare += $baseFare+ $miscfares[2];
                                 }
-                                
                                 $tkt->new_fare += ($tkt->seat_class_id==2 && $tkt->berthType==1) ? ($miscfares[1]+$miscfares[3]+$miscfares[5])  : ($miscfares[0]+$miscfares[2]+$miscfares[4])
                                ;  // extra fare  + $lower_sleeper_extra_fare should not add :: 12-jan-2025
 

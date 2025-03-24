@@ -68,7 +68,7 @@ class BookTicketRepository
     }
 
     public function SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId){
-
+     
         $defUserId = Config::get('constants.USER_ID'); 
 
 	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
