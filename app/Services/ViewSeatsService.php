@@ -658,8 +658,10 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
     $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
     $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
+    $customer_gst = $odbusCharges[0]->customer_gst;   
     $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
-    $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
+    $customer_gst = round(($odbus_charges_ownerFare * $customer_gst)/100,2);
+    $totalFare = round($odbus_charges_ownerFare + $transactionFee + $customer_gst ,2);
 
     if($clientRole == $clientRoleId){
          /////client extra service charge added to seatfare////////////////
@@ -703,7 +705,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             "festiveFare" => $totalFestiveFare,
             "odbusServiceCharges" => $service_charges,
             "transactionFee" => $transactionFee,
-            "totalFare" => (float) $totalFare
+            "totalFare" => (float) $totalFare,
+            "customerGst" => $customer_gst
             );    
     }
     Log::info($seatWithPriceRecords);
@@ -1395,9 +1398,12 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $transactionFee = 0;
     
         $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
-        $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
+         $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
+        $customer_gst = $odbusCharges[0]->customer_gst;
         $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
-        $totalFare = round($odbus_charges_ownerFare + $transactionFee,2);
+        $customer_gst = round(($odbus_charges_ownerFare * $customer_gst)/100,2);
+        $totalFare = round($odbus_charges_ownerFare + $transactionFee + $customer_gst ,2);
+
        
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
@@ -1408,6 +1414,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                 "festiveFare" => $totalFestiveFare,
                 "odbusServiceCharges" => $service_charges,
                 "transactionFee" => $transactionFee,
+                "customerGst" => $customer_gst,
                 "totalFare" => $totalFare
                 ); 
     

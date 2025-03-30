@@ -207,7 +207,7 @@ class OfferRepository
                     
                     if($discount <=  $maxDiscount ){
                         $totalAmount = $totalFare - $discount; 
-                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee  + $bookingDetails[0]->customer_gst_amount,2); 
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
                             "discount" => $discount,
@@ -228,7 +228,7 @@ class OfferRepository
                     }else{
                         $discount = $maxDiscount;
                         $totalAmount = $totalFare - $maxDiscount;
-                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2);
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee +  $bookingDetails[0]->customer_gst_amount,2);
                       
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 
@@ -251,7 +251,7 @@ class OfferRepository
                     if($totalFare >= $minTransactionAmount ){
                         $discount = $couponDetails[0]->amount;
                         $totalAmount = $totalFare - $discount; 
-                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee,2); 
+                        $payableAmount = round($totalAmount + $bookingDetails[0]->transactionFee + $bookingDetails[0]->customer_gst_amount ,2); 
                         
                         $couponRecords = array(
                             "totalAmount" => $totalFare, 

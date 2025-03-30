@@ -129,6 +129,7 @@ class BookTicketRepository
         $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
         $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
         $booking->transactionFee = $priceDetails[0]['transactionFee'];
+        $booking->customer_gst_amount = $priceDetails[0]['customerGst'];
         //$booking->owner_fare = $bookingInfo['owner_fare'];
         //$booking->total_fare = $bookingInfo['total_fare'];
         //$booking->additional_special_fare = $bookingInfo['specialFare'];

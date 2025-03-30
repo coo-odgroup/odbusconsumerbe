@@ -792,6 +792,8 @@ class ChannelRepository
 
       public function updateCustomerGST($update_customer_gst,$transationId){
 
+        Log::Info($update_customer_gst);
+
         $this->booking->where('transaction_id', $transationId)->update($update_customer_gst);
 
       }

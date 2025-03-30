@@ -815,10 +815,10 @@ border: 0;
                       @else
                     @endif
 
-                      <tr>
+                      {{-- <tr>
                         <td>Transaction Fee</td>
                         <td>+ Rs {{$transactionFee}}</td>
-                      </tr>
+                      </tr> --}}
                       @if($customer_comission > 0)
                     {{-- <tr>
                       <td class="text-left">Commission</td>

@@ -275,7 +275,7 @@ class ChannelService
 
             $masterSetting=$this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
 
-            if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
+          //  if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
     
                 $update_customer_gst['customer_gst_status']=1;
                 $update_customer_gst['customer_gst_number']=$request['customer_gst_number'];
@@ -285,37 +285,29 @@ class ChannelService
                 /////
                 if($origin =='MANTIS') {  
                     $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
-                    $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
+                    $update_customer_gst['customer_gst_percent'] = $masterSetting[0]->customer_gst;//as discussed with Santosh
                     $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
                     }
                 /////
                 else{
                     $update_customer_gst['customer_gst_percent']=$masterSetting[0]->customer_gst;
 
-                    if($records[0]->customer_gst_amount==0){
-                        $customer_gst_amount= round((( ($records[0]->owner_fare+$records[0]->odbus_charges) - $records[0]->coupon_discount ) *$masterSetting[0]->customer_gst)/100,2);
-        
-                        $amount = round($amount+$customer_gst_amount,2);
-                        $update_customer_gst['payable_amount']=$amount;
-                                
-                        $update_customer_gst['customer_gst_amount']=$customer_gst_amount; 
-                    }
-        
+                    $update_customer_gst['payable_amount']=$amount;        
                     
                 }   
-            }else{
+        //     }else{
     
-                $amount = round($amount - $records[0]->customer_gst_amount,2);
+        //         $amount = round($amount - $records[0]->customer_gst_amount,2);
     
-                $update_customer_gst['customer_gst_status']=0;
-                $update_customer_gst['customer_gst_number']=null;
-                $update_customer_gst['customer_gst_business_name']=null;
-                $update_customer_gst['customer_gst_business_email']=null;
-                $update_customer_gst['customer_gst_business_address']=null;
-                $update_customer_gst['customer_gst_percent']=0;                    
-                $update_customer_gst['customer_gst_amount']=0;
-                $update_customer_gst['payable_amount']=$amount;    
-                }
+        //         $update_customer_gst['customer_gst_status']=0;
+        //         $update_customer_gst['customer_gst_number']=null;
+        //         $update_customer_gst['customer_gst_business_name']=null;
+        //         $update_customer_gst['customer_gst_business_email']=null;
+        //         $update_customer_gst['customer_gst_business_address']=null;
+        //         $update_customer_gst['customer_gst_percent']=0;                    
+        //         $update_customer_gst['customer_gst_amount']=0;
+        //         $update_customer_gst['payable_amount']=$amount;    
+        // }
     
                 $this->channelRepository->updateCustomerGST($update_customer_gst,$transationId);
     
