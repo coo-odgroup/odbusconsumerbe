@@ -45,3 +45,6 @@ Route::get('/TestingEmail', [ChannelController::class, 'testingEmail']);
 
 Route::get('downloadTicket/{pnr}', [BookingManageController::class,'downloadTicket']);
 Route::get('PaytmdriverDetailApi', [ClientBookingController::class,'PaytmdriverDetailApi']);
+
+/// cron job for GST after journey date completed
+Route::get('/GSTEmailNotification', [ChannelController::class, 'GSTEmailSend']);

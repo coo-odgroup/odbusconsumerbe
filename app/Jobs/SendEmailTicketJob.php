@@ -316,10 +316,18 @@ class SendEmailTicketJob implements ShouldQueue
         else if($this->customer_gst_status==1){
             PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
 
+            // Mail::send('emailTicket', $data, function ($messageNew) {
+            //     $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
+            //     ->subject($this->subject);
+            // });
+
+
             Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
+                $messageNew->attach($this->email_pdf)->to($this->to)
                 ->subject($this->subject);
             });
+
+            
 
             /// send copy to mailto:reports@odbus.in
 

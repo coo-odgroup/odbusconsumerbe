@@ -27,6 +27,7 @@ Use hash_hmac;
 use JWTAuth;
 use App\Mail\SendPdfEmail;
 use Illuminate\Support\Facades\Mail;
+use DB;
 
 class ChannelController extends Controller
 {
@@ -773,8 +774,7 @@ public function pay(Request $request){
 }
 ///////////////generateFailedTicket///////////////////////////////
 
-public function generateFailedTicket(Request $request)
-    { 
+public function generateFailedTicket(Request $request){ 
 
         try {
 
@@ -794,8 +794,7 @@ public function generateFailedTicket(Request $request)
         }     
     }
 
-    public function testing(){
-        
+public function testing(){        
 
         $key = $this->channelRepository->getRazorpayKey();
         $secretKey = $this->channelRepository->getRazorpaySecret();
@@ -812,6 +811,43 @@ public function generateFailedTicket(Request $request)
         //Log::info($paymentStatus);
 
         //return $payment;
+}
+
+
+
+
+public function GSTEmailSend(){
+
+    $yesterday=date('Y-m-d', strtotime('-1 day'));
+
+    $data=DB::select("select pnr,journey_dt,users_id,gst_invoice_no,users.email,users.name 
+    from booking 
+    join users on booking.users_id=users.id
+    where  status=1 and gst_email_status=0 and journey_dt='$yesterday' and customer_gst_status=1");
+
+    foreach($data as $d){
+
+        $gst='https://consumer.odbus.co.in/public/gst/'.$d->gst_invoice_no;
+
+        $data['journeydate']=$d->journey_dt;
+        $data['pnr']=$d->pnr;
+
+        $subject="GST INVOICE FOR PNR -".$d->pnr;
+
+        Mail::send('Gstbody', $data, function ($messageNew) use($gst,$subject)  {
+            $messageNew->attach($gst)->to($d->email)
+            ->subject($subject);
+        });
+
+        DB::table("booking")->where('pnr',$d->pnr)->update(['gst_email_status'=>1]);
+
+        echo "Email has been sent to ".$d->name ."(".$d->email.") <br><br>";
+
+
     }
+
+    
+
+}
 
 }
