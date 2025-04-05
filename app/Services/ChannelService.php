@@ -669,7 +669,7 @@ class ChannelService
                 "busNumber" => $busNumber,
                 "phone" => $phone,
                 "journeydate" => $journeydate,
-                "routedetails" => $routedetails,
+                "routedetails" => $source."-".$destination,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
                 );
@@ -691,8 +691,8 @@ class ChannelService
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
-                "source" => $main_source,
-                "destination" => $main_destination,
+                "source" => $source,
+                "destination" => $destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
@@ -1075,7 +1075,7 @@ class ChannelService
               "busNumber" => $busNumber,
               "phone" => $phone,
               "journeydate" => $journeydate,
-              "routedetails" => $routedetails,
+              "routedetails" => $source."-".$destination,
               "departureTime" => $departureTime,
               "conductor_number" => $conductor_number,
               "customer_comission" => $customer_comission
@@ -1286,7 +1286,7 @@ class ChannelService
                 "busNumber" => $busNumber,
                 "phone" => $phone,
                 "journeydate" => $journeydate,
-                "routedetails" => $routedetails,
+                "routedetails" => $source."-".$destination,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
                 );

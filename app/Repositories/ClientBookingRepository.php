@@ -570,7 +570,7 @@ class ClientBookingRepository
                 "busname" => $busname,
                 "busNumber" => $busNumber,
                 "journeydate" => $journeydate,
-                "routedetails" => $routedetails,
+                "routedetails" => $srcName."-".$destName,
                 "departureTime" => $departureTime,
                 "phone" => $phone,
                 "conductor_number" => $conductor_number,

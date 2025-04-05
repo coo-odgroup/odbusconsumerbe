@@ -93,4 +93,44 @@ function PaytmdriverCallBackAPI($pnr){
    // Log::Info($response);
 }
 
+function getFinancialYear($date = null) {
+    $date = $date ? strtotime($date) : time();
+    $year = date('y', $date); // 2-digit year
+    $month = date('m', $date);
+
+    if ($month < 4) {
+        $startYear = $year - 1;
+        $endYear = $year;
+    } else {
+        $startYear = $year;
+        $endYear = $year + 1;
+    }
+
+    // Format both as 2-digit strings with leading zeros if needed
+    return str_pad($startYear, 2, '0', STR_PAD_LEFT) . '-' . str_pad($endYear, 2, '0', STR_PAD_LEFT);
+}
+
+function generateGSTId($number = 1, $date = null) {
+    $date = $date ? strtotime($date) : time();
+
+    // Financial Year
+    $year = date('y', $date);
+    $month = date('m', $date);
+    if ($month < 4) {
+        $startYear = $year - 1;
+        $endYear = $year;
+    } else {
+        $startYear = $year;
+        $endYear = $year + 1;
+    }
+    $financialYear = str_pad($startYear, 2, '0', STR_PAD_LEFT) . '-' . str_pad($endYear, 2, '0', STR_PAD_LEFT);
+
+    // Random or sequential number (default is 1 here)
+    $numberFormatted = str_pad($number, 4, '0', STR_PAD_LEFT);
+
+    // Final Format
+    return "OB/{$financialYear}/{$month}/{$numberFormatted}";
+}
+
+
 ?>

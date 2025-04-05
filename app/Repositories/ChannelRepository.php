@@ -989,7 +989,8 @@ class ChannelRepository
           }    
         }
         $totalAgentComission =  $currentSeatCount * $comissionPerSeat;
-        $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
+      //  $tds = $totalAgentComission*.05;                                             ///5% TDS Hard Coded.
+      $tds =0; // changes on 5th -april-2025 (as per Mandal Bhai Request)
         $afterTdsComission = $totalAgentComission - $tds;
 
         /// By Lima 10 April,2023, 1:30 PM no commision logic /////////

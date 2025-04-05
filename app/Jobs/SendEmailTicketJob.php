@@ -190,6 +190,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$pnr.'.pdf'; 
 
         $this->gst_name='';
+        
 
         if($customer_gst_status==1){
 
@@ -326,13 +327,10 @@ class SendEmailTicketJob implements ShouldQueue
                 $messageNew->attach($this->email_pdf)->to($this->to)
                 ->subject($this->subject);
             });
-
             
 
-            /// send copy to mailto:reports@odbus.in
-
             Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('reports@odbus.in')
+                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('accounts@odbus.in')
                 ->subject($this->subject);
             });
 
