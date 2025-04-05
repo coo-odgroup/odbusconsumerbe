@@ -194,11 +194,11 @@ class SendEmailTicketJob implements ShouldQueue
 
         if($customer_gst_status==1){
 
-        $gst_name=generateGSTId(750,$journeydate);
+        $gst_name=generateGSTId(760,$journeydate);
 
         $updated_at=date('Y-m-d H:i');
 
-        $exist=DB::table('booking')->where('status',1)->where('gst_invoice_no',$gst_name)->orderby('updated_at','desc')->first();// check if any invoice no added
+        $exist=DB::table('booking')->where('gst_invoice_no','!=','')->orderby('updated_at','desc')->first();// check if any invoice no added
 
         // $pnr_invoice=DB::table('booking')->where('pnr',$pnr)->first();// check if any invoice no added
 
@@ -209,8 +209,9 @@ class SendEmailTicketJob implements ShouldQueue
        // else 
         if($exist){
             $nm= explode('_',$exist->gst_invoice_no);
-            $count=(int)$nm[3]+1;
+            $count=(int)$nm[3]+ 1;
             $gst_name=generateGSTId($count,$journeydate);
+            log::info($gst_name);
         }
         DB::table('booking')->where('pnr', $pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
 
