@@ -605,7 +605,7 @@ class ChannelService
 
                     $pnr = $bookingRecord[0]->pnr; 
 
-                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
+                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->where('status','!=',2)->first();
 
             
                     $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
@@ -625,8 +625,12 @@ class ChannelService
 
             $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
             $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
-
-            $routedetails = $source.' To '.$destination;
+            if($main_source!='' && $main_destination!=''){
+                $routedetails = $main_source.' To '.$main_destination; 
+            }else{
+                 $routedetails = $source.' To '.$destination;
+            }
+           
             $boarding_point = $bookingRecord[0]->boarding_point;
             $departureTime = $bookingRecord[0]->boarding_time;
             $dropping_point = $bookingRecord[0]->dropping_point;
@@ -903,7 +907,7 @@ class ChannelService
             $origin = $records[0]->origin;
 
             $main_source='';
-$main_destination='';
+            $main_destination='';
           
             if($origin=='DOLPHIN') {
                
@@ -1000,18 +1004,18 @@ $main_destination='';
 
                     $pnr=$bookingRecord[0]->pnr; 
 
-                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
+                    $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->where('status','!=',2)->first();
 
 
-$main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
-$main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
-//Log::Info($main_source);
-                //Log::Info($main_destination);
+                    $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
+                    $main_destination = Location::where('id',$ticketPrice->destination_id)->first()->name;
+                    //Log::Info($main_source);
+                    //Log::Info($main_destination);
 
-                // if($main_source!='' && $main_destination!=''){
-                //     $main_source=$main_source->name;
-                //     $main_destination=$main_destination->name;
-                // }
+                    // if($main_source!='' && $main_destination!=''){
+                    //     $main_source=$main_source->name;
+                    //     $main_destination=$main_destination->name;
+                    // }
     
     
 
@@ -1024,7 +1028,14 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
             $journeydate = $bookingRecord[0]->journey_dt;
             $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
             $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
-            $routedetails = $source.' To '.$destination;
+
+            if($main_source!='' && $main_destination!=''){
+                $routedetails = $main_source.' To '.$main_destination; 
+            }else{
+                 $routedetails = $source.' To '.$destination;
+            }           
+            
+            
             $boarding_point = $bookingRecord[0]->boarding_point;
             $departureTime = $bookingRecord[0]->boarding_time;
             $dropping_point = $bookingRecord[0]->dropping_point;
@@ -1086,8 +1097,8 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,                
-                "source" => $main_source,
-                "destination" => $main_destination,
+                "source" => $source,
+                "destination" => $destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
@@ -1201,7 +1212,7 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 $busId= $bookingRecord[0]->bus->id;
                 $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
                 $pnr = $bookingRecord[0]->pnr; 
-                $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->first();
+                $ticketPrice= DB::table('ticket_price')->where('bus_id', $bookingRecord[0]->bus_id)->where('status','!=',2)->first();
 
 
                 $main_source=Location::where('id',$ticketPrice->source_id)->first()->name;
@@ -1229,7 +1240,12 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
           $journeydate = $bookingRecord[0]->journey_dt;
           $source = Location::where('id',$bookingRecord[0]->source_id)->first()->name;
           $destination = Location::where('id',$bookingRecord[0]->destination_id)->first()->name;
-          $routedetails = $source.' To '.$destination;
+         
+           if($main_source!='' && $main_destination!=''){
+                $routedetails = $main_source.' To '.$main_destination;
+            }else{
+                $routedetails = $source.' To '.$destination;
+            }
           $boarding_point = $bookingRecord[0]->boarding_point;
           $departureTime = $bookingRecord[0]->boarding_time;
           $dropping_point = $bookingRecord[0]->dropping_point;
@@ -1296,8 +1312,8 @@ $main_destination = Location::where('id',$ticketPrice->destination_id)->first()-
                 "routedetails" => $routedetails,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,                
-                "source" => $main_source,
-                "destination" =>$main_destination,
+                "source" => $source,
+                "destination" =>$destination,
                 "bustype" => $bustype,
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,

@@ -618,14 +618,14 @@ class ClientBookingRepository
         if($busContactDetails->isNotEmpty()){
            
             $contact_number = collect($busContactDetails)->implode('phone',',');
-         
-            $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);
-
+        
             $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
 
             
-            if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
-
+            if($sms_gateway ==1){
+               
+            $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);
+  
             $msgId = $sendSmsCMO->messages[0]->id;
             $status = $sendSmsCMO->status;
             $from = $sendSmsCMO->message->sender;
@@ -649,13 +649,6 @@ class ClientBookingRepository
             $sms->save();
             }  
         }
-
-
-
-         /////////////////send email to odbus admin////////
-
-         $this->channelRepository->sendAdminEmailTicket($amount,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
-
          
         unset($bookingDetails[0]->bus->cancellationslabs); 
         unset($bookingDetails[0]->bus->cancellationslabs_id); 

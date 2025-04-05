@@ -1018,7 +1018,7 @@ class ClientBookingService
                             $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
 
             
-                         if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
+                         if($sms_gateway ==1){
                             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                          }
                             }  
@@ -1072,7 +1072,7 @@ class ClientBookingService
                               $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
 
             
-                         if(isset($sendSmsCMO) && isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id) && $sms_gateway ==1){
+                         if($sms_gateway ==1){
                             $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
                          }
                              

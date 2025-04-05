@@ -89,8 +89,8 @@ function PaytmdriverCallBackAPI($pnr){
     $response = curl_exec($curl);
     
     curl_close($curl);
-    Log::Info("driver call back API");
-    Log::Info($response);
+   // Log::Info("driver call back API");
+   // Log::Info($response);
 }
 
 ?>

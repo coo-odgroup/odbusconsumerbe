@@ -620,7 +620,7 @@
 		<table class="table table-bordered border border-secondary mb-0">
 			<tbody>
 				<tr>
-				  <td colspan="2" class="bg-light text-center"><h3 class="mb-0">OD TOURS AND TRAVELS PVT LTD</h3></td>
+				  <td colspan="2" class="bg-light text-center"><h3 class="mb-0">OD TOURS AND TRAVELS</h3></td>
 				</tr>
 				
 				<tr>
@@ -638,11 +638,11 @@
 						
 						<div class="col-6">
 							<address>
-								<strong>OD Tours and Travels Pvt Ltd</strong><br />
+								<strong>OD Tours and Travels</strong><br />
 								3rd Floor, Hotel Rajdhani, Cuttack Puri Road,
-								Bhubaneswar - 751002 (Odisha), India<br />
-                <strong>PAN:-</strong> AADCO0411F<br />
-                <strong>GSTIN:-</strong>21AADCO0411F1ZC<br />
+								Bhubaneswar - 751006 (Odisha), India<br />
+								<strong>PAN:-</strong> DFIPD4949M<br />
+								<strong>GSTIN:-</strong>21DFIPD4949M1Z8<br />
 
 							</address>
 						</div>
@@ -652,7 +652,7 @@
 								<strong>{{$customer_gst_business_name}}</strong><br />
 								{{$customer_gst_business_address}}<br />
 								<strong>Email Id:-</strong>{{$customer_gst_business_email}}<br />
-                <strong>GSTIN:-</strong>{{$customer_gst_number}}<br />
+                                <strong>GSTIN:-</strong>{{$customer_gst_number}}<br />
 
 							</address>
 						</div>
@@ -749,7 +749,7 @@
 						We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
 					</td>
 					<td class="col-5 pe-1 text-end">
-						For, OD TOURS AND TRAVELS PVT LTD
+						For, OD TOURS AND TRAVELS
 						<div class="text-1 fst-italic mt-5">(Authorised Signatory)</div>
 					</td>
 				</tr>

@@ -709,7 +709,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             "customerGst" => $customer_gst
             );    
     }
-    Log::info($seatWithPriceRecords);
+   // Log::info($seatWithPriceRecords);
     return $seatWithPriceRecords;
    }
     

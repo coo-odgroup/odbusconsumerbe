@@ -69,7 +69,7 @@
     <tr style="height: 10px"></tr>
     <tr>
     <td colspan="7">
-        <p style="color:#fff;  line-height: 20px; font-size:14px">OD Tours and Travels Pvt Ltd, 3rd Floor, Hotel Rajdhani, Cuttack Puri Road,<Br/> Bhubaneswar - 751006 (Odisha), India</p>
+        <p style="color:#fff;  line-height: 20px; font-size:14px">OD Tours and Travels, 3rd Floor, Hotel Rajdhani, Cuttack Puri Road,<Br/> Bhubaneswar - 751006 (Odisha), India</p>
         <!-- <p style="color:#fff;"><a href="#" style="color:#fff; text-decoration: none;">Unsubscribe </a> | <a href="#" style="color:#fff; font-size:14px; text-decoration: none;"> Update Your Email Preferences </a> | <a href="#" style="color:#fff; text-decoration: none;">Support </a></p> -->
       </td>
     </tr>

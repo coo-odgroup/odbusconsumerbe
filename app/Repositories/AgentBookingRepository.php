@@ -55,7 +55,7 @@ class AgentBookingRepository
 
     }   
     
-    public function agentBooking($request,$clientRole,$clientId)
+    public function agentBooking($request,$clientRole,$clientId,$priceDetails)
     { 
 
         $needGstBill = Config::get('constants.NEED_GST_BILL');
@@ -132,13 +132,25 @@ class AgentBookingRepository
         $booking->origin = $bookingInfo['origin'];
         $booking->app_type = $bookingInfo['app_type'];
         $booking->typ_id = $bookingInfo['typ_id'];
-        $booking->owner_fare = $bookingInfo['owner_fare'];
-        $booking->total_fare = $bookingInfo['total_fare'];
-        $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
-        $booking->additional_special_fare =$bookingInfo['specialFare'];
-        $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
-        $booking->additional_festival_fare = $bookingInfo['festiveFare'];
-        $booking->transactionFee = $bookingInfo['transactionFee'];
+
+        $booking->owner_fare = $priceDetails[0]['ownerFare'];
+        $booking->total_fare = $priceDetails[0]['totalFare'];
+        $booking->odbus_Charges = $priceDetails[0]['odbusServiceCharges'];
+        $booking->additional_special_fare = $priceDetails[0]['specialFare'];
+        $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
+        $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
+        $booking->transactionFee = $priceDetails[0]['transactionFee'];
+        $booking->customer_gst_status = 1;
+        $booking->customer_gst_amount = $priceDetails[0]['customerGst'];
+        $booking->customer_gst_percent = 5;
+
+        // $booking->owner_fare = $bookingInfo['owner_fare'];
+        // $booking->total_fare = $bookingInfo['total_fare'];
+        // $booking->odbus_Charges = $bookingInfo['odbus_service_Charges'];
+        // $booking->additional_special_fare =$bookingInfo['specialFare'];
+        // $booking->additional_owner_fare = $bookingInfo['addOwnerFare'];
+        // $booking->additional_festival_fare = $bookingInfo['festiveFare'];
+        // $booking->transactionFee = $bookingInfo['transactionFee'];
 
         if(isset($bookingInfo['adj_note'])){
             $booking->booking_adj_note = $bookingInfo['adj_note']; 
