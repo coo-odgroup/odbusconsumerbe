@@ -96,7 +96,7 @@ class AgentBookingService
                 );
                
                 $priceDetails = $this->viewSeatsService->getPriceCalculationOdbus($data,$clientId);
-                Log::Info($priceDetails);
+              //  Log::Info($priceDetails);
 
             }
 

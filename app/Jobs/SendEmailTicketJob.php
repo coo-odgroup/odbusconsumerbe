@@ -104,7 +104,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->name = $request['name'];
         $this->to = $request['email'];
         $this->bookingdate = date('d-m-Y',strtotime($request['bookingdate']));
-        $this->journeydate = date('d-m-Y',strtotime($request['journeydate']));
+        $this->journeydate =$journeydate= date('d-m-Y',strtotime($request['journeydate']));
         $this->boarding_point = $request['boarding_point'];
         $this->dropping_point = $request['dropping_point'];
         $this->departureTime = $request['departureTime'];
@@ -194,39 +194,23 @@ class SendEmailTicketJob implements ShouldQueue
 
         if($customer_gst_status==1){
 
-        $gst_name='OB-000082.pdf';
+        $gst_name=generateGSTId(750,$journeydate);
+
         $updated_at=date('Y-m-d H:i');
 
-        $invoice=DB::table('booking')->where('status',1)->where('gst_invoice_no','!=',null)->orderby('updated_at','desc')->first();// check if any invoice no added
+        $exist=DB::table('booking')->where('status',1)->where('gst_invoice_no',$gst_name)->orderby('updated_at','desc')->first();// check if any invoice no added
 
-        $pnr_invoice=DB::table('booking')->where('pnr',$pnr)->first();// check if any invoice no added
+        // $pnr_invoice=DB::table('booking')->where('pnr',$pnr)->first();// check if any invoice no added
 
-        if($pnr_invoice->gst_invoice_no!=''){
-            $gst_name=$pnr_invoice->gst_invoice_no;
-        }
+        // if($pnr_invoice->gst_invoice_no!=''){
+        //     $gst_name=$pnr_invoice->gst_invoice_no;
+        // }
 
-        else if($invoice && $pnr_invoice->gst_invoice_no==''){
-            $nm=str_replace("OB-","",$invoice->gst_invoice_no);
-            $nm=str_replace(".pdf","",$nm);
-            $nm=ltrim("$nm",0);
-            $gst_name=(int)$nm+1;
-
-            if($gst_name<100){
-                $gst_name='OB-0000'.$gst_name.'.pdf';
-            }
-            else if($gst_name<1000){
-                $gst_name='OB-000'.$gst_name.'.pdf';
-            }
-            else if($gst_name<10000){
-                $gst_name='OB-00'.$gst_name.'.pdf';
-            }
-            else if($gst_name<100000){
-                $gst_name='OB-0'.$gst_name.'.pdf';
-            }
-            else if($gst_name<1000000){
-                $gst_name='OB-'.$gst_name.'.pdf';
-            }
-
+       // else 
+        if($exist){
+            $nm= explode('_',$exist->gst_invoice_no);
+            $count=(int)$nm[3]+1;
+            $gst_name=generateGSTId($count,$journeydate);
         }
         DB::table('booking')->where('pnr', $pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
 

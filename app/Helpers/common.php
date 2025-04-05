@@ -129,7 +129,7 @@ function generateGSTId($number = 1, $date = null) {
     $numberFormatted = str_pad($number, 4, '0', STR_PAD_LEFT);
 
     // Final Format
-    return "OB/{$financialYear}/{$month}/{$numberFormatted}";
+    return "OB_{$financialYear}_{$month}_{$numberFormatted}.pdf";
 }
 
 
