@@ -132,5 +132,9 @@ function generateGSTId($number = 1, $date = null) {
     return "OB_{$financialYear}_{$month}_{$numberFormatted}.pdf";
 }
 
+function nbf($value){
+    return round($value, 2);
+}
+
 
 ?>

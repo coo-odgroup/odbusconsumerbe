@@ -495,8 +495,8 @@ class ListingService
                 $uptoFare = $ticketFareSlab->upto_fare;
                 if($startingFare <= $misBaseFare && $uptoFare >= $misBaseFare){
                     $percentage = $ticketFareSlab->odbus_commision;
-                    $odbusServiceCharges = round($misBaseFare * ($percentage/100));
-                    $startingFromPrice = round($misBaseFare + $odbusServiceCharges);
+                    $odbusServiceCharges = nbf($misBaseFare * ($percentage/100)); // changed to nuber format (common.php) :: 12-Apr-2025
+                    $startingFromPrice = nbf($misBaseFare + $odbusServiceCharges); // changed to nuber format (common.php) :: 12-Apr-2025
                 }     
             }  
            

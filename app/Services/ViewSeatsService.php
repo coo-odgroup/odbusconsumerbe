@@ -201,8 +201,8 @@ class ViewSeatsService
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $base_sleeper_fare && $uptoFare >= $base_sleeper_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($base_sleeper_fare * ($percentage/100));
-                                    $ub->busSeats->ticket_price->base_sleeper_fare = round($base_sleeper_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($base_sleeper_fare * ($percentage/100));
+                                    $ub->busSeats->ticket_price->base_sleeper_fare = nbf($base_sleeper_fare + $odbusServiceCharges);
 
                                     $ub->busSeats->ticket_price->base_seat_fare =0;
                                     }     
@@ -218,8 +218,8 @@ class ViewSeatsService
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $new_fare && $uptoFare >= $new_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($new_fare * ($percentage/100));
-                                    $ub->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($new_fare * ($percentage/100));
+                                    $ub->busSeats->new_fare = nbf($new_fare + $odbusServiceCharges);
                                     }     
                                 }
                             }
@@ -280,10 +280,10 @@ class ViewSeatsService
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $base_seat_fare && $uptoFare >= $base_seat_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($base_seat_fare * ($percentage/100));
+                                    $odbusServiceCharges = nbf($base_seat_fare * ($percentage/100));
                                    // Log::Info($base_seat_fare);
 
-                                    $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
+                                    $lb->busSeats->ticket_price->base_seat_fare = nbf($base_seat_fare + $odbusServiceCharges);
 
                                     $lb->busSeats->ticket_price->base_sleeper_fare = 0;
                                     }     
@@ -305,8 +305,8 @@ class ViewSeatsService
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $new_fare && $uptoFare >= $new_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($new_fare * ($percentage/100));
-                                    $lb->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($new_fare * ($percentage/100));
+                                    $lb->busSeats->new_fare = nbf($new_fare + $odbusServiceCharges);
                                     }     
                                 }           
                             } 
@@ -427,27 +427,27 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
           if($clientRole == $clientRoleId){
 
-            $total_fare = $total_fare + round($total_fare * ($additional_charge/100));
+            $total_fare = $total_fare + nbf($total_fare * ($additional_charge/100));
 
           $seatWithPriceRecords[] = array(
-            "totalFare" => $total_fare,
-            "baseFare" => $total_base_fare ,
-            "serviceCharge" => $total_fare - $total_base_fare,
+            "totalFare" => nbf($total_fare),
+            "baseFare" => nbf($total_base_fare) ,
+            "serviceCharge" => nbf($total_fare - $total_base_fare),
             "gst" => 0
             ); 
 
         }else{
 
          $seatWithPriceRecords[] = array(
-             "baseFare" => $total_base_fare,
-             "ownerFare" => $total_fare,
-             "odbus_charges_ownerFare" => $total_fare,
+             "baseFare" => nbf($total_base_fare),
+             "ownerFare" => nbf($total_fare),
+             "odbus_charges_ownerFare" => nbf($total_fare),
              "specialFare" => 0,
              "addOwnerFare" => 0,
              "festiveFare" => 0,
              "odbusServiceCharges" => 0,
-             "transactionFee" => round($total_fare * ($additional_charge/100)), 
-             "totalFare" => (float) ($total_fare + round($total_fare * ($additional_charge/100))),
+             "transactionFee" => nbf($total_fare * ($additional_charge/100)), 
+             "totalFare" =>  nbf(($total_fare + $total_fare * ($additional_charge/100))),
              "gst" => 0
              );
 
@@ -518,10 +518,10 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                     $gst=$total_fare * 0.05 ;////gst calculation 5% on 30th JAN 2023
                 }
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $total_fare + $gst,
-                   "baseFare" => $total_fare - $client_service_charges ,
-                   "serviceCharge" => $client_service_charges,
-                   "gst" => $gst
+                   "totalFare" => nbf($total_fare + $gst),
+                   "baseFare" => nbf($total_fare - $client_service_charges) ,
+                   "serviceCharge" => nbf($client_service_charges),
+                   "gst" => nbf($gst)
                    ); 
            }else{ 
 
@@ -534,14 +534,14 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              }
 
             $seatWithPriceRecords[] = array(
-                "ownerFare" => $total_fare,
-                "odbus_charges_ownerFare" => $total_fare,
+                "ownerFare" => nbf($total_fare),
+                "odbus_charges_ownerFare" => nbf($total_fare),
                 "specialFare" => 0,
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => round($total_fare * ($additional_charge/100)),
-                "totalFare" =>  (float) $total_fare + round($total_fare * ($additional_charge/100)),
+                "transactionFee" => nbf($total_fare * ($additional_charge/100)),
+                "totalFare" =>   nbf($total_fare + $total_fare * ($additional_charge/100)),
                 "gst" => 0
                 );
             }  
@@ -636,8 +636,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
 
 
                                 $percentage = $ticketFareSlab->odbus_commision;
-                                $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
-                                $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
+                                $odbusServiceCharges = nbf($seat_fare * ($percentage/100));                                
+                                $tkt->new_fare = nbf($seat_fare + $odbusServiceCharges);
                                 $service_charges += $odbusServiceCharges;
 
                                 }     
@@ -658,9 +658,9 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
     $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
     $customer_gst = $odbusCharges[0]->customer_gst;   
-    $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
-    $customer_gst = round(($odbus_charges_ownerFare * $customer_gst)/100,2);
-    $totalFare = round($odbus_charges_ownerFare + $transactionFee + $customer_gst ,2);
+    $transactionFee = nbf(($odbus_charges_ownerFare * $gwCharges)/100);
+    $customer_gst = nbf(($odbus_charges_ownerFare * $customer_gst)/100);
+    $totalFare = nbf($odbus_charges_ownerFare + $transactionFee + $customer_gst);
 
     if($clientRole == $clientRoleId){
          /////client extra service charge added to seatfare////////////////
@@ -689,23 +689,23 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
             $gst=$newSeatFare * 0.05 ;  ////gst calculation 5% on 30th JAN 2023
         }
         $seatWithPriceRecords[] = array(
-            "totalFare" => round($newSeatFare + $gst,2),
-            "baseFare" => round($odbus_charges_ownerFare,2) ,
-            "serviceCharge" => round($newSeatFare - $odbus_charges_ownerFare,2),
-            "gst" => round($gst,2)
+            "totalFare" => nbf($newSeatFare + $gst),
+            "baseFare" => nbf($odbus_charges_ownerFare) ,
+            "serviceCharge" => nbf($newSeatFare - $odbus_charges_ownerFare),
+            "gst" => nbf($gst)
             ); 
     }else{
         $seatWithPriceRecords[] = array(
             "PriceDetail" => $PriceDetail,
-            "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
-            "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
-            "specialFare" => $totalSplFare,
-            "addOwnerFare" => $totalOwnFare,
-            "festiveFare" => $totalFestiveFare,
-            "odbusServiceCharges" => $service_charges,
-            "transactionFee" => $transactionFee,
-            "totalFare" => (float) $totalFare,
-            "customerGst" => $customer_gst
+            "ownerFare" => nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+            "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
+            "specialFare" => nbf($totalSplFare),
+            "addOwnerFare" => nbf($totalOwnFare),
+            "festiveFare" => nbf($totalFestiveFare),
+            "odbusServiceCharges" => nbf($service_charges),
+            "transactionFee" => nbf($transactionFee),
+            "totalFare" =>  nbf($totalFare),
+            "customerGst" => nbf($customer_gst)
             );    
     }
    // Log::info($seatWithPriceRecords);
@@ -1022,16 +1022,16 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
               
               // $newSeatFare = $dolphinFare + $client_service_charges;
                $seatWithPriceRecords[] = array(
-                   "totalFare" => $total_fare + $gst,
-                   "baseFare" => $total_fare - $client_service_charges ,
-                   "serviceCharge" => $client_service_charges,
-                   "ownerFare" => $owner_fare, // actual dolphin fare
-                    "odbus_charges_ownerFare" => $owner_fare,
+                   "totalFare" => nbf($total_fare + $gst),
+                   "baseFare" => nbf($total_fare - $client_service_charges) ,
+                   "serviceCharge" => nbf($client_service_charges),
+                   "ownerFare" => nbf($owner_fare), // actual dolphin fare
+                    "odbus_charges_ownerFare" => nbf($owner_fare),
                     "specialFare" => 0,
                     "addOwnerFare" => 0,
                     "festiveFare" => 0,
                     "odbusServiceCharges" => 0,
-                    "gst" => $gst
+                    "gst" => nbf($gst)
                    ); 
 
         return $seatWithPriceRecords;  
@@ -1149,8 +1149,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
-                                    $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($seat_fare * ($percentage/100));                                
+                                    $tkt->new_fare = nbf($seat_fare + $odbusServiceCharges);
                                     $service_charges += $odbusServiceCharges;
                                     }     
                                 } 
@@ -1193,15 +1193,15 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
-                "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
-                "specialFare" => $totalSplFare,
-                "addOwnerFare" => $totalOwnFare,
-                "festiveFare" => $totalFestiveFare,
-                "odbusServiceCharges" => $service_charges + $client_service_charges,
+                "ownerFare" =>nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+                "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
+                "specialFare" => nbf($totalSplFare),
+                "addOwnerFare" => nbf($totalOwnFare),
+                "festiveFare" => nbf($totalFestiveFare),
+                "odbusServiceCharges" => nbf($service_charges + $client_service_charges),
                 //"transactionFee" => $transactionFee,
-                "totalFare" => round($newSeatFare + $gst, 2),
-                "gst" => $gst
+                "totalFare" => nbf($newSeatFare + $gst),
+                "gst" => nbf($gst)
                 ); 
     
         return $seatWithPriceRecords;
@@ -1256,15 +1256,15 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
           }
 
           $seatWithPriceRecords[] = array(
-             "baseFare" => $total_base_fare,
-             "ownerFare" => $total_fare,
-             "odbus_charges_ownerFare" => $total_fare,
+             "baseFare" => nbf($total_base_fare),
+             "ownerFare" => nbf($total_fare),
+             "odbus_charges_ownerFare" => nbf($total_fare),
              "specialFare" => 0,
              "addOwnerFare" => 0,
              "festiveFare" => 0,
              "odbusServiceCharges" => 0,
-             "transactionFee" => round($total_fare * ($additional_charge/100)), 
-             "totalFare" => $total_fare + round($total_fare * ($additional_charge/100)),
+             "transactionFee" => nbf($total_fare * ($additional_charge/100)), 
+             "totalFare" =>  nbf($total_fare +$total_fare * ($additional_charge/100)),
              "gst" => 0
              );
 
@@ -1382,8 +1382,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $seat_fare && $uptoFare >= $seat_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($seat_fare * ($percentage/100));                                
-                                    $tkt->new_fare = round($seat_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($seat_fare * ($percentage/100));                                
+                                    $tkt->new_fare = nbf($seat_fare + $odbusServiceCharges);
                                     $service_charges += $odbusServiceCharges;
                                     }     
                                 } 
@@ -1399,22 +1399,22 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
         $odbusCharges = $this->viewSeatsRepository->odbusCharges($user_id);
          $gwCharges = $odbusCharges[0]->payment_gateway_charges + $odbusCharges[0]->email_sms_charges;
         $customer_gst = $odbusCharges[0]->customer_gst;
-        $transactionFee = round(($odbus_charges_ownerFare * $gwCharges)/100,2);
-        $customer_gst = round(($odbus_charges_ownerFare * $customer_gst)/100,2);
-        $totalFare = round($odbus_charges_ownerFare + $transactionFee + $customer_gst ,2);
+        $transactionFee = nbf(($odbus_charges_ownerFare * $gwCharges)/100);
+        $customer_gst = nbf(($odbus_charges_ownerFare * $customer_gst)/100);
+        $totalFare = nbf($odbus_charges_ownerFare + $transactionFee + $customer_gst );
 
        
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" => $ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare),
-                "odbus_charges_ownerFare" => $odbus_charges_ownerFare,
-                "specialFare" => $totalSplFare,
-                "addOwnerFare" => $totalOwnFare,
-                "festiveFare" => $totalFestiveFare,
-                "odbusServiceCharges" => $service_charges,
-                "transactionFee" => $transactionFee,
-                "customerGst" => $customer_gst,
-                "totalFare" => $totalFare
+                "ownerFare" => nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+                "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
+                "specialFare" => nbf($totalSplFare),
+                "addOwnerFare" => nbf($totalOwnFare),
+                "festiveFare" => nbf($totalFestiveFare),
+                "odbusServiceCharges" => nbf($service_charges),
+                "transactionFee" => nbf($transactionFee),
+                "customerGst" => nbf($customer_gst),
+                "totalFare" => nbf($totalFare)
                 ); 
     
         return $seatWithPriceRecords;
@@ -1516,8 +1516,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $base_sleeper_fare && $uptoFare >= $base_sleeper_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($base_sleeper_fare * ($percentage/100));
-                                    $ub->busSeats->ticket_price->base_sleeper_fare = round($base_sleeper_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($base_sleeper_fare * ($percentage/100));
+                                    $ub->busSeats->ticket_price->base_sleeper_fare = nbf($base_sleeper_fare + $odbusServiceCharges);
                                     }     
                                 }
                             if($ub->busSeats->new_fare > 0){
@@ -1530,8 +1530,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $new_fare && $uptoFare >= $new_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($new_fare * ($percentage/100));
-                                    $ub->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($new_fare * ($percentage/100));
+                                    $ub->busSeats->new_fare = nbf($new_fare + $odbusServiceCharges);
                                     }     
                                 }
                             }   
@@ -1560,8 +1560,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $base_seat_fare && $uptoFare >= $base_seat_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($base_seat_fare * ($percentage/100));
-                                    $lb->busSeats->ticket_price->base_seat_fare = round($base_seat_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($base_seat_fare * ($percentage/100));
+                                    $lb->busSeats->ticket_price->base_seat_fare = nbf($base_seat_fare + $odbusServiceCharges);
                                     }     
                                 }
                             if($lb->busSeats->new_fare > 0){
@@ -1580,8 +1580,8 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $uptoFare = $ticketFareSlab->upto_fare;
                                 if($startingFare <= $new_fare && $uptoFare >= $new_fare){
                                     $percentage = $ticketFareSlab->odbus_commision;
-                                    $odbusServiceCharges = round($new_fare * ($percentage/100));
-                                    $lb->busSeats->new_fare = round($new_fare + $odbusServiceCharges);
+                                    $odbusServiceCharges = nbf($new_fare * ($percentage/100));
+                                    $lb->busSeats->new_fare = nbf($new_fare + $odbusServiceCharges);
                                     }     
                                 }
                             }   
