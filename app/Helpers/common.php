@@ -123,13 +123,13 @@ function generateGSTId($number = 1, $date = null) {
         $startYear = $year;
         $endYear = $year + 1;
     }
-    $financialYear = str_pad($startYear, 2, '0', STR_PAD_LEFT) . '-' . str_pad($endYear, 2, '0', STR_PAD_LEFT);
+    $financialYear = str_pad($startYear, 2, '0', STR_PAD_LEFT).str_pad($endYear, 2, '0', STR_PAD_LEFT);
 
     // Random or sequential number (default is 1 here)
     $numberFormatted = str_pad($number, 4, '0', STR_PAD_LEFT);
 
     // Final Format
-    return "OB_{$financialYear}_{$month}_{$numberFormatted}.pdf";
+    return "OB{$financialYear}{$month}-{$numberFormatted}.pdf";
 }
 
 function nbf($value){

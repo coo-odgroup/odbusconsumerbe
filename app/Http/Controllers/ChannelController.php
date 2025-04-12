@@ -28,6 +28,8 @@ use JWTAuth;
 use App\Mail\SendPdfEmail;
 use Illuminate\Support\Facades\Mail;
 use DB;
+use PDF;
+
 
 class ChannelController extends Controller
 {
@@ -818,16 +820,41 @@ public function testing(){
 
 public function GSTEmailSend(){
 
-    $yesterday=date('Y-m-d', strtotime('-1 day'));
+    $yesterday=date('Y-m-d', strtotime('-3 day'));
+    $firstApril=date('Y-04-01');
+    $updated_at=date('Y-m-d H:i:s');
 
-    $data=DB::select("select pnr,journey_dt,users_id,gst_invoice_no,users.email,users.name 
+    $data=DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name 
     from booking 
     join users on booking.users_id=users.id
-    where  status=1 and gst_email_status=0 and gst_invoice_no IS NOT NULL and  journey_dt <= '$yesterday' and customer_gst_status=1");
+    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  journey_dt between  '$firstApril' and '$yesterday'   and customer_gst_status=1 order by booking.id asc "); 
+   $num=1;
 
     foreach($data as $d){
 
-        $gst='https://consumer.odbus.co.in/public/gst/'.$d->gst_invoice_no;
+        ////////////////////// generate gst invoice /////////////
+              
+        $gst_invoice_no=generateGSTId($num,$d->journey_dt);
+        $chk_exist=DB::table('booking')->where("gst_invoice_no",$gst_invoice_no)->first();
+        if($chk_exist){
+        $get_latest= DB::select("select gst_invoice_no from booking  where gst_invoice_no is not null and journey_dt between  '$firstApril' and '$yesterday' and customer_gst_status=1 ORDER BY  id DESC  limit 1 ");
+        $gst_arr=explode('-',$get_latest[0]->gst_invoice_no);
+        $gst= (int)$gst_arr[1] + 1;
+        $num= $gst;
+         $gst=str_pad($gst, 4, '0', STR_PAD_LEFT);
+         $gst_invoice_no= generateGSTId($gst,$d->journey_dt); 
+        }
+        $upd= DB::table('booking')->where('pnr', $d->pnr)->update(['gst_invoice_no' => $gst_invoice_no,'updated_at' => $updated_at]); 
+
+        $data= $this->bookingManageService->downloadTicket($d->pnr); 
+        $data['gst_name']= $gst_invoice_no;
+        PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$gst_invoice_no);
+       
+        ////////////////////////////////////////////////////////
+
+
+
+        $gst='https://consumer.odbus.co.in/public/gst/'.$gst_invoice_no;
 
         $data['journeydate']=$d->journey_dt;
         $data['pnr']=$d->pnr;
@@ -843,7 +870,6 @@ public function GSTEmailSend(){
         DB::table("booking")->where('pnr',$d->pnr)->update(['gst_email_status'=>1]);
 
         echo "Email has been sent to ".$d->name ."(".$d->email.") <br><br>";
-
 
     }
 
