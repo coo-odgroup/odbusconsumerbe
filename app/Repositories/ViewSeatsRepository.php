@@ -80,14 +80,15 @@ class ViewSeatsRepository
             ->get();
 
         ////////////////////////////////////
-        $JdayDetails =  $this->ticketPrice
+        $JdayDetails =  $this->ticketPrice->select('start_j_days','j_day')
             ->where('bus_id', $busId)
             ->where('source_id',$sourceId)
             ->where('destination_id',$destinationId)
-            ->where('status','1')
-            ->get(['start_j_days','j_day']);
-            $startJDay =  $JdayDetails[0]->start_j_days;
-            $JDay =  $JdayDetails[0]->j_day;
+            ->where('status',1)
+            ->first();
+
+            $startJDay =  $JdayDetails->start_j_days;
+            $JDay =  $JdayDetails->j_day;
             
         switch($startJDay){  
             case(1):          //// Bus Starting on Day-1        

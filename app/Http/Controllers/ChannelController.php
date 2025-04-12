@@ -823,7 +823,7 @@ public function GSTEmailSend(){
     $data=DB::select("select pnr,journey_dt,users_id,gst_invoice_no,users.email,users.name 
     from booking 
     join users on booking.users_id=users.id
-    where  status=1 and gst_email_status=0 and journey_dt='$yesterday' and customer_gst_status=1");
+    where  status=1 and gst_email_status=0 and gst_invoice_no IS NOT NULL and  journey_dt <= '$yesterday' and customer_gst_status=1");
 
     foreach($data as $d){
 
@@ -833,9 +833,10 @@ public function GSTEmailSend(){
         $data['pnr']=$d->pnr;
 
         $subject="GST INVOICE FOR PNR -".$d->pnr;
+        $email=$d->email;
 
-        Mail::send('Gstbody', $data, function ($messageNew) use($gst,$subject)  {
-            $messageNew->attach($gst)->to($d->email)
+        Mail::send('Gstbody', $data, function ($messageNew) use($gst,$subject,$email)  {
+            $messageNew->attach($gst)->to($email)
             ->subject($subject);
         });
 

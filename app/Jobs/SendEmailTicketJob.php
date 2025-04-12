@@ -189,36 +189,29 @@ class SendEmailTicketJob implements ShouldQueue
         $this->ticketpdf=public_path('ticketpdf/'.$pnr.'.pdf');
         $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$pnr.'.pdf'; 
 
-        $this->gst_name='';
+         $this->gst_name='';
         
 
-        if($customer_gst_status==1){
+        // if($customer_gst_status==1){
 
-        $gst_name=generateGSTId(760,$journeydate);
+        // $gst_name=generateGSTId(760,$journeydate);
 
-        $updated_at=date('Y-m-d H:i');
+        // $updated_at=date('Y-m-d H:i');
 
-        $exist=DB::table('booking')->where('gst_invoice_no','!=','')->orderby('updated_at','desc')->first();// check if any invoice no added
+        // $exist=DB::table('booking')->whereNotNull('gst_invoice_no')->orderby('updated_at','desc')->first();// check if any invoice no added
 
-        // $pnr_invoice=DB::table('booking')->where('pnr',$pnr)->first();// check if any invoice no added
-
-        // if($pnr_invoice->gst_invoice_no!=''){
-        //     $gst_name=$pnr_invoice->gst_invoice_no;
+        // if($exist){
+        //     $nm= explode('_',$exist->gst_invoice_no);
+        //     $count=(int)$nm[3]+ 1;
+        //     $gst_name=generateGSTId($count,$journeydate);
+        //    // log::info($gst_name);
         // }
+        // DB::table('booking')->where('pnr', $pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
 
-       // else 
-        if($exist){
-            $nm= explode('_',$exist->gst_invoice_no);
-            $count=(int)$nm[3]+ 1;
-            $gst_name=generateGSTId($count,$journeydate);
-            log::info($gst_name);
-        }
-        DB::table('booking')->where('pnr', $pnr)->update(['gst_invoice_no' => $gst_name,'updated_at' => $updated_at]); 
+        // $this->gst_name=$gst_name;
 
-        $this->gst_name=$gst_name;
-
-        $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$gst_name;
-    }
+        // $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$gst_name;
+    //}
  
     }
 
@@ -281,8 +274,8 @@ class SendEmailTicketJob implements ShouldQueue
             'add_festival_fare' => $this->add_festival_fare, 
             'add_special_fare' => $this->add_special_fare, 
             'bus_type' => $this->bus_type,
-            'bus_sitting' => $this->bus_sitting,
-            'gst_name' => str_replace('.pdf','',$this->gst_name),
+            'bus_sitting' => $this->bus_sitting
+           // 'gst_name' => str_replace('.pdf','',$this->gst_name),
             
         ];
 
@@ -300,7 +293,7 @@ class SendEmailTicketJob implements ShouldQueue
         }
 
         else if($this->customer_gst_status==1){
-            PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
+            //PDF::loadView('Gst',$data)->save(public_path().'/gst/'.$this->gst_name);
 
             // Mail::send('emailTicket', $data, function ($messageNew) {
             //     $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to($this->to)
@@ -314,10 +307,10 @@ class SendEmailTicketJob implements ShouldQueue
             });
             
 
-            Mail::send('emailTicket', $data, function ($messageNew) {
-                $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('accounts@odbus.in')
-                ->subject($this->subject);
-            });
+            // Mail::send('emailTicket', $data, function ($messageNew) {
+            //     $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('accounts@odbus.in')
+            //     ->subject($this->subject);
+            // });
 
             // Mail::send('emailTicket', $data, function ($messageNew) {
             //     $messageNew->attach($this->email_pdf)->attach($this->gstpdf)->to('mohantylima71@gmail.com')

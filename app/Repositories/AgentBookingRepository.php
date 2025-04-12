@@ -140,9 +140,9 @@ class AgentBookingRepository
         $booking->additional_owner_fare = $priceDetails[0]['addOwnerFare'];
         $booking->additional_festival_fare = $priceDetails[0]['festiveFare'];
         $booking->transactionFee = $priceDetails[0]['transactionFee'];
-        $booking->customer_gst_status = 1;
-        $booking->customer_gst_amount = $priceDetails[0]['customerGst'];
-        $booking->customer_gst_percent = 5;
+        $booking->customer_gst_amount = isset($priceDetails[0]['customerGst']) ? $priceDetails[0]['customerGst'] : 0;
+        $booking->customer_gst_percent = isset($priceDetails[0]['customerGst']) ? 5 : 0;
+        $booking->customer_gst_status = isset($priceDetails[0]['customerGst']) ? 1 : 0;
 
         // $booking->owner_fare = $bookingInfo['owner_fare'];
         // $booking->total_fare = $bookingInfo['total_fare'];

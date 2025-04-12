@@ -215,24 +215,31 @@ class SendAdminEmailTicketJob implements ShouldQueue
              
         $this->subject = config('services.email.subjectTicket');
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
+
+
+        Mail::send('AdminemailTicket', $data, function ($messageNew) {
+            $messageNew->to('booking@odbus.in')
+            ->subject($this->subject);
+        });
+        
        
-        if($this->customer_gst_status==0){
-            Mail::send('AdminemailTicket', $data, function ($messageNew) {
-                $messageNew->to('booking@odbus.in')
-                ->subject($this->subject);
-            });
+        // if($this->customer_gst_status==0){
+        //     Mail::send('AdminemailTicket', $data, function ($messageNew) {
+        //         $messageNew->to('booking@odbus.in')
+        //         ->subject($this->subject);
+        //     });
 
-        }
+        // }
 
-        else{
+        // else{
 
-            $gst='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
+        //     $gst='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
 
-            Mail::send('AdminemailTicket', $data, function ($messageNew) use($gst)  {
-                $messageNew->attach($gst)->to('booking@odbus.in')
-                ->subject($this->subject);
-            });
-        }
+        //     Mail::send('AdminemailTicket', $data, function ($messageNew) use($gst)  {
+        //         $messageNew->attach($gst)->to('booking@odbus.in')
+        //         ->subject($this->subject);
+        //     });
+        // }
        
         
         // // check for failures

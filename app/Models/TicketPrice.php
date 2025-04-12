@@ -16,7 +16,7 @@ class TicketPrice extends Model
     use HasFactory;
     protected $table = 'ticket_price';
     protected $fillable = ['bus_id', 'bus_operator_id','user_id','source_id','destination_id','base_seat_fare',
-    'base_sleeper_fare', 'dep_time','arr_time','j_day','created_by'];
+    'base_sleeper_fare', 'dep_time','arr_time','start_j_days','j_day','created_by'];
     public function bus()
     {
     	return $this->belongsTo(Bus::class);

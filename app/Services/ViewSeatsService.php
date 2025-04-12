@@ -491,7 +491,6 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
               }
 
         if($clientRole == $clientRoleId){
-
           $dolphinFare=  $total_fare ;//+ round($total_fare * (10/100)); // 10% extra as per santosh
 
                 /////client extra service charge added to seatfare////////////////
@@ -541,8 +540,8 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
-                "totalFare" =>  (float) $total_fare + round($total_fare * ($additional_charge/100)), // 10% extra as per santosh
+                "transactionFee" => round($total_fare * ($additional_charge/100)),
+                "totalFare" =>  (float) $total_fare + round($total_fare * ($additional_charge/100)),
                 "gst" => 0
                 );
             }  
