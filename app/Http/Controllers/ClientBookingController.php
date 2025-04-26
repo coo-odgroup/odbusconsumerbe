@@ -24,7 +24,7 @@ use App\Repositories\ClientBookingRepository;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
-class clientBookingController extends Controller
+class ClientBookingController extends Controller
 {
 
     use ApiResponser;
