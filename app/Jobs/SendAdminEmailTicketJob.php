@@ -147,6 +147,7 @@ class SendAdminEmailTicketJob implements ShouldQueue
         }
 
         $this->p_names=$pp_names;
+        //Log::info("step admin");
 
        
     }
@@ -206,7 +207,8 @@ class SendAdminEmailTicketJob implements ShouldQueue
             'p_names' => $this->p_names,            
         ];
 
-        //Log::info($data);
+      //  Log::info("admin");
+       // Log::info($data);
 
         $bk_dtl=Booking::with(["bus" => function($bs){
             $bs->with('BusType.busClass');

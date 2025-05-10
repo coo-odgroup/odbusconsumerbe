@@ -83,9 +83,9 @@ class ListingService
 
          //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
 
-            $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId);
-            $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
-            $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
+             $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId);
+             $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
+             $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
         // }
 
        

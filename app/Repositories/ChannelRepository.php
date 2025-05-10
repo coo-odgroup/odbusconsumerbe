@@ -37,6 +37,7 @@ use Illuminate\Support\Collection;
 Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ChannelRepository
 {
@@ -731,36 +732,68 @@ class ChannelRepository
 
     
 
-    public function UpdateCustomPayment($receiptId, $amount ,$name, $bookingId){
-
-      $key = $this->getRazorpayKey();
-      $secretKey = $this->getRazorpaySecret();
+    public function UpdateCustomPayment($receiptId, $amount ,$name,$email,$phone, $bookingId){
       
-      $api = new Api($key, $secretKey);   
-      $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+      $cashfree=DB::table("credentials")->first();
+      $key =$cashfree->cashfree_key;
+      $secretKey =$cashfree->cashfree_secret;
+      $apiUrl =$cashfree->cashfree_apiurl;
 
+      $response = Http::withHeaders([
+        'x-client-id' => $key,
+        'x-client-secret' =>  $secretKey,
+        'x-api-version' =>'2023-08-01',
+        'Content-Type' => 'application/json',
+    ])->post($apiUrl, [
+        "order_id" => $receiptId,
+        "order_amount" => $amount * 100,
+        "order_currency" => "INR",
+        "customer_details" => [
+          "customer_id" => "$bookingId",
+          "customer_email" => $email,
+          "customer_phone" => $phone,
+        ],
+    ]);
       // Creates customer payment 
-      $orderId = $order['id']; 
-
-      //Log::info($bookingId."---".$receiptId."---".$orderId);
+      $orderId = $response->payment_session_id;//$order['id']; 
 
       $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId,'amount' =>$amount ,'name'=>$name]);
 
-       return $orderId;
+      $result["payment_session_id"]=$sessionId;
+      $result["receipt_id"]=$orderId;
+      return $result;
 
     }
 
 
-      public function CreateCustomPayment($receiptId, $amount ,$name, $bookingId){
+      public function CreateCustomPayment($receiptId, $amount ,$name,$email,$phone, $bookingId){
 
-        $key = $this->getRazorpayKey();
-        $secretKey = $this->getRazorpaySecret();
-        
-        $api = new Api($key, $secretKey);   
-        $order = $api->order->create(array('receipt' => $receiptId, 'amount' => $amount * 100 , 'currency' => 'INR')); 
+        $cashfree=DB::table("credentials")->first();
+        $key =$cashfree->cashfree_key;
+        $secretKey =$cashfree->cashfree_secret;
+        $apiUrl =$cashfree->cashfree_apiurl;
+  
+        $response = Http::withHeaders([
+          'x-client-id' => $key,
+          'x-client-secret' =>  $secretKey,
+          'x-api-version' =>'2023-08-01',
+          'Content-Type' => 'application/json',
+        ])->post($apiUrl, [
+          "order_id" => $receiptId,
+          "order_amount" => $amount,
+          "order_currency" => "INR",
+          "customer_details" => [
+              "customer_id" => "$bookingId",
+              "customer_email" => $email,
+              "customer_phone" => $phone,
+          ],
+      ]);
 
-        // Creates customer payment 
-        $orderId = $order['id']; 
+      $response=json_decode($response);
+      // Creates customer payment 
+      $sessionId = $response->payment_session_id;//$order['id']; 
+      $orderId = $response->order_id;//$order['id']; 
+
         $user_pay = new $this->customerPayment();
         $user_pay->name = $name;
         $user_pay->booking_id = $bookingId;
@@ -768,9 +801,9 @@ class ChannelRepository
         $user_pay->order_id = $orderId;
          $user_pay->save();
 
-         //Log::info($bookingId."---".$receiptId."---".$orderId);
-
-         return $orderId;
+         $result["payment_session_id"]=$sessionId;
+         $result["receipt_id"]=$orderId;
+         return $result;
 
       }
 
@@ -824,18 +857,9 @@ class ChannelRepository
 
       public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin){
        
-        $key = $this->getRazorpayKey();
-        $secretKey = $this->getRazorpaySecret();
+       
         $SmsGW = config('services.sms.otpservice');
        
-        $generated_signature = hash_hmac('sha256', $razorpay_order_id."|" .$razorpay_payment_id, $secretKey);
-
-        $api = new Api($key, $secretKey);
-
-       // $payment = $api->payment->fetch($razorpay_payment_id);
-       // $paymentStatus = $payment->status;
-
-       // if ($generated_signature == $razorpay_signature &&  $paymentStatus == 'captured') { //captured(live version) , authorized (test version)
             $this->customerPayment->where('id', $customerId)
                                 ->update([
                                     'razorpay_id' => $razorpay_payment_id,

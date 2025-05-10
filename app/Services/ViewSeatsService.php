@@ -392,7 +392,9 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     $clientDetails = User::where('id', $clientId)->first();
     $ReferenceNumber = (isset($request['ReferenceNumber'])) ? $request['ReferenceNumber'] : '';
     $origin = (isset($request['origin'])) ? $request['origin'] : 'ODBUS';
-
+    /// added 10-may-2025 for dolphin bus - customer gst added    
+    $odbusCharges = $this->viewSeatsRepository->odbusCharges(1);
+    ///////////////////////////////////////
     $seatWithPriceRecords=[];
 
     if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
@@ -532,6 +534,14 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
              if($dolphin_data){
                 $additional_charge= $dolphin_data->additional_charge;
              }
+             /// added on 10-may-2025 for dolphin bus customer gst
+             $transactionFee= nbf($total_fare * ($additional_charge/100));
+
+             $customer_gst = $odbusCharges[0]->customer_gst;  
+             $customer_gst = nbf(($total_fare * $customer_gst)/100);
+             $totalFare = nbf($total_fare + $transactionFee + $customer_gst);
+
+            
 
             $seatWithPriceRecords[] = array(
                 "ownerFare" => nbf($total_fare),
@@ -540,9 +550,10 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
                 "addOwnerFare" => 0,
                 "festiveFare" => 0,
                 "odbusServiceCharges" => 0,
-                "transactionFee" => nbf($total_fare * ($additional_charge/100)),
-                "totalFare" =>   nbf($total_fare + $total_fare * ($additional_charge/100)),
-                "gst" => 0
+                "transactionFee" =>$transactionFee ,
+                "totalFare" =>   nbf($totalFare),
+                "gst" => 0,
+                "customerGst" => nbf($customer_gst)
                 );
             }  
 

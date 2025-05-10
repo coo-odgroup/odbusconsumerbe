@@ -498,11 +498,17 @@ public function pay(Request $request){
 
  }   
   
-  public function RazorpayWebhook(){
+public function RazorpayWebhook(){
     
     $post = file_get_contents('php://input');
-    $res = json_decode($post);
+  
+    // DB insert to webhook
+    $insert['date']=date("Y-m-d H:i:s");
+    $insert['body']=json_encode($post);
+    $insert['type']='razoypay';
+    DB::table("payment_webhook")->insert($insert);
 
+    $res = json_decode($post);
     if(isset($res->payload->payment)){
    
     $response=$res->payload->payment->entity;     
@@ -553,6 +559,59 @@ public function pay(Request $request){
                 }
             }  
     }
+}
+}
+
+
+public function Webhook(){
+    
+    $post = file_get_contents('php://input');
+    // DB insert to webhook
+    $insert['date']=date("Y-m-d H:i:s");
+    $insert['body']=json_encode($post);
+    $insert['type']='cashfree';
+    DB::table("payment_webhook")->insert($insert);
+
+    $res = json_decode($post);
+
+    if(isset($res->data->order) && isset($res->data->payment) && $res->data->payment->payment_status == 'SUCCESS'){
+   
+    $order_id=$res->data->order->order_id;     
+    $status=$res->data->payment->payment_status;     
+  
+                $rp=$this->customerPayment->where('order_id', $order_id)->first();
+
+                if($rp && isset($rp->booking_id)){
+                    $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
+
+                    if($booking_det->status!=1){
+                    
+                    $crt=strtotime($booking_det->created_at);
+                    $now=strtotime(date("Y-m-d H:i:s"));
+
+                    $diff=round(abs($crt - $now) / 60);
+                    if($diff <= 10){
+
+                        $razorpay_status_updated_at= date("Y-m-d H:i:s");
+
+                       $this->customerPayment->where('order_id', $order_id)->update(['razorpay_id' => $order_id,'payment_done' =>1,'razorpay_status' => $status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+
+                        $this->booking->where('id', $booking_det->id)->update(['status' => 1]);                       
+
+                        $request['transaction_id']=$booking_det->transaction_id;
+                        $request['razorpay_payment_id']=$order_id;
+                        $request['razorpay_order_id']=$order_id;
+                        $request['razorpay_signature']='';
+                        $res = $this->channelService->pay(collect($request),1); 
+                   // }
+                    }else{
+                        Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$order_id.'-----'.$status);
+                        $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$order_id,$order_id,$status);
+                      
+                    }    
+                }
+            }  
+    
 }
 }
 
@@ -853,8 +912,9 @@ public function GSTEmailSend(){
         ////////////////////////////////////////////////////////
 
 
+        $CONSUMER_API_URL=Config::get('constants.CONSUMER_API_URL');
 
-        $gst='https://consumer.odbus.co.in/public/gst/'.$gst_invoice_no;
+        $gst=$CONSUMER_API_URL.'public/gst/'.$gst_invoice_no;
 
         $data['journeydate']=$d->journey_dt;
         $data['pnr']=$d->pnr;

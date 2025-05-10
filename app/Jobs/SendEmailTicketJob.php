@@ -159,6 +159,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->email_pnr= $pnr;
 
        $CONSUMER_FRONT_URL=Config::get('constants.CONSUMER_FRONT_URL');
+       
 
        $this->qrCodeText= $CONSUMER_FRONT_URL."pnr/".$pnr;
 
@@ -187,9 +188,14 @@ class SendEmailTicketJob implements ShouldQueue
         $this->p_names=$pp_names;
 
         $this->ticketpdf=public_path('ticketpdf/'.$pnr.'.pdf');
-        $this->email_pdf= 'https://consumer.odbus.co.in/public/ticketpdf/'.$pnr.'.pdf'; 
+        
+       $CONSUMER_API_URL=Config::get('constants.CONSUMER_API_URL');
+        $this->email_pdf= $CONSUMER_API_URL.'public/ticketpdf/'.$pnr.'.pdf'; 
 
          $this->gst_name='';
+
+       // Log::info('step 1');
+
         
 
         // if($customer_gst_status==1){
@@ -210,7 +216,7 @@ class SendEmailTicketJob implements ShouldQueue
 
         // $this->gst_name=$gst_name;
 
-        // $this->gstpdf='https://consumer.odbus.co.in/public/gst/'.$gst_name;
+        // $this->gstpdf=CONSUMER_API_URL.'public/gst/'.$gst_name;
     //}
  
     }
@@ -278,6 +284,8 @@ class SendEmailTicketJob implements ShouldQueue
            // 'gst_name' => str_replace('.pdf','',$this->gst_name),
             
         ];
+
+       // Log::info($data);
 
        
         PDF::loadView('htmlPdf',$data)->save($this->ticketpdf);

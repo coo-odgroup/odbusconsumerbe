@@ -153,6 +153,7 @@ Route::post('/Auth', function (Request $request) {
 
 Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
+Route::post('/Webhook', [ChannelController::class, 'Webhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
 Route::get('/testing', [ChannelController::class, 'testing']);
 Route::post('/ClientCancelTicket', [ClientBookingController::class, 'clientCancelTicket']);

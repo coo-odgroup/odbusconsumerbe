@@ -64,17 +64,24 @@ class DolphinTransformer
     }
     
     public function BusList($request,$clientRole,$clientId){
+        Log::info('BusList');
+
          $srcResult= $this->listingRepository->getLocationID($request['source']);
         $destResult= $this->listingRepository->getLocationID($request['destination']);
 
         $dolphinresult=[];
+
+        $entry_date=date("d-m-Y",strtotime($request['entry_date']));
+        Log::info($entry_date);
+
 
         if($srcResult[0]->is_dolphin==1 && $destResult[0]->is_dolphin==1){
 
             $dolphin_source=$srcResult[0]->dolphin_id;
             $dolphin_dest=$destResult[0]->dolphin_id;
 
-            $data= $this->DolphinService->GetAvailableRoutes($dolphin_source,$dolphin_dest,$request['entry_date']);
+           
+            $data= $this->DolphinService->GetAvailableRoutes($dolphin_source,$dolphin_dest,$entry_date);
 
             $dolphinresult= $this->BusListProcess($data,$srcResult[0]->id,$destResult[0]->id,$clientRole,$clientId);
 
@@ -86,10 +93,14 @@ class DolphinTransformer
     }
 
     public function Filter($request,$clientRole,$clientId){
+        Log::info('filter');
 
         $sourceID = $request['sourceID'];      
         $destinationID = $request['destinationID'];
-        $entry_date = $request['entry_date'];
+        $entry_date =date("d-m-Y",strtotime($request['entry_date']));
+
+        Log::info($entry_date);
+
 
         $srcResult= $this->listingRepository->getLocationResult($sourceID);
         $destResult= $this->listingRepository->getLocationResult($destinationID);

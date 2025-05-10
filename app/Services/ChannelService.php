@@ -316,14 +316,15 @@ class ChannelService
     
                     $bookingId = $records[0]->id;   
                     $name = $records[0]->users->name;
+                    $email = $records[0]->users->email;
+                    $phone = $records[0]->users->phone;
                     $receiptId = 'rcpt_'.$transationId;
     
-                    $GetOrderId=$this->channelRepository->UpdateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    $GetOrderId=$this->channelRepository->UpdateCustomPayment($receiptId, $amount ,$name,$email,$phone, $bookingId);
                         
                     $data = array(
                         'name' => $records[0]->users->name,
                         'amount' => $amount,
-                        'key' => $key,
                         'razorpay_order_id' => $GetOrderId   
                     );
                         return $data;
@@ -340,11 +341,13 @@ class ChannelService
                         $this->channelRepository->UpdateMantisHoldId($transationId,$holdId);   
                     } 
                     $name = $records[0]->users->name;
+                    $email = $records[0]->users->email;
+                    $phone = $records[0]->users->phone;
                     $receiptId = 'rcpt_'.$transationId;
     
                     $key= $this->channelRepository->getRazorpayKey();
     
-                    $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name, $bookingId);
+                    $GetOrderId=$this->channelRepository->CreateCustomPayment($receiptId, $amount ,$name,$email,$phone, $bookingId);
                         
                     $data = array(
                         'name' => $name,
@@ -1339,7 +1342,7 @@ class ChannelService
         }    
     } 
 
-    public function NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status){
+    public function NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status=null){
         
         try{
           return $this->channelRepository->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_detail,$order_id,$payament_id,$status);

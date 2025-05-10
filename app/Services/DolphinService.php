@@ -63,6 +63,8 @@ class DolphinService
 
     $result=[];
 
+    $dt=date("d-m-Y",strtotime($dt));
+
     $this->soapWrapper->add('GetAvailableRoutes', function ($service) {
         $service
           ->wsdl('http://apislvv2.itspl.net/ITSGateway.asmx?wsdl')
@@ -76,9 +78,15 @@ class DolphinService
               "VerifyCall"=>$this->option['verifyCall']
             );
 
+          //  Log::info("http://apislvv2.itspl.net/ITSGateway.asmx?wsdl");
+           // Log::info($option);
+
        $response = $this->soapWrapper->call('GetAvailableRoutes.GetAvailableRoutes', [$option]);
 
          $data=$this->xmlToArray($response->GetAvailableRoutesResult->any);
+
+         //Log::info($data);
+
 
       if(isset($data['DocumentElement'])){
       
