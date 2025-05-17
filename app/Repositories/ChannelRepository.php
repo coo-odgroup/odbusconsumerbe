@@ -750,10 +750,14 @@ class ChannelRepository
         "order_currency" => "INR",
         "customer_details" => [
           "customer_id" => "$bookingId",
+          "customer_name" => $name,
           "customer_email" => $email,
           "customer_phone" => $phone,
         ],
     ]);
+
+    Log::info($response);
+
       // Creates customer payment 
       $orderId = $response->payment_session_id;//$order['id']; 
 
@@ -784,10 +788,13 @@ class ChannelRepository
           "order_currency" => "INR",
           "customer_details" => [
               "customer_id" => "$bookingId",
+              "customer_name" => $name,
               "customer_email" => $email,
               "customer_phone" => $phone,
           ],
       ]);
+
+      Log::info($response);
 
       $response=json_decode($response);
       // Creates customer payment 
