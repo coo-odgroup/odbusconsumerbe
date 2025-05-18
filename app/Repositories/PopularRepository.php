@@ -54,11 +54,11 @@ class PopularRepository
     }
 
     public function getRoute($sourceId){ 
-        return $this->location->where('id',$sourceId)->get();
+        return $this->location->select('id','state_id','name','url','synonym')->where('id',$sourceId)->get();
     }
 
     public function getDolphinRoute($id){ 
-        return $this->location->where('dolphin_id',$id)->get();
+        return $this->location->select('id','state_id','name','url','synonym')->where('dolphin_id',$id)->get();
     }
 
     
@@ -95,7 +95,7 @@ class PopularRepository
 
     public function getBus($sid,$did){ 
 
-        return DB::select("SELECT b.name,b.bus_number from ticket_price t left join bus b on t.bus_id=b.id where t.status=1 AND t.source_id=$sid AND t.destination_id=$did");
+        return DB::select("SELECT b.id,b.name,b.bus_number from ticket_price t left join bus b on t.bus_id=b.id where t.status=1 AND t.source_id=$sid AND t.destination_id=$did");
 
         // return $this->ticketPrice->with('bus')
         // ->where([

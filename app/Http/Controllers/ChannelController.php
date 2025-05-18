@@ -577,6 +577,7 @@ public function Webhook(){
     if(isset($res->data->order) && isset($res->data->payment) && $res->data->payment->payment_status == 'SUCCESS'){
    
     $order_id=$res->data->order->order_id;     
+    $payment_id=$res->data->payment->cf_payment_id;     
     $status=$res->data->payment->payment_status;     
   
                 $rp=$this->customerPayment->where('order_id', $order_id)->first();
@@ -594,19 +595,19 @@ public function Webhook(){
 
                         $razorpay_status_updated_at= date("Y-m-d H:i:s");
 
-                       $this->customerPayment->where('order_id', $order_id)->update(['razorpay_id' => $order_id,'payment_done' =>1,'razorpay_status' => $status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+                       $this->customerPayment->where('order_id', $order_id)->update(['razorpay_id' => $payment_id,'payment_done' =>1,'razorpay_status' => $status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
 
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]);                       
 
                         $request['transaction_id']=$booking_det->transaction_id;
-                        $request['razorpay_payment_id']=$order_id;
+                        $request['razorpay_payment_id']=$payment_id;
                         $request['razorpay_order_id']=$order_id;
                         $request['razorpay_signature']='';
                         $res = $this->channelService->pay(collect($request),1); 
                    // }
                     }else{
                         Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$order_id.'-----'.$status);
-                        $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$order_id,$order_id,$status);
+                        $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$order_id,$payment_id,$status);
                       
                     }    
                 }

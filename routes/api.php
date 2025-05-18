@@ -58,7 +58,7 @@ Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphin
 //Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
 Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
-Route::get('/AllRoutes', [PopularController::class, 'allRoutes']);
+
 Route::post('/AllOperators', [PopularController::class, 'allOperators']);
 Route::get('/OperatorDetails', [PopularController::class, 'operatorDetails']);
 Route::post('/saveContacts', [ContactController::class, 'save']);
@@ -166,6 +166,7 @@ Route::get('/DolphinCronJobEmailSms', [SoapController::class, 'DolphinCronJobEma
 Route::get('/FeedbackCronJob', [BookingManageController::class, 'FeedbackCronJob']);
 Route::get('/UpdateMantisApiLocation', [ListingController::class, 'updateMantisApiLocation']);
 Route::get('/GetToken', [MantisController::class, 'getToken']);
+Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is without auth beacuse for abhi bus need :: 18-may-2025 :: Banashri Mohanty
 
 //});
 
