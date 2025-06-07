@@ -356,15 +356,15 @@ class CancelTicketRepository
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $refunded = Config::get('constants.REFUNDED');
        
-        $key = $this->credentials->first()->razorpay_key;
-        $secretKey = $this->credentials->first()->razorpay_secret;
+        // $key = $this->credentials->first()->razorpay_key;
+        // $secretKey = $this->credentials->first()->razorpay_secret;
        
-        $api = new Api($key, $secretKey);
-        $payment = $api->payment->fetch($razorpay_payment_id);
+        // $api = new Api($key, $secretKey);
+        // $payment = $api->payment->fetch($razorpay_payment_id);
        
         $paidAmount = $this->booking->where('id', $bookingId)->first()->total_fare; //$payment->amount;
-        $paymentStatus = $payment->status;
-        $refundStatus = $payment->refund_status;
+       // $paymentStatus = $payment->status;
+       // $refundStatus = $payment->refund_status;
         //$ownerFare = $this->booking->where('id', $bookingId)->first()->owner_fare;
         //$odbusCharges = $this->booking->where('id', $bookingId)->first()->odbus_charges;
         $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
@@ -373,10 +373,10 @@ class CancelTicketRepository
         //$baseFare = $ownerFare + $odbusCharges; 
       
        // if($paymentStatus == 'captured'){
-            if($refundStatus != null){
-                return 'refunded';
-            }
-            else{
+            // if($refundStatus != null){
+            //     return 'refunded';
+            // }
+            //else{
                 $refundAmount =$refundAmount; //round($baseFare * ((100-$percentage) / 100),2);
                 $data = array(
                      'refundAmount' => $refundAmount,
@@ -389,7 +389,7 @@ class CancelTicketRepository
                 $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
                 $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
                 return $data;
-            } 
+           // } 
        }
 
     public function refundPolicy($percentage,$razorpay_payment_id,$bookingId,$booking,$smsData,$emailData,$busId){
