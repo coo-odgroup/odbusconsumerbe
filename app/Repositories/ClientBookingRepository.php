@@ -429,6 +429,13 @@ class ClientBookingRepository
                                         //->where('status', $seatHold)
                                        ->with('bookingDetail')
                                        ->get(); 
+        
+        if($bookingRecord[0]->status==1){
+            $bal['wallet_balance'] = $bookingDetails[0]->clientWallet[0]->balance;
+            $bal['final_pnr'] = $bookingRecord[0]->pnr;
+
+            return $bal;
+        }                               
 
         // Log::info($transactionId);
 
