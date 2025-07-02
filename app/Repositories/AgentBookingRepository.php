@@ -124,7 +124,7 @@ class AgentBookingRepository
         }
 
         $booking->j_day = $j_day;
-        $booking->journey_dt = $bookingInfo['journey_dt'];
+        $booking->journey_dt = $bookingInfo['journey_date'];
         $booking->boarding_point = $bookingInfo['boarding_point'];
         $booking->dropping_point = $bookingInfo['dropping_point'];
         $booking->boarding_time = $bookingInfo['boarding_time'];
@@ -274,9 +274,9 @@ class AgentBookingRepository
             }
             elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
 
-                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_dt'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
                 
-                $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_dt'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+                $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
                 
                 unset($bDetail['bus_seats_id']);
                 $bDetail['seat_name'] = $seat_name; 

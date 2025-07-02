@@ -112,7 +112,7 @@ class AgentBookingController extends Controller
  *                  example=1374
  *                  ),
  *                @OA\Property(
- *                  property="journey_dt",
+ *                  property="journey_date",
  *                  type="string",
  *                  default="2021-10-09",
  *                  example="2021-10-09" ,

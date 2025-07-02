@@ -61,7 +61,7 @@ class AgentBookingService
                 $reqInfo= array(
                     "source" => $source,
                     "destination" => $destination,
-                    "entry_date" => $bookingInfo['journey_dt'],
+                    "entry_date" => $bookingInfo['journey_date'],
                     "bus_operator_id" => Null,
                     "user_id" => Null
                 ); 
@@ -81,7 +81,7 @@ class AgentBookingService
                 $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');
                 $seater = Seats::whereIn('id',$seatIds)->where('berthType',1)->pluck('id');
                 $sleeper = Seats::whereIn('id',$seatIds)->where('berthType',2)->pluck('id');
-                $entry_date = $bookingInfo['journey_dt'];
+                $entry_date = $bookingInfo['journey_date'];
                 $busId = $bookingInfo['bus_id'];
                 $sourceId = $bookingInfo['source_id'];
                 $destinationId =  $bookingInfo['destination_id'];
