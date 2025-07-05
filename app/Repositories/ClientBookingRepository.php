@@ -627,7 +627,6 @@ class ClientBookingRepository
             $contact_number = collect($busContactDetails)->implode('phone',',');
         
             $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
-
             
             if($sms_gateway ==1){
                
