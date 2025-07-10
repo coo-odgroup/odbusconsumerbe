@@ -431,7 +431,7 @@ class ClientBookingRepository
                                        ->get(); 
         
         if($bookingRecord[0]->status==1){
-            $bal['wallet_balance'] = $bookingDetails[0]->clientWallet[0]->balance;
+            $bal['wallet_balance'] = $bookingRecord[0]->clientWallet[0]->balance;
             $bal['final_pnr'] = $bookingRecord[0]->pnr;
 
             return $bal;
