@@ -428,6 +428,11 @@ class ClientBookingRepository
         $bookingRecord = $this->booking->where('transaction_id', $transactionId)
                                         //->where('status', $seatHold)
                                        ->with('bookingDetail')
+                                       ->with(['clientWallet' => function($cw){
+                                        $cw->orderBy('id','DESC');
+                                        $cw->where("status",1);
+                                        $cw->limit(1);
+                                        }])
                                        ->get(); 
         
         if($bookingRecord[0]->status==1){

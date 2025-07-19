@@ -114,14 +114,14 @@ Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking'])
 
 //Route::group(['excluded_middleware' => 'throttle:api'], function() {
    Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock'])->middleware(LogRoute::class);
-   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation'])->middleware(LogRoute::class);;         
+   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation'])->middleware(LogRoute::class);         
 //});
 
 
-Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket'])->middleware(LogRoute::class);;
-Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos'])->middleware(LogRoute::class);;
-Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel'])->middleware(LogRoute::class);;
-Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails'])->middleware(LogRoute::class);;
+Route::post('/ClientCancelticket', [ClientBookingController::class, 'clientCancelTicket'])->middleware(LogRoute::class);
+Route::post('/ClientCancelTicketinfo', [ClientBookingController::class, 'clientCancelTicketInfos'])->middleware(LogRoute::class);
+Route::post('/ClientTicketCancellation', [ClientBookingController::class, 'clientTicketCancel'])->middleware(LogRoute::class);
+Route::post('/TicketDetails', [ClientBookingController::class, 'ticketDetails'])->middleware(LogRoute::class);
 Route::post('/GetFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('/CityPair', [PopularController::class, 'CityPair']);
 Route::post('/SendNotification', [UsersController::class, 'sendNotification']);

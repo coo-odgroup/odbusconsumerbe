@@ -476,6 +476,7 @@ class ClientBookingController extends Controller
             return $this->successResponse($response,Config::get('constants.TICKET_CONFIRMED'),Response::HTTP_OK);
          }
         catch (Exception $e) {
+            Log::Info($e->getMessage());
             return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
           }     
     }
