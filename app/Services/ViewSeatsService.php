@@ -95,7 +95,6 @@ class ViewSeatsService
          
 
                 if ($busRecords) {
-                    $busId = $bookingInfo['bus_id'];
                     $validBus = $busRecords->pluck('busId')->contains($busId);
                 }
 
