@@ -18,10 +18,12 @@ use App\Models\BusSpecialFare;
 use App\Models\OwnerFare;
 use App\Models\User;
 use App\Models\BusOwnerFare;
+use App\Models\Location;
 use App\Transformers\DolphinTransformer;
 use App\Models\IncomingApiCompany;
 use App\Transformers\MantisTransformer;
 use Illuminate\Support\Str;
+use App\Services\ListingService;
 
 
 
@@ -29,11 +31,17 @@ class ViewSeatsService
 {
     protected $dolphinTransformer;
     protected $viewSeatsRepository;    
-    public function __construct(ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
+    protected $mantisTransformer;    
+    protected $listingService;   
+    protected $location;
+
+    public function __construct(ViewSeatsRepository $viewSeatsRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer,ListingService $listingService,Location $location)
     {
         $this->dolphinTransformer = $dolphinTransformer;
         $this->viewSeatsRepository = $viewSeatsRepository;
         $this->mantisTransformer = $mantisTransformer;
+        $this->listingService = $listingService;
+         $this->location = $location;
     }
     public function getAllViewSeats($request,$clientRole,$clientId)
     {
@@ -70,6 +78,31 @@ class ViewSeatsService
                 return $dolphinSeatresult= $this->dolphinTransformer->seatLayout($ReferenceNumber,$clientRole,$clientId);
             }
         }else if($origin=='ODBUS'){
+
+            $source_nm=$this->location->where('id',$sourceId)->first()->name;
+            $destination_nm=$this->location->where('id',$destinationId)->first()->name;
+
+
+             $reqInfo = array(
+                "source" => $source_nm,
+                "destination" => $destination_nm,
+                "entry_date" => $journeyDate,
+                "bus_operator_id" => Null,
+                "user_id" => Null
+            ); 
+           
+            $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
+         
+
+                if ($busRecords) {
+                    $busId = $bookingInfo['bus_id'];
+                    $validBus = $busRecords->pluck('busId')->contains($busId);
+                }
+
+                if (!$validBus) {
+                    return "Bus_not_running";
+                }
+
 
 
         $busDet = Bus::where('id', $busId)->first();
