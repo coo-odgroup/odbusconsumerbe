@@ -63,7 +63,8 @@ class AgentBookingService
                     "destination" => $destination,
                     "entry_date" => $bookingInfo['journey_date'],
                     "bus_operator_id" => Null,
-                    "user_id" => Null
+                    "user_id" => Null,
+                    "origin" =>'ODBUS'
                 ); 
 
                 $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);

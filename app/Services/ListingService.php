@@ -85,13 +85,11 @@ class ListingService
          $DolPhinshowRecords = [];
          $DolPhinShowSoldoutRecords =[];
 
-         if($config->dolphin_api_status ==1){
-
+         if($config->dolphin_api_status ==1 && !isset($request['origin']) ){ //
              $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId);
              $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
              $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
-         }
-
+            }
        
         $CurrentDateTime = Carbon::now();
 
@@ -257,6 +255,8 @@ class ListingService
             $showBusRecords = Arr::flatten($records);
             $hideBusRecords = Arr::flatten($hideBusRecords);
             //return $showBusRecords;
+
+            
             $showRecords = $this->processBusRecords($showBusRecords,$sourceID, $destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,'show',$clientRole,$clientId);
 
             $ShowSoldoutRecords = (isset($showRecords['soldout'])) ? $showRecords['soldout'] : [];
@@ -290,11 +290,11 @@ class ListingService
                 
              $ListingRecords = $ListingRecords->concat(collect($DolPhinShowSoldoutRecords))->concat(collect($mantisShowSoldoutRecords));
         }
+
         return $ListingRecords;  
 
     }
     public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
-
 
         $ListingRecords['regular'] = [];
         $ListingRecords['soldout'] = [];
@@ -785,6 +785,7 @@ class ListingService
             $cSlabDuration = $cSlabDatas->pluck('duration');
             $cSlabDeduction = $cSlabDatas->pluck('deduction');
 
+
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
           
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
@@ -822,6 +823,8 @@ class ListingService
                 if(isset($operatorBlockId)){
                   $Contains = $operatorBlockId->contains($operatorId);
                 }
+
+                
 
                 if($Contains==0){
            
@@ -927,6 +930,7 @@ class ListingService
                 }
             }           
         }
+
         return $ListingRecords;
     }
 

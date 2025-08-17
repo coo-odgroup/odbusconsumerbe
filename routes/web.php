@@ -7,6 +7,7 @@ use App\Http\Controllers\BookingManageController;
 use App\Http\Controllers\HTMLPDFController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\ClientBookingController;
+use App\Http\Controllers\PopularController;
 
 
 
@@ -48,3 +49,5 @@ Route::get('PaytmdriverDetailApi', [ClientBookingController::class,'PaytmdriverD
 
 /// cron job for GST after journey date completed
 Route::get('/GSTEmailNotification', [ChannelController::class, 'GSTEmailSend']);
+
+Route::get('/send-sms', [PopularController::class, 'ValueFirstSms']);

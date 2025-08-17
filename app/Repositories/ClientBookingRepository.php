@@ -100,7 +100,8 @@ class ClientBookingRepository
                 "destination" => $destination,
                 "entry_date" => $entry_date,
                 "bus_operator_id" => Null,
-                "user_id" => Null
+                "user_id" => Null,
+                "origin" =>'ODBUS'
             ); 
             $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
 

@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\PopularService;
 use App\AppValidator\DownloadAppValidator;
-
+use App\Services\ValueFirstService;
 
 
 class PopularController extends Controller
@@ -233,4 +233,13 @@ class PopularController extends Controller
         $response = $this->popularService->CityPair();      
         return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
     } 
+
+     public function ValueFirstSms(Request $request)
+    {
+        $sms = new ValueFirstService();
+        $to= (isset($_REQUEST['phone']) && $_REQUEST['phone']!='') ? $_REQUEST['phone'] : '7978817539';
+        $result = $sms->sendSms($to, 'PNR:ODM38169894, Bus Details: NILKANTHESWAR OR02 B 2525, DOJ: 15-12-2020, Route: Rayagada-Bhubaneswar, Dep: 20:55, Name: Nikhil Patnaik, Gender: 1M, Seat: 13, Fare: 812.00, Conductor Mob: 7205738853 - ODBUS');
+
+        return response()->json(['result' => $result]);
+    }
 }

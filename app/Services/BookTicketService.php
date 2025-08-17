@@ -44,6 +44,8 @@ class BookTicketService
         $ReferenceNumber = (isset($request['bookingInfo']['ReferenceNumber'])) ? $request['bookingInfo']['ReferenceNumber'] : '';
         $origin = (isset($request['bookingInfo']['origin'])) ? $request['bookingInfo']['origin'] : 'ODBUS';
 
+
+
             if($origin !='DOLPHIN' && $origin != 'ODBUS' && $origin != 'MANTIS'){
                 return 'Invalid Origin';
             }else if($origin=='DOLPHIN'){
@@ -86,16 +88,18 @@ class BookTicketService
                     $reqInfo= array(
                         "source" => $source,
                         "destination" => $destination,
-                        "entry_date" => $bookingInfo['journey_date'],
+                        "entry_date" => date('Y-m-d',strtotime($bookingInfo['journey_date'])),
                         "bus_operator_id" => Null,
-                        "user_id" => Null
+                        "user_id" => Null,
+                        "origin" =>'ODBUS'
                     ); 
+
+                    
     
                     $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
-                
+                    
                     if($busRecords){
                     $busId = $bookingInfo['bus_id'];
-                    $busRecords->pluck('busId');
                     $validBus = $busRecords->pluck('busId')->contains($busId);
                     }
                     if(!$validBus){
@@ -123,7 +127,7 @@ class BookTicketService
                     );
                    
                     $priceDetails = $this->viewSeatsService->getPriceCalculationOdbus($data,$clientId);
-                   // Log::Info($priceDetails);
+                   
                 }
 
                 /////////// get seat price for dolphin
@@ -197,6 +201,7 @@ class BookTicketService
                 }
                 ///////////////////////////////////////////////////////////////
                 //Save Booking 
+               
                 $booking = $this->bookTicketRepository->SaveBooking($bookingInfo,$userId,$needGstBill,$priceDetails,$clientRole,$clientId);   
                 /////////////auto apply coupon//////////
             if($bookingInfo['origin'] == 'ODBUS'){ 
@@ -217,7 +222,8 @@ class BookTicketService
                         return collect($booking)->put('couponStatus', $coupon);
                     }     
                 } 
-            }      
+            } 
+            
                 return $booking; 
 
         } catch (Exception $e) {

@@ -88,7 +88,8 @@ class ViewSeatsService
                 "destination" => $destination_nm,
                 "entry_date" => $journeyDate,
                 "bus_operator_id" => Null,
-                "user_id" => Null
+                "user_id" => Null,
+                "origin" =>'ODBUS'
             ); 
            
             $busRecords = $this->listingService->getAll($reqInfo,$clientRole,$clientId);
@@ -1321,8 +1322,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     //////////////////used for ODBUS booking PRICE CALCULATION ///////////////
 
     public function getPriceCalculationOdbus($request,$clientId)
-    {
-       
+    {       
         $seaterIds = (isset($request['seater'])) ? $request['seater'] : [];
         $sleeperIds = (isset($request['sleeper'])) ? $request['sleeper'] : [];
         
