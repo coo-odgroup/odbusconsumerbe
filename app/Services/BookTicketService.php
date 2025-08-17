@@ -255,15 +255,30 @@ class BookTicketService
             $seatIds = Arr::pluck($bookingInfo['bookingDetail'], 'bus_seats_id');
 
             $selectedAray=[];
+            if(isset($seatArray['lower_berth'])){
 
-            foreach($seatArray['lower_berth'] as $sat){ 
-            	foreach ($seatIds as $st) {
-             		if($sat['id']==$st){             			
-		              $selectedAray[]=$sat;
+                 foreach($seatArray['lower_berth'] as $sat){ 
+                    foreach ($seatIds as $st) {
+                        if($sat['id']==$st){             			
+                        $selectedAray[]=$sat;
+                        }
+                    }
+                }  
+
+            }
+           
+            if(isset($seatArray['upper_berth'])){
+                foreach($seatArray['upper_berth'] as $sat){ 
+                    foreach ($seatIds as $st) {
+                        if($sat['id']==$st){             			
+                        $selectedAray[]=$sat;
+                        }
                     }
                 }
-            }         	
+            }
+
                 foreach ($selectedAray as $k => $itm) { 
+                    if(isset($seatArray['lower_berth'])){
                    foreach($seatArray['lower_berth'] as $at){ 
 
                       if( $itm['colNumber'] == $at['colNumber'] && 
@@ -279,9 +294,31 @@ class BookTicketService
 
                             $genderRestrictSeatarray[]=$sst;
  	
-		                }		                           
+		                }
+                       }		                           
 
 		             }
+
+                    if(isset($seatArray['upper_berth'])){
+                     foreach($seatArray['upper_berth'] as $at){ 
+
+                      if( $itm['colNumber'] == $at['colNumber'] && 
+		                  ($itm['rowNumber']- $at['rowNumber'] == -1 || $itm['rowNumber'] - $at['rowNumber'] == 1)  
+		                  && $at['seatText']!='' && $itm['id'] !=$at['id'] && $at['Gender']){ 
+
+	                        $sst=[
+	                          "seat_id" => $itm['id'],
+	                          "canSelect" => $at['Gender'],
+	                          "seat_name" => $itm['seatText']
+	                        ];
+
+
+                            $genderRestrictSeatarray[]=$sst;
+ 	
+		                }
+                      }		                           
+
+		            }
                 }
 
           if($genderRestrictSeatarray){
