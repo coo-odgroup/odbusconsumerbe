@@ -30,7 +30,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 
 class ClientBookingRepository
 {

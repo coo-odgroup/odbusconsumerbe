@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 use PDF;
 use App\Models\Bus;
 use App\Models\Booking;

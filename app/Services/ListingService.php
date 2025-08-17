@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
+use App\Models\OdbusCharges;
 
 class ListingService
 {
@@ -41,6 +42,9 @@ class ListingService
     }
     public function getAll($request,$clientRole,$clientId)
     {  
+
+        $config = OdbusCharges::where('user_id', '1')->first();
+
         $source = $request['source'];
         $destination = $request['destination'];
         $entry_date = $request['entry_date'];
@@ -81,17 +85,15 @@ class ListingService
          $DolPhinshowRecords = [];
          $DolPhinShowSoldoutRecords =[];
 
-         //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
+         if($config->dolphin_api_status ==1){
 
              $dolphinresult= $this->dolphinTransformer->BusList($request,$clientRole,$clientId);
              $DolPhinshowRecords = (isset($dolphinresult['regular'])) ? $dolphinresult['regular'] : [];
              $DolPhinShowSoldoutRecords = (isset($dolphinresult['soldout'])) ? $dolphinresult['soldout'] : [];
-        // }
+         }
 
        
-
-        //$CurrentDateTime = "2022-01-11 14:48:35";
-        $CurrentDateTime = Carbon::now();//->toDateTimeString();
+        $CurrentDateTime = Carbon::now();
 
 
         $common=$this->commonRepository->getCommonSettings(Config::get('constants.USER_ID'));
@@ -936,6 +938,9 @@ class ListingService
 
     public function filter(Request $request,$clientRole,$clientId)
     {
+        
+        $config = OdbusCharges::where('user_id', '1')->first();
+
         $booked = Config::get('constants.BOOKED_STATUS');   
         
         $sourceID = $request['sourceID'];      
@@ -981,9 +986,9 @@ class ListingService
 
             $DolPhinshowRecords = [];
             $DolPhinShowSoldoutRecords =[];   
-            //if($clientId!=44 && $clientRole!=6){ // to stop dolphin bus in android until madhu completed work
-               $dolphinresult= $this->dolphinTransformer->Filter($request,$clientRole,$clientId); // getting dolphin buslist
-            //}
+             if($config->dolphin_api_status ==1){
+               $dolphinresult= $this->dolphinTransformer->Filter($request,$clientRole,$clientId);
+            }
         }
 
         

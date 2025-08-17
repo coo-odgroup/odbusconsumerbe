@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Review;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 use Carbon\Carbon;
 use App\Models\Credentials;
 

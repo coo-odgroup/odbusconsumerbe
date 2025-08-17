@@ -1,5 +1,5 @@
 <?php
-use DB;
+use Illuminate\Support\Facades\DB;
 
 // Added By Banashri Mohanty :: 25-jun-2024 (for security audit weak encryption fixes)
 function encryptResponse($data){

@@ -6,7 +6,8 @@ use App\Models\Contacts;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 use Carbon\Carbon;
 
 class ContactRepository

@@ -20,7 +20,8 @@ use App\Models\BusSchedule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 use Carbon\Carbon;
 use DateTime;
 

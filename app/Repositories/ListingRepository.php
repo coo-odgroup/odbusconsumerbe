@@ -40,7 +40,8 @@ use App\Services\MantisService;
 use DateTime;
 use Time;
 use Illuminate\Support\Facades\Log;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Config;
 
 class ListingRepository

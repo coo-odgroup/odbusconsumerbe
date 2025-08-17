@@ -27,7 +27,8 @@ Use hash_hmac;
 use JWTAuth;
 use App\Mail\SendPdfEmail;
 use Illuminate\Support\Facades\Mail;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 use PDF;
 
 
