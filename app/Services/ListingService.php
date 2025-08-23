@@ -986,7 +986,7 @@ class ListingService
 
         $dolphinresult=[];
 
-        if( ($operatorId != null && count($operatorId)!=0 && in_array('111111',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){ // 111111 used as dolphon operator id
+        if($config->dolphin_api_status ==1 && !isset($request['origin']) && ($operatorId != null && count($operatorId)!=0 && in_array('111111',$operatorId)) ||  ($operatorId != null && count($operatorId)==0) || $operatorId == null){ // 111111 used as dolphon operator id
 
             $DolPhinshowRecords = [];
             $DolPhinShowSoldoutRecords =[];   
@@ -1228,6 +1228,8 @@ class ListingService
 
     public function getFilterOptions(Request $request,$clientRole,$clientId)
     {
+        $config = OdbusCharges::where('user_id', '1')->first();
+        
         $sourceID = $request['sourceID'];
         $destinationID = $request['destinationID']; 
         $busIds = $request['busIDs']; 
@@ -1246,8 +1248,14 @@ class ListingService
         /////// to get dolphin operator , calling buslist function again
 
         //Log::info($request);
+
+        $DolphinBusList=[];
+
+        if($config->dolphin_api_status ==1 && !isset($request['origin'])){
+             $DolphinBusList = $this->dolphinTransformer->Filter($request,$clientRole,$clientId);
+        }
        
-         $DolphinBusList = $this->dolphinTransformer->Filter($request,$clientRole,$clientId);
+        
 
          //Log::info($DolphinBusList);
 
