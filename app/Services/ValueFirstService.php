@@ -13,10 +13,6 @@ class ValueFirstService
 
     public function __construct()
     {
-        $this->username = config('valuefirst.username', env('VALUEFIRST_USERNAME'));
-        $this->password = config('valuefirst.password', env('VALUEFIRST_PASSWORD'));
-        $this->sender   = config('valuefirst.sender', env('VALUEFIRST_SENDER'));
-        $this->url      = config('valuefirst.url', env('VALUEFIRST_URL'));
     }
 
     public function sendSms($to, $message)
