@@ -38,6 +38,7 @@ Use hash_hmac;
 use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Services\ValueFirstService;
 
 class ChannelRepository
 {
@@ -150,8 +151,23 @@ class ChannelRepository
         $url = env('TEXT_SMS_INDIA_HUB_URL');
         list($header, $content) = PostRequest($url,$data);
     }
+// Created by Subhasis Mohanty  added on 22-05-2024 for Value First SMS Service
+    public function sendSms($data, $otp){
+            $name = $data['name'];
+            $phone = $data['phone'];
+
+            $message = "Dear ".$name.", Your OTP is ".$otp." to login ODBUS. Thanks - ODBUS";
+            $valueFirstService = new ValueFirstService();
+            
+            $response = $valueFirstService->sendSms($phone, $message);
+            //Log::info($phone);
+            //Log::info($response);
+           //return $response;
+            
+        
+    }
     
-    public function sendSms($data, $otp) {
+    public function sendSms_backup($data, $otp) {
 
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){

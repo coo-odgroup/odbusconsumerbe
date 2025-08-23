@@ -169,6 +169,7 @@ Route::get('/GetToken', [MantisController::class, 'getToken']);
 Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is without auth beacuse for abhi bus need :: 18-may-2025 :: Banashri Mohanty
 
 //});
+Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); //VALUE FIRST SMS SERVICE
 
 
 
