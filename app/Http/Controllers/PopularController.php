@@ -237,8 +237,12 @@ class PopularController extends Controller
      public function ValueFirstSms(Request $request)
     {
         $sms = new ValueFirstService();
+
         $to= (isset($_REQUEST['phone']) && $_REQUEST['phone']!='') ? $_REQUEST['phone'] : '7978817539';
-        $result = $sms->sendSms($to, 'PNR:ODM38169894, Bus Details: NILKANTHESWAR OR02 B 2525, DOJ: 15-12-2020, Route: Rayagada-Bhubaneswar, Dep: 20:55, Name: Nikhil Patnaik, Gender: 1M, Seat: 13, Fare: 812.00, Conductor Mob: 7205738853 - ODBUS');
+        $pnr="ODBUS28428";
+        $msg='PNR:'.$pnr.', Bus Details: NILKANTHESWAR OR02 B 2525, DOJ: 15-12-2020, Route: Rayagada-Bhubaneswar, Dep: 20:55, Name: Nikhil Patnaik, Gender: 1M, Seat: 13, Fare: 812.00, Conductor Mob: 7205738853 - ODBUS';
+
+        $result = $sms->sendSms($to,$msg);
 
         return response()->json(['result' => $result]);
     }
