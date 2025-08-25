@@ -301,7 +301,72 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsTicket($payable_amount,$data, $pnr) {
+// Created by Subhasis Mohanty  added on 25-05-2024 for Value First SMS Service
+    public function sendSmsTicket($payable_amount, $data, $pnr)
+{
+    $collection = collect($data['seat_no']);
+    $seatList = $collection->implode(',');
+
+    // passenger details
+    $passengerDetails = $data['passengerDetails'];
+    $i = 0;
+    $m = 0; $f = 0; $O = 0;
+    $nameList = "";
+
+    foreach ($passengerDetails as $pDetail) {
+        if ($i == 0) {
+            $nameList = "{$nameList},{$pDetail['passenger_name']}";
+        }
+        $i++;
+
+        switch ($pDetail['passenger_gender']) {
+            case "M": $m++; break;
+            case "F": $f++; break;
+            case "O": $O++; break;
+        }
+    }
+
+    if ($m>0 && $f>0 && $O > 0) $genderList = "{$m}M/{$f}F/{$O}O";
+    else if ($m>0 && $f>0) $genderList = "{$m}M/{$f}F";
+    else if ($m>0 && $O>0) $genderList = "{$m}M/{$O}O";
+    else if ($f>0 && $O>0) $genderList = "{$f}F/{$O}O";
+    else if ($m>0) $genderList = "{$m}M";
+    else if ($f>0) $genderList = "{$f}F";
+    else if ($O>0) $genderList = "{$O}O";
+    else $genderList = "";
+
+    if (count($passengerDetails) > 1) {
+        $restNo = count($passengerDetails) - 1;
+        $nameList = "{$nameList}+{$restNo}";
+    }
+
+    $nameList = substr($nameList, 1);
+
+    $busDetails = $data['busname'].' '.$data['busNumber'];
+    $data['journeydate'] = date('d-m-Y', strtotime($data['journeydate']));
+
+    if (isset($data['customer_comission'])) {
+        $payable_amount = $payable_amount + $data['customer_comission'];
+    }
+
+    // Construct message
+    $message = "PNR:{$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
+               "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, ".
+               "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, ".
+               "Fare: {$payable_amount}, Conductor Mob: {$data['conductor_number']} - ODBUS";
+
+    // Send SMS via ValueFirstService
+    $valueFirstService = new \App\Services\ValueFirstService();
+    $response = $valueFirstService->sendSms($data['phone'], $message);
+     
+    
+    Log::info("ValueFirst SMS Response", (array)$response);
+
+    return $response;
+}
+
+
+      public function sendSmsTicket_backup($payable_amount,$data, $pnr) {
 
         $collection = collect($data['seat_no']);
         $seatList = $collection->implode(',');
