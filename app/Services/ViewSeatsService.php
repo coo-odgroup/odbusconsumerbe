@@ -741,7 +741,7 @@ public function getPriceOnSeatsSelection($request,$clientRole,$clientId)
     }else{
         $seatWithPriceRecords[] = array(
             "PriceDetail" => $PriceDetail,
-            "ownerFare" => nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+            "ownerFare" => nbf($ownerFare - $totalOwnFare),
             "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
             "specialFare" => nbf($totalSplFare),
             "addOwnerFare" => nbf($totalOwnFare),
@@ -1237,7 +1237,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" =>nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+                "ownerFare" =>nbf($ownerFare - $totalOwnFare),
                 "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
                 "specialFare" => nbf($totalSplFare),
                 "addOwnerFare" => nbf($totalOwnFare),
@@ -1449,7 +1449,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
        
         $seatWithPriceRecords[] = array(
                 //"PriceDetail" => $PriceDetail,
-                "ownerFare" => nbf($ownerFare - ($totalSplFare+$totalFestiveFare+$totalOwnFare)),
+                "ownerFare" => nbf($ownerFare - $totalOwnFare),
                 "odbus_charges_ownerFare" => nbf($odbus_charges_ownerFare),
                 "specialFare" => nbf($totalSplFare),
                 "addOwnerFare" => nbf($totalOwnFare),
