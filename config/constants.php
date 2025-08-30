@@ -82,8 +82,8 @@ return [
     'PAYMENT_NOT_DONE' => 'payment not done',
     'TICKET_REGENERATED' => 'Ticket regenerated Successfully',
     'BOOKING_TYPE' => 'Failled Ticket Generated',
-    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
-    'CONSUMER_API_URL' => 'https://consumer.odbus.co.in/', // https://testing.odbus.co.in/  , https://consumer.odbus.co.in/
+    'CONSUMER_FRONT_URL' =>   'https://odtesting.odbus.co.in/',  //'https://www.odbus.in/',
+    'CONSUMER_API_URL' => 'https://testing.odbus.co.in/', // https://consumer.odbus.co.in/  , https://consumer.odbus.co.in/
     //'CONSUMER_FRONT_URL' => 'https://odtesting.odbus.co.in/',
     'SEAT_BLOCKED_FOR_PAYMENT' => 'Seats are blocked for further payment process',
     'TICKET_CONFIRMED' => 'Tickets booked successfully',

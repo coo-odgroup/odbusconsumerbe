@@ -966,9 +966,68 @@ class DolphinTransformer
            // session(['msgId'=> $msgId]);
 
     }
-   
 
-    public function FetchTicketPrintData(){
+    //created by Subhasish for dolphin ticket sms valuefirst on 30th Aug 2025
+   public function FetchTicketPrintData() {
+
+    $list = $this->booking->with('users')
+                ->where('origin','DOLPHIN')
+                ->where('api_pnr','!=',null)
+                ->orderBy('id','DESC')
+                ->get();
+
+    if($list){
+        $main = [];
+        foreach($list as $l){
+            $res = $this->DolphinService->FetchTicketPrintData($l->api_pnr); 
+            
+            if($res){
+                $ar['DOLPHIN_PNRNO']   = $res['PNRNO'];
+                $ar['CoachNo']        = (isset($res['CoachNo'])) ? $res['CoachNo'] : '';
+                $ar['PickUpName']     = (isset($res['PickUpName'])) ? $res['PickUpName'] : ''; 
+                $ar['MainTime']       = (isset($res['MainTime'])) ? $res['MainTime'] : ''; 
+                $ar['ReportingTime']  = (isset($res['ReportingTime'])) ? $res['ReportingTime'] : ''; 
+                $main[] = $ar; 
+
+                if(isset($res['CoachNo']) && $l->dolphin_sms_email==0 && $l->app_type != 'CLNTWEB'){
+
+                    /////// Build SMS message
+                    $name       = $l->users->name;
+                    $phone      = $l->users->phone;
+                    $pnr        = $l->pnr;
+                    $busDetails = $res['CoachNo'];
+                    $route      = $l->from."-".$l->to;   // assuming booking has from/to
+                    $doj        = date('d-m-Y', strtotime($l->doj));
+                    $pickup     = $res['PickUpName'];
+                    $depttime   = $res['MainTime'];
+                    $rpttime    = $res['ReportingTime'];
+
+                    $message = "Dear ".$name.", PNR: ".$pnr.", Bus dtls: ".$busDetails." From-".$route.", Pick Up Add: ".$pickup.", Dep Time: ".$depttime.", Reporting Time: ".$rpttime." - ODBUS.";
+
+                    /////// Send via ValueFirstService
+                    $valueFirstService = new ValueFirstService();
+                    $response = $valueFirstService->sendSms($phone, $message);
+
+                    \Log::info("Dolphin Ticket SMS sent to: ".$phone);
+                    \Log::info("Message: ".$message);
+                    \Log::info("Response: ".json_encode($response));
+
+                    ////// update the sms status in booking table to 1
+                    $this->booking->where('id', $l->id)
+                        ->update([
+                            'dolphin_sms_email' => 1,
+                            'bus_number'        => $busDetails,
+                            'pickup_details'    => $pickup
+                        ]);
+                }
+            }
+        }
+        return $main;
+    }
+}
+
+
+    public function FetchTicketPrintData_backup(){
 
             $list=$this->booking->with('users')->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 

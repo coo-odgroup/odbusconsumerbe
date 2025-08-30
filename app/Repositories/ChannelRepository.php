@@ -151,7 +151,7 @@ class ChannelRepository
         $url = env('TEXT_SMS_INDIA_HUB_URL');
         list($header, $content) = PostRequest($url,$data);
     }
-// Created by Subhasis Mohanty  added on 22-05-2024 for Value First SMS Service
+// Created by Subhasis Mohanty  added on 22-05-2024 for Value First SMS Service.
     public function sendSms($data, $otp){
             $name = $data['name'];
             $phone = $data['phone'];
@@ -233,7 +233,24 @@ class ChannelRepository
         }
       }
 
-      public function sendSmsAgent($data, $otp) {
+//Created by Subhasis Mohanty  added on 24-05-2024 for Value First SMS Service
+      public function sendSmsAgent($data, $otp)
+{
+    
+    $message = "Your OTP to register as agent is " . $otp . " . Do not share this with anyone - ODBUS";
+
+    
+    $phone = $data['phone'];
+
+    // Send SMS via ValueFirst service
+    $valueFirstService = new ValueFirstService();
+    $response = $valueFirstService->sendSms($phone, $message);
+
+    return $response;
+}
+
+
+      public function sendSmsAgent_backup($data, $otp) {
 
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
@@ -302,12 +319,13 @@ class ChannelRepository
         }
       }
 // Created by Subhasis Mohanty  added on 25-05-2024 for Value First SMS Service
-    public function sendSmsTicket($payable_amount, $data, $pnr)
+   public function sendSmsTicket($payable_amount, $data, $pnr)
 {
+    
     $collection = collect($data['seat_no']);
     $seatList = $collection->implode(',');
 
-    // passenger details
+    
     $passengerDetails = $data['passengerDetails'];
     $i = 0;
     $m = 0; $f = 0; $O = 0;
@@ -326,6 +344,7 @@ class ChannelRepository
         }
     }
 
+   
     if ($m>0 && $f>0 && $O > 0) $genderList = "{$m}M/{$f}F/{$O}O";
     else if ($m>0 && $f>0) $genderList = "{$m}M/{$f}F";
     else if ($m>0 && $O>0) $genderList = "{$m}M/{$O}O";
@@ -335,32 +354,37 @@ class ChannelRepository
     else if ($O>0) $genderList = "{$O}O";
     else $genderList = "";
 
+    
     if (count($passengerDetails) > 1) {
         $restNo = count($passengerDetails) - 1;
         $nameList = "{$nameList}+{$restNo}";
     }
-
     $nameList = substr($nameList, 1);
 
+    // Bus details
     $busDetails = $data['busname'].' '.$data['busNumber'];
     $data['journeydate'] = date('d-m-Y', strtotime($data['journeydate']));
 
+    
     if (isset($data['customer_comission'])) {
         $payable_amount = $payable_amount + $data['customer_comission'];
     }
 
-    // Construct message
+    
     $message = "PNR:{$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
                "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, ".
                "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, ".
                "Fare: {$payable_amount}, Conductor Mob: {$data['conductor_number']} - ODBUS";
 
-    // Send SMS via ValueFirstService
+    // Send SMS using ValueFirst
     $valueFirstService = new \App\Services\ValueFirstService();
     $response = $valueFirstService->sendSms($data['phone'], $message);
-     
-    
-    Log::info("ValueFirst SMS Response", (array)$response);
+
+    \Log::info("Ticket SMS sent via ValueFirst", [
+        'to' => $data['phone'],
+        'message' => $message,
+        'response' => $response
+    ]);
 
     return $response;
 }
@@ -502,7 +526,85 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsCMO($payable_amount,$data, $pnr, $contact_number) {
+
+      //Created by Subhasis Mohanty  added on 26-05-2024 for Value First SMS Service
+
+   public function sendSmsCMO($payable_amount, $data, $pnr, $contact_number)
+{
+    $collection = collect($data['seat_no']);
+    $seatList = $collection->implode(',');
+
+    $passengerDetails = $data['passengerDetails'];
+    $i = 0; $m = 0; $f = 0; $O = 0;
+    $nameList = "";
+
+    foreach ($passengerDetails as $pDetail) {
+        if ($i == 0) {
+            $nameList = "{$nameList},{$pDetail['passenger_name']}";
+        }
+        $i++;
+
+        switch ($pDetail['passenger_gender']) {
+            case "M": $m++; break;
+            case "F": $f++; break;
+            case "O": $O++; break;
+        }
+    }
+
+    if ($m>0 && $f>0 && $O > 0) $genderList = "{$m}M/{$f}F/{$O}O";
+    else if ($m>0 && $f>0) $genderList = "{$m}M/{$f}F";
+    else if ($m>0 && $O>0) $genderList = "{$m}M/{$O}O";
+    else if ($f>0 && $O>0) $genderList = "{$f}F/{$O}O";
+    else if ($m>0) $genderList = "{$m}M";
+    else if ($f>0) $genderList = "{$f}F";
+    else if ($O>0) $genderList = "{$O}O";
+    else $genderList = "";
+
+    if (count($passengerDetails) > 1) {
+        $restNo = count($passengerDetails) - 1;
+        $nameList = "{$nameList}+{$restNo}";
+    }
+
+    $nameList = substr($nameList, 1);
+
+    if (isset($data['customer_comission'])) {
+        $payable_amount = $payable_amount + $data['customer_comission'];
+    }
+
+    $data['journeydate'] = date('d-m-Y', strtotime($data['journeydate']));
+    $busDetails = $data['busname'].' '.$data['busNumber'];
+
+    // Construct the SMS message 
+    $message = "PNR:{$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
+               "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, ".
+               "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, ".
+               "Passenger Mob: {$data['phone']} - ODBUS";
+
+    $valueFirstService = new \App\Services\ValueFirstService();
+
+    
+    $numbers = array_filter(explode(',', $contact_number));
+
+    foreach ($numbers as $number) {
+        $number = trim($number); // remove spaces just in case
+        $response = $valueFirstService->sendSms($number, $message);
+
+        Log::info("CMO Ticket SMS sent to: " . $number);
+        Log::info("Message: " . $message);
+        Log::info("Response: " . json_encode($response));
+    }
+
+    return true; 
+}
+
+
+
+
+
+
+
+
+      public function sendSmsCMO_backup($payable_amount,$data, $pnr, $contact_number) {
 
         $collection = collect($data['seat_no']);
         $seatList = $collection->implode(',');
@@ -636,7 +738,42 @@ class ChannelRepository
 
         }
       }
-      public function sendSmsTicketCancelCMO($data,$contact_number) {
+
+
+
+      //Created by Subhasis Mohanty  added on 26-05-2024 for Value First SMS Service
+public function sendSmsTicketCancelCMO($data, $contact_number)
+{
+    
+    $seatList = implode(",", $data['seat']);
+    $doj = date('d-m-Y', strtotime($data['doj'])); // format date like in your example
+
+    
+    $message = "PNR: {$data['PNR']}, Bus Details: {$data['busdetails']}, Route: {$data['route']}, DOJ: {$doj}, Seat: {$seatList} is cancelled - ODBUS.";
+
+    // Send SMS via ValueFirst service
+    $valueFirstService = new ValueFirstService();
+
+    
+    $numbers = array_filter(explode(',', $contact_number));
+    foreach ($numbers as $number) {
+        $number = trim($number);
+        $response = $valueFirstService->sendSms($number, $message);
+
+        Log::info("Cancel Ticket CMO SMS sent to: " . $number);
+        Log::info("Message: " . $message);
+        Log::info("Response: " . json_encode($response));
+    }
+
+    return $response ?? null; // return last response or null if no numbers
+}
+
+
+
+
+
+
+      public function sendSmsTicketCancelCMO_backup($data,$contact_number) {
       
         $seatList = implode(",",$data['seat']);
         $doj = $data['doj'];
@@ -675,7 +812,35 @@ class ChannelRepository
         session(['msgId'=> $msgId]);
 
   }
-      public function sendSmsTicketCancel($data) {
+
+  //Created by Subhasis Mohanty  added on 25-05-2024 for Value First SMS Service
+
+  
+  public function sendSmsTicketCancel($data)
+{
+    // Prepare seat list if multiple seats
+    $seatList = implode(",", $data['seat']);
+
+    // cancellation message
+    $message = "Your PNR: ".$data['PNR'].", Bus Details: ".$data['busdetails'].
+               ", Route: ".$data['route'].", DOJ: ".$data['doj'].
+               ", Seat: ".$seatList." is cancelled. Amount of Rs ".$data['refundAmount'].
+               " will be refunded in 10 - 12 Working Days - ODBUS.";
+
+    
+    $valueFirstService = new ValueFirstService();
+
+    // Send SMS
+    $response = $valueFirstService->sendSms($data['phone'], $message);
+
+    
+    Log::info("Cancel Ticket SMS sent to: " . $data['phone']);
+    //Log::info("Response: " . json_encode($response));
+
+    return $response;
+}
+
+      public function sendSmsTicketCancel_backup($data) {
       
             $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];

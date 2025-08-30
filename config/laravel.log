@@ -1,0 +1,102 @@
+[2025-08-29 11:43:13] local.INFO: {"cart_details":null,"cf_order_id":"2196366414","created_at":"2025-08-29T11:43:14+05:30","customer_details":{"customer_id":"14809","customer_name":"Subhashis Mohanty","customer_email":"subhasis2000mohanty@gmail.com","customer_phone":"8917667487","customer_uid":null},"entity":"order","order_amount":539.28,"order_currency":"INR","order_expiry_time":"2025-09-28T11:43:14+05:30","order_id":"rcpt_202508291142544107","order_meta":{"return_url":null,"notify_url":null,"payment_methods":null},"order_note":null,"order_splits":[],"order_status":"ACTIVE","order_tags":null,"payment_session_id":"session_WEQpAkXtmCZs89aQPFhosKbrMwh9CDl-4eIKszjEU6619wzSnSoud1MRWMygwgKPGdYYFV1AugKWhGWWgi22tMxItjPb7asbNNhDiIXitO0AAF9EQcofgC_FcJr-fQpaymentpayment","terminal_data":null}
+  
+[2025-08-29 11:45:22] local.INFO: {"cart_details":null,"cf_order_id":"2196366442","created_at":"2025-08-29T11:45:23+05:30","customer_details":{"customer_id":"14811","customer_name":"Subhashis Mohanty","customer_email":"subhasis2000mohanty@gmail.com","customer_phone":"8917667487","customer_uid":null},"entity":"order","order_amount":539.28,"order_currency":"INR","order_expiry_time":"2025-09-28T11:45:23+05:30","order_id":"rcpt_20250829114512267233","order_meta":{"return_url":null,"notify_url":null,"payment_methods":null},"order_note":null,"order_splits":[],"order_status":"ACTIVE","order_tags":null,"payment_session_id":"session_KoYtUTsIbBqEEBRFdmmbuPERalitHgyBo0b-guw7HdilezqXXAFPCcYDAziA96vdMgVfbt6SjZh4kM-2_JUTL0BYBQsoS_CViy4MzWLabgNjczpqKDvd7duyCJ4CNApaymentpayment","terminal_data":null}
+  
+[2025-08-29 11:46:08] local.INFO: Ticket SMS sent via ValueFirst {"to":"8917667487","message":"PNR:ODW2278697, Bus Details: DILDAR OD 02 AD 9657, DOJ: 31-08-2025, Route: Bhubaneswar-Rourkela, Dep: 20:15:00, Name: Subhasis, Gender: 1M, Seat: 17, Fare: 539.28, Conductor Mob: 9938223666 - ODBUS","response":"{\"status\":\"Error\",\"statuscode\":403,\"statustext\":\"Forbidden\"}"} 
+[2025-08-29 11:46:08] local.INFO: CMO Ticket SMS sent to: 9938223666,,9937008757,9437008757  
+[2025-08-29 11:46:08] local.INFO: Message: PNR:ODW2278697, Bus Details: DILDAR OD 02 AD 9657, DOJ: 31-08-2025, Route: Bhubaneswar-Rourkela, Dep: 20:15:00, Name: Subhasis, Gender: 1M, Seat: 17, Passenger Mob: 8917667487 - ODBUS  
+[2025-08-29 11:46:08] local.INFO: Response: "{\"status\":\"Error\",\"statuscode\":403,\"statustext\":\"Forbidden\"}"  
+[2025-08-29 11:46:42] local.INFO: Unable to open file for reading [https://consumer.odbus.co.in/public/ticketpdf/ODW2278697.pdf]  
+[2025-08-29 11:46:42] local.ERROR: Invalid Argument Passed {"exception":"[object] (InvalidArgumentException(code: 0): Invalid Argument Passed at /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/app/Services/ChannelService.php:708)
+[stacktrace]
+#0 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/app/Http/Controllers/ChannelController.php(607): App\\Services\\ChannelService->pay()
+#1 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\ChannelController->Webhook()
+#2 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(45): Illuminate\\Routing\\Controller->callAction()
+#3 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(262): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#4 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(205): Illuminate\\Routing\\Route->runController()
+#5 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(721): Illuminate\\Routing\\Route->run()
+#6 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(128): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#7 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(103): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#8 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(723): Illuminate\\Pipeline\\Pipeline->then()
+#9 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(698): Illuminate\\Routing\\Router->runRouteWithinStack()
+#10 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(662): Illuminate\\Routing\\Router->runRoute()
+#11 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(651): Illuminate\\Routing\\Router->dispatchToRoute()
+#12 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(167): Illuminate\\Routing\\Router->dispatch()
+#13 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(128): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#14 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#16 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#18 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Session\\Middleware\\StartSession->handle()
+#19 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#20 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#21 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#22 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#24 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#25 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#27 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(86): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#28 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#29 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/fruitcake/laravel-cors/src/HandleCors.php(52): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#30 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Fruitcake\\Cors\\HandleCors->handle()
+#31 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/fideloper/proxy/src/TrustProxies.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#32 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Fideloper\\Proxy\\TrustProxies->handle()
+#33 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(103): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#34 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\\Pipeline\\Pipeline->then()
+#35 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(111): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#36 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/index.php(103): Illuminate\\Foundation\\Http\\Kernel->handle()
+#37 {main}
+"} 
+[2025-08-29 11:47:33] local.INFO: Cancel Ticket SMS sent to: 8917667487  
+[2025-08-29 11:47:33] local.INFO: Cancel Ticket CMO SMS sent to: 9938223666,,9937008757,9437008757  
+[2025-08-29 11:47:33] local.INFO: Message: PNR: ODW2278697, Bus Details: DILDAR-OD 02 AD 9657, Route: Bhubaneswar-Rourkela, DOJ: 31-08-2025, Seat: 17 is cancelled - ODBUS.  
+[2025-08-29 11:47:33] local.INFO: Response: "{\"status\":\"Success\",\"statuscode\":200,\"statustext\":\"OK\",\"messageack\":{\"guids\":[{\"guid\":\"kp8tb4733925e1f140a00ana4uODBUSI4MQO\",\"submitdate\":\"2025-08-29 11:47:33\",\"id\":\"1\",\"errors\":[{\"errorcode\":28682,\"errortext\":\"Invalid Mobile Number\",\"seq\":\"1\"}]}]}}"  
+[2025-08-29 12:53:11] local.INFO: {"cart_details":null,"cf_order_id":"2196369109","created_at":"2025-08-29T12:53:12+05:30","customer_details":{"customer_id":"14812","customer_name":"Subhashis Mohanty","customer_email":"subhasis2000mohanty@gmail.com","customer_phone":"8917667487","customer_uid":null},"entity":"order","order_amount":539.28,"order_currency":"INR","order_expiry_time":"2025-09-28T12:53:12+05:30","order_id":"rcpt_20250829125303830895","order_meta":{"return_url":null,"notify_url":null,"payment_methods":null},"order_note":null,"order_splits":[],"order_status":"ACTIVE","order_tags":null,"payment_session_id":"session_lsJCBFe2hGG18aTN9mopGHHnFiSXPIKr_MklnpeaOriXQtwRmlFCvMZBjJ-yvHDI3-O_cxDTt7po4jgk2IPfQ2zJZREFSpYPbY9RNaxIJNMvGSbRjsNab9k50EFWUQpaymentpayment","terminal_data":null}
+  
+[2025-08-29 12:53:26] local.INFO: Ticket SMS sent via ValueFirst {"to":"8917667487","message":"PNR:ODW8627370, Bus Details: DILDAR OD 02 AD 9657, DOJ: 31-08-2025, Route: Bhubaneswar-Rourkela, Dep: 20:15:00, Name: Subhasis, Gender: 1M, Seat: 20, Fare: 539.28, Conductor Mob: 9938223666 - ODBUS","response":"{\"status\":\"Success\",\"statuscode\":200,\"statustext\":\"OK\",\"messageack\":{\"guids\":[{\"guid\":\"kp8tc5326913d1f140a00vbo9oODBUSI4MQO\",\"submitdate\":\"2025-08-29 12:53:26\",\"id\":\"1\"}]}}"} 
+[2025-08-29 12:53:27] local.INFO: CMO Ticket SMS sent to: 9938223666,,9937008757,9437008757  
+[2025-08-29 12:53:27] local.INFO: Message: PNR:ODW8627370, Bus Details: DILDAR OD 02 AD 9657, DOJ: 31-08-2025, Route: Bhubaneswar-Rourkela, Dep: 20:15:00, Name: Subhasis, Gender: 1M, Seat: 20, Passenger Mob: 8917667487 - ODBUS  
+[2025-08-29 12:53:27] local.INFO: Response: "{\"status\":\"Success\",\"statuscode\":200,\"statustext\":\"OK\",\"messageack\":{\"guids\":[{\"guid\":\"kp8tc5327000x1f140a00nlwnqODBUSI4MQO\",\"submitdate\":\"2025-08-29 12:53:27\",\"id\":\"1\",\"errors\":[{\"errorcode\":28682,\"errortext\":\"Invalid Mobile Number\",\"seq\":\"1\"}]}]}}"  
+[2025-08-29 12:54:00] local.INFO: Unable to open file for reading [https://consumer.odbus.co.in/public/ticketpdf/ODW8627370.pdf]  
+[2025-08-29 12:54:00] local.ERROR: Invalid Argument Passed {"exception":"[object] (InvalidArgumentException(code: 0): Invalid Argument Passed at /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/app/Services/ChannelService.php:708)
+[stacktrace]
+#0 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/app/Http/Controllers/ChannelController.php(607): App\\Services\\ChannelService->pay()
+#1 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\ChannelController->Webhook()
+#2 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(45): Illuminate\\Routing\\Controller->callAction()
+#3 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(262): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#4 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(205): Illuminate\\Routing\\Route->runController()
+#5 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(721): Illuminate\\Routing\\Route->run()
+#6 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(128): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#7 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(103): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#8 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(723): Illuminate\\Pipeline\\Pipeline->then()
+#9 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(698): Illuminate\\Routing\\Router->runRouteWithinStack()
+#10 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(662): Illuminate\\Routing\\Router->runRoute()
+#11 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(651): Illuminate\\Routing\\Router->dispatchToRoute()
+#12 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(167): Illuminate\\Routing\\Router->dispatch()
+#13 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(128): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#14 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#16 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#18 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Session\\Middleware\\StartSession->handle()
+#19 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#20 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#21 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#22 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#24 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#25 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#27 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(86): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#28 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#29 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/fruitcake/laravel-cors/src/HandleCors.php(52): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#30 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Fruitcake\\Cors\\HandleCors->handle()
+#31 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/fideloper/proxy/src/TrustProxies.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#32 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(167): Fideloper\\Proxy\\TrustProxies->handle()
+#33 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(103): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#34 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(142): Illuminate\\Pipeline\\Pipeline->then()
+#35 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(111): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#36 /home/561909.cloudwaysapps.com/mjrxunpqrq/public_html/index.php(103): Illuminate\\Foundation\\Http\\Kernel->handle()
+#37 {main}
+"} 

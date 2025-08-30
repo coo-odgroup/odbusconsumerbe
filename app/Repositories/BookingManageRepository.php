@@ -689,7 +689,39 @@ class BookingManageRepository
         //return SendEmailTicketJob::dispatch($request, $pnr);
       }
 
-    public function sendSmsTicket($data, $pnr) {
+//Created by Subhasis Mohanty on 25-06-2024 for ValueFirst SMS Gateway Integration
+    //Function to send SMS using ValueFirst Service
+
+public function sendSmsTicket($data) {
+    // Prepare variables
+    $seatList = implode(",", $data['seat']);
+    $pnr = $data['PNR'];
+    $busDetails = $data['busdetails'];
+    $route = $data['route'];
+    $doj = $data['doj'];
+    $refundAmount = $data['refundAmount'];
+    $phone = $data['phone'];
+
+    // Message format (cancellation notice)
+    $message = "Your PNR: {$pnr}, Bus Details: {$busDetails}, Route: {$route}, DOJ: {$doj}, Seat: {$seatList} is cancelled. "
+             . "Amount of Rs {$refundAmount} will be refunded in 10 - 12 Working Days - ODBUS.";
+
+    // Call ValueFirst service
+    $valueFirstService = new ValueFirstService();
+    $response = $valueFirstService->sendSms($phone, $message);
+
+    // Optional logging
+    // Log::info("Cancel SMS sent to {$phone}");
+    // Log::info($response);
+
+    return $response;
+}
+
+
+
+
+
+    public function sendSmsTicket_backup($data, $pnr) {
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";
