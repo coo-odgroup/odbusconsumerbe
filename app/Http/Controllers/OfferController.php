@@ -162,6 +162,10 @@ class OfferController extends Controller
                 case('coupon_expired'):   //Validity of Coupon Has Expired
                     return $this->errorResponse(Config::get('constants.COUPON_EXPIRED'),Response::HTTP_OK);
                 break;
+                case('already_applied'):   //Validity of Coupon Has already applied once
+                    return $this->errorResponse(Config::get('constants.COUPON_ALREADY_APPLIED_ONCE'),Response::HTTP_OK);
+                break;    
+                
             }
             return $this->successResponse($response,Config::get('constants.COUPON_APPLIED'),Response::HTTP_OK);    
             }

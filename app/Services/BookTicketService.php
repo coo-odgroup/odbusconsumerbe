@@ -211,11 +211,11 @@ class BookTicketService
                 $couponDetails = Coupon::where('coupon_code',$bookingInfo['coupon_code'])
                                  ->where('bus_id',$bookingInfo['bus_id'])
                                  ->where('status','1')
-                                 ->get();
+                                 ->get();             
                 if(isset($couponDetails[0]) && ($couponDetails[0]->auto_apply==1)){
                     
                     $coupon = $this->offerRepository->coupons($bcollection);
-        
+
                     if(collect($coupon)->has("totalAmount")){
                         return collect($booking)->merge(collect($coupon));
                     }else{

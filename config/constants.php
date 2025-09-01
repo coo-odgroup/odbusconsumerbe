@@ -53,6 +53,7 @@ return [
     'COUPON_NOT_APPLICABLE' => 'Coupon is not applicable for this amount of transaction',
     'INVALID_COUPON' => 'Coupon is not valid',
     'COUPON_EXPIRED' => 'Coupon is expired',
+    'COUPON_ALREADY_APPLIED_ONCE' => 'Coupon is already applied',
     'COUPON_APPLIED' => 'Coupon Apply successful',
     'OPERATOR_NOT_FOUND' => 'Operator is not available',
     'PNR_NOT_MATCH'=> "PNR does not match",

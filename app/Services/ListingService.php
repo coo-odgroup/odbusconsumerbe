@@ -23,7 +23,7 @@ use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use App\Models\OdbusCharges;
-
+use JWTAuth;
 class ListingService
 {
     
@@ -372,6 +372,18 @@ class ListingService
             //$bookingDate = "2022-06-06";
 
             
+            $user = JWTAuth::parseToken()->authenticate();
+           // Log::Info($user);
+
+            $via=0;
+
+            if($user->client_id=='odbusSas'){ // for website
+                $via=[0,1];
+            }
+
+            if($user->client_id=='odbusSasAndroid'){ // for App
+                $via=[0,2];
+            }
 
             foreach($CouponRecords as $key => $coupon){
                 
@@ -385,6 +397,7 @@ class ListingService
                         if(isset($selCouponRecords)){  
                                     $CouponDetails = $selCouponRecords[0]
                                                     ->where('coupon_code',$coupon)
+                                                    ->whereIn('via',$via)
                                                     ->where('status', 1)
                                                         ->where('from_date', '<=', $entry_date)
                                                         ->where('to_date', '>=', $entry_date)->get();
@@ -400,6 +413,7 @@ class ListingService
                                     $CouponDetails = $selCouponRecords[0]
                                                     ->where('coupon_code',$coupon)
                                                     ->where('status', 1)
+                                                    ->whereIn('via',$via)
                                                         ->where('from_date', '<=', $bookingDate)
                                                         ->where('to_date', '>=', $bookingDate)
                                                         ->get();
@@ -407,7 +421,7 @@ class ListingService
                         $appliedCoupon->push($coupon);                                                               
                         break;      
                 }
-               
+
                 // if($dateInRange){
                 //     $appliedCoupon->push($coupon);
                 //     if(isset($selCouponRecords)){

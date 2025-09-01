@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use JWTAuth;
 
 class OfferRepository
 {
@@ -47,6 +48,19 @@ class OfferRepository
     }
     public function coupons($request)
     {   
+
+         $user = JWTAuth::parseToken()->authenticate();
+          
+        $via=0;
+
+        if($user->client_id=='odbusSas'){ // for website
+            $via=[0,1];
+        }
+
+        if($user->client_id=='odbusSasAndroid'){ // for App
+            $via=[0,2];
+        }
+
         $requestedCouponCode = $request['coupon_code'];
         $busId = $request['bus_id'];
         $sourceId = $request['source_id'];
@@ -71,6 +85,7 @@ class OfferRepository
         $routeCoupon = Coupon::where('source_id', $sourceId)////Route wise coupon
                                 ->where('destination_id', $destId)
                                 ->where('coupon_type_id', 2)
+                                ->whereIn('via',$via)
                                 ->where('status','1')
                                 ->where('from_date', '<=', $jDate)
                                 ->where('to_date', '>=', $jDate)
@@ -84,6 +99,7 @@ class OfferRepository
         
         $operatorCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////Operator wise coupon
                                 ->where('coupon_type_id', 1)
+                                ->whereIn('via',$via)
                                 ->where('status','1')
                                 ->where('from_date', '<=', $jDate)
                                 ->where('to_date', '>=', $jDate)
@@ -96,6 +112,7 @@ class OfferRepository
         } 
         $opRouteCoupon = Coupon::where('bus_operator_id', $busOperatorId) ////OperatorRoute wise coupon
                                     ->where('coupon_type_id', 3)
+                                    ->whereIn('via',$via)
                                     ->where('source_id', $sourceId)
                                     ->where('destination_id', $destId)
                                     ->where('status','1')
@@ -138,6 +155,7 @@ class OfferRepository
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                                 ->where('from_date', '<=', $jDate)
                                 ->where('to_date', '>=', $jDate)
+                                ->whereIn('via',$via)
                                 ->where('status', 1)
                                 ->all();           
                     break;
@@ -145,11 +163,16 @@ class OfferRepository
                     $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
                     ->where('from_date', '<=', $bookingDate)
                     ->where('to_date', '>=', $bookingDate)
+                    ->whereIn('via',$via)
                     ->where('status', 1)
                     ->all();
                     break;      
             }
+
+            $applied_once=0;
             if($dateInRange){
+                $matchedCoupon = collect($dateInRange)->first();
+                $applied_once = $matchedCoupon->apply_once;
                 $appliedCoupon->push($coupon);                
             }
         } 
@@ -157,7 +180,16 @@ class OfferRepository
         if($couponExists)
         {
             $userId = Booking::where('transaction_id',$transactionId)->first()->users_id;
+
+             $ifMobileCouponApplied = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->where('users_id',$userId)->count('id');
+
+             if($ifMobileCouponApplied>0 && $applied_once==1){
+                return "already_applied";
+             } 
+
             $couponCount = Booking::where('coupon_code',$requestedCouponCode)->whereIn('status',[1,2])->count('id');
+           
+
         }else{
             return "inval_coupon";
         } 
@@ -169,6 +201,7 @@ class OfferRepository
         case(1):    //Coupon available on journey date
             $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
                                                     ->where('bus_id',$busId)
+                                                    ->whereIn('via',$via)
                                                     ->where('from_date', '<=', $jDate)
                                                     ->where('to_date', '>=', $jDate)
                                                      ->where('status', 1)
@@ -179,6 +212,7 @@ class OfferRepository
 
             $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
             ->where('bus_id',$busId)
+            ->whereIn('via',$via)
             ->where('from_date', '<=', $bookingDate)
             ->where('to_date', '>=', $bookingDate)
             ->where('status', 1)
@@ -187,16 +221,13 @@ class OfferRepository
     }  
     
         $maxRedeemCount = $couponDetails[0]->max_redeem;
-        
+
+              
         if($couponCount < $maxRedeemCount){     
             if(isset($couponDetails)){ 
                 $couponType = $couponDetails[0]->type;  ///type:1 for percentage and 2 for amount
                 $maxDiscount = $couponDetails[0]->max_discount_price;
-                
-                //log::info($maxDiscount);
                
-
-                //dd($couponType);
 
                 if($couponType == '1'){
                     $percentage = $couponDetails[0]->percentage;
