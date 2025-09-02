@@ -151,8 +151,18 @@ class ChannelRepository
         $url = env('TEXT_SMS_INDIA_HUB_URL');
         list($header, $content) = PostRequest($url,$data);
     }
-// Created by Subhasis Mohanty  added on 22-05-2024 for Value First SMS Service.
-    public function sendSms($data, $otp){
+//Created by Subhasis Mohanty  added on 01-09-2025 for Value First and textLocal SMS Service
+    public function sendSms($data, $otp)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSms_valueFirst($data, $otp);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSms_textLocal($data, $otp);
+    }
+}
+// Created by Subhasis Mohanty  added on 22-08-2025 for Value First SMS Service.
+    public function sendSms_valueFirst($data, $otp){
             $name = $data['name'];
             $phone = $data['phone'];
 
@@ -167,7 +177,7 @@ class ChannelRepository
         
     }
     
-    public function sendSms_backup($data, $otp) {
+    public function sendSms_textLocal($data, $otp) {
 
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
@@ -233,8 +243,18 @@ class ChannelRepository
         }
       }
 
-//Created by Subhasis Mohanty  added on 24-05-2024 for Value First SMS Service
+//Created by Subhasis Mohanty  added on 01-09-2025 for Value First and textLocal SMS Service
       public function sendSmsAgent($data, $otp)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsAgent_valueFirst($data, $otp);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsAgent_textLocal($data, $otp);
+    }
+}
+//Created by Subhasis Mohanty  added on 24-05-2024 for Value First SMS Service
+      public function sendSmsAgent_valueFirst($data, $otp)
 {
     
     $message = "Your OTP to register as agent is " . $otp . " . Do not share this with anyone - ODBUS";
@@ -250,7 +270,7 @@ class ChannelRepository
 }
 
 
-      public function sendSmsAgent_backup($data, $otp) {
+      public function sendSmsAgent_textLocal($data, $otp) {
 
         $SmsGW = config('services.sms.otpservice');
         if($SmsGW =='textLocal'){
@@ -318,8 +338,23 @@ class ChannelRepository
 
         }
       }
-// Created by Subhasis Mohanty  added on 25-05-2024 for Value First SMS Service
-   public function sendSmsTicket($payable_amount, $data, $pnr)
+
+
+      //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
+public function sendSmsTicket($payable_amount, $data, $pnr)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicket_valueFirst($payable_amount, $data, $pnr);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicket_textLocal($payable_amount, $data, $pnr);
+    }
+}
+
+   
+
+// Created by Subhasis Mohanty  added on 25-08-2024 for Value First SMS Service
+   public function sendSmsTicket_valueFirst($payable_amount, $data, $pnr)
 {
     
     $collection = collect($data['seat_no']);
@@ -390,7 +425,7 @@ class ChannelRepository
 }
 
 
-      public function sendSmsTicket_backup($payable_amount,$data, $pnr) {
+      public function sendSmsTicket_textLocal($payable_amount,$data, $pnr) {
 
         $collection = collect($data['seat_no']);
         $seatList = $collection->implode(',');
@@ -526,10 +561,20 @@ class ChannelRepository
 
         }
       }
-
+ //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
+    public function sendSmsCMO($payable_amount, $data, $pnr, $contact_number)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsCMO_valueFirst($payable_amount, $data, $pnr, $contact_number);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsCMO_textLocal($payable_amount, $data, $pnr, $contact_number);
+    }
+}
+      
       //Created by Subhasis Mohanty  added on 26-05-2024 for Value First SMS Service
 
-   public function sendSmsCMO($payable_amount, $data, $pnr, $contact_number)
+   public function sendSmsCMO_valueFirst($payable_amount, $data, $pnr, $contact_number)
 {
     $collection = collect($data['seat_no']);
     $seatList = $collection->implode(',');
@@ -604,7 +649,7 @@ class ChannelRepository
 
 
 
-      public function sendSmsCMO_backup($payable_amount,$data, $pnr, $contact_number) {
+      public function sendSmsCMO_textLocal($payable_amount,$data, $pnr, $contact_number) {
 
         $collection = collect($data['seat_no']);
         $seatList = $collection->implode(',');
@@ -738,11 +783,19 @@ class ChannelRepository
 
         }
       }
-
-
+ //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
+public function sendSmsTicketCancelCMO($data, $contact_number)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicketCancelCMO_valueFirst($data, $contact_number);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicketCancelCMO_textLocal($data, $contact_number);
+    }
+}
 
       //Created by Subhasis Mohanty  added on 26-05-2024 for Value First SMS Service
-public function sendSmsTicketCancelCMO($data, $contact_number)
+public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number)
 {
     
     $seatList = implode(",", $data['seat']);
@@ -773,7 +826,7 @@ public function sendSmsTicketCancelCMO($data, $contact_number)
 
 
 
-      public function sendSmsTicketCancelCMO_backup($data,$contact_number) {
+      public function sendSmsTicketCancelCMO_textLocal($data,$contact_number) {
       
         $seatList = implode(",",$data['seat']);
         $doj = $data['doj'];
@@ -813,10 +866,20 @@ public function sendSmsTicketCancelCMO($data, $contact_number)
 
   }
 
+ //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
+  public function sendSmsTicketCancel($data)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicketCancel_valueFirst($data);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicketCancel_textLocal($data);
+    }
+}
   //Created by Subhasis Mohanty  added on 25-05-2024 for Value First SMS Service
 
   
-  public function sendSmsTicketCancel($data)
+  public function sendSmsTicketCancel_valueFirst($data)
 {
     // Prepare seat list if multiple seats
     $seatList = implode(",", $data['seat']);
@@ -840,7 +903,7 @@ public function sendSmsTicketCancelCMO($data, $contact_number)
     return $response;
 }
 
-      public function sendSmsTicketCancel_backup($data) {
+      public function sendSmsTicketCancel_textLocal($data) {
       
             $seatList = implode(",",$data['seat']);
             $doj = $data['doj'];
@@ -1105,7 +1168,7 @@ public function sendSmsTicketCancelCMO($data, $contact_number)
 
       }
 
-      
+    
 
 
       public function UpdateCutsomerPaymentInfo($razorpay_order_id,$razorpay_signature,$razorpay_payment_id,$customerId,$paymentDone,$totalfare,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$request,$bookingId,$booked,$bookedStatusFailed,$transationId,$pnr,$busId,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount,$smsData,$email,$emailData,$origin){

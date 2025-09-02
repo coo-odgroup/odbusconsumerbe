@@ -967,8 +967,18 @@ class DolphinTransformer
 
     }
 
+//Created by Subhasish for dolphin ticket sms on 3rd sep 2025
+    public function FetchTicketPrintData()
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->FetchTicketPrintData_valueFirst();
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->FetchTicketPrintData_textlocal();
+    }
+}
     //created by Subhasish for dolphin ticket sms valuefirst on 30th Aug 2025
-   public function FetchTicketPrintData() {
+   public function FetchTicketPrintData_valueFirst() {
 
     $list = $this->booking->with('users')
                 ->where('origin','DOLPHIN')
@@ -1027,7 +1037,7 @@ class DolphinTransformer
 }
 
 
-    public function FetchTicketPrintData_backup(){
+    public function FetchTicketPrintData_textlocal(){
 
             $list=$this->booking->with('users')->where('origin','DOLPHIN')->where('api_pnr','!=',null)->orderBy('id','DESC')->get();
 
