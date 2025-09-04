@@ -28,6 +28,7 @@ use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use Illuminate\Support\Str;
+use App\Services\ValueFirstService;
 
 
 
@@ -585,7 +586,38 @@ class BookingManageRepository
             }]);    
         }])->get();
     }
-    public function OTP($phone,$pnr,$otp,$bookingId)
+//created by Subhasis mohanty on 2-09-2025 for Value First OTP Service and textlocal otp service
+
+ public function OTP($phone, $pnr, $otp, $bookingId)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->OTP_valuefirst($phone, $pnr, $otp, $bookingId);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->OTP_textlocal($phone, $pnr, $otp, $bookingId);
+    }
+}
+    public function OTP_valuefirst($phone, $pnr, $otp, $bookingId)
+{
+    
+    $message = "Your Ticket Cancellation OTP is {$otp} for PNR {$pnr} Plz share with your Agent - ODBUS";
+
+   
+    $valueFirstService = new ValueFirstService();
+    $response = $valueFirstService->sendSms($phone, $message);
+
+    
+    Log::info("Cancel Ticket OTP sent to: " . $phone);
+    Log::info("Message: " . $message);
+    Log::info("Response: " . json_encode($response));
+
+    
+    $this->booking->where('id', $bookingId)->update(['cancel_otp' => $otp]);
+
+    return $response;
+}
+
+    public function OTP_textlocal($phone,$pnr,$otp,$bookingId)
     {
         $SmsGW = config('services.sms.otpservice');
 
@@ -689,30 +721,54 @@ class BookingManageRepository
         //return SendEmailTicketJob::dispatch($request, $pnr);
       }
 
+//Created by Subhasis Mohanty on 2-09-2025 for ValueFirst and textlocal SMS Gateway Integration
+        public function sendSmsTicket($data, $pnr)
+{
+   $SmsGW = config('services.sms.otpservice'); 
+    if ($SmsGW === 'valuefirst') {
+        return $this->sendSmsTicket_valueFirst($data, $pnr);
+    } else if ($SmsGW === 'textLocal' ) {
+        return $this->sendSmsTicket_textlocal($data, $pnr);
+    }
+}
 //Created by Subhasis Mohanty on 25-06-2024 for ValueFirst SMS Gateway Integration
     //Function to send SMS using ValueFirst Service
 
-public function sendSmsTicket($data) {
-    // Prepare variables
-    $seatList = implode(",", $data['seat']);
-    $pnr = $data['PNR'];
-    $busDetails = $data['busdetails'];
-    $route = $data['route'];
-    $doj = $data['doj'];
-    $refundAmount = $data['refundAmount'];
-    $phone = $data['phone'];
+public function sendSmsTicket_valueFirst($data, $pnr)
+{
+   
+    $seatList = implode(",", $data['seat_no']);
+    $nameList = "";
+    $genderList = "";
 
-    // Message format (cancellation notice)
-    $message = "Your PNR: {$pnr}, Bus Details: {$busDetails}, Route: {$route}, DOJ: {$doj}, Seat: {$seatList} is cancelled. "
-             . "Amount of Rs {$refundAmount} will be refunded in 10 - 12 Working Days - ODBUS.";
+    $passengerDetails = $data['passengerDetails'];
+    foreach ($passengerDetails as $pDetail) {
+        $nameList .= "," . $pDetail['passenger_name'];
+        $genderList .= "," . $pDetail['passenger_gender'];
+    }
+    $nameList = ltrim($nameList, ',');
+    $genderList = ltrim($genderList, ',');
 
-    // Call ValueFirst service
+    
+    $busDetails = $data['busname'] . " " . $data['busNumber'];
+
+    
+    $doj = date('d-m-Y', strtotime($data['journeydate']));
+
+    
+    $message = "PNR: {$pnr}, Bus Details: {$busDetails}, DOJ: {$doj}, "
+        . "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, "
+        . "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, "
+        . "Fare: {$data['payable_amount']}, Conductor Mob: {$data['conductor_number']} - ODBUS.";
+
+   
     $valueFirstService = new ValueFirstService();
-    $response = $valueFirstService->sendSms($phone, $message);
+    $response = $valueFirstService->sendSms($data['phone'], $message);
 
-    // Optional logging
-    // Log::info("Cancel SMS sent to {$phone}");
-    // Log::info($response);
+    
+    \Log::info("Ticket SMS sent via ValueFirst to: " . $data['phone']);
+    \Log::info("Message: " . $message);
+    \Log::info("Response: " . json_encode($response));
 
     return $response;
 }
@@ -721,7 +777,8 @@ public function sendSmsTicket($data) {
 
 
 
-    public function sendSmsTicket_backup($data, $pnr) {
+
+    public function sendSmsTicket_textlocal($data, $pnr) {
 
         $seatList = implode(",",$data['seat_no']);
         $nameList = "";

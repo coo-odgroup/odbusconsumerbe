@@ -19,6 +19,7 @@ use App\Jobs\SendEmailTicketJob;
 use App\Models\Credentials;
 use App\Models\ClientFeeSlab;
 use App\Repositories\ViewSeatsRepository;
+use App\Services\ValueFirstService;
 
 
 
