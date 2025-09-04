@@ -1002,12 +1002,12 @@ class DolphinTransformer
 
                 if(isset($res['CoachNo']) && $l->dolphin_sms_email==0 && $l->app_type != 'CLNTWEB'){
 
-                    /////// Build SMS message
+                    
                     $name       = $l->users->name;
                     $phone      = $l->users->phone;
                     $pnr        = $l->pnr;
                     $busDetails = $res['CoachNo'];
-                    $route      = $l->from."-".$l->to;   // assuming booking has from/to
+                    $route      = $l->from."-".$l->to;   
                     $doj        = date('d-m-Y', strtotime($l->doj));
                     $pickup     = $res['PickUpName'];
                     $depttime   = $res['MainTime'];
@@ -1015,7 +1015,7 @@ class DolphinTransformer
 
                     $message = "Dear ".$name.", PNR: ".$pnr.", Bus dtls: ".$busDetails." From-".$route.", Pick Up Add: ".$pickup.", Dep Time: ".$depttime.", Reporting Time: ".$rpttime." - ODBUS.";
 
-                    /////// Send via ValueFirstService
+                    
                     $valueFirstService = new ValueFirstService();
                     $response = $valueFirstService->sendSms($phone, $message);
 
@@ -1023,7 +1023,7 @@ class DolphinTransformer
                     \Log::info("Message: ".$message);
                     \Log::info("Response: ".json_encode($response));
 
-                    ////// update the sms status in booking table to 1
+                   
                     $this->booking->where('id', $l->id)
                         ->update([
                             'dolphin_sms_email' => 1,
