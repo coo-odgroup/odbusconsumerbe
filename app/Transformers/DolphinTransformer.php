@@ -1018,11 +1018,6 @@ class DolphinTransformer
                     
                     $valueFirstService = new ValueFirstService();
                     $response = $valueFirstService->sendSms($phone, $message);
-
-                    \Log::info("Dolphin Ticket SMS sent to: ".$phone);
-                    \Log::info("Message: ".$message);
-                    \Log::info("Response: ".json_encode($response));
-
                    
                     $this->booking->where('id', $l->id)
                         ->update([

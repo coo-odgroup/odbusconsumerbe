@@ -605,12 +605,6 @@ class BookingManageRepository
    
     $valueFirstService = new ValueFirstService();
     $response = $valueFirstService->sendSms($phone, $message);
-
-    
-    Log::info("Cancel Ticket OTP sent to: " . $phone);
-    Log::info("Message: " . $message);
-    Log::info("Response: " . json_encode($response));
-
     
     $this->booking->where('id', $bookingId)->update(['cancel_otp' => $otp]);
 
@@ -764,11 +758,6 @@ public function sendSmsTicket_valueFirst($data, $pnr)
    
     $valueFirstService = new ValueFirstService();
     $response = $valueFirstService->sendSms($data['phone'], $message);
-
-    
-    \Log::info("Ticket SMS sent via ValueFirst to: " . $data['phone']);
-    \Log::info("Message: " . $message);
-    \Log::info("Response: " . json_encode($response));
 
     return $response;
 }

@@ -18,6 +18,19 @@ class ValueFirstService
 
     public function sendSms($to, $message)
     {
+        $numbers = array_filter(explode(',', $to));
+
+        $addrs=[];
+        
+        foreach( $numbers as $k => $n){
+            $addrs[]=[
+                    "from" => "ODBUUS",
+                    "to" => $n,
+                    "seq" => $k++,
+                    "tag" => ""
+                ];
+        }
+
         $curl = curl_init();
 
         $payload = [
@@ -33,14 +46,7 @@ class ValueFirstService
                 "text" => $message,
                 "property" => 0,
                 "id" => "1",
-                "addresses" => [
-                    [
-                        "from" => "ODBUUS",
-                        "to" => $to,
-                        "seq" => "1",
-                        "tag" => ""
-                    ]
-                ]
+                "addresses" => $addrs
             ]
         ]
     ]
@@ -69,8 +75,9 @@ class ValueFirstService
 
          $sms_log['phone']=$to;
         $sms_log['sms_body']=$message;
+        $sms_log['req_body']=json_encode($payload);
         $sms_log['response']=$response;
-        $sms_log['via']="Admin";
+        $sms_log['via']="Website";
         DB::table("sms_log")->insert($sms_log);
 
 

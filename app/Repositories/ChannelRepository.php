@@ -406,7 +406,7 @@ public function sendSmsTicket($payable_amount, $data, $pnr)
     }
 
     
-    $message = "PNR:{$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
+    $message = "PNR: {$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
                "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, ".
                "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, ".
                "Fare: {$payable_amount}, Conductor Mob: {$data['conductor_number']} - ODBUS";
@@ -414,12 +414,6 @@ public function sendSmsTicket($payable_amount, $data, $pnr)
     // Send SMS using ValueFirst
     $valueFirstService = new \App\Services\ValueFirstService();
     $response = $valueFirstService->sendSms($data['phone'], $message);
-
-    \Log::info("Ticket SMS sent via ValueFirst", [
-        'to' => $data['phone'],
-        'message' => $message,
-        'response' => $response
-    ]);
 
     return $response;
 }
@@ -620,24 +614,14 @@ public function sendSmsTicket($payable_amount, $data, $pnr)
     $busDetails = $data['busname'].' '.$data['busNumber'];
 
     // Construct the SMS message 
-    $message = "PNR:{$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
+    $message = "PNR: {$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, ".
                "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, ".
                "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, ".
                "Passenger Mob: {$data['phone']} - ODBUS";
 
     $valueFirstService = new \App\Services\ValueFirstService();
 
-    
-    $numbers = array_filter(explode(',', $contact_number));
-
-    foreach ($numbers as $number) {
-        $number = trim($number); // remove spaces just in case
-        $response = $valueFirstService->sendSms($number, $message);
-
-        Log::info("CMO Ticket SMS sent to: " . $number);
-        Log::info("Message: " . $message);
-        Log::info("Response: " . json_encode($response));
-    }
+    $response = $valueFirstService->sendSms($contact_number, $message);
 
     return true; 
 }
@@ -807,16 +791,7 @@ public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number)
     // Send SMS via ValueFirst service
     $valueFirstService = new ValueFirstService();
 
-    
-    $numbers = array_filter(explode(',', $contact_number));
-    foreach ($numbers as $number) {
-        $number = trim($number);
-        $response = $valueFirstService->sendSms($number, $message);
-
-        Log::info("Cancel Ticket CMO SMS sent to: " . $number);
-        Log::info("Message: " . $message);
-        Log::info("Response: " . json_encode($response));
-    }
+     $response = $valueFirstService->sendSms($contact_number, $message);
 
     return $response ?? null; // return last response or null if no numbers
 }
@@ -895,10 +870,6 @@ public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number)
 
     // Send SMS
     $response = $valueFirstService->sendSms($data['phone'], $message);
-
-    
-    Log::info("Cancel Ticket SMS sent to: " . $data['phone']);
-    //Log::info("Response: " . json_encode($response));
 
     return $response;
 }
@@ -1065,8 +1036,6 @@ public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number)
         ],
     ]);
 
-    Log::info($response);
-
       // Creates customer payment 
       $orderId = $response->payment_session_id;//$order['id']; 
 
@@ -1102,8 +1071,6 @@ public function sendSmsTicketCancelCMO_valueFirst($data, $contact_number)
               "customer_phone" => $phone,
           ],
       ]);
-
-      Log::info($response);
 
       $response=json_decode($response);
       // Creates customer payment 
