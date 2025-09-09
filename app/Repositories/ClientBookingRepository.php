@@ -637,29 +637,7 @@ class ClientBookingRepository
             
             if($sms_gateway ==1){
                
-            $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);
-  
-            $msgId = $sendSmsCMO->messages[0]->id;
-            $status = $sendSmsCMO->status;
-            $from = $sendSmsCMO->message->sender;
-            $to = collect($sendSmsCMO->messages)->pluck('recipient');
-            $contents = $sendSmsCMO->message->content;
-            $response = collect($sendSmsCMO);
-
-            /// save sms related things in manage_sms table///////////////
-          
-            $sms = new ManageSms;
-            $sms->pnr = $pnr;
-            $sms->booking_id = $bookingId;
-            $sms->sms_engine = $SmsGW;
-            $sms->type = 'cmo';
-            $sms->status = $status;
-            $sms->from = $from;
-            $sms->to = $to;
-            $sms->contents = $contents;
-            $sms->response = $response;
-            $sms->message_id = $msgId;
-            $sms->save();
+            $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);  
             }  
         }
          
