@@ -317,9 +317,6 @@ class ListingService
 
             $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
 
-             //Log::info($busId);
-            //Log::info($sourceID.'-'.$destinationID.'-'.$busId.'-'.$entry_date);
-
             if(isset($routeCoupon[0]))
             {                           
                $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
@@ -346,43 +343,25 @@ class ListingService
                 $opRouteCouponCode =[];
             }
 
-            // $busCoupon = $this->listingRepository->getBusCoupon($busId);
-            // if(isset($busCoupon[0]))
-            // {                           
-            //     $busCouponCode = $busCoupon[0]->coupon_code;//bus wise coupon
-            // }else
-            // {
-            //     $busCouponCode =[];
-            // } 
-
-
-
             $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
-
-
-            
-            //$CouponRecords = collect($busCouponCode);
-            $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
+           $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
             ///Coupon applicable for specific date range
             $appliedCoupon = collect([]);
             $CouponDetails = [];
             $date = Carbon::now();
             $bookingDate = $date->toDateString();
-            //$bookingDate = "2022-06-06";
-
-            
+           
             $user = JWTAuth::parseToken()->authenticate();
-           // Log::Info($user);
-
-            $via=0;
+           
+            $coupon_via=[0];
 
             if($user->client_id=='odbusSas'){ // for website
-                $via=[0,1];
+                $coupon_via=[0,1];
             }
 
             if($user->client_id=='odbusSasAndroid'){ // for App
-                $via=[0,2];
+                $coupon_via=[0,2];
             }
 
             foreach($CouponRecords as $key => $coupon){
@@ -397,7 +376,7 @@ class ListingService
                         if(isset($selCouponRecords)){  
                                     $CouponDetails = $selCouponRecords[0]
                                                     ->where('coupon_code',$coupon)
-                                                    ->whereIn('via',$via)
+                                                    ->whereIn('via',$coupon_via)
                                                     ->where('status', 1)
                                                         ->where('from_date', '<=', $entry_date)
                                                         ->where('to_date', '>=', $entry_date)->get();
@@ -413,7 +392,7 @@ class ListingService
                                     $CouponDetails = $selCouponRecords[0]
                                                     ->where('coupon_code',$coupon)
                                                     ->where('status', 1)
-                                                    ->whereIn('via',$via)
+                                                    ->whereIn('via',$coupon_via)
                                                         ->where('from_date', '<=', $bookingDate)
                                                         ->where('to_date', '>=', $bookingDate)
                                                         ->get();
@@ -422,17 +401,6 @@ class ListingService
                         break;      
                 }
 
-                // if($dateInRange){
-                //     $appliedCoupon->push($coupon);
-                //     if(isset($selCouponRecords)){
-                //         $CouponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
-                //         ->where('from_date', '<=', $bookingDate)
-                //         ->where('to_date', '>=', $bookingDate)
-                //         ->get(); 
-                //         //return $appliedCoupon;
-                //     }
-
-                //  }
             }
             $maxSeatBook = $record->max_seat_book;
             $conductor_number ='';
