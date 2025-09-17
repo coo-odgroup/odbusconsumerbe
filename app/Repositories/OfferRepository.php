@@ -51,7 +51,7 @@ class OfferRepository
 
          $user = JWTAuth::parseToken()->authenticate();
           
-        $via=0;
+        $via=[0];
 
         if($user->client_id=='odbusSas'){ // for website
             $via=[0,1];
