@@ -14,7 +14,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Review;
 use Illuminate\Support\Facades\DB;
-
+use App\Services\ValueFirstService;
 use Carbon\Carbon;
 use App\Models\Credentials;
 
@@ -108,9 +108,29 @@ class PopularRepository
        
     }
 
+
+    public function sendSmsApp_valueFirst($phone)
+        {
+            
+            $message = "Upgrade to the NEW ODBUS App! Quick bookings & secure payments await you. Install today https://tinyurl.com/ODBUS - Team ODBUS";
+            $valueFirstService = new ValueFirstService();
+            $response = $valueFirstService->sendSms($phone, $message);
+            return $response;
+        }
+
+    public function downloadApp($phone)
+        {
+            
+             $SmsGW = config('services.sms.otpservice'); 
+            if ($SmsGW === 'valuefirst') {
+                return $this->sendSmsApp_valueFirst($phone);
+            } else if ($SmsGW === 'textLocal' ) {
+                return $this->sendSmsApp_textLocal($phone);
+            }
+        }
     
 
-    public function downloadApp($phone){  
+    public function sendSmsApp_textLocal($phone){  
 
         $SmsGW = config('services.sms.otpservice');
 
@@ -125,7 +145,7 @@ class PopularRepository
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($phone);
           
-            $message = str_replace("<LINK>",'https://bit.ly/3nYcl9L',$message);
+            $message = str_replace("<LINK>",'https://tinyurl.com/ODBUS',$message);
             //return $message;
             $message = rawurlencode($message);
             $response_type = "json"; 
