@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://localhost:7001/ODBUS/odbusconsumerbe/'),
 
     'asset_url' => env('ASSET_URL', null),
 

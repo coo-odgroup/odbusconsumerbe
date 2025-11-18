@@ -32,6 +32,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
+use App\Http\Controllers\PhonpeController;
 
 //Route::group(['middleware' => ['checkIp']], function() {
 
@@ -48,12 +49,18 @@ Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSe
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);   
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
-Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
+// Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/CheckSeatStatus', [ChannelController::class, 'checkSeatStatus']);
 Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/UpdateAdjustStatus', [ChannelController::class, 'UpdateAdjustStatus']);
 Route::post('/BlockDolphinSeat', [ChannelController::class, 'BlockDolphinSeat']);
 Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphinSeat']);
+
+//phonpe
+Route::post('/MakePayment', [PhonpeController::class, 'makePayment']);
+
+
+
   
 //Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);

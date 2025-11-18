@@ -93,6 +93,14 @@ return [
     'NOTIFICATION_SENT' => "Notification sent successfully",
     'PUSH_NTFY_FAILED' => "Push Notofication Failed",
     'BUS_NOT_RUNNING' => "Bus not running in this route",
-    'NO_RECORD_FOUND' => "No record found"
+    'NO_RECORD_FOUND' => "No record found",
+
+
+    #PhonePe
+    'MID' => env('MID', 'ODBUSUAT'),
+    'CLIENT_ID' => env('CLIENT_ID', 'ODBUSUAT_251114164525072'),
+    'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
+    'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
+    'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
    
 ];
