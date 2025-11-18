@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+use App\Models\PhonePayToken;
+
+class PhonePayCron extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'cron:oauth-token';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Check and update PhonePe payment status';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        try {
+            $response = Http::withoutVerifying()->asForm()->post(
+                'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token',
+                [
+                    "client_id" => "ODBUSUAT_251114164525072",
+                    "client_secret" => "NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk",
+                    "client_version" => "1",
+                    "grant_type" => "client_credentials",
+                ]
+            );
+
+            // Check for API error
+            if (!$response->successful()) {
+                Log::error('PhonePe Token API Failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                throw new Exception("PhonePe API request failed.");
+            }
+
+            // Check if record exists
+            $record = PhonePayToken::first();
+
+            $data = [
+                'access_token' => $response['access_token'],
+                'encrypted_access_token' => $response['encrypted_access_token'],
+                'expires_in' => $response['expires_in'],
+                'issued_at' => date('Y-m-d H:i:s', $response['issued_at']),
+                'expires_at' => date('Y-m-d H:i:s', $response['expires_at']),
+                'session_expires_at' => date('Y-m-d H:i:s', $response['session_expires_at']),
+                'token_type' => $response['token_type'],
+                'updated_at' => now()
+            ];
+
+            if (!$record) {
+                // insert first time
+                $data['created_at'] = now();
+                PhonePayToken::create($data);
+                Log::info('PhonePe Token inserted first time.');
+            } else {
+                // update same record
+                $record->update($data);
+                Log::info('PhonePe Token updated.');
+            }
+
+        } catch (\Throwable $e) {
+            Log::error('PhonePe Token Error: ' . $e->getMessage(), [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+}
