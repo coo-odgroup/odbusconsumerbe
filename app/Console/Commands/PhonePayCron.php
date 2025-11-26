@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\PhonePayToken;
+use Exception;
 
 class PhonePayCron extends Command
 {
@@ -44,10 +45,10 @@ class PhonePayCron extends Command
             $response = Http::withoutVerifying()->asForm()->post(
                 'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token',
                 [
-                    "client_id" => "ODBUSUAT_251114164525072",
-                    "client_secret" => "NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk",
-                    "client_version" => "1",
-                    "grant_type" => "client_credentials",
+                    "client_id" => Config('constants.CLIENT_ID'),
+                    "client_secret" => Config('constants.CLIENT_SECRET'),
+                    "client_version" => Config('constants.CLIENT_VERSION'),
+                    "grant_type" => Config('constants.GRANT_TYPE'),
                 ]
             );
 
@@ -70,8 +71,7 @@ class PhonePayCron extends Command
                 'issued_at' => date('Y-m-d H:i:s', $response['issued_at']),
                 'expires_at' => date('Y-m-d H:i:s', $response['expires_at']),
                 'session_expires_at' => date('Y-m-d H:i:s', $response['session_expires_at']),
-                'token_type' => $response['token_type'],
-                'updated_at' => now()
+                'token_type' => $response['token_type']
             ];
 
             if (!$record) {
@@ -81,6 +81,7 @@ class PhonePayCron extends Command
                 Log::info('PhonePe Token inserted first time.');
             } else {
                 // update same record
+                $data['updated_at'] = now();
                 $record->update($data);
                 Log::info('PhonePe Token updated.');
             }

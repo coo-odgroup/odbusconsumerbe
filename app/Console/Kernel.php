@@ -24,9 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        // $schedule->command('cron:phonepe-status')->everyFiftyMinutes();
-        $schedule->command('cron:oauth-token')->everyMinute();
+        $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
+        // $schedule->command('cron:oauth-token')->everyMinute();
     }
 
     /**

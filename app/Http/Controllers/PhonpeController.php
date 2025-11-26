@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PhonpeSercie;
+use App\AppValidator\PaymentStatusValidator;
+use App\Models\PhonePayToken;
+use App\Services\PhonpeService;
 use Exception;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class PhonpeController extends Controller
 {
     use ApiResponser;
 
-    protected $phonpeSercie;
-    public function __construct(PhonpeSercie $phonpeSercie)
+    protected $phonpeService;
+    protected $paymentStatusValidator;
+
+    public function __construct(PhonpeService $phonpeService,PaymentStatusValidator $paymentStatusValidator)
     {
-        $this->phonpeSercie = $phonpeSercie;
+        $this->phonpeService = $phonpeService;
+        $this->paymentStatusValidator = $paymentStatusValidator;
     }
 
     //     public function makePayment(Request $request)
@@ -28,7 +34,7 @@ class PhonpeController extends Controller
     //     $clientRole = $user->role_id;
 
     //     try {
-    //         $response = $this->phonpeSercie->makePayment($request, $clientRole);
+    //         $response = $this->phonpeService->makePayment($request, $clientRole);
 
     //         if ($response['status'] === true && $response['message'] === "READY_FOR_PAYMENT") {
 
@@ -68,47 +74,74 @@ class PhonpeController extends Controller
     // }
 
 
-    public function makePayment(Request $request)
-    {
+    public function makePayment(Request $request){
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
 
+        $token = PhonePayToken::first();
+
+        
+        // return $token;
+        
+        
         try {
-            $response = $this->phonpeSercie->makePayment($request, $user->role_id);
+            $response = $this->phonpeService->makePayment($request, $user->role_id);
+            
+            
+            $orderId = data_get($response, 'pp_resp.original.orderId');
+            // dd($orderId);
 
-            if ($response['status'] === true && $response['message'] === "READY_FOR_PAYMENT") {
+            // return $orderId;
 
-                $transactionId = $response["transactionId"];
-                $mobile = $response["number"];
-                $amount = intval(round($response["amount"] * 100));
+            if (isset($orderId)) {
 
-                $token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVzT24iOjE3NjM0NjczMDYwOTcsIm1lcmNoYW50SWQiOiJPREJVU1VBVCJ9.ud1RQyrELyW_YgkY_bPCip8tpdO1oOHn8_sKBn74Ahw";
+                return $this->successResponse($response, Config::get('constants.ORDERID_CREATED'), Response::HTTP_CREATED);
+            } elseif ($response == 'BUS_SEIZED') {
 
-                $payload = [
-                    "merchantOrderId" => $transactionId,
-                    "amount" => $amount,
-                    "merchantUserId" => "USER" . rand(1000, 9999),
-                    "metaInfo" => [
-                        "udf1" => $mobile,
-                    ],
-                    "paymentFlow" => [
-                        "type" => "PG_CHECKOUT",
-                    ]
-                ];
+                return $this->errorResponse(Config::get('constants.BUS_SEIZED'), Response::HTTP_OK);
+            } elseif ($response == 'SEAT UN-AVAIL') {
 
-                $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
+                return $this->successResponse($response, Config::get('constants.HOLD'), Response::HTTP_OK);
+            } elseif ($response == 'BUS_CANCELLED') {
 
-                $resp = Http::withHeaders([
-                    'Authorization' => 'O-Bearer ' . $token,
-                    'Content-Type' => 'application/json'
-                ])->post($url, $payload);
+                return $this->errorResponse(Config::get('constants.BUS_CANCELLED'), Response::HTTP_OK);
+            } elseif ($response == 'SEAT_BLOCKED') {
 
-                return response()->json($resp->json());
+                return $this->errorResponse(Config::get('constants.SEAT_BLOCKED'), Response::HTTP_OK);
+            } else {
+                return $this->errorResponse($response, Response::HTTP_OK);
             }
-
-            return response()->json($response);
         } catch (Exception $e) {
+            // dd('jsbzfhf');
             return $this->errorResponse($e->getMessage(), \Illuminate\Http\Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function paymentStatus(Request $request){
+        $data = $request->all();
+        $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
+        
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $clientRole = $user->role_id;
+        
+        if ($paymentStatusValidation->fails()) {
+            
+            $errors = $paymentStatusValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        try {
+            // dd($request);
+            $response = $this->phonpeService->paymentStatus($request, $clientRole);
+            // return $response; 
+            if ($response == 'Payment Done') {
+                return $this->successResponse("Payment Done",Response::HTTP_OK);
+            } else {
+                return $this->errorResponse("Payment Failed", Response::HTTP_PAYMENT_REQUIRED);
+            }
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
 }

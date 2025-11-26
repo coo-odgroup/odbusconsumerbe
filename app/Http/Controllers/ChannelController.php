@@ -24,13 +24,12 @@ use App\Jobs\TestingEmailJob;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 Use hash_hmac;
-use JWTAuth;
 use App\Mail\SendPdfEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 
 use PDF;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ChannelController extends Controller
 {
