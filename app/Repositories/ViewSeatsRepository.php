@@ -166,10 +166,10 @@ class ViewSeatsRepository
     }
 
     public function busRecord($busId){
-        return $this->bus->where('id',$busId)->get(['id','name','bus_seat_layout_id']);
+        return $this->bus->where('id',$busId)->get(); //['id','name','bus_seat_layout_id']
     }
 
-    public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId){
+    public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId,$running_cycle){
         $ticketPriceId = TicketPrice::where('bus_id',$busId)
                                     ->where('source_id',$sourceId)
                                     ->where('destination_id',$destinationId)
@@ -223,6 +223,20 @@ class ViewSeatsRepository
             ->where('status',1)
             ->where('ticket_price_id',$ticketPriceId)
             ->pluck('seats_id');
+
+       $prevDay_blockSeats=[];
+
+       if($running_cycle>1){
+
+        $entry_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+
+        $prevDay_blockSeats = BusSeats::where('operation_date', $entry_date)
+            ->where('type',2)
+            ->where('bus_id',$busId)
+            ->where('status',1)
+            ->where('ticket_price_id',$ticketPriceId)
+            ->pluck('seats_id');
+       }     
             
         ////////////////////////seat open on specific date//////////////////////
         $seatsOpenOnDate = BusSeats::where('operation_date', $entry_date)
@@ -287,7 +301,7 @@ class ViewSeatsRepository
             ->get();
 
         
-        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats));   
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats))->concat(collect($prevDay_blockSeats));   
         
 
         /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
