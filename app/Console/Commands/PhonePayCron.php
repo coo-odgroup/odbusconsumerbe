@@ -42,8 +42,9 @@ class PhonePayCron extends Command
     public function handle()
     {
         try {
+            $url = Config('constants.PHONPE_API_URL');
             $response = Http::withoutVerifying()->asForm()->post(
-                'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token',
+                $url.'v1/oauth/token',
                 [
                     "client_id" => Config('constants.CLIENT_ID'),
                     "client_secret" => Config('constants.CLIENT_SECRET'),
