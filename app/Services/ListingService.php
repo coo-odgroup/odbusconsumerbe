@@ -309,6 +309,7 @@ class ListingService
             $busId = $record->id; 
             $user_id = $record->user_id; 
             $busName = $record->name;
+            $running_cycle = $record->running_cycle;
             $popularity = $record->popularity;
             $busNumber = $record->bus_number;
             $via = $record->via;
@@ -538,6 +539,20 @@ class ListingService
     
        /////seat close/////
        ///////////////////////////////////
+
+                $prevDay_blockSeats=[];
+
+                if($running_cycle>1){
+
+                    $entry_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+
+                    $prevDay_blockSeats = $record->busSeats
+                                        ->where('ticket_price_id',$ticketPriceId)
+                                        ->where('operation_date',$entry_date)
+                                        ->where('bus_id',$busId)
+                                        ->where('type',2)                              
+                                        ->pluck('seats_id');
+                } 
                
                 $blockSeats = $record->busSeats
                                         ->where('ticket_price_id',$ticketPriceId)
@@ -617,6 +632,14 @@ class ListingService
             if(!$oldExtraSeatsBlock->isEmpty()){ 
                 $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));   
             } 
+
+            $prevDay_blockSeats = collect($prevDay_blockSeats);
+
+             if(!$prevDay_blockSeats->isEmpty()){
+                $blockSeats = $blockSeats->concat(collect($prevDay_blockSeats));
+            }
+
+            
         
             
             $totalSeats = $record->busSeats->where('ticket_price_id',$ticketPriceId)
