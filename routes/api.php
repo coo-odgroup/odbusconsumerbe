@@ -33,6 +33,7 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\PhonpeController;
+use Illuminate\Support\Facades\Artisan;
 
 //Route::group(['middleware' => ['checkIp']], function() {
 
@@ -180,6 +181,6 @@ Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is wi
 Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); //VALUE FIRST SMS SERVICE
 
 
-
-
-
+$router->get('/update-phonepay-token', function () {
+   Artisan::call('cron:oauth-token');
+});
