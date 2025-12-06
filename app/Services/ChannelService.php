@@ -873,16 +873,15 @@ class ChannelService
 
                     /////mantis holdId updated to booking table////////
                     if($origin=='MANTIS'){
-                    /////      
-                    $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
-                    $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
-                    $update_customer_gst['customer_gst_status'] =1;
-                    $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
-                    $this->channelRepository->updateCustomerGST($update_customer_gst,$transactionId);
-                    /////
-                    $holdId = $res["data"]['HoldId'];
-                    $this->channelRepository->UpdateMantisHoldId($transactionId,$holdId); 
-
+                        /////      
+                        $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
+                        $update_customer_gst['customer_gst_percent'] = 5.00;//as discussed with Santosh
+                        $update_customer_gst['customer_gst_status'] =1;
+                        $update_customer_gst['customer_gst_amount'] = $priceDetails[0]['ownerFare'] - $priceDetails[0]['baseFare'];
+                        $this->channelRepository->updateCustomerGST($update_customer_gst,$transactionId);
+                        /////
+                        $holdId = $res["data"]['HoldId'];
+                        $this->channelRepository->UpdateMantisHoldId($transactionId,$holdId);
                     } 
                     
                     $data = array(

@@ -102,5 +102,7 @@ return [
     'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
     'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
     'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
+    'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),
+    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','http://localhost:4200/payment-status')
    
 ];

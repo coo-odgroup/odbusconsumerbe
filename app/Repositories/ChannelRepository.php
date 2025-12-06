@@ -1157,7 +1157,7 @@ class ChannelRepository
         "type" => "PG_CHECKOUT",
         "message" => "Payment initiation",
         "merchantUrls" => [
-          "redirectUrl" => "http://localhost:4200/payment-status"
+          "redirectUrl" => Config('constants.PHONPE_REDIRECT_URL')
         ]
       ]
     ];
@@ -1165,8 +1165,8 @@ class ChannelRepository
 
     // return $getToken->access_token;
 
-
-    $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay";
+    $phonpe_url = Config('constants.PHONPE_API_URL');
+    $url = $phonpe_url."checkout/v2/pay";
 
     // return $url;exit;
 
@@ -1371,8 +1371,10 @@ class ChannelRepository
 
     $getToken = $this->phonpeToken();
 
+    $phonpe_url = Config('constants.PHONPE_API_URL');
 
-    $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/{$transactionId}/status";
+
+    $url = $phonpe_url."checkout/v2/order/{$transactionId}/status";
     // dd( 'Authorization'. $getToken->token_type . " " . $getToken->access_token);
     $response = Http::withHeaders([
     'Authorization' => $getToken->token_type . " " . $getToken->access_token,
