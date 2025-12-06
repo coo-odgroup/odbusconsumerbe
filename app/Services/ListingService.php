@@ -544,11 +544,11 @@ class ListingService
 
                 if($running_cycle>1){
 
-                    $entry_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+                    $rdt = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
 
                     $prevDay_blockSeats = $record->busSeats
                                         ->where('ticket_price_id',$ticketPriceId)
-                                        ->where('operation_date',$entry_date)
+                                        ->where('operation_date',$rdt)
                                         ->where('bus_id',$busId)
                                         ->where('type',2)                              
                                         ->pluck('seats_id');
@@ -792,7 +792,7 @@ class ListingService
 
 
            $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
-          
+           
            $seatClassRecords = $seatClassRecords - $bookedSeats[1];
            $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
            $totalSeats = $totalSeats - $bookedSeats[2];

@@ -95,18 +95,26 @@ class ViewSeatsRepository
             case(1):          //// Bus Starting on Day-1        
                 $nday = date('Y-m-d', strtotime('+1 day', strtotime($journeyDate))); 
                 If($JDay==2){
+
                     if(isset($busEntryPresent[0]) && $busEntryPresent[0]->busScheduleDate->isNotEmpty()){  
+                        
                         $bookingIds =  $this->booking->where('bus_id',$busId)
                             ->where('journey_dt',$journeyDate)
                             ->whereIn('status',[$booked,$seatHold])
                             ->pluck('id');
                     }else{
+
+                       
+
                
                         $bookingIds = $this->booking->where('bus_id',$busId)
                             ->whereIn('journey_dt',[$nday,$journeyDate])
                             ->whereIn('status',[$booked,$seatHold])
                             ->pluck('id');
                     }
+
+                    
+                
                 }else{
                     $bookingIds =  $this->booking->where('bus_id',$busId)
                         ->where('journey_dt',$journeyDate)
@@ -228,9 +236,9 @@ class ViewSeatsRepository
 
        if($running_cycle>1){
 
-        $entry_date = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+        $entdate = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
 
-        $prevDay_blockSeats = BusSeats::where('operation_date', $entry_date)
+        $prevDay_blockSeats = BusSeats::where('operation_date', $entdate)
             ->where('type',2)
             ->where('bus_id',$busId)
             ->where('status',1)

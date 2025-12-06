@@ -331,6 +331,7 @@ class ListingRepository
         $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
 
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$entry_date,$booked,$seatHold,$sourceID,$destinationID);
+
         
         $sl = 0;
         $st = 0;
