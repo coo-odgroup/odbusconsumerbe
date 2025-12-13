@@ -2,6 +2,7 @@
 namespace App\Repositories;
 use App\Models\Testimonial;
 use App\Models\Faq;
+use App\Models\FaqCategory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
 class TestimonialRepository
@@ -20,7 +21,15 @@ class TestimonialRepository
 
     public function getFAQ()
     {
-      $faq = Faq::where('status',1)->get(['title','content']);
-      return $faq;
+      return FaqCategory::where('status', 1)
+      ->select('id', 'category_name')
+      ->with(['faqs' => function ($q) {
+          $q->select(
+              'faq_category_id',
+              'title as question',
+              'content as answer'
+          );
+      }])
+      ->get();
     }
 }
