@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 class ClientBookingRepository
@@ -248,12 +249,14 @@ class ClientBookingRepository
             //Save Booking 
                 $booking = new $this->booking;
             // do {
-            $transactionId = date('YmdHis') . gettimeofday()['usec'];
+           // $transactionId = date('YmdHis') . gettimeofday()['usec'];
             // } while ( $booking ->where('transaction_id', $transactionId )->exists());
-            $booking->transaction_id =  $transactionId;
+           // $booking->transaction_id =  $transactionId;
             // do {
             //     $PNR = 'ODCL'.rand(10000,99999);
             //     } while ( $booking ->where('pnr', $PNR )->exists()); 
+
+            $booking->transaction_id = (string) Str::uuid();
 
             $PNR = $this->generatePNR();
 
