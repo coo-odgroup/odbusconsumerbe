@@ -13,7 +13,7 @@ class MakePaymentValidator
             'busId' => 'required|numeric',
             'sourceId' => 'required|numeric',
             'destinationId' => 'required|numeric',
-            'transaction_id' => 'required|numeric',
+            'transaction_id' => 'required',
             'seatIds' => 'required|array|min:1',
             //'amount' => 'required',
             'entry_date' => 'required|date_format:d-m-Y',

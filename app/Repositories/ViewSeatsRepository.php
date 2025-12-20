@@ -313,6 +313,7 @@ class ViewSeatsRepository
                         'seats_id' => $s->seats_id,
                         'duration' => $s->duration
                     ]);
+
         $extraSeatsBlock = $busSeats
                     ->where('duration', 0)
                     ->where('operation_date', $entry_date)
@@ -409,15 +410,28 @@ class ViewSeatsRepository
       
         /////////Hide Extra Seats based on seize time/////////
 
-        if(!$extraSeats->isEmpty()){
-            $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
-            $seizedTime = $extraSeats[0]->duration;
-            if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
-                $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
+        // if(!$extraSeats->isEmpty()){
+        //     $extraSeatsHide = collect($extraSeats)->pluck('seats_id');
+        //     $seizedTime = $extraSeats[0]->duration;
+        //     if(!$extraSeatsHide->isEmpty() && $seizedTime > $diff_in_minutes){
+        //         $totalHideSeats = $totalHideSeats->concat(collect($extraSeatsHide));
+        //     }
+        // }
+
+         if ($extraSeats->isNotEmpty()) {
+            $extraSeatsHide = $extraSeats->pluck('seats_id');
+
+            $seizedTime = $extraSeats->first()['duration'];
+
+            if ($extraSeatsHide->isNotEmpty() && $seizedTime > $diff_in_minutes) {
+                $totalHideSeats = $totalHideSeats->concat($extraSeatsHide);
             }
         }
 
         /////////////Blocked Extra Seats on specific date///////////
+
+       
+
         if(!$extraSeatsBlock->isEmpty()){
             $eBlockSeats = collect($extraSeatsBlock)->pluck('seats_id');
             $totalHideSeats = $totalHideSeats->concat(collect($eBlockSeats));

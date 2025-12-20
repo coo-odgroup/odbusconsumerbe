@@ -13,7 +13,7 @@ class CouponValidator
             'source_id' => 'required|numeric',
             'destination_id' => 'required|numeric',
             'journey_date' => 'required|date_format:Y-m-d',
-            'transaction_id' => 'required|numeric',
+            'transaction_id' => 'required',
         ];      
       
         $couponValidator = Validator::make($data, $rules);

@@ -10,7 +10,7 @@ class SeatBlockValidator
     public function validate($data) { 
         
         $rules = [
-            'transaction_id' => 'required|numeric',
+            'transaction_id' => 'required',
         ];      
       
         $seatBlockValidation = Validator::make($data, $rules);
