@@ -178,118 +178,209 @@ class ViewSeatsRepository
     }
 
     public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId,$running_cycle){
-        $ticketPriceId = TicketPrice::where('bus_id',$busId)
-                                    ->where('source_id',$sourceId)
-                                    ->where('destination_id',$destinationId)
-                                    ->where('status',1)
-                                    ->first()->id;
+//         $ticketPriceData = TicketPrice::where('bus_id',$busId)
+//                                     ->where('source_id',$sourceId)
+//                                     ->where('destination_id',$destinationId)
+//                                     ->where('status',1)
+//                                     ->first();
+//         $ticketPriceId =  $ticketPriceData->id;                           
+//         $start_j_days =  $ticketPriceData->start_j_days;                           
                                  
-///////////////Extra seats///////////////
+// ///////////////Extra seats///////////////
 
-        $depTime = TicketPrice::where('bus_id',$busId)
-                                ->where('source_id',$sourceId)
-                                ->where('destination_id',$destinationId)
-                                ->where('status',1)
-                                ->first()->dep_time;  
+//         $depTime = TicketPrice::where('bus_id',$busId)
+//                                 ->where('source_id',$sourceId)
+//                                 ->where('destination_id',$destinationId)
+//                                 ->where('status',1)
+//                                 ->first()->dep_time;  
        
-        $extraSeats = BusSeats::where('bus_id',$busId)
-                                ->where('status',1)
-                                ->where('ticket_price_id',$ticketPriceId)
-                                ->where('duration','>',0)
-                                ->get(['seats_id','duration']);
+//         $extraSeats = BusSeats::where('bus_id',$busId)
+//                                 ->where('status',1)
+//                                 ->where('ticket_price_id',$ticketPriceId)
+//                                 ->where('duration','>',0)
+//                                 ->get(['seats_id','duration']);
         
-        $extraSeatsBlock = BusSeats::where('bus_id',$busId)
-                                    ->where('status',1)
-                                    ->where('ticket_price_id',$ticketPriceId)
-                                    ->where('duration','=',0)
-                                    ->where('operation_date',$entry_date)
-                                    ->where('type',null)
-                                    ->get('seats_id');
-         ///Seats blocked prior to journey date////////                           
-        $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
-                                    ->where('status',1)
-                                    ->where('ticket_price_id',$ticketPriceId)
-                                    ->where('duration','=',0)
-                                    ->where('operation_date','<' ,$entry_date)
-                                    ->where('type',null)
-                                    ->pluck('seats_id');                        
+//         $extraSeatsBlock = BusSeats::where('bus_id',$busId)
+//                                     ->where('status',1)
+//                                     ->where('ticket_price_id',$ticketPriceId)
+//                                     ->where('duration','=',0)
+//                                     ->where('operation_date',$entry_date)
+//                                     ->where('type',null)
+//                                     ->get('seats_id');
+//          ///Seats blocked prior to journey date////////                           
+//         $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
+//                                     ->where('status',1)
+//                                     ->where('ticket_price_id',$ticketPriceId)
+//                                     ->where('duration','=',0)
+//                                     ->where('operation_date','<' ,$entry_date)
+//                                     ->where('type',null)
+//                                     ->pluck('seats_id');                        
        
-        //$CurrentDateTime = "2022-01-05 16:48:35";
-        $depTime = date("H:i:s", strtotime($depTime));
-        $CurrentDateTime = Carbon::now();//->toDateTimeString();
-        $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
+//         //$CurrentDateTime = "2022-01-05 16:48:35";
+//         $depTime = date("H:i:s", strtotime($depTime));
+//         $CurrentDateTime = Carbon::now();//->toDateTimeString();
+//         $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$depTime);
 
-        if($depDateTime>=$CurrentDateTime){
-            $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
-        }else{
-            $diff_in_minutes = 0;
-        }
+//         if($depDateTime>=$CurrentDateTime){
+//             $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+//         }else{
+//             $diff_in_minutes = 0;
+//         }
    
-       $blockSeats = BusSeats::where('operation_date', $entry_date)
-            ->where('type',2)
-            ->where('bus_id',$busId)
-            ->where('status',1)
-            ->where('ticket_price_id',$ticketPriceId)
-            ->pluck('seats_id');
+//        $blockSeats = BusSeats::where('operation_date', $entry_date)
+//             ->where('type',2)
+//             ->where('bus_id',$busId)
+//             ->where('status',1)
+//             ->where('ticket_price_id',$ticketPriceId)
+//             ->pluck('seats_id');
 
-       $prevDay_blockSeats=[];
+//        $prevDay_blockSeats=[];
 
-       if($running_cycle>1){
+//        if($running_cycle>1 && $start_j_days > 1){
 
-        $entdate = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
+//         $entdate = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));
 
-        $prevDay_blockSeats = BusSeats::where('operation_date', $entdate)
-            ->where('type',2)
-            ->where('bus_id',$busId)
-            ->where('status',1)
-            ->where('ticket_price_id',$ticketPriceId)
-            ->pluck('seats_id');
-       }     
+//         $prevDay_blockSeats = BusSeats::where('operation_date', $entdate)
+//             ->where('type',2)
+//             ->where('bus_id',$busId)
+//             ->where('status',1)
+//             ->where('ticket_price_id',$ticketPriceId)
+//             ->pluck('seats_id');
+//        }     
             
-        ////////////////////////seat open on specific date//////////////////////
-        $seatsOpenOnDate = BusSeats::where('operation_date', $entry_date)
-                                ->where('type',1)
-                                ->where('bus_id',$busId)
-                                ->where('status',1)
-                                ->where('ticket_price_id',$ticketPriceId)
-                                ->pluck('seats_id');
+//         ////////////////////////seat open on specific date//////////////////////
+//         $seatsOpenOnDate = BusSeats::where('operation_date', $entry_date)
+//                                 ->where('type',1)
+//                                 ->where('bus_id',$busId)
+//                                 ->where('status',1)
+//                                 ->where('ticket_price_id',$ticketPriceId)
+//                                 ->pluck('seats_id');
 
-       $openSeatsHide = BusSeats::where('operation_date','!=', $entry_date)
-            ->where('type',1)
-            ->where('bus_id',$busId)
-            ->where('status',1)
-            ->where('ticket_price_id',$ticketPriceId)
-            ->pluck('seats_id');
+//        $openSeatsHide = BusSeats::where('operation_date','!=', $entry_date)
+//             ->where('type',1)
+//             ->where('bus_id',$busId)
+//             ->where('status',1)
+//             ->where('ticket_price_id',$ticketPriceId)
+//             ->pluck('seats_id');
            
-        if(isset($seatsOpenOnDate) && $seatsOpenOnDate->isNotEmpty()){
-            $openSeatsHide = collect($openSeatsHide)->diff(collect($seatsOpenOnDate));
-        }
-        $moreAddedSeats = BusSeats::whereNull('operation_date')
-            ->whereNull('type')
-            ->where('bus_id',$busId)
-            ->whereIn('seats_id',$openSeatsHide)
-            ->where('status',1)
-            ->where('ticket_price_id',$ticketPriceId)
-            ->pluck('seats_id');
-            $seatsHide = [];
-            if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
-                $seatsHide = collect($openSeatsHide)->diff(collect($moreAddedSeats));
-            }else{
-                $seatsHide = $openSeatsHide;
-            }
-///////////////////////////////////////////////////////////////////
-        $blockSeatsOnAllDates = BusSeats::where('type',2)
-                                        ->where('bus_id',$busId)
-                                        ->where('status',1)
-                                        ->where('ticket_price_id',$ticketPriceId)
-                                        ->pluck('seats_id');   
+//         if(isset($seatsOpenOnDate) && $seatsOpenOnDate->isNotEmpty()){
+//             $openSeatsHide = collect($openSeatsHide)->diff(collect($seatsOpenOnDate));
+//         }
+//         $moreAddedSeats = BusSeats::whereNull('operation_date')
+//             ->whereNull('type')
+//             ->where('bus_id',$busId)
+//             ->whereIn('seats_id',$openSeatsHide)
+//             ->where('status',1)
+//             ->where('ticket_price_id',$ticketPriceId)
+//             ->pluck('seats_id');
+//             $seatsHide = [];
+//             if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
+//                 $seatsHide = collect($openSeatsHide)->diff(collect($moreAddedSeats));
+//             }else{
+//                 $seatsHide = $openSeatsHide;
+//             }
+// ///////////////////////////////////////////////////////////////////
+//         $blockSeatsOnAllDates = BusSeats::where('type',2)
+//                                         ->where('bus_id',$busId)
+//                                         ->where('status',1)
+//                                         ->where('ticket_price_id',$ticketPriceId)
+//                                         ->pluck('seats_id');   
 
-        $permanentSeats = BusSeats::whereNull('operation_date')
-                                ->where('ticket_price_id',$ticketPriceId)
-                                ->where('bus_id',$busId)
-                                ->where('status',1)
-                                ->pluck('seats_id'); 
-                       
+//         $permanentSeats = BusSeats::whereNull('operation_date')
+//                                 ->where('ticket_price_id',$ticketPriceId)
+//                                 ->where('bus_id',$busId)
+//                                 ->where('status',1)
+//                                 ->pluck('seats_id'); 
+
+        $ticketPrice = TicketPrice::where('bus_id', $busId)
+            ->where('source_id', $sourceId)
+            ->where('destination_id', $destinationId)
+            ->where('status', 1)
+            ->firstOrFail();
+
+        $ticketPriceId = $ticketPrice->id;
+        $start_j_days  = $ticketPrice->start_j_days;
+        $depTime       = date('H:i:s', strtotime($ticketPrice->dep_time));
+
+         $busSeats = BusSeats::where('bus_id', $busId)
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('status', 1)
+                    ->get();  
+                    
+        $extraSeats = $busSeats
+                    ->where('duration', '>', 0)
+                    ->map(fn($s) => [
+                        'seats_id' => $s->seats_id,
+                        'duration' => $s->duration
+                    ]);
+        $extraSeatsBlock = $busSeats
+                    ->where('duration', 0)
+                    ->where('operation_date', $entry_date)
+                    ->whereNull('type')
+                    ->pluck('seats_id');
+                    
+        $oldExtraSeatsBlock = $busSeats
+                    ->where('duration', 0)
+                    ->where('operation_date', '<', $entry_date)
+                    ->whereNull('type')
+                    ->pluck('seats_id');   
+                    
+        $CurrentDateTime = Carbon::now();
+        $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$entry_date $depTime");
+
+        $diff_in_minutes = $depDateTime >= $CurrentDateTime
+        ? $depDateTime->diffInMinutes($CurrentDateTime)
+        : 0;     
+        
+        $blockSeats = $busSeats
+                    ->where('operation_date', $entry_date)
+                    ->where('type', 2)
+                    ->pluck('seats_id');
+
+        $prevDay_blockSeats = collect();
+
+        if ($running_cycle > 1 && $start_j_days > 1) {
+            $prevDate = Carbon::parse($entry_date)->subDay()->toDateString();
+
+            $prevDay_blockSeats = $busSeats
+                ->where('operation_date', $prevDate)
+                ->where('type', 2)
+                ->pluck('seats_id');
+        }
+
+        $seatsOpenOnDate = $busSeats
+            ->where('operation_date', $entry_date)
+            ->where('type', 1)
+            ->pluck('seats_id');
+
+        $openSeatsHide = $busSeats
+            ->where('type', 1)
+            ->where('operation_date', '!=', $entry_date)
+            ->pluck('seats_id');
+
+        if ($seatsOpenOnDate->isNotEmpty()) {
+            $openSeatsHide = $openSeatsHide->diff($seatsOpenOnDate);
+        }
+
+        $moreAddedSeats = $busSeats
+            ->whereNull('operation_date')
+            ->whereNull('type')
+            ->whereIn('seats_id', $openSeatsHide)
+            ->pluck('seats_id');
+
+        $seatsHide = $moreAddedSeats->isNotEmpty()
+            ? $openSeatsHide->diff($moreAddedSeats)
+            : $openSeatsHide;
+
+        $blockSeatsOnAllDates = $busSeats
+            ->where('type', 2)
+            ->pluck('seats_id');
+
+        $permanentSeats = $busSeats
+            ->whereNull('operation_date')
+            ->pluck('seats_id');
+                    
+
                        
         $noMoreavailableSeats = collect($blockSeatsOnAllDates)->diff(collect($permanentSeats));                   
 
@@ -307,10 +398,8 @@ class ViewSeatsRepository
                             ->select('ticket_price_id','seats_id','new_fare');
             }]) 
             ->get();
-
         
-        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats))->concat(collect($prevDay_blockSeats));   
-        
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats))->concat(collect($prevDay_blockSeats));           
 
         /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
         $oldExtraSeatsBlock = collect($oldExtraSeatsBlock)->diff(collect($permanentSeats));

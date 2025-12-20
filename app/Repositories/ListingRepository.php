@@ -116,7 +116,14 @@ class ListingRepository
             return $list;
      }
 
-
+    public function getLocationIDs(array $names) // added by Banashri Mohanty :: Dec-20-2025
+    {
+        return $this->location
+            ->whereIn('name', $names)
+            ->where('status', 1)
+            ->pluck('id', 'name'); // [name => id]
+    }
+ 
      public function getLocationID($name)
      {
          return $this->location->where("name", $name)->where("status", 1)->get();
@@ -217,9 +224,6 @@ class ListingRepository
      public function getBusData($busOperatorId,$busId,$userId,$entry_date)
      {  
         return $this->bus
-        // ->when($userId != null || isset($userId), function ($query) use ($userId){
-        //     $query->where('user_id',$userId);
-        //     })
         ->with('busContacts')       
         ->with(['busAmenities'  => function ($query) {
             $query->with(['amenities' =>function ($a){
