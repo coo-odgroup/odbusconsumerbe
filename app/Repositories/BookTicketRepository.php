@@ -83,20 +83,30 @@ class BookTicketRepository
 
         $booking->transaction_id = (string) Str::uuid(); // added by Banashri Mohanty :: 20-Dec-2025
       
-        do {
-          switch($bookingInfo['app_type'])
-          {
-            case("WEB"):
-                $PNR = 'ODW'.rand(1000000,9999999);
-                break;
-            case("MOB"):
-                $PNR = 'ODM'.rand(1000000,9999999);
-                break;
-            case("ANDROID"):
-                $PNR = 'ODA'."".rand(1000000,9999999);
-                break;
-          }
-        } while ( $booking ->where('pnr', $PNR )->exists());  
+        // do {
+        //   switch($bookingInfo['app_type'])
+        //   {
+        //     case("WEB"):
+        //         $PNR = 'ODW'.rand(1000000,9999999);
+        //         break;
+        //     case("MOB"):
+        //         $PNR = 'ODM'.rand(1000000,9999999);
+        //         break;
+        //     case("ANDROID"):
+        //         $PNR = 'ODA'."".rand(1000000,9999999);
+        //         break;
+        //   }
+        // } while ( $booking ->where('pnr', $PNR )->exists());  
+
+        $prefixMap = [
+            'WEB'     => 'ODW',
+            'MOB'     => 'ODM',
+            'ANDROID' => 'ODA',
+        ];
+
+        $prefix = $prefixMap[$bookingInfo['app_type']] ?? 'ODX';
+
+        $PNR=$this->generatePNR($prefix);
 
         $booking->pnr = $PNR;
         $booking->bus_id = $bookingInfo['bus_id'];
@@ -274,5 +284,15 @@ class BookTicketRepository
         return $booking; 
     }
 
+
+    protected function generatePNR($prefix)
+    {       
+        $randomNumber = strval(rand(1000000, 9999999));
+        $alphabets = array_diff(range('A', 'Z'), ['O']);
+        $alphabet = $alphabets[array_rand($alphabets)];
+        $pos = rand(0, strlen($randomNumber));
+        $randomWithAlpha = substr($randomNumber, 0, $pos) . $alphabet . substr($randomNumber, $pos);
+        return $prefix . $randomWithAlpha;
+    }
    
 }
