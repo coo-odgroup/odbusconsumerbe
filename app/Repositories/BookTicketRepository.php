@@ -19,6 +19,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
+use Illuminate\Support\Str;
 
 
 class BookTicketRepository
@@ -74,10 +75,13 @@ class BookTicketRepository
 	    $bookingInfo['origin'] = (isset($bookingInfo['origin'])) ? $bookingInfo['origin']: 'ODBUS';
         
         $booking = new $this->booking;
-        do {
-           $transactionId = date('YmdHis') . gettimeofday()['usec'];
-           } while ( $booking->where('transaction_id', $transactionId )->exists());
-        $booking->transaction_id =  $transactionId;
+        // do {
+        //    $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        //    } while ( $booking->where('transaction_id', $transactionId )->exists());
+
+        //$booking->transaction_id =  $transactionId;
+
+        $booking->transaction_id = (string) Str::uuid(); // added by Banashri Mohanty :: 20-Dec-2025
       
         do {
           switch($bookingInfo['app_type'])
