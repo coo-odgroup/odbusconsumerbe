@@ -1052,7 +1052,7 @@ class ChannelRepository
       ],
     ]);
 
-    log::info($response); exit;
+   // log::info($response); exit;
 
     // Creates customer payment 
     $orderId = $response->payment_session_id; //$order['id']; 
