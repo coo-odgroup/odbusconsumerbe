@@ -247,13 +247,16 @@ class ClientBookingRepository
         if($walletBalance >= (int)$priceDetails[0]['totalFare']){
             //Save Booking 
                 $booking = new $this->booking;
-            do {
+            // do {
             $transactionId = date('YmdHis') . gettimeofday()['usec'];
-            } while ( $booking ->where('transaction_id', $transactionId )->exists());
+            // } while ( $booking ->where('transaction_id', $transactionId )->exists());
             $booking->transaction_id =  $transactionId;
-            do {
-                $PNR = 'ODCL'.rand(10000,99999);
-                } while ( $booking ->where('pnr', $PNR )->exists()); 
+            // do {
+            //     $PNR = 'ODCL'.rand(10000,99999);
+            //     } while ( $booking ->where('pnr', $PNR )->exists()); 
+
+            $PNR = $this->generatePNR();
+
             $booking->pnr = $PNR;
             $booking->user_id = $bookingInfo['user_id'];
             $booking->bus_id = $bookingInfo['bus_id'];
@@ -418,6 +421,17 @@ class ClientBookingRepository
             return 'CLIENT_INVALID';
         }
 }
+
+    protected function generatePNR()
+    {
+        $prefix = 'ODCL';
+        $randomNumber = strval(rand(1000000, 9999999));
+        $alphabets = array_diff(range('A', 'Z'), ['O']);
+        $alphabet = $alphabets[array_rand($alphabets)];
+        $pos = rand(0, strlen($randomNumber));
+        $randomWithAlpha = substr($randomNumber, 0, $pos) . $alphabet . substr($randomNumber, $pos);
+        return $prefix . $randomWithAlpha;
+    }
 
     public function ticketConfirmation($request)
     {
