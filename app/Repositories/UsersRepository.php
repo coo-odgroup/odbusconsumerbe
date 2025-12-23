@@ -66,16 +66,31 @@ class UsersRepository
 
     }
 
-   public function GetUserData($phone,$email){
-    return $this->users->where([
-          ['phone', $phone],
-          ['phone', '<>', null]
-          ])
-          ->orWhere([
-          ['email', $email],
-          ['email', '<>', null]
-          ]);
-   }
+  //  public function GetUserData($phone,$email){
+  //   return $this->users->where([
+  //         ['phone', $phone],
+  //         ['phone', '<>', null]
+  //         ])
+  //         ->orWhere([
+  //         ['email', $email],
+  //         ['email', '<>', null]
+  //         ]);
+  //  }
+
+  public function GetUserData($phone, $email)
+  {
+    return $this->users
+      ->where(function($q) use ($phone, $email) {
+          if (!empty($phone)) {
+              $q->where('phone', $phone);
+          }
+          if (!empty($email)) {
+              $q->orWhere('email', $email);
+          }
+      })
+      ->first();   // IMPORTANT
+  }
+
 
    public function saveUser($request){
         $user = new $this->users;
@@ -115,15 +130,16 @@ class UsersRepository
    }
 
     public function sendOtp($request){
+      // return $request['phone'];
         $otp = rand(10000, 99999);
-        if($request['phone']){
-            $this->users->phone = $request['phone'];
-            $sendsms = $this->channelRepository->sendSms($request,$otp);  
-        } 
-        elseif($request['email']){
-            $this->users->email = $request['email']; 
-            $sendEmail = $this->channelRepository->sendEmail($request,$otp);
-        }
+        // if($request['phone']){
+        //     $this->users->phone = $request['phone'];
+        //     $sendsms = $this->channelRepository->sendSms($request,$otp);  
+        // } 
+        // elseif($request['email']){
+        //     $this->users->email = $request['email']; 
+        //     $sendEmail = $this->channelRepository->sendEmail($request,$otp);
+        // }
         return  $otp;
     }
     public function getOtp($userId){
@@ -161,18 +177,43 @@ class UsersRepository
     //  ));
     }
 
-    public function createOtp($query,$otp,$request){
-
-      if($request['phone']!='9999999999'){
-        $query->update(array('otp' => $otp));
-      }      
-      $query->update(array('password' => bcrypt('odbus123')));
-      if(isset($request['fcmId'])){
-        $query->update(array('fcm_id' => $request['fcmId']));
-      }
-      return  $query->latest()->first(); 
+    // public function createOtp($query,$otp,$request){
+    //   // return $otp;
+    //   if($request['phone']!='9999999999'){
+    //     $query->update(array('otp' => $otp));
+    //   }      
+    //   $query->update(array('password' => bcrypt('odbus123')));
+    //   if(isset($request['fcmId'])){
+    //     $query->update(array('fcm_id' => $request['fcmId']));
+    //   }
+    //   return  $query->latest()->first(); 
            
+    // }
+
+
+    public function createOtp($query, $otp, $request)
+    {
+        // return $query;
+        $user = $query;
+
+        if (!$user) {
+          return null;
+        }
+        if ($request['phone'] != '9999999999') {
+           $user->otp = $otp;
+        }
+
+        $user->password = bcrypt('odbus123');
+
+        if ($request->has('fcmId')) {
+          $user->fcm_id = $request['fcmId'];
+        }
+        $user->save();
+        
+        return $user;
     }
+
+
     public function GetuserByToken($userId,$token)
     {
        return $this->users->where('id', $userId)->where('token', $token)->get();
