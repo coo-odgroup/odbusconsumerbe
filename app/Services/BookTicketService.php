@@ -234,7 +234,7 @@ class BookTicketService
     } 
     
     public function genderValidate($request,$clientRole,$clientId){
-    	$bookingInfo = $request['bookingInfo'];
+        $bookingInfo = $request['bookingInfo'];
                 ////////////////////////busId validation////////////////////////////////////
                 $sourceID = $bookingInfo['source_id'];
                 $destinationID = $bookingInfo['destination_id'];
@@ -242,14 +242,14 @@ class BookTicketService
                 $ReferenceNumber = $bookingInfo['ReferenceNumber'];
 
 
-                	$arrvst['sourceId']=$sourceID;
-                	$arrvst['destinationId']=$destinationID;
-                	$arrvst['busId']=$bookingInfo['bus_id'];
-                	$arrvst['entry_date']=$bookingInfo['journey_date'];
-                	$arrvst['origin']=$origin;
-                	$arrvst['ReferenceNumber']=$ReferenceNumber;
+                    $arrvst['sourceId']=$sourceID;
+                    $arrvst['destinationId']=$destinationID;
+                    $arrvst['busId']=$bookingInfo['bus_id'];
+                    $arrvst['entry_date']=$bookingInfo['journey_date'];
+                    $arrvst['origin']=$origin;
+                    $arrvst['ReferenceNumber']=$ReferenceNumber;
 
-                	$seatArray=$this->viewSeatsService->getAllViewSeats($arrvst,$clientRole,$clientId);
+                    $seatArray=$this->viewSeatsService->getAllViewSeats($arrvst,$clientRole,$clientId);
 
 
             ///////// logic for seat select gender restriction
@@ -265,7 +265,7 @@ class BookTicketService
 
                  foreach($seatArray['lower_berth'] as $sat){ 
                     foreach ($seatIds as $st) {
-                        if($sat['id']==$st){             			
+                        if($sat['id']==$st){                        
                         $selectedAray[]=$sat;
                         }
                     }
@@ -276,7 +276,7 @@ class BookTicketService
             if(isset($seatArray['upper_berth'])){
                 foreach($seatArray['upper_berth'] as $sat){ 
                     foreach ($seatIds as $st) {
-                        if($sat['id']==$st){             			
+                        if($sat['id']==$st){                        
                         $selectedAray[]=$sat;
                         }
                     }
@@ -287,69 +287,69 @@ class BookTicketService
                     if(isset($seatArray['lower_berth'])){
                    foreach($seatArray['lower_berth'] as $at){ 
 
-                      if( $itm['colNumber'] == $at['colNumber'] && 
-		                  ($itm['rowNumber']- $at['rowNumber'] == -1 || $itm['rowNumber'] - $at['rowNumber'] == 1)  
-		                  && $at['seatText']!='' && $itm['id'] !=$at['id'] && $at['Gender']){ 
-
-	                        $sst=[
-	                          "seat_id" => $itm['id'],
-	                          "canSelect" => $at['Gender'],
-	                          "seat_name" => $itm['seatText']
-	                        ];
+                      if($itm['berthType'] == $at['berthType']  && $itm['colNumber'] == $at['colNumber'] && 
+                          ( $itm['rowNumber']- $at['rowNumber'] == -1 || $itm['rowNumber'] - $at['rowNumber'] == 1)  
+                          && $at['seatText']!='' && $itm['id'] !=$at['id'] && $at['Gender']){ 
+                            $sst=[
+                              "seat_id" => $itm['id'],
+                              "canSelect" => $at['Gender'],
+                              "seat_name" => $itm['seatText']
+                            ];
 
 
                             $genderRestrictSeatarray[]=$sst;
- 	
-		                }
-                       }		                           
+    
+                        }
+                       }                                   
 
-		             }
+                     }
 
                     if(isset($seatArray['upper_berth'])){
-                     foreach($seatArray['upper_berth'] as $at){ 
+                     foreach($seatArray['upper_berth'] as $up){ 
 
-                      if( $itm['colNumber'] == $at['colNumber'] && 
-		                  ($itm['rowNumber']- $at['rowNumber'] == -1 || $itm['rowNumber'] - $at['rowNumber'] == 1)  
-		                  && $at['seatText']!='' && $itm['id'] !=$at['id'] && $at['Gender']){ 
+                      if($itm['berthType'] == $up['berthType']  && $itm['colNumber'] == $up['colNumber'] && 
+                          ($itm['rowNumber']- $up['rowNumber'] == -1 || $itm['rowNumber'] - $up['rowNumber'] == 1)  
+                          && $up['seatText']!='' && $itm['id'] !=$up['id'] && $up['Gender']){ 
 
-	                        $sst=[
-	                          "seat_id" => $itm['id'],
-	                          "canSelect" => $at['Gender'],
-	                          "seat_name" => $itm['seatText']
-	                        ];
+                            $sst=[
+                              "seat_id" => $itm['id'],
+                              "canSelect" => $up['Gender'],
+                              "seat_name" => $itm['seatText']
+                            ];
 
 
                             $genderRestrictSeatarray[]=$sst;
- 	
-		                }
-                      }		                           
+    
+                        }
+                      }                                
 
-		            }
+                    }
                 }
 
           if($genderRestrictSeatarray){
-          	foreach ($genderRestrictSeatarray as $value) {
-          		foreach ($bookingInfo['bookingDetail'] as $b) {
-          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='F' && $b['passenger_gender'] =='M' ){
-          				$msg= 'Male is not allowed for seat no '.$value['seat_name'];
+            foreach ($genderRestrictSeatarray as $value) {
+                foreach ($bookingInfo['bookingDetail'] as $b) {
+                    if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='F' && $b['passenger_gender'] =='M' ){
+                        $msg= 'Male is not allowed for seat no '.$value['seat_name'];
 
-          				 return $arr=['status'=>'Gender Error','message' => $msg];
-          			}
+                         return $arr=['status'=>'Gender Error','message' => $msg];
+                    }
 
-          			if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='M' && $b['passenger_gender'] =='F' ){
-          				 $msg= 'Female is not allowed for seat no '.$value['seat_name'];
+                    if($value['seat_id'] == $b['bus_seats_id'] && $value['canSelect'] =='M' && $b['passenger_gender'] =='F' ){
+                         $msg= 'Female is not allowed for seat no '.$value['seat_name'];
 
-          				 return $arr=['status'=>'Gender Error','message' => $msg];
-          			}
+                         return $arr=['status'=>'Gender Error','message' => $msg];
+                    }
 
-          		}
-          		
-          	}
+                }
+                
+            }
 
           }
            
            /////////////////////////////
-    }  
+    }   
+   
    
    
 }
