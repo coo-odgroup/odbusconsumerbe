@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
 use App\Services\BookingManageService;
 use App\Models\Users;
+use App\Models\AgentWallet;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
@@ -722,7 +723,7 @@ public function Webhook(){
  * )
  * 
  */
-
+ 
   public function walletPayment(Request $request)
   {   
       $data = $request->all();
@@ -736,9 +737,7 @@ public function Webhook(){
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }  
       try {        
-         $response = $this->channelService->walletPayment($request,$clientRole); 
-
-         if(isset($response['notifications'])){
+         $response = $this->channelService->walletPayment($request,$clientRole);         if(isset($response['notifications'])){
 
             return $this->successResponse($response,Config::get('constants.WALLET_PAYMENT_SUCESS'),Response::HTTP_CREATED);  
 
@@ -842,7 +841,7 @@ public function generateFailedTicket(Request $request){
 
             $response = $this->channelService->generateFailedTicket($request); 
 
-
+    
             if($response == 'payment_not_done'){
                 return $this->errorResponse(Config::get('constants.PAYMENT_NOT_DONE'),Response::HTTP_OK);
             }
@@ -874,6 +873,7 @@ public function testing(){
 
         //return $payment;
 }
+
 
 
 

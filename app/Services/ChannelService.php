@@ -113,7 +113,7 @@ class ChannelService
     } 
     
     ///////////////////////////////////////////////////////////////////
-    public function makePayment($request,$clientRole)
+    public function  makePayment($request,$clientRole)
     {
         try {
                 $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
@@ -790,7 +790,7 @@ class ChannelService
                       $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
                       break;
                   }   
-                  $cancelledBus = BusCancelled::where('bus_id', $busId)
+                 $cancelledBus = BusCancelled::where('bus_id', $busId)
                                           ->where('status', '1')
                                           ->with(['busCancelledDate' => function ($bcd) use ($new_date){
                                           $bcd->where('cancelled_date',$new_date);
@@ -870,7 +870,7 @@ class ChannelService
                     $details = $this->channelRepository->CreateAgentPayment($agentId,$agentName,$amount ,$name, $bookingId,$transactionId,$pnr);   
 
                     $totalSeatsBookedByAgent = $this->channelRepository->FetchAgentBookedSeats($agentId,$agentName,$seatIds,$bookingId,$booked,$appliedComission,$pnr);
-
+                    //return $totalSeatsBookedByAgent;
                     /////mantis holdId updated to booking table////////
                     if($origin=='MANTIS'){
                         /////      
