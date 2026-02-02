@@ -163,7 +163,9 @@ class UsersService
         $verifiedStatus = $query->latest()->first()->is_verified; 
        
         if($verifiedStatus == 1){
-            $name = $query->latest()->first()->name;        
+            // return $query;
+            // $name = $query->latest()->first()->name;
+            $name = $query->name;        
             $request->request->add(['name' => $name]);
             $otp = $this->usersRepository->sendOtp($request);
             return $this->usersRepository->createOtp($query,$otp,$request);

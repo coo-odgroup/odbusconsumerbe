@@ -60,6 +60,7 @@ Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphin
 //phonpe
 Route::post('/paymentStatus', [PhonpeController::class, 'paymentStatus']);
 Route::post('/MakePayment', [PhonpeController::class, 'makePayment']);
+Route::post('/PhonpeWebhook', [PhonpeController::class, 'PhonpeWebhook']);
 
 
 

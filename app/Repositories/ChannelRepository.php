@@ -127,51 +127,51 @@ class ChannelRepository
   }
 
 
-  public function sendSmsIndiaHub($data)
-  {
-    // parse the given URL
-    $url = parse_url($url);
-    if ($url['scheme'] != 'http') {
-      die('Only HTTP request are supported !');
-    }
-    // extract host and path:
-    $host = $url['host'];
-    $path = $url['path'];
-    // open a socket connection on port 80
-    $fp = fsockopen($host, 8000);
-    // send the request headers:
-    fputs($fp, "POST $path HTTP/1.1\r\n");
-    fputs($fp, "Host: $host\r\n");
-    fputs($fp, "Referer: $referer\r\n");
-    fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-    fputs($fp, "Content-length: " . strlen($data) . "
-        \r\n");
-    fputs($fp, "Connection: close\r\n\r\n");
-    fputs($fp, $data);
-    $result = "";
-    while (!feof($fp)) {
-      // receive the results of the request
-      $result .= fgets($fp, 128);
-    }
-    // close the socket connection:
-    fclose($fp);
-    // split the result header from the content
-    $result = explode("\r\n\r\n", $result, 2);
-    $header = isset($result[0]) ? $result[0] : ”;
-    $content = isset($result[1]) ? $result[1] : ”;
-    // return as array:
-    //return array($header, $content);
-    $data = array(
-      'user' => "user",
-      'password' => "pwd",
-      'msisdn' => "919898123456",
-      'sid' => "API",
-      'msg' => "Test Message from API",
-      'fl' => "0",
-    );
-    $url = env('TEXT_SMS_INDIA_HUB_URL');
-    list($header, $content) = PostRequest($url, $data);
-  }
+  // public function sendSmsIndiaHub($data)
+  // {
+  //   // parse the given URL
+  //   $url = parse_url($url);
+  //   if ($url['scheme'] != 'http') {
+  //     die('Only HTTP request are supported !');
+  //   }
+  //   // extract host and path:
+  //   $host = $url['host'];
+  //   $path = $url['path'];
+  //   // open a socket connection on port 80
+  //   $fp = fsockopen($host, 8000);
+  //   // send the request headers:
+  //   fputs($fp, "POST $path HTTP/1.1\r\n");
+  //   fputs($fp, "Host: $host\r\n");
+  //   fputs($fp, "Referer: $referer\r\n");
+  //   fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+  //   fputs($fp, "Content-length: " . strlen($data) . "
+  //       \r\n");
+  //   fputs($fp, "Connection: close\r\n\r\n");
+  //   fputs($fp, $data);
+  //   $result = "";
+  //   while (!feof($fp)) {
+  //     // receive the results of the request
+  //     $result .= fgets($fp, 128);
+  //   }
+  //   // close the socket connection:
+  //   fclose($fp);
+  //   // split the result header from the content
+  //   $result = explode("\r\n\r\n", $result, 2);
+  //   $header = isset($result[0]) ? $result[0] : ”;
+  //   $content = isset($result[1]) ? $result[1] : ”;
+  //   // return as array:
+  //   //return array($header, $content);
+  //   $data = array(
+  //     'user' => "user",
+  //     'password' => "pwd",
+  //     'msisdn' => "919898123456",
+  //     'sid' => "API",
+  //     'msg' => "Test Message from API",
+  //     'fl' => "0",
+  //   );
+  //   $url = env('TEXT_SMS_INDIA_HUB_URL');
+  //   list($header, $content) = PostRequest($url, $data);
+  // }
   //Created by Subhasis Mohanty  added on 01-09-2025 for Value First and textLocal SMS Service
   public function sendSms($data, $otp)
   {
@@ -1075,6 +1075,7 @@ class ChannelRepository
 
     log::info($response);
     exit;
+   // log::info($response); exit;
 
     // Creates customer payment 
     $orderId = $response->payment_session_id; //$order['id']; 

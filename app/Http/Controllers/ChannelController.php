@@ -497,7 +497,7 @@ public function pay(Request $request){
           }     
 
 
- }   
+}   
   
 public function RazorpayWebhook(){
     
@@ -512,55 +512,55 @@ public function RazorpayWebhook(){
     $res = json_decode($post);
     if(isset($res->payload->payment)){
    
-    $response=$res->payload->payment->entity;     
-    //Log::info($response->order_id."---".$response->status."---".$response->id);
- 
-    if($response->status == 'authorized' || $response->status =='captured'){
-                
-
-                $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
-
-                if($rp && isset($rp->booking_id)){
-                    $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
-
-                    if($booking_det->status!=1){
+        $response=$res->payload->payment->entity;     
+        //Log::info($response->order_id."---".$response->status."---".$response->id);
+    
+        if($response->status == 'authorized' || $response->status =='captured'){
                     
-                    $crt=strtotime($booking_det->created_at);
-                    $now=strtotime(date("Y-m-d H:i:s"));
 
-                    $diff=round(abs($crt - $now) / 60);
+                    $rp=$this->customerPayment->where('order_id', $response->order_id)->first();
 
+                    if($rp && isset($rp->booking_id)){
+                        $booking_det=$this->booking->with('users')->where('id', $rp->booking_id)->first();
 
-                   // if($booking_det->origin=='ODBUS'){
-                    if($diff <= 10){
-
-                        $razorpay_status_updated_at= date("Y-m-d H:i:s");
-
-                       $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
-
-                        $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
-                        //// call to emailsms api function to send to customer
+                        if($booking_det->status!=1){
                         
-                        // $request['pnr']=$booking_det->pnr;
-                        // $request['mobile']=$booking_det->users->phone;
-                        //$res= $this->bookingManageService->emailSms($request);
+                        $crt=strtotime($booking_det->created_at);
+                        $now=strtotime(date("Y-m-d H:i:s"));
 
-                        $request['transaction_id']=$booking_det->transaction_id;
-                        $request['razorpay_payment_id']=$response->id;
-                        $request['razorpay_order_id']=$response->order_id;
-                        $request['razorpay_signature']='';
-                        $res = $this->channelService->pay(collect($request),1); // 1-> super admin
-                        //Log::info($booking_det->pnr."----".$res);
-                   // }
-                    }else{
-                        Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$response->order_id."---".$response->status."---".$response->id);
-                        $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$response->order_id,$response->id,$response->status);
-                      
-                    }    
-                }
-            }  
+                        $diff=round(abs($crt - $now) / 60);
+
+
+                    // if($booking_det->origin=='ODBUS'){
+                        if($diff <= 10){
+
+                            $razorpay_status_updated_at= date("Y-m-d H:i:s");
+
+                        $this->customerPayment->where('order_id', $response->order_id)->update(['razorpay_id' => $response->id,'payment_done' =>1,'razorpay_status' => $response->status,'razorpay_status_updated_at' => $razorpay_status_updated_at]);  
+
+                            $this->booking->where('id', $booking_det->id)->update(['status' => 1]); 
+                            //// call to emailsms api function to send to customer
+                            
+                            // $request['pnr']=$booking_det->pnr;
+                            // $request['mobile']=$booking_det->users->phone;
+                            //$res= $this->bookingManageService->emailSms($request);
+
+                            $request['transaction_id']=$booking_det->transaction_id;
+                            $request['razorpay_payment_id']=$response->id;
+                            $request['razorpay_order_id']=$response->order_id;
+                            $request['razorpay_signature']='';
+                            $res = $this->channelService->pay(collect($request),1); // 1-> super admin
+                            //Log::info($booking_det->pnr."----".$res);
+                    // }
+                        }else{
+                            Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$response->order_id."---".$response->status."---".$response->id);
+                            $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$response->order_id,$response->id,$response->status);
+                        
+                        }    
+                    }
+                }  
+        }
     }
-}
 }
 
 
@@ -881,23 +881,21 @@ public function testing(){
 public function GSTEmailSend(){
 
     $yesterday=date('Y-m-d', strtotime('-3 day'));
-    $firstApril=date('Y-04-01');
+    //$firstApril=date('Y-04-01');
     $updated_at=date('Y-m-d H:i:s');
 
     $data=DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name 
     from booking 
     join users on booking.users_id=users.id
-    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  journey_dt between  '$firstApril' and '$yesterday'   and customer_gst_status=1 order by booking.id asc "); 
+    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc "); 
    $num=1;
 
     foreach($data as $d){
-
-        ////////////////////// generate gst invoice /////////////
-              
+        ////////////////////// generate gst invoice /////////////              
         $gst_invoice_no=generateGSTId($num,$d->journey_dt);
         $chk_exist=DB::table('booking')->where("gst_invoice_no",$gst_invoice_no)->first();
         if($chk_exist){
-        $get_latest= DB::select("select gst_invoice_no from booking  where gst_invoice_no is not null and journey_dt between  '$firstApril' and '$yesterday' and customer_gst_status=1 ORDER BY  id DESC  limit 1 ");
+        $get_latest= DB::select("select gst_invoice_no from booking  where gst_invoice_no is not null and DATE(journey_dt) <= '$yesterday' and customer_gst_status=1 ORDER BY  id DESC  limit 1 ");
         $gst_arr=explode('-',$get_latest[0]->gst_invoice_no);
         $gst= (int)$gst_arr[1] + 1;
         $num= $gst;
