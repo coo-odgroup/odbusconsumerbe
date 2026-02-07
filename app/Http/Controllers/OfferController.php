@@ -143,7 +143,7 @@ class OfferController extends Controller
          */
     public function coupons(Request $request) {
 
-        $data = $request->all();
+           $data = $request->all();
            $couponValidation = $this->couponValidator->validate($data);
          
            if ($couponValidation->fails()) {
@@ -164,7 +164,13 @@ class OfferController extends Controller
                 break;
                 case('already_applied'):   //Validity of Coupon Has already applied once
                     return $this->errorResponse(Config::get('constants.COUPON_ALREADY_APPLIED_ONCE'),Response::HTTP_OK);
-                break;    
+                break; 
+
+                case('not_firsttime_user'):   //Validity of Coupon Has already applied once
+                    return $this->errorResponse('This Coupon is only applicable for first time user',Response::HTTP_OK);
+                break; 
+
+                
                 
             }
             return $this->successResponse($response,Config::get('constants.COUPON_APPLIED'),Response::HTTP_OK);    
