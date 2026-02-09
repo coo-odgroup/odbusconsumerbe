@@ -1191,6 +1191,7 @@ class ChannelRepository
     $user_pay->booking_id = $bookingId;
     $user_pay->amount = $amount;
     $user_pay->order_id = $receiptId;
+    $user_pay->phonepe_status = "PENDING";
     $user_pay->pp_orderId = $pp_orderId;
     $user_pay->save();
 

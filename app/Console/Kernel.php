@@ -24,8 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
-        // $schedule->command('cron:oauth-token')->everyMinute();
+        // $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
+        $schedule->command('cron:oauth-token')->everyMinute();
+        $schedule->command('phonepe:check')->everyMinute();
     }
 
     /**
