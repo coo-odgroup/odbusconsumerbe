@@ -215,7 +215,7 @@ class CancelTicketRepository
             $u->where([
                 ['booking.pnr', '=', $pnr],
                 ['status', '=', $booked],
-            ]);
+            ]);      
             //$u->where('booking.pnr', '=', $pnr); 
             $u->with(["customerPayment" => function($b){
                 $b->where('payment_done',1);

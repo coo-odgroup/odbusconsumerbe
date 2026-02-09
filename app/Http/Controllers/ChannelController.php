@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\ChannelService;
 use App\Services\BookingManageService;
 use App\Models\Users;
+use App\Models\AgentWallet;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\ChannelRepository;
 use App\Models\CustomerPayment;
@@ -722,7 +723,7 @@ public function Webhook(){
  * )
  * 
  */
-
+ 
   public function walletPayment(Request $request)
   {   
       $data = $request->all();
@@ -736,9 +737,7 @@ public function Webhook(){
       return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
       }  
       try {        
-         $response = $this->channelService->walletPayment($request,$clientRole); 
-
-         if(isset($response['notifications'])){
+         $response = $this->channelService->walletPayment($request,$clientRole);         if(isset($response['notifications'])){
 
             return $this->successResponse($response,Config::get('constants.WALLET_PAYMENT_SUCESS'),Response::HTTP_CREATED);  
 
@@ -842,7 +841,7 @@ public function generateFailedTicket(Request $request){
 
             $response = $this->channelService->generateFailedTicket($request); 
 
-
+    
             if($response == 'payment_not_done'){
                 return $this->errorResponse(Config::get('constants.PAYMENT_NOT_DONE'),Response::HTTP_OK);
             }
@@ -878,26 +877,25 @@ public function testing(){
 
 
 
+
 public function GSTEmailSend(){
 
     $yesterday=date('Y-m-d', strtotime('-3 day'));
-    $firstApril=date('Y-04-01');
+    //$firstApril=date('Y-04-01');
     $updated_at=date('Y-m-d H:i:s');
 
     $data=DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name 
     from booking 
     join users on booking.users_id=users.id
-    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  journey_dt between  '$firstApril' and '$yesterday'   and customer_gst_status=1 order by booking.id asc "); 
+    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc "); 
    $num=1;
 
     foreach($data as $d){
-
-        ////////////////////// generate gst invoice /////////////
-              
+        ////////////////////// generate gst invoice /////////////              
         $gst_invoice_no=generateGSTId($num,$d->journey_dt);
         $chk_exist=DB::table('booking')->where("gst_invoice_no",$gst_invoice_no)->first();
         if($chk_exist){
-        $get_latest= DB::select("select gst_invoice_no from booking  where gst_invoice_no is not null and journey_dt between  '$firstApril' and '$yesterday' and customer_gst_status=1 ORDER BY  id DESC  limit 1 ");
+        $get_latest= DB::select("select gst_invoice_no from booking  where gst_invoice_no is not null and DATE(journey_dt) <= '$yesterday' and customer_gst_status=1 ORDER BY  id DESC  limit 1 ");
         $gst_arr=explode('-',$get_latest[0]->gst_invoice_no);
         $gst= (int)$gst_arr[1] + 1;
         $num= $gst;

@@ -110,6 +110,7 @@ Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
 //Route::post('/AgentLogin', [UserController::class, 'login']);
 Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 Route::post('/AgentWalletPayment', [ChannelController::class, 'walletPayment']);
+//subhais mohanty
 Route::post('/AgentPaymentStatus', [ChannelController::class, 'agentPaymentStatus']);
 Route::get('/AllPathUrls', [OfferController::class, 'getPathUrls']);
 Route::get('/seolist', [SeoController::class, 'seolist']);
@@ -179,9 +180,9 @@ Route::get('/GetToken', [MantisController::class, 'getToken']);
 Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is without auth beacuse for abhi bus need :: 18-may-2025 :: Banashri Mohanty
 
 //});
-Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); //VALUE FIRST SMS SERVICE
+Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); 
 
 
 $router->get('/update-phonepay-token', function () {
    Artisan::call('cron:oauth-token');
-});
+});   

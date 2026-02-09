@@ -42,6 +42,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Services\ValueFirstService;
 
+use App\Models\FcmNotification;
+use App\Jobs\TicketConfirmationJob;
+use App\Jobs\ReminderBeforeOneHourJob;
+use App\Jobs\ReminderBefore24HourJob;
+use App\Jobs\SendCancelTicketNotificationJob;
+use App\Jobs\ReminderBeforeDeboardingJob  ;
+use App\Jobs\SendFeedbackNotificationJob;
+
+use Carbon\Carbon;
+
 class ChannelRepository
 {
   protected $gatewayInformation;
@@ -57,14 +67,14 @@ class ChannelRepository
   public function __construct(
     GatewayInformation $gatewayInformation,
     Users $users,
-    CustomerPayment $customerPayment, 
-    Booking $booking, 
-    BusSeats $busSeats, 
-    Credentials $credentials, 
-    BookingDetail $bookingDetail, 
-    ManageSms $manageSms, 
-    User $user)
-  {
+    CustomerPayment $customerPayment,
+    Booking $booking,
+    BusSeats $busSeats,
+    Credentials $credentials,
+    BookingDetail $bookingDetail,
+    ManageSms $manageSms,
+    User $user
+  ) {
     $this->gatewayInformation = $gatewayInformation;
     $this->users = $users;
     $this->user = $user;
@@ -117,51 +127,51 @@ class ChannelRepository
   }
 
 
-  public function sendSmsIndiaHub($data)
-  {
-    // parse the given URL
-    $url = parse_url($url);
-    if ($url['scheme'] != 'http') {
-      die('Only HTTP request are supported !');
-    }
-    // extract host and path:
-    $host = $url['host'];
-    $path = $url['path'];
-    // open a socket connection on port 80
-    $fp = fsockopen($host, 8000);
-    // send the request headers:
-    fputs($fp, "POST $path HTTP/1.1\r\n");
-    fputs($fp, "Host: $host\r\n");
-    fputs($fp, "Referer: $referer\r\n");
-    fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-    fputs($fp, "Content-length: " . strlen($data) . "
-        \r\n");
-    fputs($fp, "Connection: close\r\n\r\n");
-    fputs($fp, $data);
-    $result = "";
-    while (!feof($fp)) {
-      // receive the results of the request
-      $result .= fgets($fp, 128);
-    }
-    // close the socket connection:
-    fclose($fp);
-    // split the result header from the content
-    $result = explode("\r\n\r\n", $result, 2);
-    $header = isset($result[0]) ? $result[0] : ”;
-    $content = isset($result[1]) ? $result[1] : ”;
-    // return as array:
-    //return array($header, $content);
-    $data = array(
-      'user' => "user",
-      'password' => "pwd",
-      'msisdn' => "919898123456",
-      'sid' => "API",
-      'msg' => "Test Message from API",
-      'fl' => "0",
-    );
-    $url = env('TEXT_SMS_INDIA_HUB_URL');
-    list($header, $content) = PostRequest($url, $data);
-  }
+  // public function sendSmsIndiaHub($data)
+  // {
+  //   // parse the given URL
+  //   $url = parse_url($url);
+  //   if ($url['scheme'] != 'http') {
+  //     die('Only HTTP request are supported !');
+  //   }
+  //   // extract host and path:
+  //   $host = $url['host'];
+  //   $path = $url['path'];
+  //   // open a socket connection on port 80
+  //   $fp = fsockopen($host, 8000);
+  //   // send the request headers:
+  //   fputs($fp, "POST $path HTTP/1.1\r\n");
+  //   fputs($fp, "Host: $host\r\n");
+  //   fputs($fp, "Referer: $referer\r\n");
+  //   fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+  //   fputs($fp, "Content-length: " . strlen($data) . "
+  //       \r\n");
+  //   fputs($fp, "Connection: close\r\n\r\n");
+  //   fputs($fp, $data);
+  //   $result = "";
+  //   while (!feof($fp)) {
+  //     // receive the results of the request
+  //     $result .= fgets($fp, 128);
+  //   }
+  //   // close the socket connection:
+  //   fclose($fp);
+  //   // split the result header from the content
+  //   $result = explode("\r\n\r\n", $result, 2);
+  //   $header = isset($result[0]) ? $result[0] : ”;
+  //   $content = isset($result[1]) ? $result[1] : ”;
+  //   // return as array:
+  //   //return array($header, $content);
+  //   $data = array(
+  //     'user' => "user",
+  //     'password' => "pwd",
+  //     'msisdn' => "919898123456",
+  //     'sid' => "API",
+  //     'msg' => "Test Message from API",
+  //     'fl' => "0",
+  //   );
+  //   $url = env('TEXT_SMS_INDIA_HUB_URL');
+  //   list($header, $content) = PostRequest($url, $data);
+  // }
   //Created by Subhasis Mohanty  added on 01-09-2025 for Value First and textLocal SMS Service
   public function sendSms($data, $otp)
   {
@@ -922,6 +932,17 @@ class ChannelRepository
     session(['msgId' => $msgId]);
   }
 
+  public function sendCancelTicketNotification($phone, $pnr, $ticket_cancelled)
+  {
+    $data = [
+      'phone' => $phone,
+      'pnr' => $pnr
+    ];
+
+    // return $data;
+    SendCancelTicketNotificationJob::dispatch($data, $ticket_cancelled);
+  }
+
   public function smsDeliveryStatus($request)
   {
     $phone = $request['phone'];
@@ -1052,6 +1073,8 @@ class ChannelRepository
       ],
     ]);
 
+    log::info($response);
+    exit;
    // log::info($response); exit;
 
     // Creates customer payment 
@@ -1107,7 +1130,8 @@ class ChannelRepository
     return $result;
   }
 
-  public function phonpeToken(){
+  public function phonpeToken()
+  {
     $token = PhonePayToken::first();
 
     return $token;
@@ -1166,7 +1190,7 @@ class ChannelRepository
     // return $getToken->access_token;
 
     $phonpe_url = Config('constants.PHONPE_API_URL');
-    $url = $phonpe_url."checkout/v2/pay";
+    $url = $phonpe_url . "checkout/v2/pay";
 
     // return $url;exit;
 
@@ -1176,7 +1200,7 @@ class ChannelRepository
     ])->post($url, $payload);
 
 
-    
+
 
 
     $response = json_decode($resp);
@@ -1276,7 +1300,7 @@ class ChannelRepository
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
+    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr);
     if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
 
       $msgId = $sendsms->messages[0]->id;
@@ -1361,13 +1385,37 @@ class ChannelRepository
     // }
   }
 
-  public function UpdateCutsomerPaymentppInfo($customerId,
-  $paymentDone, $totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $request,
-  $bookingId, $booked, $bookedStatusFailed, $transactionId, $pnr, $busId, $cancellationslabs, $transactionFee,
-  $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email,
-  $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount, $smsData,
-  $email, $emailData, $origin)
-  {
+  public function UpdateCutsomerPaymentppInfo(
+    $customerId,
+    $paymentDone,
+    $totalfare,
+    $discount,
+    $payable_amount,
+    $odbus_charges,
+    $odbus_gst,
+    $owner_fare,
+    $request,
+    $bookingId,
+    $booked,
+    $bookedStatusFailed,
+    $transactionId,
+    $pnr,
+    $busId,
+    $cancellationslabs,
+    $transactionFee,
+    $customer_gst_status,
+    $customer_gst_number,
+    $customer_gst_business_name,
+    $customer_gst_business_email,
+    $customer_gst_business_address,
+    $customer_gst_percent,
+    $customer_gst_amount,
+    $coupon_discount,
+    $smsData,
+    $email,
+    $emailData,
+    $origin
+  ) {
     $SmsGW = config('services.sms.otpservice');
 
     $getToken = $this->phonpeToken();
@@ -1375,11 +1423,11 @@ class ChannelRepository
     $phonpe_url = Config('constants.PHONPE_API_URL');
 
 
-    $url = $phonpe_url."checkout/v2/order/{$transactionId}/status";
+    $url = $phonpe_url . "checkout/v2/order/{$transactionId}/status";
     // dd( 'Authorization'. $getToken->token_type . " " . $getToken->access_token);
     $response = Http::withHeaders([
-    'Authorization' => $getToken->token_type . " " . $getToken->access_token,
-    'Content-Type' => 'application/json'
+      'Authorization' => $getToken->token_type . " " . $getToken->access_token,
+      'Content-Type' => 'application/json'
     ])->get($url);
 
     // Convert to array if needed
@@ -1393,13 +1441,13 @@ class ChannelRepository
 
     // return $customerId;
 
-    if($data['state'] == "COMPLETED"){
+    if ($data['state'] == "COMPLETED") {
       $this->customerPayment->where('id', $customerId)
-      ->update([
-      // 'razorpay_id' => $razorpay_payment_id,
-      // 'razorpay_signature' => $razorpay_signature,
-      'payment_done' => $paymentDone
-      ]);
+        ->update([
+          // 'razorpay_id' => $razorpay_payment_id,
+          // 'razorpay_signature' => $razorpay_signature,
+          'payment_done' => $paymentDone
+        ]);
 
       // return $customerId;
 
@@ -1407,6 +1455,116 @@ class ChannelRepository
 
       $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
       $booking = $this->booking->find($bookingId);
+
+      // return $booking;
+
+
+
+
+      TicketConfirmationJob::dispatch($bookingId, 'ticket_confirmed');
+      $now = Carbon::now();
+
+      $boardingDateTime = Carbon::parse(
+        $booking->journey_dt . ' ' . $booking->boarding_time
+      );
+
+      $droppingDateTime = Carbon::parse(
+        $booking->journey_dt . ' ' . $booking->dropping_time
+      );
+
+      if ($booking->dropping_time < $booking->boarding_time) {
+        $droppingDateTime->addDay();
+      }
+
+      $oneHourBefore     = $boardingDateTime->copy()->subHour(1);
+      $twentyFourBefore  = $boardingDateTime->copy()->subHour(24);
+      $deboardingBefore  = $droppingDateTime->copy()->subMinutes(30);
+      $feedbackTime = $droppingDateTime->copy()->addHours(8);
+
+      Log::info('Reminder times', [
+        'now' => $now->toDateTimeString(),
+        'boarding' => $boardingDateTime->toDateTimeString(),
+        'dropping' => $droppingDateTime->toDateTimeString(),
+        '1h_before' => $oneHourBefore->toDateTimeString(),
+        '24h_before' => $twentyFourBefore->toDateTimeString(),
+        'deboarding_30m_before' => $deboardingBefore->toDateTimeString(),
+      ]);
+
+
+      if ($oneHourBefore->greaterThan($now)) {
+        ReminderBeforeOneHourJob::dispatch(
+          $booking->id,
+          'pre_departure_reminder_1h'
+        )->delay($oneHourBefore);
+      }
+
+      if ($twentyFourBefore->greaterThan($now)) {
+        ReminderBefore24HourJob::dispatch(
+          $booking->id,
+          'pre_departure_reminder_24h'
+        )->delay($twentyFourBefore);
+      }
+     $alreadyScheduled = FcmNotification::where('booking_id', $booking->id)
+    ->whereIn('template_id', function ($q) {
+        $q->select('push.id')
+          ->from('scheduler.push_notification_template as push')
+          ->join('scheduler.ms_template_key as key', 'key.id', '=', 'push.template_key_id')
+          ->whereRaw('TRIM(key.template_key) = ?', ['pre_deboarding_reminder_30m'])
+          ->where('push.status', 1);
+    })
+    ->exists();
+
+if (!$alreadyScheduled && $deboardingBefore->greaterThan($now)) {
+    ReminderBeforeDeboardingJob::dispatch(
+        $booking->id,
+        'pre_deboarding_reminder_30m',
+        $deboardingBefore
+    )->delay($deboardingBefore);
+}
+
+$hour = $feedbackTime->hour;
+if ($hour >= 22 || $hour < 8) {
+    $feedbackTime = $feedbackTime
+        ->addDay()
+        ->setTime(9, 0, 0);
+}
+
+Log::info('Feedback scheduling time', [
+    'dropping_time' => $droppingDateTime->toDateTimeString(),
+    'feedback_time' => $feedbackTime->toDateTimeString(),
+]);
+
+$feedbackAlreadyScheduled = FcmNotification::where('booking_id', $booking->id)
+    ->whereIn('template_id', function ($q) {
+        $q->select('push.id')
+          ->from('scheduler.push_notification_template as push')
+          ->join('scheduler.ms_template_key as key', 'key.id', '=', 'push.template_key_id')
+          ->whereRaw('TRIM(key.template_key) = ?', ['feedback_request'])
+          ->where('push.status', 1);
+    })
+    ->exists();
+
+if (!$feedbackAlreadyScheduled && $feedbackTime->greaterThan($now)) {
+
+    SendFeedbackNotificationJob::dispatch(
+        $booking->id,
+        'feedback_request'
+    )->delay($feedbackTime);
+
+    Log::info('FEEDBACK JOB → Scheduled', [
+        'booking_id' => $booking->id,
+        'run_at'     => $feedbackTime->toDateTimeString(),
+    ]);
+}
+
+
+      // return response()->json([
+      //   'status' => true,
+      //   'message' => 'Job dispatched successfully'
+      // ]);
+
+      // return $booking;
+
       $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
       $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
       // dd($sendsms);
@@ -1440,9 +1598,9 @@ class ChannelRepository
 
       if ($origin == 'ODBUS') {
         $busContactDetails = BusContacts::where('bus_id', $busId)
-                                        ->where('status', '1')
-                                        ->where('booking_sms_send', '1')
-                                        ->get('phone');
+          ->where('status', '1')
+          ->where('booking_sms_send', '1')
+          ->get('phone');
 
         if ($busContactDetails->isNotEmpty()) {
           $contact_number = collect($busContactDetails)->implode('phone', ',');
@@ -1480,12 +1638,12 @@ class ChannelRepository
         // $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
         // dd($email);
       }
-      
+
       /////////////////send email to odbus admin////////
-      
+
       // $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-      
-      
+
+
       return "Payment Done";
       // }
       // else{
@@ -1494,14 +1652,14 @@ class ChannelRepository
       // ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]);
       // return "Payment Failed";
       // }
-    }elseif($data['state'] == "PENDING"){
+    } elseif ($data['state'] == "PENDING") {
       return "Payment Pending";
-    }else{
+    } else {
       return "Payment Failed";
     }
   }
 
-  
+
 
   public function CreateAgentPayment($agentId, $agentName, $amount, $name, $bookingId, $transactionId, $pnr)
   {
@@ -1516,6 +1674,7 @@ class ChannelRepository
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;
     $agetWallet->status = 1;
+       
 
     //Log::info($agetWallet);
 
@@ -1564,6 +1723,8 @@ class ChannelRepository
     $tds = 0; // changes on 5th -april-2025 (as per Mandal Bhai Request)
     $afterTdsComission = $totalAgentComission - $tds;
 
+    //return $afterTdsComission;
+    
     /// By Lima 10 April,2023, 1:30 PM no commision logic /////////
 
     $AgentData = $this->user->where('id', $agentId)->first();
@@ -1592,14 +1753,15 @@ class ChannelRepository
     $agetWallet->type = 'Commission';
     $agetWallet->booking_id = $bookingId;
     $agetWallet->transaction_type = 'c';
-    $agetWallet->balance = $walletBalance + $afterTdsComission;
+    $agetWallet->balance = $walletBalance;// + $afterTdsComission;  //commented to not to add agent commision into  wallet balance immedietly
+    $agetWallet->balance = $walletBalance;
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;
     $agetWallet->status = 1;
-    $agetWallet->save();
-    //return $agetWallet;
+    //$agetWallet->save();
+    // return $agetWallet;
 
-    $newBalance = $walletBalance + $afterTdsComission;
+    return $newBalance = $walletBalance; // + $afterTdsComission;  //commented to not to add agent commision into wallet balance immedietly 
     $notification = new Notification;
     //New Balance is Rs.00.00 after receive of Comission of Rs.0.00 for PNR 00000000
     $notification->notification_heading = "New Balance is Rs.$newBalance after receive of Comission of Rs.$afterTdsComission for PNR.$pnr";
