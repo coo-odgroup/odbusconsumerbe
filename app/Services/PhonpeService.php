@@ -606,58 +606,16 @@ class PhonpeService
         }
     }
 
-    // public function checkStatus(string $orderId)
-    // {
-    //     $token = PhonePayToken::first();
-
-    //     $access_token = $token->access_token;
-
-    //     $base_url = rtrim(Config::get('constants.PHONPE_API_URL'), '/');;
-    //     $mid = Config('constants.MID');
-
-    //     // $url ="https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/{$mid}/rcpt_f1574de9-6f92-44fe-8bd1-cfe2f282582e";
-    //     $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/ODBUSUAT/rcpt_f1574de9-6f92-44fe-8bd1-cfe2f282582e";
-
-    //     $response = Http::withToken($access_token)->get($url);
-
-    //     Log::info('PhonePe Poll Status', [
-    //         'url' => $url,
-    //         'orderId' => $orderId,
-    //         'response' => $response->json()
-    //     ]);
-
-    //     // if (!$response->successful()) {
-    //     //     Log::error('PhonePe Status API Failed', [
-    //     //         'status' => $response->status(),
-    //     //         'body' => $response->body()
-    //     //     ]);
-    //     //     throw new \Exception('PhonePe status API failed');
-    //     // }
-
-    //     // return $response->json();
-
-    //     // Log::info('PhonePe Poll Status', [
-    //     //     'orderId' => $orderId,
-    //     //     'response' => $response->json()
-    //     // ]);
-
-    //     // if (!$response->successful()) {
-    //     //     throw new \Exception('PhonePe status API failed');
-    //     // }
-
-    //     // return $response->json();
-    // }
-
     public function checkStatus(string $merchantTransactionId)
     {
         $token = PhonePayToken::first();
         $access_token = $token->access_token;
 
-        // log::info($merchantTransactionId); exit;
-
         $mid = Config::get('constants.MID');
 
         $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/$merchantTransactionId/status";
+
+        // log::info($url);
 
         $ch = curl_init($url);
 
@@ -675,53 +633,5 @@ class PhonpeService
 
         return $response;
     }
-
-
-    //     public function checkStatus(string $merchantTransactionId)
-    // {
-    //     $token = PhonePayToken::first();
-    //     $access_token = $token->access_token;
-
-    //     $mid = Config::get('constants.MID');
-
-    //     $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/{$merchantTransactionId}/status";
-
-    //     $ch = curl_init($url);
-
-    //     curl_setopt_array($ch, [
-    //         CURLOPT_RETURNTRANSFER => true,
-    //         CURLOPT_HTTPHEADER => [
-    //             "Authorization: O-Bearer {$access_token}",
-    //             "X-MERCHANT-ID: {$mid}",
-    //             "Content-Type: application/json"
-    //         ],
-    //         CURLOPT_TIMEOUT => 30,
-    //         CURLOPT_CONNECTTIMEOUT => 10,
-    //         CURLOPT_SSL_VERIFYPEER => true, // important
-    //         CURLOPT_SSL_VERIFYHOST => 2,
-    //     ]);
-
-    //     $response = curl_exec($ch);
-
-    //     // 🔴 VERY IMPORTANT: check error
-    //     if ($response === false) {
-    //         $error = curl_error($ch);
-    //         curl_close($ch);
-
-    //         Log::error('PhonePe cURL Error', ['error' => $error]);
-    //         return ['error' => $error];
-    //     }
-
-    //     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    //     curl_close($ch);
-
-    //     Log::info('PhonePe Status API', [
-    //         'http_code' => $httpCode,
-    //         'response' => $response,
-    //         "order_id" => $merchantTransactionId
-    //     ]);
-
-    //     return json_decode($response, true);
-    // }
 
 }

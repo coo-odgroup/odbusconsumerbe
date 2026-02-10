@@ -46,29 +46,22 @@ class PhonePeStatusCheck extends Command
     public function handle()
     {
         $payments = CustomerPayment::where('phonepe_status', 'PENDING')
-            // ->where('poll_attempt', '<', 20)          // max retries
             ->where('created_at', '>=', now()->subMinutes(15))
             ->limit(5)
             ->get();
 
         foreach ($payments as $payment) {
 
-            // throttle polling (20 seconds)
-            // if (
-            //     $payment->last_polled_at &&
-            //     Carbon::now()->diffInSeconds($payment->last_polled_at) < 20
-            // ) {
-            //     continue;
-            // }
-
             try {
-                $response = $this->phonePeService->checkStatus($payment->pp_orderId);
+                $response = $this->phonePeService->checkStatus($payment->order_id);
+
+                // log::info($response);
 
                 $data = is_array($response) ? $response : json_decode($response, true);
 
                 if (!is_array($data)) {
                     Log::error('Invalid PhonePe response', [
-                        'order' => $payment->pp_orderId,
+                        'order' => $payment->order_id,
                         'response' => $response
                     ]);
                     continue;
