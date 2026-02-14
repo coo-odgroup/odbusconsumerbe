@@ -7,6 +7,7 @@ use App\Models\BookingSeized;
 use App\Models\BusCancelled;
 use App\Models\BusSeats;
 use App\Models\Location;
+use App\Models\PhonePayToken;
 use App\Models\TicketPrice;
 use App\Repositories\ChannelRepository;
 use App\Repositories\CommonRepository;
@@ -17,6 +18,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
@@ -36,8 +38,7 @@ class PhonpeService
         ViewSeatsService $viewSeatsService,
         CommonRepository $commonRepository,
         ChannelRepository $channelRepository
-        )
-    {
+    ) {
         $this->booking = $booking;
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
@@ -71,9 +72,9 @@ class PhonpeService
 
             // return $records;
             // dd($records);
-            
+
             $origin = $records[0]->origin;
-            
+
 
             if ($records[0]->payable_amount == 0.00) {
                 $amount = $records[0]->total_fare;
@@ -129,7 +130,7 @@ class PhonpeService
                 }
 
 
-                
+
 
                 $startJDay = $routeDetails[0]->start_j_days;
                 $ticketPriceId = $routeDetails[0]->id;
@@ -145,7 +146,7 @@ class PhonpeService
                         $new_date = date('Y-m-d', strtotime('-2 day', strtotime($entry_date)));
                         break;
                 }
-                
+
                 $cancelledBus = BusCancelled::where('bus_id', $busId)
                     ->where('status', '1')
                     ->with(['busCancelledDate' => function ($bcd) use ($new_date) {
@@ -154,14 +155,14 @@ class PhonpeService
 
                 $busCancel = $cancelledBus->pluck('busCancelledDate')->flatten();
 
-                
+
 
                 if (isset($busCancel) && $busCancel->isNotEmpty()) {
                     return "BUS_CANCELLED";
                 }
 
                 $seatIds = is_array($seatIds) ? $seatIds : explode(',', $seatIds);
-                
+
                 // return $amount;
                 /////////////////seat block recheck////////////////////////
                 $blockSeats = BusSeats::where('operation_date', $entry_date)
@@ -175,15 +176,14 @@ class PhonpeService
 
                 if (isset($blockSeats) && $blockSeats->isNotEmpty()) {
                     return "SEAT_BLOCKED";
-                }              
-               
+                }
+
                 $bookedHoldSeats = $this->viewSeatsService->checkBlockedSeats($request);
 
                 // return $bookedHoldSeats;
 
                 $intersect = collect($bookedHoldSeats)->intersect($seatIds);
-                
-            }else if ($origin == 'DOLPHIN') {
+            } else if ($origin == 'DOLPHIN') {
 
                 $intersect = [];
 
@@ -191,7 +191,7 @@ class PhonpeService
                 if ($res['Status'] != 1) {
                     return  $res['Message'];
                 }
-            }else if ($origin == 'MANTIS') {
+            } else if ($origin == 'MANTIS') {
                 $clientId = 1;
                 $mantisSeatresult = $this->mantisTransformer->MantisSeatLayout($sourceId, $destinationId, $entry_date, $busId, $clientRole, $clientId);
                 //return $mantisSeatresult;
@@ -235,7 +235,7 @@ class PhonpeService
                 $masterSetting = $this->commonRepository->getCommonSettings('1'); // 1 stands for ODBSU is from user table to get maste setting data
 
                 //  if($request['customer_gst_status']==true || $request['customer_gst_status']=='true'){
-                
+
 
                 $update_customer_gst['customer_gst_status'] = 1;
                 $update_customer_gst['customer_gst_number'] = $request['customer_gst_number'];
@@ -253,8 +253,6 @@ class PhonpeService
                     $update_customer_gst['customer_gst_percent'] = $masterSetting[0]->customer_gst;
 
                     $update_customer_gst['payable_amount'] = $amount;
-
-                    
                 }
                 //     }else{
 
@@ -270,22 +268,22 @@ class PhonpeService
                 //         $update_customer_gst['payable_amount']=$amount;    
                 // }
 
-                
+
                 $this->channelRepository->updateCustomerGST($update_customer_gst, $transactionId);
                 // return $records[0]->status;
-                
-                
+
+
                 // dd($seatHold);
 
                 if ($records && $records[0]->status == $seatHold) {
-                    
+
                     $key = $this->channelRepository->getRazorpayKey();
 
                     $bookingId = $records[0]->id;
                     $name = $records[0]->users->name;
                     $email = $records[0]->users->email;
                     $phone = $records[0]->users->phone;
-                    $receiptId = 'rcpt_' . $transactionId;
+                    $receiptId = $transactionId;
 
                     $GetOrderId = $this->channelRepository->UpdateCustomPayment($receiptId, $amount, $name, $email, $phone, $bookingId);
 
@@ -303,9 +301,9 @@ class PhonpeService
                     // dd($origin);
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
                     $bookingId = $records[0]->id;
-                    
+
                     // $this->channelRepository->UpdateStatus($bookingId, $seatHold);
-                    
+
 
                     /////mantis holdId updated to booking table////////
                     if ($origin == 'MANTIS') {
@@ -315,7 +313,7 @@ class PhonpeService
                     $name = $records[0]->users->name;
                     $email = $records[0]->users->email;
                     $phone = $records[0]->users->phone;
-                    $receiptId = 'rcpt_' . $transactionId;
+                    $receiptId = $transactionId;
 
                     // dd($email);
 
@@ -324,7 +322,7 @@ class PhonpeService
                     $key = $this->channelRepository->getRazorpayKey();
 
                     // $GetOrderId = $this->channelRepository->CreateCustomPayment($receiptId, $amount, $name, $email, $phone, $bookingId);
-                    $GetOrderId = $this->channelRepository->CreatePayment($receiptId,$transactionId,$amount, $name, $email, $phone, $bookingId);
+                    $GetOrderId = $this->channelRepository->CreatePayment($receiptId, $transactionId, $amount, $name, $email, $phone, $bookingId);
 
                     $data = array(
                         'name' => $name,
@@ -355,7 +353,7 @@ class PhonpeService
             $data = $request->all();
             $customerId = $this->channelRepository->GetCustomerPaymentppId($request->pp_orderId);
             $customerId = $customerId[0];
-            
+
             // return $customerId;
             //$seatIds = $request['seat_id'];
             // $razorpay_signature = $data['razorpay_signature'];
@@ -607,4 +605,33 @@ class PhonpeService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
     }
+
+    public function checkStatus(string $merchantTransactionId)
+    {
+        $token = PhonePayToken::first();
+        $access_token = $token->access_token;
+
+        $mid = Config::get('constants.MID');
+
+        $url = "https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/order/$merchantTransactionId/status";
+
+        // log::info($url);
+
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                "Authorization: O-Bearer $access_token",
+                "Content-Type: application/json"
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);    
+
+        return $response;
+    }
+
 }

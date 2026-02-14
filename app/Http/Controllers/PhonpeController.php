@@ -159,7 +159,7 @@ class PhonpeController extends Controller
         $pporderId = $payload['payload']['orderId'] ?? null;
         $amount = ($payload['payload']['amount'] ?? 0) / 100;
 
-        // Log::info([$state, $merchantOrderId, $pporderId, $amount]);
+        Log::info([$payload]);
 
         if ($state === 'COMPLETED') {
 
@@ -209,6 +209,45 @@ class PhonpeController extends Controller
 
             return response()->json(['message' => 'payment success']);
         }
+        elseif ($state === 'FAILED') {
+
+
+            $rp = $this->customerPayment->where('pp_orderId', $pporderId)->first();
+
+            if ($rp && isset($rp->booking_id)) {
+                $booking_det = $this->booking->with('users')->where('id', $rp->booking_id)->first();
+
+                if ($booking_det->status != 1) {
+
+                    $crt = strtotime($booking_det->created_at);
+                    $now = strtotime(date("Y-m-d H:i:s"));
+
+                    $diff = round(abs($crt - $now) / 60);
+
+
+                    // if($booking_det->origin=='ODBUS'){
+                    // if ($diff <= 10) {
+
+                        // $razorpay_status_updated_at = date("Y-m-d H:i:s");
+
+                        $this->customerPayment->where('pp_orderId', $pporderId)->update(['phonepe_status' => $state]);
+
+                        // $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
+                        //// call to emailsms api function to send to customer
+
+                        // $request['pnr']=$booking_det->pnr;
+                        // $request['mobile']=$booking_det->users->phone;
+                        //$res= $this->bookingManageService->emailSms($request);
+
+                        $request['transaction_id'] = $booking_det->transaction_id;
+                        $request['pp_orderId'] = $pporderId;
+                        // Log::info([$request['transaction_id'],$request['pp_orderId']]);
+                        $res = $this->phonpeService->paymentStatus(collect($request), 1); // 1-> super admin
+                }
+            }
+            return response()->json(['message' => 'payment Failed']);
+
+        } 
         // elseif ($state === 'FAILED') {
 
         //     Log::warning("Payment FAILED for Order ID: {$orderId}", [
