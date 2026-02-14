@@ -220,28 +220,28 @@ class OfferRepository
         // $couponDetails = $selCouponRecords[0]->where('coupon_code',$appliedCoupon)
         //                                           ->where('bus_id',$busId)
         //                                           ->get(); 
-        switch($type){
-        case(1):    //Coupon available on journey date
-            $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
-                                                   // ->where('bus_id',$busId) /// for all route checkbox bus i is null
-                                                    ->whereIn('via',$via)
-                                                    ->where('from_date', '<=', $jDate)
-                                                    ->where('to_date', '>=', $jDate)
-                                                     ->where('status', 1)
-                                                    ->get(); 
+        $query = Coupon::where('coupon_code', $requestedCouponCode)
+               ->whereIn('via', $via)
+               ->where('status', 1);
 
-            break;
-        case(2):    //Coupon available on booking date
+        if (!isset($AllrouteCoupon[0])) {
+            $query->where('bus_id', $busId);
+        }
 
-            $couponDetails = Coupon::where('coupon_code',$requestedCouponCode)
-                                               // ->where('bus_id',$busId) /// for all route checkbox bus i is null
-                                                ->whereIn('via',$via)
-                                                ->where('from_date', '<=', $bookingDate)
-                                                ->where('to_date', '>=', $bookingDate)
-                                                ->where('status', 1)
-                                                ->get(); 
-            break;      
-    }  
+        switch ($type) {
+            case 1: // journey date
+                $query->where('from_date', '<=', $jDate)
+                    ->where('to_date', '>=', $jDate);
+                break;
+
+            case 2: // booking date
+                $query->where('from_date', '<=', $bookingDate)
+                    ->where('to_date', '>=', $bookingDate);
+                break;
+        }
+
+        $couponDetails = $query->get();
+ 
 
     
         $maxRedeemCount = $couponDetails[0]->max_redeem;
