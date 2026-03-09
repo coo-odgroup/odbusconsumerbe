@@ -97,12 +97,23 @@ return [
 
 
     #PhonePe
-    'MID' => env('MID', 'ODBUSUAT'),
-    'CLIENT_ID' => env('CLIENT_ID', 'ODBUSUAT_251114164525072'),
+    // 'MID' => env('MID', 'ODBUSUAT'),
+    // 'CLIENT_ID' => env('CLIENT_ID', 'ODBUSUAT_251114164525072'),
+    // 'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
+    // 'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
+    // 'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
+    // 'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),  //test
+    // // 'PHONPE_API_URL' => env('PHONPE_API_URL','https://api.phonepe.com/apis/hermes/pg/v1/'),
+    // 'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','http://localhost:4200/payment-status')
+
+    #PhonePe Live
+    'MID' => env('MID', 'ODBUSONLINE'),
+    'CLIENT_ID' => env('CLIENT_ID', 'SU2602201330348595959341'),
     'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
-    'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
+    'CLIENT_SECRET' => env('CLIENT_SECRET', 'eada605f-e1c5-4f3d-bef3-b7550cb7ec5e'),
     'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
-    'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),
-    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','http://localhost:4200/payment-status')
+    'PHONPE_API_URL' => env('PHONPE_API_URL','https://api.phonepe.com/apis/pg/'),
+    'PHONPE_TOKEN_URL' => env('PHONPE_TOKEN_URL','https://api.phonepe.com/apis/identity-manager/v1/oauth/token'),
+    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','https://odtesting.odbus.co.in/payment-status')
    
 ];

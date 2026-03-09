@@ -302,7 +302,7 @@ class PhonpeService
                     //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
                     $bookingId = $records[0]->id;
 
-                    // $this->channelRepository->UpdateStatus($bookingId, $seatHold);
+                    $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
 
                     /////mantis holdId updated to booking table////////

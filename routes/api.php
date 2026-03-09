@@ -32,6 +32,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PhonpeController;
 use Illuminate\Support\Facades\Artisan;
 
@@ -182,7 +183,15 @@ Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is wi
 //});
 Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); 
 
+//Blog module
+Route::post('bloglist',[BlogController::class,"bloglist"]);
+Route::post('blogdetails',[BlogController::class,"blogdetails"]);
+
 
 $router->get('/update-phonepay-token', function () {
    Artisan::call('cron:oauth-token');
+});   
+
+$router->get('/phonepe/status-check', function () {
+   Artisan::call('phonepe:check');
 });   
