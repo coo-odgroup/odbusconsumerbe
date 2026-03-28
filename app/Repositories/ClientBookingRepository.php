@@ -924,4 +924,189 @@ class ClientBookingRepository
 
     }
 
+
+     public function send_notification_api_bookings(){
+
+        $SmsGW = config('services.sms.otpservice');
+        $defUserId = Config::get('constants.USER_ID');
+
+        $today=date('Y-m-d');
+
+       $bookingRecord = $this->booking->where('status', 1)->where('email_sms_status',0)->where('app_type', 'CLNTWEB')->with('bookingDetail')->whereDate('updated_at', $today)->get();
+
+       if($bookingRecord){
+        foreach($bookingRecord as $b){
+
+          $origin = $b->origin;  
+          $busId = $b->bus_id;  
+          $sourceId = $b->source_id;
+          $destinationId = $b->destination_id;
+          $entry_date = $b->journey_dt;
+                              
+          $bookingId = $b->id; 
+          $pnr = $b->pnr;
+          $comissionAmount = $b->client_comission;             
+          $amount = $b->total_fare;
+          $discount = $b->coupon_discount;
+          $payable_amount = $b->total_fare;
+          $odbus_charges = $b->odbus_charges;
+          $odbus_gst = $b->odbus_gst_charges;
+          $owner_fare = $b->owner_fare;
+
+            if($origin=='ODBUS'){
+  
+                   $bookingDetails = $this->booking->where('transaction_id', $b->transaction_id)                               
+                                ->with('users')
+                               ->with(["bus" => function($bs){
+                                $bs->with(['cancellationslabs'=> function($c){
+                                    $c->with('cancellationSlabInfo');
+                                    }]);
+                                $bs->with(['BusType' => function($bt){
+                                   $bt->with('busClass');
+                                 }]);
+                                $bs->with('BusSitting');                
+                                $bs->with('busContacts');               
+                                }])
+                                ->with(["bookingDetail" => function($bk){
+                                    $bk->with('busSeats');    
+                                }])
+                              ->with(['clientWallet' => function($cw){
+                                $cw->orderBy('id','DESC');
+                                $cw->where("status",1);
+                                $cw->limit(1);
+                                }])->first();
+            }
+
+            if($origin=='DOLPHIN' || $origin=='MANTIS'){
+                $bookingDetails = $this->booking->where('transaction_id', $b->transaction_id)
+                                  ->with('users')
+                                  ->with('bus')
+                                  ->with('bookingDetail')
+                                  ->with(['clientWallet' => function($cw){
+                                  $cw->orderBy('id','DESC');
+                                  $cw->where("status",1);
+                                  $cw->limit(1);
+                                  }])->first();
+            }  
+
+           
+
+            $srcName = Location::where('id',$bookingDetails->source_id)->first()->name;
+            $destName = Location::where('id',$bookingDetails->destination_id)->first()->name;
+            
+            $bookingDetails['src_name'] = $srcName;
+            $bookingDetails['dest_name'] = $destName;
+
+            if($origin=='ODBUS'){
+          
+                $busSeatsIds = $b->bookingDetail->pluck('bus_seats_id');
+                $busSeatsDetails = BusSeats::whereIn('id',$busSeatsIds)->with('seats')->get();
+                $seat_no = $busSeatsDetails->pluck('seats.seatText');
+                $passengerDetails = $b->bookingDetail;
+                $busname = $bookingDetails->bus->name;
+                $busNumber = $bookingDetails->bus->bus_number;
+                $conductor_number = $bookingDetails->bus->busContacts->phone;
+                $journeydate = $bookingDetails->journey_dt;
+                $routedetails = $srcName.' To '.$destName;
+                $departureTime = $bookingDetails->boarding_time;
+                $departureTime = date("H:i:s",strtotime($departureTime));
+                $arrivalTime = $bookingDetails->dropping_time;
+                $bookingdate = $b->created_at;
+                $bookingdate = date("d-m-Y", strtotime($bookingdate));
+                $boarding_point = $bookingDetails->boarding_point;
+                $dropping_point = $bookingDetails->dropping_point;
+                $bustype = $bookingDetails->bus->BusType->busClass->class_name;
+                $busTypeName = $bookingDetails->bus->BusType->name;
+                $sittingType = $bookingDetails->bus->BusSitting->name;
+                $name = $bookingDetails->users->name;
+                $phone = $bookingDetails->users->phone;
+                $email = $bookingDetails->users->email;
+                $cancellationslabs = $bookingDetails->bus->cancellationslabs->cancellationSlabInfo; 
+                $transactionFee = $b->transactionFee;
+                $customer_gst_status=$b->customer_gst_status;
+                $customer_gst_number=$b->customer_gst_number;
+                $customer_gst_business_name=$b->customer_gst_business_name;
+                $customer_gst_business_email=$b->customer_gst_business_email;
+                $customer_gst_business_address=$b->customer_gst_business_address;
+                $customer_gst_percent=$b->customer_gst_percent;
+                $customer_gst_amount=$b->customer_gst_amount;
+                $coupon_discount=$b->coupon_discount;
+            
+                $smsData = array(
+                    "seat_no" => $seat_no,
+                    "passengerDetails" => $passengerDetails, 
+                    "busname" => $busname,
+                    "busNumber" => $busNumber,
+                    "journeydate" => $journeydate,
+                    "routedetails" => $srcName."-".$destName,
+                    "departureTime" => $departureTime,
+                    "phone" => $phone,
+                    "conductor_number" => $conductor_number,
+                );
+
+              
+
+                $emailData = array(
+                "pnr" => $pnr,
+                "seat_no" => $seat_no,
+                "passengerDetails" => $passengerDetails, 
+                "busname" => $busname,
+                "busNumber" => $busNumber,
+                "phone" => $phone,
+                "name" => $name,
+                "email" => $email,
+                "journeydate" => $journeydate,
+                "bookingdate" => $bookingdate,
+                "boarding_point" => $boarding_point,
+                "arrivalTime" => $arrivalTime,
+                "dropping_point" => $dropping_point,
+                "routedetails" => $routedetails,
+                "departureTime" => $departureTime,
+                "conductor_number" => $conductor_number,
+                "source" => $srcName,
+                "destination" => $destName,
+                "bustype" => $bustype,
+                "busTypeName" => $busTypeName,
+                "sittingType" => $sittingType,
+              );  
+              
+              Log::info($emailData);
+              Log::info($smsData);
+              
+
+              /////////////////send email to odbus admin////////
+
+                $this->channelRepository->sendAdminEmailTicket($amount,$discount,$payable_amount,$odbus_charges,$odbus_gst,$owner_fare,$emailData,$pnr,$cancellationslabs,$transactionFee,$customer_gst_status,$customer_gst_number,$customer_gst_business_name,$customer_gst_business_email,$customer_gst_business_address,$customer_gst_percent,$customer_gst_amount,$coupon_discount);
+
+                ///////////////////CMO SMS/////////////////////////////////////////////////
+                $busContactDetails = BusContacts::where('bus_id',$busId)
+                                            ->where('status','1')
+                                            ->where('booking_sms_send','1')
+                                            ->get('phone');
+            
+              if($busContactDetails->isNotEmpty()){           
+                    $contact_number = collect($busContactDetails)->implode('phone',',');
+                
+                    $sms_gateway = OdbusCharges::where('user_id',$defUserId)->first()->sms_gateway;
+                    
+                    if($sms_gateway ==1){
+
+                        Log::info($pnr);
+                        Log::info($contact_number);
+                    
+                        $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount,$smsData, $pnr, $contact_number);  
+                    }  
+                }
+
+            ////// update email_sms_status=1 column
+
+            Booking::where('id', $b->id)->update(['email_sms_status' => 1]);
+            
+            }
+
+
+        }
+       }
+    }
+
 }

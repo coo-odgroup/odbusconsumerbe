@@ -51,3 +51,6 @@ Route::get('PaytmdriverDetailApi', [ClientBookingController::class,'PaytmdriverD
 Route::get('/GSTEmailNotification', [ChannelController::class, 'GSTEmailSend']);
 
 Route::get('/send-sms', [PopularController::class, 'ValueFirstSms']);
+
+// added by Banashri Mohanty :: 28-March-2026 
+Route::get('/send-notification-api-bookings', [ClientBookingController::class, 'send_notification_api_bookings']);

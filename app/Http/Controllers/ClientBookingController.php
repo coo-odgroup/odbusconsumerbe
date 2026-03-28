@@ -48,6 +48,7 @@ class ClientBookingController extends Controller
         $this->clientCancelTicketValidator = $clientCancelTicketValidator;  
         $this->clientCancelTktValidator = $clientCancelTktValidator; 
         $this->bookingManageValidator = $bookingManageValidator;   
+        $this->clientBookingRepository = $clientBookingRepository;   
     }
         /**
      * @OA\Post(
@@ -772,4 +773,8 @@ class ClientBookingController extends Controller
     PaytmdriverCallBackAPI('ODCL51335');
     
   }
+
+   public function send_notification_api_bookings(){
+     return $this->clientBookingRepository->send_notification_api_bookings();
+   }
 }
