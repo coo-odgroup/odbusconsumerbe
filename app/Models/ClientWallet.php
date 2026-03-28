@@ -9,7 +9,7 @@ class ClientWallet extends Model
 {
     use HasFactory; 
     protected $table = 'client_wallet';
-    protected $fillable = ['transaction_id','booking_id','reference_id','payment_via','amount','transaction_type','balance','user_id'];
+    protected $fillable = ['transaction_id','booking_id','reference_id','payment_via','amount','transaction_type','balance','user_id','type','created_by','status'];
     
 
     public function booking()
