@@ -48,7 +48,11 @@ function PaytmdriverCallBackAPI($pnr)
     left join bus bs on b.bus_id=bs.id 
     left join bus_contacts bc on b.bus_id=bc.bus_id 
     where b.pnr='$pnr' and bc.status=1 and bc.type=2");
-    $bd = $bd[0];
+
+    
+   if(isset($bd[0])){
+      $bd = $bd[0];
+   
     $body = '{
         "providerId":68 , 
         "operatorId": "' . $bd->bus_operator_id . '",
@@ -93,7 +97,8 @@ function PaytmdriverCallBackAPI($pnr)
     $response = curl_exec($curl);
 
     curl_close($curl);
-    // Log::Info("driver call back API");
+   }
+     
     // Log::Info($response);
 }
 

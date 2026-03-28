@@ -314,8 +314,6 @@ class ClientBookingService
  
     public function ticketConfirmation($request,$clientRole)
     {
-
-
         try {
             $records = $this->channelRepository->getBookingRecord($request['transaction_id']);
             $transationId = $request['transaction_id'];
@@ -352,6 +350,7 @@ class ClientBookingService
            
             $bookTicket = $this->clientBookingRepository->ticketConfirmation($request);
            //// paytm driver api call
+          
             if($records[0]->user_id==env('PAYTM_ID')){
                 PaytmdriverCallBackAPI($records[0]->pnr); 
             }
