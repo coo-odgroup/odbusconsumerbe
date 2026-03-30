@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\CancelTicketService;
 use App\AppValidator\CancelTicketValidator;
+use App\Models\CustomerPaymentLog;
 use App\Repositories\ChannelRepository;
 
 
@@ -37,46 +38,6 @@ class CancelTicketController extends Controller
     $this->cancelTicketValidator = $cancelTicketValidator;
     $this->channelRepository = $channelRepository;
   }
-
-  /**
-   * @OA\Post(
-   *     path="/api/CancelTicket",
-   *     tags={"CancelTicket API"},
-   *     description="refund initiated for ticket cancellation",
-   *     summary="refund initiated for ticket cancellation",
-   *     @OA\Parameter(
-   *          name="pnr",
-   *          description="pnr number",
-   *          required=true,
-   *          in="query",
-   *          @OA\Schema(
-   *              type="string",
-   *              example="ODM5163863"
-   *          )
-   *      ),
-   *     @OA\Parameter(
-   *          name="phone",
-   *          description="mobile number",
-   *          required=true,
-   *          in="query",
-   *          @OA\Schema(
-   *              type="integer",
-   *              example="9090909090"
-   *          )
-   *      ),
-   *  @OA\Response(response="201", description=" Refund initiated on cancellation of ticket"),
-   *  @OA\Response(response=206, description="Validation error: Not a valid pnr or Mobile number"),
-   *  @OA\Response(response=400, description="Bad request"),
-   *  @OA\Response(response=401, description="Unauthorized access"),
-   *  @OA\Response(response=404, description="No record found"),
-   *  @OA\Response(response=500, description="Internal server error"),
-   *  @OA\Response(response=502, description="Bad gateway"),
-   *  @OA\Response(response=503, description="Service unavailable"),
-   *  @OA\Response(response=504, description="Gateway timeout"),
-   *     security={{ "apiAuth": {} }}
-   * )
-   * 
-   */
 
   public function CancelDolphinSeat(Request $request)
   {
@@ -117,6 +78,18 @@ class CancelTicketController extends Controller
       //   return $this->successResponse($response,Config::get('constants.NO_PAYMENT'));
       // }
 
+    } catch (Exception $e) {
+      return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+    }
+  }
+
+
+  public function fetchRefundStatus(Request $request)
+  {
+    try {
+      $bookingId = $request->booking_id;
+      $response = CustomerPaymentLog::where('booking_id', $bookingId)->get(['refund_status','created_at']);
+      return $this->successResponse($response, Response::HTTP_OK);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
     }

@@ -195,3 +195,5 @@ $router->get('/update-phonepay-token', function () {
 $router->get('/phonepe/status-check', function () {
    Artisan::call('phonepe:check');
 });   
+
+Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatus"]);
