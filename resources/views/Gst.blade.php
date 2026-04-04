@@ -641,8 +641,8 @@
 								<strong>OD Tours and Travels</strong><br />
 								3rd Floor, Hotel Rajdhani, Cuttack Puri Road,
 								Bhubaneswar - 751006 (Odisha), India<br />
-								<strong>PAN:-</strong> DFIPD4949M<br />
-								<strong>GSTIN:-</strong>21DFIPD4949M1Z8<br />
+								<strong>PAN:-</strong> AAJFO7883L<br />
+								<strong>GSTIN:-</strong>21AAJFO7883L1ZP<br />
 
 							</address>
 						</div>
