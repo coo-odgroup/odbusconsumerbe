@@ -19,6 +19,7 @@ class BlogController extends Controller
         try {
             $limit = $request->limit ?? null;
             $cat = DB::table('blog_categories')->where('slug', $request->cat_slug)->first();
+            $author = DB::table('authors')->where('author_slug', $request->author_slug)->first();
             // return $request->tag_slug;
 
             $tag = DB::table('blog_tag_map')
@@ -27,24 +28,36 @@ class BlogController extends Controller
                 ->pluck('blog_tag_map.blog_id');
 
 
-                // return $tag;
+            // return $tag;
 
             if ($cat) {
                 $blogs = Blog::where('category_id', $cat->id)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-                    ->select('blogs.*', 'blog_categories.category_name')
+                    ->join('authors', 'authors.id', '=', 'blogs.author_id')
+                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
+                    ->orderBy('blogs.id', 'desc')
+                    ->get();
+            } elseif ($author) {
+                $blogs = Blog::where('author_id', $author->id)
+                    ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+                    ->join('authors', 'authors.id', '=', 'blogs.author_id')
+                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             } elseif ($tag->count() != 0) {
                 $blogs = Blog::whereIn('blogs.id', $tag)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-                    ->select('blogs.*', 'blog_categories.category_name')
+                    ->join('authors', 'authors.id', '=', 'blogs.author_id')
+                    ->select('blogs.*', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blog_categories.category_name')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             } else {
                 $blogs = Blog::orderBy('id', 'desc')->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
+                    ->join('authors', 'authors.id', '=', 'blogs.author_id')
                     ->limit($limit)
-                    ->select('blogs.*', 'blog_categories.category_name')->get();
+                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
+                    ->orderBy('blogs.id', 'desc')
+                    ->get();
             }
 
             // return $blogs;
@@ -80,7 +93,8 @@ class BlogController extends Controller
 
             $blogs = Blog::where('blogs.slug', $request->slug)
                 ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
-                ->select('blog_categories.category_name', 'blogs.*')
+                ->join('authors', 'authors.id', '=', 'blogs.author_id')
+                ->select('blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blogs.*')
                 ->with('tags')
                 ->first();
 

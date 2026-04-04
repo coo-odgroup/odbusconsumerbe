@@ -34,6 +34,7 @@ use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PhonpeController;
+use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Artisan;
 
 //Route::group(['middleware' => ['checkIp']], function() {
@@ -141,7 +142,11 @@ Route::post('/PopularInfo', [HomepageController::class, 'homePage']);
 Route::post('/ResendOTP', [UsersController::class, 'resendOTP']);
 Route::post('/apiReference', [ApiReferenceController::class, 'apiReference']);
 Route::get('/GetPnr/{trans_id}', [BookingManageController::class, 'GetPnr']);
-Route::get('/CheckWalletBalance', [ClientBookingController::class, 'walletBalance'])->middleware(LogRoute::class);;
+Route::get('/CheckWalletBalance', [ClientBookingController::class, 'walletBalance'])->middleware(LogRoute::class);
+
+
+Route::post('/test-booking-sms', [SmsController::class, 'send']);
+Route::post('/test-whatsapp-sms', [SmsController::class, 'sendWhatsappCampaign']);
 
 });
 
