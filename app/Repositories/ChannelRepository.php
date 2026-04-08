@@ -47,7 +47,7 @@ use App\Jobs\TicketConfirmationJob;
 use App\Jobs\ReminderBeforeOneHourJob;
 use App\Jobs\ReminderBefore24HourJob;
 use App\Jobs\SendCancelTicketNotificationJob;
-use App\Jobs\ReminderBeforeDeboardingJob  ;
+use App\Jobs\ReminderBeforeDeboardingJob;
 use App\Jobs\SendFeedbackNotificationJob;
 
 use Carbon\Carbon;
@@ -367,12 +367,7 @@ class ChannelRepository
   //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
   public function sendSmsTicket($payable_amount, $data, $pnr)
   {
-    $SmsGW = config('services.sms.otpservice');
-    if ($SmsGW === 'valuefirst') {
-      return $this->sendSmsTicket_valueFirst($payable_amount, $data, $pnr);
-    } else if ($SmsGW === 'textLocal') {
-      return $this->sendSmsTicket_textLocal($payable_amount, $data, $pnr);
-    }
+    return $this->sendSmsTicket_valueFirst($payable_amount, $data, $pnr);
   }
 
 
@@ -380,6 +375,7 @@ class ChannelRepository
   // Created by Subhasis Mohanty  added on 25-08-2024 for Value First SMS Service
   public function sendSmsTicket_valueFirst($payable_amount, $data, $pnr)
   {
+    // return $data;
 
     $collection = collect($data['seat_no']);
     $seatList = $collection->implode(',');
@@ -442,6 +438,8 @@ class ChannelRepository
       "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, " .
       "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, " .
       "Fare: {$payable_amount}, Conductor Mob: {$data['conductor_number']} - ODBUS";
+
+    // return $message;
 
     // Send SMS using ValueFirst
     $valueFirstService = new \App\Services\ValueFirstService();
@@ -1075,7 +1073,7 @@ class ChannelRepository
 
     log::info($response);
     exit;
-   // log::info($response); exit;
+    // log::info($response); exit;
 
     // Creates customer payment 
     $orderId = $response->payment_session_id; //$order['id']; 
@@ -1416,247 +1414,91 @@ class ChannelRepository
     $emailData,
     $origin
   ) {
+    // return $smsData;
     $SmsGW = config('services.sms.otpservice');
 
-    $getToken = $this->phonpeToken();
+    //---------------------------------------------------------------------------------------------------------------
+    //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
-    $phonpe_url = Config('constants.PHONPE_API_URL');
+    // $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
+    $booking = $this->booking->find($bookingId);
+    $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
+    // return $booking;
 
-    $url = $phonpe_url . "checkout/v2/order/{$transactionId}/status";
-    // dd( 'Authorization'. $getToken->token_type . " " . $getToken->access_token);
-    $response = Http::withHeaders([
-      'Authorization' => $getToken->token_type . " " . $getToken->access_token,
-      'Content-Type' => 'application/json'
-    ])->get($url);
+    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
+    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
 
-    // Convert to array if needed
-    $data = $response->json();
-    // dd($data);
-    // return $data['state'];
+      $msgId = $sendsms->messages[0]->id;
+      $status = $sendsms->status;
+      $from = $sendsms->message->sender;
+      $to = $sendsms->messages[0]->recipient;
+      $contents = $sendsms->message->content;
+      $response = collect($sendsms);
+      /// save sms related things in manage_sms table///////////////
 
-    // PENDING
-    // COMPLETED
-    // FAILED
-
-    // return $customerId;
-
-    if ($data['state'] == "COMPLETED") {
-      $this->customerPayment->where('id', $customerId)
-        ->update([
-          // 'razorpay_id' => $razorpay_payment_id,
-          // 'razorpay_signature' => $razorpay_signature,
-          'payment_done' => $paymentDone
-        ]);
-
-      // return $customerId;
-
-      //Update Booking Ticket Status in booking Change status to 1(Booked)
-
-      $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
-      $booking = $this->booking->find($bookingId);
-
-      // return $booking;
-
-
-
-
-      TicketConfirmationJob::dispatch($bookingId, 'ticket_confirmed');
-      $now = Carbon::now();
-
-      $boardingDateTime = Carbon::parse(
-        $booking->journey_dt . ' ' . $booking->boarding_time
-      );
-
-      $droppingDateTime = Carbon::parse(
-        $booking->journey_dt . ' ' . $booking->dropping_time
-      );
-
-      if ($booking->dropping_time < $booking->boarding_time) {
-        $droppingDateTime->addDay();
-      }
-
-      $oneHourBefore     = $boardingDateTime->copy()->subHour(1);
-      $twentyFourBefore  = $boardingDateTime->copy()->subHour(24);
-      $deboardingBefore  = $droppingDateTime->copy()->subMinutes(30);
-      $feedbackTime = $droppingDateTime->copy()->addHours(8);
-
-      Log::info('Reminder times', [
-        'now' => $now->toDateTimeString(),
-        'boarding' => $boardingDateTime->toDateTimeString(),
-        'dropping' => $droppingDateTime->toDateTimeString(),
-        '1h_before' => $oneHourBefore->toDateTimeString(),
-        '24h_before' => $twentyFourBefore->toDateTimeString(),
-        'deboarding_30m_before' => $deboardingBefore->toDateTimeString(),
-      ]);
-
-
-      if ($oneHourBefore->greaterThan($now)) {
-        ReminderBeforeOneHourJob::dispatch(
-          $booking->id,
-          'pre_departure_reminder_1h'
-        )->delay($oneHourBefore);
-      }
-
-      if ($twentyFourBefore->greaterThan($now)) {
-        ReminderBefore24HourJob::dispatch(
-          $booking->id,
-          'pre_departure_reminder_24h'
-        )->delay($twentyFourBefore);
-      }
-     $alreadyScheduled = FcmNotification::where('booking_id', $booking->id)
-    ->whereIn('template_id', function ($q) {
-        $q->select('push.id')
-          ->from('scheduler.push_notification_template as push')
-          ->join('scheduler.ms_template_key as key', 'key.id', '=', 'push.template_key_id')
-          ->whereRaw('TRIM(key.template_key) = ?', ['pre_deboarding_reminder_30m'])
-          ->where('push.status', 1);
-    })
-    ->exists();
-
-if (!$alreadyScheduled && $deboardingBefore->greaterThan($now)) {
-    ReminderBeforeDeboardingJob::dispatch(
-        $booking->id,
-        'pre_deboarding_reminder_30m',
-        $deboardingBefore
-    )->delay($deboardingBefore);
-}
-
-$hour = $feedbackTime->hour;
-if ($hour >= 22 || $hour < 8) {
-    $feedbackTime = $feedbackTime
-        ->addDay()
-        ->setTime(9, 0, 0);
-}
-
-Log::info('Feedback scheduling time', [
-    'dropping_time' => $droppingDateTime->toDateTimeString(),
-    'feedback_time' => $feedbackTime->toDateTimeString(),
-]);
-
-$feedbackAlreadyScheduled = FcmNotification::where('booking_id', $booking->id)
-    ->whereIn('template_id', function ($q) {
-        $q->select('push.id')
-          ->from('scheduler.push_notification_template as push')
-          ->join('scheduler.ms_template_key as key', 'key.id', '=', 'push.template_key_id')
-          ->whereRaw('TRIM(key.template_key) = ?', ['feedback_request'])
-          ->where('push.status', 1);
-    })
-    ->exists();
-
-if (!$feedbackAlreadyScheduled && $feedbackTime->greaterThan($now)) {
-
-    SendFeedbackNotificationJob::dispatch(
-        $booking->id,
-        'feedback_request'
-    )->delay($feedbackTime);
-
-    Log::info('FEEDBACK JOB → Scheduled', [
-        'booking_id' => $booking->id,
-        'run_at'     => $feedbackTime->toDateTimeString(),
-    ]);
-}
-
-
-      // return response()->json([
-      //   'status' => true,
-      //   'message' => 'Job dispatched successfully'
-      // ]);
-
-      // return $booking;
-
-      $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
-      $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
-      // dd($sendsms);
-      // if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
-
-      //   $msgId = $sendsms->messages[0]->id;
-      //   $status = $sendsms->status;
-      //   $from = $sendsms->message->sender;
-      //   $to = $sendsms->messages[0]->recipient;
-      //   $contents = $sendsms->message->content;
-      //   $response = collect($sendsms);
-      //   /// save sms related things in manage_sms table///////////////
-
-      //   $sms = new $this->manageSms();
-      //   $sms->pnr = $pnr;
-      //   $sms->booking_id = $bookingId;
-      //   $sms->sms_engine = $SmsGW;
-      //   $sms->type = 'customer';
-      //   $sms->status = $status;
-      //   $sms->from = $from;
-      //   $sms->to = $to;
-      //   $sms->contents = $contents;
-      //   $sms->response = $response;
-      //   $sms->message_id = $msgId;
-      //   $sms->save();
-      // }
-
-
-
-      ///////////////////CMO SMS/////////////////////////////////////////////////
-
-      if ($origin == 'ODBUS') {
-        $busContactDetails = BusContacts::where('bus_id', $busId)
-          ->where('status', '1')
-          ->where('booking_sms_send', '1')
-          ->get('phone');
-
-        if ($busContactDetails->isNotEmpty()) {
-          $contact_number = collect($busContactDetails)->implode('phone', ',');
-          $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
-
-          if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
-
-            $msgId = $sendSmsCMO->messages[0]->id;
-            $status = $sendSmsCMO->status;
-            $from = $sendSmsCMO->message->sender;
-            $to = collect($sendSmsCMO->messages)->pluck('recipient');
-            $contents = $sendSmsCMO->message->content;
-            $response = collect($sendSmsCMO);
-
-            /// save sms related things in manage_sms table///////////////
-
-            $sms = new $this->manageSms();
-            $sms->pnr = $pnr;
-            $sms->booking_id = $bookingId;
-            $sms->sms_engine = $SmsGW;
-            $sms->type = 'cmo';
-            $sms->status = $status;
-            $sms->from = $from;
-            $sms->to = $to;
-            $sms->contents = $contents;
-            $sms->response = $response;
-            $sms->message_id = $msgId;
-            $sms->save();
-          }
-          //return $sms;
-        }
-      }
-
-      if ($email) {
-        // $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-        // dd($email);
-      }
-
-      /////////////////send email to odbus admin////////
-
-      // $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-
-
-      return "Payment Done";
-      // }
-      // else{
-      // $this->booking->where('id', $bookingId)
-      // ->where('transaction_id', $transationId)
-      // ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]);
-      // return "Payment Failed";
-      // }
-    } elseif ($data['state'] == "PENDING") {
-      return "Payment Pending";
-    } else {
-      return "Payment Failed";
+      $sms = new $this->manageSms();
+      $sms->pnr = $pnr;
+      $sms->booking_id = $bookingId;
+      $sms->sms_engine = $SmsGW;
+      $sms->type = 'customer';
+      $sms->status = $status;
+      $sms->from = $from;
+      $sms->to = $to;
+      $sms->contents = $contents;
+      $sms->response = $response;
+      $sms->message_id = $msgId;
+      $sms->save();
     }
+
+    ///////////////////CMO SMS/////////////////////////////////////////////////
+
+    if ($origin == 'ODBUS') {
+      $busContactDetails = BusContacts::where('bus_id', $busId)
+        ->where('status', '1')
+        ->where('booking_sms_send', '1')
+        ->get('phone');
+      if ($busContactDetails->isNotEmpty()) {
+        $contact_number = collect($busContactDetails)->implode('phone', ',');
+        $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
+
+        if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+
+          $msgId = $sendSmsCMO->messages[0]->id;
+          $status = $sendSmsCMO->status;
+          $from = $sendSmsCMO->message->sender;
+          $to = collect($sendSmsCMO->messages)->pluck('recipient');
+          $contents = $sendSmsCMO->message->content;
+          $response = collect($sendSmsCMO);
+
+          /// save sms related things in manage_sms table///////////////
+
+          $sms = new $this->manageSms();
+          $sms->pnr = $pnr;
+          $sms->booking_id = $bookingId;
+          $sms->sms_engine = $SmsGW;
+          $sms->type = 'cmo';
+          $sms->status = $status;
+          $sms->from = $from;
+          $sms->to = $to;
+          $sms->contents = $contents;
+          $sms->response = $response;
+          $sms->message_id = $msgId;
+          $sms->save();
+        }
+        //return $sms;
+      }
+    }
+
+    if ($email) {
+      $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+    }
+    /////////////////send email to odbus admin////////
+    $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+
+    return "Payment Done";
+
+    //--------------------------------------------------------------------------------------------------------------
   }
 
 
@@ -1674,7 +1516,7 @@ if (!$feedbackAlreadyScheduled && $feedbackTime->greaterThan($now)) {
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;
     $agetWallet->status = 1;
-       
+
 
     //Log::info($agetWallet);
 
@@ -1724,7 +1566,7 @@ if (!$feedbackAlreadyScheduled && $feedbackTime->greaterThan($now)) {
     $afterTdsComission = $totalAgentComission - $tds;
 
     //return $afterTdsComission;
-    
+
     /// By Lima 10 April,2023, 1:30 PM no commision logic /////////
 
     $AgentData = $this->user->where('id', $agentId)->first();
@@ -1753,7 +1595,7 @@ if (!$feedbackAlreadyScheduled && $feedbackTime->greaterThan($now)) {
     $agetWallet->type = 'Commission';
     $agetWallet->booking_id = $bookingId;
     $agetWallet->transaction_type = 'c';
-    $agetWallet->balance = $walletBalance;// + $afterTdsComission;  //commented to not to add agent commision into  wallet balance immedietly
+    $agetWallet->balance = $walletBalance; // + $afterTdsComission;  //commented to not to add agent commision into  wallet balance immedietly
     $agetWallet->balance = $walletBalance;
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;

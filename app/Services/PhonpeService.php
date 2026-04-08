@@ -341,29 +341,18 @@ class PhonpeService
 
     public function paymentStatus($request, $clientRole)
     {
-        // return $request;
-        // dd($request);
-        // return $request->all();
-        //log::info("booking updated by - ".$clientRole);
-
         try {
             $booked = Config::get('constants.BOOKED_STATUS');
             $paymentDone = Config::get('constants.PAYMENT_DONE');
             $bookedStatusFailed = Config::get('constants.BOOKED_STATUS_FAILED');
             $data = $request->all();
-            $customerId = $this->channelRepository->GetCustomerPaymentppId($request->pp_orderId);
+            $customerId = $this->channelRepository->GetCustomerPaymentppId($request["pp_orderId"]);
             $customerId = $customerId[0];
 
-            // return $customerId;
-            //$seatIds = $request['seat_id'];
-            // $razorpay_signature = $data['razorpay_signature'];
-            // $razorpay_payment_id = $data['razorpay_payment_id'];
-            // $razorpay_order_id = $data['razorpay_order_id'];
-            $transationId = $request->transaction_id;
+            $transationId = $request["transaction_id"];
             $main_source = '';
             $main_destination = '';
             $records = $this->channelRepository->getBookingRecord($transationId);
-            // dd($records);
 
             // return $records[0];
 
@@ -375,8 +364,6 @@ class PhonpeService
 
 
             $origin = $records[0]->origin;
-
-            // dd($origin);
 
             if ($origin == 'DOLPHIN') {
 

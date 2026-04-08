@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AppValidator\PaymentStatusValidator;
+use App\Models\Booking;
 use App\Models\CustomerPayment;
 use App\Models\PhonePayToken;
 use App\Services\PhonpeService;
@@ -22,11 +23,15 @@ class PhonpeController extends Controller
 
     protected $phonpeService;
     protected $paymentStatusValidator;
+    protected $customerPayment;
+    protected $booking;
 
-    public function __construct(PhonpeService $phonpeService,PaymentStatusValidator $paymentStatusValidator)
+    public function __construct(PhonpeService $phonpeService, PaymentStatusValidator $paymentStatusValidator, CustomerPayment $customerPayment, Booking $booking)
     {
         $this->phonpeService = $phonpeService;
         $this->paymentStatusValidator = $paymentStatusValidator;
+        $this->customerPayment = $customerPayment;
+        $this->booking = $booking;
     }
 
     //     public function makePayment(Request $request)
@@ -76,27 +81,18 @@ class PhonpeController extends Controller
     // }
 
 
-    public function makePayment(Request $request){
+    public function makePayment(Request $request)
+    {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
 
         $token = PhonePayToken::first();
 
-        
-        // return $token;
-        
-        
         try {
             $response = $this->phonpeService->makePayment($request, $user->role_id);
-            
-            
+
             $orderId = data_get($response, 'pp_resp.original.orderId');
-            // dd($orderId);
-
-            // return $orderId;
-
             if (isset($orderId)) {
-
                 return $this->successResponse($response, Config::get('constants.ORDERID_CREATED'), Response::HTTP_CREATED);
             } elseif ($response == 'BUS_SEIZED') {
 
@@ -125,9 +121,6 @@ class PhonpeController extends Controller
         $username = 'odbusSas';
         $password = 'Admin2010';
 
-        // echo hash('sha256', $username.':'.$password);
-
-        // 1️⃣ Get Authorization header sent by PhonePe
         $authHeader = $request->header('Authorization');
 
         if (!$authHeader) {
@@ -136,11 +129,8 @@ class PhonpeController extends Controller
         }
 
 
-        // SHA256(username:password)
         $expectedHash = hash('sha256', $username . ':' . $password);
 
-        // return $expectedHash;
-        // PhonePe sends hash directly in Authorization header
         if ($authHeader !== $expectedHash) {
             Log::error('PhonePe Webhook: Invalid Authorization hash', [
                 'received' => $authHeader,
@@ -150,20 +140,20 @@ class PhonpeController extends Controller
             return response()->json(['error' => 'Invalid signature'], 401);
         }
 
-        // 4️⃣ Authorization verified → process payload
         $payload = $request->all();
 
-        // Correct paths
         $state = $payload['payload']['state'] ?? null;
         $merchantOrderId = $payload['payload']['merchantOrderId'] ?? null;
         $pporderId = $payload['payload']['orderId'] ?? null;
         $amount = ($payload['payload']['amount'] ?? 0) / 100;
 
-        Log::info([$payload]);
+        // $pporderId = $request->pp_orderId;
+        // $state = 'COMPLETED';
+
+        // return $state;
 
         if ($state === 'COMPLETED') {
 
-
             $rp = $this->customerPayment->where('pp_orderId', $pporderId)->first();
 
             if ($rp && isset($rp->booking_id)) {
@@ -176,40 +166,25 @@ class PhonpeController extends Controller
 
                     $diff = round(abs($crt - $now) / 60);
 
+                    $this->customerPayment->where('pp_orderId', $pporderId)->update(['payment_done' => 1, 'phonepe_status' => $state]);
 
-                    // if($booking_det->origin=='ODBUS'){
-                    // if ($diff <= 10) {
+                    $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
+                    //// call to emailsms api function to send to customer
 
-                        $razorpay_status_updated_at = date("Y-m-d H:i:s");
+                    // $request['pnr']=$booking_det->pnr;
+                    // $request['mobile']=$booking_det->users->phone;
+                    //$res= $this->bookingManageService->emailSms($request);
 
-                        $this->customerPayment->where('pp_orderId', $pporderId)->update(['payment_done' => 1,'phonepe_status' => $state]);
+                    $request['transaction_id'] = $booking_det->transaction_id;
+                    $request['pp_orderId'] = $pporderId;
 
-                        $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
-                        //// call to emailsms api function to send to customer
-
-                        // $request['pnr']=$booking_det->pnr;
-                        // $request['mobile']=$booking_det->users->phone;
-                        //$res= $this->bookingManageService->emailSms($request);
-
-                        $request['transaction_id'] = $booking_det->transaction_id;
-                        $request['pp_orderId'] = $pporderId;
-                        // Log::info([$request['transaction_id'],$request['pp_orderId']]);
-                        $res = $this->phonpeService->paymentStatus(collect($request), 1); // 1-> super admin
-                        //Log::info($booking_det->pnr."----".$res);
-                        // }
-                    // } else {
-                    //     // Log::info("Payment receive late. So Not updateing the status: ".$booking_det->pnr."---".$response->order_id."---".$response->status."---".$response->id);
-                    //     // $res = $this->channelService->NotifyToAdminForDelayPaymentFromRazorpayHook($booking_det,$response->order_id,$response->id,$response->status);
-
-                    // }
+                    // return $request->all();
+                    return $res = $this->phonpeService->paymentStatus(collect($request), 1);
                 }
             }
-
-            // Log::info("Payment COMPLETED for Order ID");
-
+            
             return response()->json(['message' => 'payment success']);
-        }
-        elseif ($state === 'FAILED') {
+        } elseif ($state === 'FAILED') {
 
 
             $rp = $this->customerPayment->where('pp_orderId', $pporderId)->first();
@@ -228,26 +203,25 @@ class PhonpeController extends Controller
                     // if($booking_det->origin=='ODBUS'){
                     // if ($diff <= 10) {
 
-                        // $razorpay_status_updated_at = date("Y-m-d H:i:s");
+                    // $razorpay_status_updated_at = date("Y-m-d H:i:s");
 
-                        $this->customerPayment->where('pp_orderId', $pporderId)->update(['phonepe_status' => $state]);
+                    $this->customerPayment->where('pp_orderId', $pporderId)->update(['phonepe_status' => $state]);
 
-                        // $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
-                        //// call to emailsms api function to send to customer
+                    // $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
+                    //// call to emailsms api function to send to customer
 
-                        // $request['pnr']=$booking_det->pnr;
-                        // $request['mobile']=$booking_det->users->phone;
-                        //$res= $this->bookingManageService->emailSms($request);
+                    // $request['pnr']=$booking_det->pnr;
+                    // $request['mobile']=$booking_det->users->phone;
+                    //$res= $this->bookingManageService->emailSms($request);
 
-                        $request['transaction_id'] = $booking_det->transaction_id;
-                        $request['pp_orderId'] = $pporderId;
-                        // Log::info([$request['transaction_id'],$request['pp_orderId']]);
-                        $res = $this->phonpeService->paymentStatus(collect($request), 1); // 1-> super admin
+                    $request['transaction_id'] = $booking_det->transaction_id;
+                    $request['pp_orderId'] = $pporderId;
+                    // Log::info([$request['transaction_id'],$request['pp_orderId']]);
+                    $res = $this->phonpeService->paymentStatus(collect($request), 1); // 1-> super admin
                 }
             }
             return response()->json(['message' => 'payment Failed']);
-
-        } 
+        }
         // elseif ($state === 'FAILED') {
 
         //     Log::warning("Payment FAILED for Order ID: {$orderId}", [
@@ -268,8 +242,9 @@ class PhonpeController extends Controller
     }
 
 
-    public function paymentStatus(Request $request){
-        $data = CustomerPayment::where('pp_orderId',$request->pp_orderId)->first();
+    public function paymentStatus(Request $request)
+    {
+        $data = CustomerPayment::where('pp_orderId', $request->pp_orderId)->first();
 
         return response()->json(["data" => $data]);
     }
@@ -278,13 +253,13 @@ class PhonpeController extends Controller
     // public function paymentStatus(Request $request){
     //     $data = $request->all();
     //     $paymentStatusValidation = $this->paymentStatusValidator->validate($data);
-        
+
     //     $token = JWTAuth::getToken();
     //     $user = JWTAuth::toUser($token);
     //     $clientRole = $user->role_id;
-        
+
     //     if ($paymentStatusValidation->fails()) {
-            
+
     //         $errors = $paymentStatusValidation->errors();
     //         return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
     //     }
