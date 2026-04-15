@@ -1247,7 +1247,7 @@ class ChannelRepository
   //Phonpe orderId
   public function GetCustomerPaymentppId($pp_orderId)
   {
-    return $this->customerPayment->where('pp_orderId', $pp_orderId)->pluck('id');
+    return $this->customerPayment->where('pp_orderId', $pp_orderId)->first(['id', 'booking_id']);
   }
 
   public function updateCustomerGST($update_customer_gst, $transationId)

@@ -34,6 +34,7 @@ use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PhonpeController;
+use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Artisan;
 
 //Route::group(['middleware' => ['checkIp']], function() {
@@ -197,3 +198,5 @@ $router->get('/phonepe/status-check', function () {
 });   
 
 Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatus"]);
+
+Route::post('test-whatsapp-sms',[SmsController::class,"sendWhatsappCampaign"]);

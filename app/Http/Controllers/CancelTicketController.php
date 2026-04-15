@@ -62,7 +62,7 @@ class CancelTicketController extends Controller
     }
     try {
       // Return Remove this line later
-      $response =  $this->cancelTicketService->cancelTicket($request);
+      return $response =  $this->cancelTicketService->cancelTicket($request);
       if ($response == 'refunded') {
         return $this->successResponse($response, Config::get('constants.REFUNDED_COMPLETED'));
       } elseif ($response == 'PNR_NOT_MATCH') {

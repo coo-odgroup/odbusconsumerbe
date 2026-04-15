@@ -341,11 +341,6 @@ class PhonpeService
 
     public function paymentStatus($request, $clientRole)
     {
-        // return $request;
-        // dd($request);
-        // return $request->all();
-        //log::info("booking updated by - ".$clientRole);
-
         try {
             $booked = Config::get('constants.BOOKED_STATUS');
             $paymentDone = Config::get('constants.PAYMENT_DONE');
@@ -356,17 +351,11 @@ class PhonpeService
 
             // return $customerId;
             //$seatIds = $request['seat_id'];
-            // $razorpay_signature = $data['razorpay_signature'];
-            // $razorpay_payment_id = $data['razorpay_payment_id'];
-            // $razorpay_order_id = $data['razorpay_order_id'];
             $transationId = $request->transaction_id;
             $main_source = '';
             $main_destination = '';
             $records = $this->channelRepository->getBookingRecord($transationId);
-            // dd($records);
-
             // return $records[0];
-
             // return $records[0]->email_sms_status;
 
             if ($records[0]->email_sms_status == 1) {
@@ -565,9 +554,7 @@ class PhonpeService
                 "busTypeName" => $busTypeName,
                 "sittingType" => $sittingType,
             );
-
-            // dd($emailData);
-
+            
             // return $emailData;
             return $this->channelRepository->UpdateCutsomerPaymentppInfo(
                 $customerId,
@@ -629,9 +616,8 @@ class PhonpeService
 
         $response = curl_exec($ch);
 
-        curl_close($ch);    
+        curl_close($ch);
 
         return $response;
     }
-
 }
