@@ -33,6 +33,7 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PhonpeController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Artisan;
@@ -40,17 +41,17 @@ use Illuminate\Support\Facades\Artisan;
 //Route::group(['middleware' => ['checkIp']], function() {
 
 Route::group(['middleware' => ['jwt.verify']], function() {
-   
+
 Route::get('/getLocation', [ListingController::class, 'getLocation']);
 Route::post('/FilterOptions', [ListingController::class, 'getFilterOptions']);
 Route::get('/Listing', [ListingController::class, 'getAllListing']);
-Route::post('/Filter', [ListingController::class, 'filter']);    
+Route::post('/Filter', [ListingController::class, 'filter']);
 Route::post('/BusDetails', [ListingController::class, 'busDetails']);
 Route::post('/viewSeats', [ViewSeatsController::class, 'getAllViewSeats']);
 Route::post('/BoardingDroppingPoints', [ViewSeatsController::class, 'getBoardingDroppingPoints']);
 Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSeatsSelection']);
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
-Route::post('/SendSms', [ChannelController::class, 'sendSms']);   
+Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
 // Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/CheckSeatStatus', [ChannelController::class, 'checkSeatStatus']);
@@ -66,7 +67,7 @@ Route::post('/PhonepeWebhook', [PhonpeController::class, 'Webhook']);
 
 
 
-  
+
 //Route::post('/storeGWInfo', [ChannelController::class, 'storeGWInfo']);
 Route::get('/PopularRoutes', [PopularController::class, 'getPopularRoutes']);
 Route::get('/TopOperators', [PopularController::class, 'getTopOperators']);
@@ -93,11 +94,11 @@ Route::delete('/DeleteReview/{id}/{userId}', [ReviewController::class, 'deleteRe
 //Route::get('/ReviewDetail/{id}', [ReviewController::class, 'getReview']);
 Route::post('/Register', [UsersController::class, 'Register']);
 Route::post('/VerifyOtp', [UsersController::class, 'verifyOtp']);
-Route::post('/Login', [UsersController::class, 'login']); 
+Route::post('/Login', [UsersController::class, 'login']);
 ////////// craeted on 22-march-2025 (for encrypt related security issue resolved)
 Route::post('/Registerweb', [UsersController::class, 'Registerweb']);
 Route::post('/VerifyOtpweb', [UsersController::class, 'verifyOtpweb']);
-Route::post('/Loginweb', [UsersController::class, 'loginweb']); 
+Route::post('/Loginweb', [UsersController::class, 'loginweb']);
 
 Route::get('/UserProfile', [UsersController::class, 'userProfile']);
 //Route::put('/updateProfile/{userId}/{token}', [UsersController::class, 'updateProfile']);
@@ -127,7 +128,7 @@ Route::post('/PassengerInfo', [ClientBookingController::class, 'clientBooking'])
 
 //Route::group(['excluded_middleware' => 'throttle:api'], function() {
    Route::post('/SeatBlock', [ClientBookingController::class, 'seatBlock'])->middleware(LogRoute::class);
-   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation'])->middleware(LogRoute::class);         
+   Route::post('/TicketConfirmation', [ClientBookingController::class, 'ticketConfirmation'])->middleware(LogRoute::class);
 //});
 
 
@@ -157,18 +158,18 @@ Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
 
 Route::post('/Auth', function (Request $request) {
-   
-      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA'])); 
+
+      $arrParam = json_decode(decryptRequest($request['REQUEST_DATA']));
       $request = new Request([
          'client_id' => $arrParam->client_id,
          'password' => $arrParam->password,
      ]);
       return UserController::clientLogin($request);
-   
+
 });
 
 
-Route::get('/ClientDetails', [UserController::class, 'clienDetails']); 
+Route::get('/ClientDetails', [UserController::class, 'clienDetails']);
 Route::post('/RazorpayWebhook', [ChannelController::class, 'RazorpayWebhook']);
 Route::post('/Webhook', [ChannelController::class, 'Webhook']);
 Route::get('/Appversion', [CommonController::class, 'Appversion']);
@@ -186,7 +187,7 @@ Route::get('/GetToken', [MantisController::class, 'getToken']);
 Route::get('/AllRoutes', [PopularController::class, 'allRoutes']); // this is without auth beacuse for abhi bus need :: 18-may-2025 :: Banashri Mohanty
 
 //});
-Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']); 
+Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']);
 
 //Blog module
 Route::post('bloglist',[BlogController::class,"bloglist"]);
@@ -195,10 +196,12 @@ Route::post('blogdetails',[BlogController::class,"blogdetails"]);
 
 $router->get('/update-phonepay-token', function () {
    Artisan::call('cron:oauth-token');
-});   
+});
 
 $router->get('/phonepe/status-check', function () {
    Artisan::call('phonepe:check');
-});   
+});
 
 Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatus"]);
+
+Route::post('/getFaq', [FaqController::class, 'index']);
