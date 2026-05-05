@@ -204,4 +204,6 @@ $router->get('/phonepe/status-check', function () {
 
 Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatus"]);
 
-Route::post('/getFaq', [FaqController::class, 'index']);
+Route::post('/getfaqs', [FaqController::class, 'getFaqs']);
+
+Route::post('seoContent', [SeoController::class, 'seoContent']);

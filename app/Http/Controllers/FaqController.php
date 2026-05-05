@@ -7,22 +7,47 @@ use Illuminate\Support\Facades\DB;
 
 class FaqController extends Controller
 {
-    public function index(Request $request)
+    public function getFaqs()
     {
-        return "he";
-        $faqs = DB::table('odbus.faq_category as fc')
-            ->leftJoin('odbus.faq as f', 'fc.id', '=', 'f.faq_category_id')
-            ->select(
-                'fc.id as category_id',
-                'fc.name as category_name',
-                'f.id as faq_id',
-                'f.question',
-                'f.answer'
-            )
-            ->orderBy('fc.id')
-            ->get()
-            ->groupBy('category_id');
+        try {
+            $faqs = DB::table('faq_category as fc')
+                ->leftJoin('faq as f', 'fc.id', '=', 'f.faq_category_id')
+                ->select(
+                    'fc.id as category_id',
+                    'fc.category_name',
+                    'f.id as faq_id',
+                    'f.title',
+                    'f.content'
+                )
+                ->orderBy('fc.id')
+                ->get()
+                ->groupBy('category_id')
+                ->map(function ($items) {
+                    return [
+                        'category_id' => $items->first()->category_id,
+                        'category_name' => $items->first()->category_name,
+                        'faqs' => $items->map(function ($item) {
+                            return [
+                                'faq_id' => $item->faq_id,
+                                'title' => $item->title,
+                                'content' => $item->content,
+                            ];
+                        })->values()
+                    ];
+                })
+                ->values();
 
-        return  $faqs;
+            return response()->json([
+                'status' => true,
+                'message' => 'FAQ fetched successfully',
+                'data' => $faqs
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
