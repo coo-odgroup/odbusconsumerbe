@@ -19,6 +19,8 @@ class FaqController extends Controller
                     'f.title',
                     'f.content'
                 )
+                ->where('f.page_id', null)
+                ->where('f.status', 1)
                 ->orderBy('fc.id')
                 ->get()
                 ->groupBy('category_id')
