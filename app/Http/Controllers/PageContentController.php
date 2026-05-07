@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Config;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -57,11 +58,23 @@ class PageContentController extends Controller
      *       {"apiAuth": {}}
      *     }
      * )
-     * 
+     *
      */
     public function getAllpagecontent(Request $request)
     {
         $pagecontent = $this->pagecontentService->getAll($request);
         return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+    }
+
+    public function getAdvantageDetails(Request $request)
+    {
+        $page = DB::table('page_content')
+            ->where('page_url', $request->page_url)
+            ->first();
+
+        return response()->json([
+            'status' => true,
+            'data' => $page
+        ]);
     }
 }

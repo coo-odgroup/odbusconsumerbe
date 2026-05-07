@@ -207,3 +207,4 @@ Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatu
 Route::post('/getfaqs', [FaqController::class, 'getFaqs']);
 
 Route::post('seoContent', [SeoController::class, 'seoContent']);
+Route::post('get-advantage-details', [PageContentController::class, 'getAdvantageDetails']);
