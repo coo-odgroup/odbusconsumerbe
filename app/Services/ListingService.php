@@ -300,7 +300,7 @@ class ListingService
         return $ListingRecords;  
 
     }
-    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
+    public function processBusRecords_old($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
 
         $ListingRecords['regular'] = [];
         $ListingRecords['soldout'] = [];
@@ -913,6 +913,603 @@ class ListingService
                     "seaters" => $seatClassRecords,
                     "sleepers" => $sleeperClassRecords,
                     "startingFromPrice" => $startingFromPrice,
+                    "departureTime" =>$depTime,
+                    "arrivalTime" =>$arrTime,
+                    "bookingCloseTime" =>$ticketPriceRecords->actual_time,
+                    "totalJourneyTime" =>$totalJourneyTime, 
+                    "amenity" =>$amenityDatas,
+                    "safety" => $safetyDatas,
+                    "busPhotos" => $busPhotoDatas,
+                    "cancellationDuration" => $cSlabDuration,
+                    "cancellationDuduction" => $cSlabDeduction,
+                    "cancellationPolicyContent" => $cancellationPolicyContent,
+                    "TravelPolicyContent" => $TravelPolicyContent,
+                    "Totalrating" => $Totalrating,
+                    "Totalrating_5star" => $Totalrating_5star,
+                    "Totalrating_4star" => $Totalrating_4star,
+                    "Totalrating_3star" => $Totalrating_3star,
+                    "Totalrating_2star" => $Totalrating_2star,
+                    "Totalrating_1star" => $Totalrating_1star,
+                    "reviews" => $reviews
+                ); 
+                if($totalSeats>0){
+                    $ListingRecords['regular'][] = $arr;
+                }else{
+                    $ListingRecords['soldout'][] = $arr;
+                }
+            }           
+        }
+
+        return $ListingRecords;
+    }
+    
+    public function processBusRecords($records,$sourceID,$destinationID,$entry_date,$path,$selCouponRecords,$busOperatorId,$busId,$flag,$clientRole,$clientId){
+
+        $ListingRecords['regular'] = [];
+        $ListingRecords['soldout'] = [];
+
+       
+        $ListingRecords = array();
+        $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
+
+        foreach($records as $record){
+            //return $record;
+            $unavailbleSeats = 0;
+            $busId = $record->id; 
+            $user_id = $record->user_id; 
+            $busName = $record->name;
+            $running_cycle = $record->running_cycle;
+            $popularity = $record->popularity;
+            $busNumber = $record->bus_number;
+            $via = $record->via;
+            $busOperatorId = $record->bus_operator_id;
+
+
+            $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID,$destinationID,$busId,$entry_date);
+
+            if(isset($routeCoupon[0]))
+            {                           
+               $routeCouponCode = $routeCoupon[0]->coupon_code;//route wise coupon
+            }else
+            {
+               $routeCouponCode =[];
+            }  
+ 
+            $operatorCoupon = $this->listingRepository->getOperatorCoupon($busOperatorId,$busId,$entry_date);
+            if(isset($operatorCoupon[0]))
+            {                           
+                $opCouponCode = $operatorCoupon[0]->coupon_code;//operator wise coupon
+            }else
+            {
+                $opCouponCode =[];
+            } 
+            $opRouteCoupon = $this->listingRepository->getOpRouteCoupon($busOperatorId,$sourceID,$destinationID,$busId,$entry_date);
+
+            if(isset($opRouteCoupon[0]))
+            {                           
+                $opRouteCouponCode = $opRouteCoupon[0]->coupon_code;//operatorRoute wise coupon
+            }else
+            {
+                $opRouteCouponCode =[];
+            }
+
+            $CouponRecords = collect([$opRouteCouponCode,$opCouponCode,$routeCouponCode]);
+           $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
+
+            ///Coupon applicable for specific date range
+            $appliedCoupon = collect([]);
+            $CouponDetails = [];
+            $date = Carbon::now();
+            $bookingDate = $date->toDateString();
+           
+            $user = JWTAuth::parseToken()->authenticate();
+           
+            $coupon_via=[0];
+
+            if($user->client_id=='odbusSas'){ // for website
+                $coupon_via=[0,1];
+            }
+
+            if($user->client_id=='odbusSasAndroid'){ // for App
+                $coupon_via=[0,2];
+            }
+
+            foreach($CouponRecords as $key => $coupon){
+                
+                $type = $selCouponRecords->where('coupon_code',$coupon)->first()->valid_by;
+                switch($type){
+                    case(1):    //Coupon available on journey date
+                        $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                                          ->where('status', 1)
+                                                        ->where('from_date', '<=', $entry_date)
+                                                        ->where('to_date', '>=', $entry_date)->all();
+                        if(isset($selCouponRecords)){  
+                                    $CouponDetails = $selCouponRecords[0]
+                                                    ->where('coupon_code',$coupon)
+                                                    ->whereIn('via',$coupon_via)
+                                                    ->where('status', 1)
+                                                        ->where('from_date', '<=', $entry_date)
+                                                        ->where('to_date', '>=', $entry_date)->get();
+                        } 
+                        $appliedCoupon->push($coupon);                             
+                        break;
+                    case(2):    //Coupon available on booking date
+                        $dateInRange = $selCouponRecords->where('coupon_code',$coupon)
+                                                         ->where('status', 1)
+                                                        ->where('from_date', '<=', $bookingDate)
+                                                        ->where('to_date', '>=', $bookingDate)->all();
+                         if(isset($selCouponRecords)){  
+                                    $CouponDetails = $selCouponRecords[0]
+                                                    ->where('coupon_code',$coupon)
+                                                    ->where('status', 1)
+                                                    ->whereIn('via',$coupon_via)
+                                                        ->where('from_date', '<=', $bookingDate)
+                                                        ->where('to_date', '>=', $bookingDate)
+                                                        ->get();
+                        } 
+                        $appliedCoupon->push($coupon);                                                               
+                        break;      
+                }
+
+            }
+            $maxSeatBook = $record->max_seat_book;
+            $conductor_number ='';
+
+            if($record->busContacts && isset($record->busContacts->phone)){
+               $conductor_number = $record->busContacts->phone;
+            }
+            
+            $operatorId = $record->busOperator->id;
+            $operatorUrl = $record->busOperator->operator_url;
+            $operatorName = $record->busOperator->operator_name;
+            $sittingType = $record->BusSitting->name;   
+            $bus_description = $record->bus_description; 
+            $busType = $record->BusType->busClass->class_name;
+            $busTypeName = $record->BusType->name;
+            $ticketPriceDatas = $record->ticketPrice->where("status","1");
+            
+            $ticketPriceRecords = $ticketPriceDatas
+                    ->where('source_id', $sourceID)
+                    ->where('destination_id', $destinationID)
+                    ->first(); 
+            $ticketPriceId = $ticketPriceRecords->id;
+            $start_j_days = $ticketPriceRecords->start_j_days;
+
+            //////// get bus seat wise fare to calculate logic for lowest bus fare
+            $get_bus_seat_new_fare=BusSeats::where('ticket_price_id',$ticketPriceId)->where('new_fare','>',0)->where('status',1)->select(\DB::raw("MIN(new_fare) AS StartFrom"))->first();
+
+            $start_price_arr=[];
+
+            if($get_bus_seat_new_fare->StartFrom){
+                $new_start_from=$get_bus_seat_new_fare->StartFrom;
+                array_push($start_price_arr,$new_start_from);
+            }
+            
+            ///////////////////////////////////////////////////////////////////////////////
+            ////owner/special/festive fare with service charges added to base fare////////////
+
+            
+           
+            $seatPrice = $ticketPriceRecords->base_seat_fare;
+            $sleeperPrice = $ticketPriceRecords->base_sleeper_fare;
+
+            if($seatPrice>0){
+                array_push($start_price_arr,$seatPrice);
+            }
+
+            if($sleeperPrice>0){
+                array_push($start_price_arr,$sleeperPrice);
+            }
+           
+            $startingFromPrice = $baseFare = min($start_price_arr);
+
+
+           
+            $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
+            $totalMiscfares = $miscfares[0]+$miscfares[2]+$miscfares[4];
+            $misBaseFare = $baseFare + $totalMiscfares; 
+         
+           
+            $departureTime = $ticketPriceRecords->dep_time;
+            $arrivalTime = $ticketPriceRecords->arr_time;
+            $depTime = date("H:i",strtotime($departureTime));
+            $arrTime = date("H:i",strtotime($arrivalTime)); 
+            $arr_time = new DateTime($arrivalTime);
+            $dep_time = new DateTime($departureTime);
+            $totalTravelTime = $dep_time->diff($arr_time);
+            $totalJourneyTime = ($totalTravelTime->format("%a") * 24) + $totalTravelTime->format(" %h"). "h". $totalTravelTime->format(" %im");
+
+       $extraSeatsOpen = $record->busSeats 
+                               ->where('bus_id',$busId)
+                               ->where('status',1)
+                               ->where('ticket_price_id',$ticketPriceId)
+                               ->where('duration','>',0)
+                               ->pluck('seats_id'); 
+       $seizedTime = $record->busSeats
+                               ->where('bus_id',$busId)
+                               ->where('status',1)
+                               ->where('ticket_price_id',$ticketPriceId)
+                               ->where('duration','>',0)
+                               ->pluck('duration');
+
+       $extraSeatsBlock = $record->busSeats->where('bus_id',$busId)
+                                   ->where('status',1)
+                                   ->where('ticket_price_id',$ticketPriceId)
+                                   ->where('duration','=',0)
+                                   ->where('operation_date',$entry_date)
+                                   ->where('type',null)
+                                   ->pluck('seats_id');
+
+         ///Seats blocked prior to journey date////////                           
+         $oldExtraSeatsBlock = BusSeats::where('bus_id',$busId)
+                                    ->where('status',1)
+                                    ->where('ticket_price_id',$ticketPriceId)
+                                    ->where('duration','=',0)
+                                    ->where('operation_date','<' ,$entry_date)
+                                    ->where('type',null)
+                                    ->pluck('seats_id');                           
+                                                    
+        $ActualExtraSeatsOpen = ($extraSeatsOpen->diff($extraSeatsBlock))->values();
+
+
+       //$CurrentDateTime = "2022-01-05 16:48:35";
+       $dep_Time = date("H:i:s", strtotime($departureTime));
+       $CurrentDateTime = Carbon::now();//->toDateTimeString();
+       $depDateTime = Carbon::createFromFormat('Y-m-d H:i:s', $entry_date.' '.$dep_Time);
+       if($depDateTime>=$CurrentDateTime){
+           $diff_in_minutes = $depDateTime->diffInMinutes($CurrentDateTime);
+       }else{
+           $diff_in_minutes = 0;
+       }
+    
+       /////////////////////////////// get seat block list ///// ///////////////////////////////////
+
+                $startJourneydt = date('Y-m-d', strtotime('-1 day', strtotime($entry_date)));// if bus start from the location on second day then get all blocked seats using the prev date 
+
+                $busSeats = $record->busSeats
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('bus_id', $busId);
+
+                /* Previous day blocked seats */
+                $prevDay_blockSeats = collect();
+
+                if ($running_cycle > 1 && $start_j_days > 1) {
+                    $prevDay_blockSeats = $busSeats
+                        ->where('operation_date', $startJourneydt)
+                        ->where('type', 2)
+                        ->pluck('seats_id');
+                }
+
+                /* Blocked seats on selected date */
+                $blockSeats = $busSeats
+                    ->where('operation_date', $entry_date)
+                    ->where('type', 2)
+                    ->pluck('seats_id');
+
+                /* Unavailable seats (other dates) */
+                $unavailbleSeats = $busSeats
+                    ->where('type', 1)
+                    ->where('operation_date', '!=', $entry_date)
+                    ->pluck('seats_id')
+                    ->unique();
+
+                /* Available seats on selected date */
+                $availableSeatsOnDate = $busSeats
+                    ->where('type', 1)
+                    ->where('operation_date', $entry_date)
+                    ->pluck('seats_id')
+                    ->unique();
+
+
+                if(isset($availableSeatsOnDate) && $availableSeatsOnDate->isNotEmpty()){
+                    $unavailbleSeats = collect($unavailbleSeats)->diff(collect($availableSeatsOnDate));
+
+                }
+
+                $allSeats = BusSeats::where('bus_id', $busId)
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('status', 1)
+                ->get();
+
+                $moreAddedSeats = $allSeats
+                                ->whereNull('operation_date')
+                                ->whereNull('type')
+                                ->whereIn('seats_id', $unavailbleSeats)
+                                ->pluck('seats_id');
+
+                $blockSeatsOnAllDates = $allSeats
+                    ->where('type', 2)
+                    ->pluck('seats_id');
+
+                /* Permanent seats */
+                $permanentSeats = $allSeats
+                    ->whereNull('operation_date')
+                    ->pluck('seats_id'); 
+
+                $noMoreavailableSeats = collect($blockSeatsOnAllDates)->diff(collect($permanentSeats));                   
+           
+
+            if(isset($moreAddedSeats) && $moreAddedSeats->isNotEmpty()){
+                $blockSeats = $blockSeats->concat(collect($unavailbleSeats)->diff(collect($moreAddedSeats)));
+            }else{
+                $blockSeats = $blockSeats->concat(collect($unavailbleSeats))->concat(collect($noMoreavailableSeats));/////need to check for other options if required
+            }                    
+
+       ////////Hide Extra Seats based on seize time///////////////
+           if(!$ActualExtraSeatsOpen->isEmpty() && !$seizedTime->isEmpty()){
+               if($seizedTime[0] > $diff_in_minutes){
+                   $blockSeats = $blockSeats->concat(collect($ActualExtraSeatsOpen));
+               }    
+           }
+
+       /////////////Blocked Extra Seats on specific date///////////
+            $seatClassRecords = 0;
+            $sleeperClassRecords = 0;
+            $totalSeats = 0;
+
+            if(!$extraSeatsBlock->isEmpty()){
+                $blockSeats = $blockSeats->concat(collect($extraSeatsBlock));
+            }
+        /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
+            $oldExtraSeatsBlock = collect($oldExtraSeatsBlock)->diff(collect($permanentSeats));
+            if(!$oldExtraSeatsBlock->isEmpty()){ 
+                $blockSeats = $blockSeats->concat(collect($oldExtraSeatsBlock));   
+            } 
+
+            $prevDay_blockSeats = collect($prevDay_blockSeats);
+
+             if(!$prevDay_blockSeats->isEmpty()){
+                // Log::info($busId);
+                // Log::info($prevDay_blockSeats);
+                $blockSeats = $blockSeats->concat(collect($prevDay_blockSeats));
+            }
+
+            
+            $filteredSeats = $record->busSeats
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('bus_id', $busId)
+                ->where('status', 1)
+                ->whereNotIn('seats_id', $blockSeats)
+                ->whereNotNull('seats')
+                ->unique('seats_id');
+
+            /* Total seats */
+            $totalSeats = $filteredSeats->count();
+
+            /* Seat class = 1 */
+            $seatClassRecords = $filteredSeats
+                ->where('seats.seat_class_id', 1)
+                ->count();
+
+            /* Sleeper class = 2 or 3 */
+            $sleeperClassRecords = $filteredSeats
+                ->whereIn('seats.seat_class_id', [2, 3])
+                ->count();   
+
+            $amenityDatas = [];  
+
+           if($record->busAmenities)
+           {
+               $amenityDatas = [];  
+               foreach($record->busAmenities as $k =>  $a){
+                   $am_dt=$a;
+                   if($am_dt->amenities != NULL)
+                   {
+                       $amenities_image='';
+                       $am_android_image='';
+                       if($am_dt->amenities->amenities_image !=''){
+                           $amenities_image = $path->amenity_url.$am_dt->amenities->amenities_image;   
+                       }
+                       if($am_dt->amenities->android_image !='')
+                       {
+                           $am_android_image = $path->amenity_url.$am_dt->amenities->android_image;   
+                       }
+                       $am_arr['id']=$am_dt->amenities->id;
+                       $am_arr['name']=$am_dt->amenities->name;
+                       $am_arr['amenity_image']=$amenities_image ;
+                       $am_arr['amenity_android_image']=$am_android_image;
+                       $amenityDatas[] = $am_arr;
+                   }
+               }
+           }
+            $safetyDatas = [];
+            if($record->busSafety)
+           {
+               foreach($record->busSafety as $sd){
+                   if($sd->safety != NULL)
+                   {
+                       $safety_image='';
+                       $safety_android_image='';
+                       if($sd->safety->safety_image !=''){
+                           $safety_image = $path->safety_url.$sd->safety->safety_image;
+                       }  
+                       if($sd->safety->android_image != '' )
+                       {
+                           $safety_android_image = $path->safety_url.$sd->safety->android_image;   
+                       }
+                       $sf_arr['id']=$sd->safety->id;
+                       $sf_arr['name']=$sd->safety->name;
+                       $sf_arr['safety_image']=$safety_image ;
+                       $sf_arr['safety_android_image']=$safety_android_image;
+                       $safetyDatas[] = $sf_arr;
+                   }
+               }
+           }
+            $busPhotoDatas = [];
+
+            if(count($record->busGallery)>0)
+            {
+                foreach($record->busGallery as  $k => $bp){
+                    if($bp->bus_image_1 != null && $bp->bus_image_1!='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_1'] = $path->busphoto_url.$bp->bus_image_1;                         
+                    }
+                    if($bp->bus_image_2 != null && $bp->bus_image_2 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_2'] = $path->busphoto_url.$bp->bus_image_2;                        
+                    }
+                    if($bp->bus_image_3 != null && $bp->bus_image_3 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_3'] = $path->busphoto_url.$bp->bus_image_3;                        
+                    }
+                    if($bp->bus_image_4 != null && $bp->bus_image_4 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_4'] = $path->busphoto_url.$bp->bus_image_4;                        
+                    }
+                    if($bp->bus_image_5 != null && $bp->bus_image_5 !='')
+                    {                        
+                       $busPhotoDatas[$k]['bus_image_5'] = $path->busphoto_url.$bp->bus_image_5;                        
+                    }    
+                }
+            } 
+            $Totalrating=0;
+            $Totalrating_5star=0;
+            $Totalrating_4star=0;
+            $Totalrating_3star=0;
+            $Totalrating_2star=0;
+            $Totalrating_1star=0;
+            $Review_list=[];
+            $i=1;
+            if(count($record->review)>0){
+                foreach($record->review as $k => $rv){
+               if($i<=2){ // only latest 2 reviews 
+                  $Totalrating += $rv->rating_overall;  
+                  if($rv->rating_overall==5){
+                   $Totalrating_5star ++;   
+                  } 
+                  if($rv->rating_overall==4){
+                   $Totalrating_4star ++;   
+                  } 
+                  if($rv->rating_overall==3){
+                   $Totalrating_3star ++;   
+                  } 
+                  if($rv->rating_overall==2){
+                   $Totalrating_2star ++;   
+                  } 
+                  if($rv->rating_overall==1){
+                   $Totalrating_1star ++;   
+                  }  
+                  $Review_list[$k]['bus_id']=$rv->bus_id;
+                     $Review_list[$k]['users_id']=$rv->users_id;
+                     $Review_list[$k]['title']=$rv->title;
+                     $Review_list[$k]['rating_overall']=$rv->rating_overall;
+                     $Review_list[$k]['comments']=$rv->comments;
+                     $Review_list[$k]['name']=$rv->users->name;
+                     $Review_list[$k]['profile_image']='';
+                  if($rv->users && $rv->users->profile_image!='' && $rv->users->profile_image!=null){
+                   $Review_list[$k]['profile_image']=$path->profile_url.$rv->users->profile_image;
+                 }
+               $i++;
+               }
+           }
+                $Totalrating = number_format($Totalrating/count($record->review),1);
+            }
+            $reviews=  $Review_list; //$record->review;
+            $cancellationPolicyContent = $record->cancellationslabs->cancellation_policy_desc;
+            $TravelPolicyContent=$record->travel_policy_desc;
+            $cSlabDatas = $record->cancellationslabs->cancellationSlabInfo;
+            
+            $cSlabDuration = $cSlabDatas->pluck('duration');
+            $cSlabDeduction = $cSlabDatas->pluck('deduction');
+
+
+           $bookedSeats = $this->listingRepository->getBookedSeats($sourceID,$destinationID,$entry_date,$busId);
+           
+           $seatClassRecords = $seatClassRecords - $bookedSeats[1];
+           $sleeperClassRecords = $sleeperClassRecords - $bookedSeats[0];
+           $totalSeats = $totalSeats - $bookedSeats[2];
+
+           
+                
+
+            if($clientRole == $clientRoleId){
+                /////////hide buses wrt operator block////////////
+                 $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
+                $Contains=0;
+                if(isset($operatorBlockId)){
+                  $Contains = $operatorBlockId->contains($operatorId);
+                }
+
+                
+
+                if($Contains==0){
+           
+                    $arr= array(
+                        "origin" => 'ODBUS',
+                        "CompanyID" => '',
+                        "ReferenceNumber" => '',
+                        "BoardingPoints" => '',
+                        "DroppingPoints" => '',
+                        "RouteTimeID" => '',
+                        "srcId" => $sourceID,
+                        "destId" => $destinationID,
+                        "display" => $flag,
+                        "busId" => $busId, 
+                        "busName" => $busName,
+                        "via" => $via,
+                        "popularity" => $popularity,
+                        "busNumber" => $busNumber,
+                        "maxSeatBook" => $maxSeatBook,
+                        "conductor_number" => $conductor_number,
+                        "operatorId" => $operatorId,
+                        "operatorUrl" => $operatorUrl,
+                        "operatorName" => $busName,//$operatorName,
+                        "sittingType" => $sittingType,
+                        "bus_description" => $bus_description,
+                        "busType" => $busType,
+                        "busTypeName" => $busTypeName,
+                        "totalSeats" => $totalSeats,
+                        "seaters" => $seatClassRecords,
+                        "sleepers" => $sleeperClassRecords,
+                        "startingFromPrice" => $record->min_price,
+                        "departureTime" =>$depTime,
+                        "arrivalTime" =>$arrTime,
+                        "bookingCloseTime" =>$ticketPriceRecords->actual_time,
+                        "totalJourneyTime" =>$totalJourneyTime, 
+                        "amenity" =>$amenityDatas,
+                        "safety" => $safetyDatas,
+                        "cancellationDuration" => $cSlabDuration,
+                        "cancellationDuduction" => $cSlabDeduction,
+                        "cancellationPolicyContent" => $cancellationPolicyContent,
+                        "TravelPolicyContent" => $TravelPolicyContent,
+                        ); 
+                    if($totalSeats>0){
+                        $ListingRecords['regular'][] = $arr;
+                    }else{
+                        $ListingRecords['soldout'][] = $arr;
+                    }
+                }
+            }else{
+                $arr= array(
+                    "origin" => 'ODBUS',
+                    "CompanyID" => '',
+                    "ReferenceNumber" => '',
+                    "BoardingPoints" => '',
+                    "DroppingPoints" => '',
+                    "RouteTimeID" => '',
+                    "srcId" => $sourceID,
+                    "destId" => $destinationID,
+                    "display" => $flag,
+                    "busId" => $busId, 
+                    "busName" => $busName,
+                    "via" => $via,
+                    "popularity" => $popularity,
+                    "busNumber" => $busNumber,
+                    "maxSeatBook" => $maxSeatBook,
+                    "conductor_number" => $conductor_number,
+                    "couponCode" => $appliedCoupon->all(),
+                    "couponDetails" => $CouponDetails,
+                    "operatorId" => $operatorId,
+                    "operatorUrl" => $operatorUrl,
+                    "operatorName" => $busName,//$operatorName,
+                    "sittingType" => $sittingType,
+                    "bus_description" => $bus_description,
+                    "busType" => $busType,
+                    "busTypeName" => $busTypeName,
+                    "totalSeats" => $totalSeats,
+                    "seaters" => $seatClassRecords,
+                    "sleepers" => $sleeperClassRecords,
+                    "startingFromPrice" => $record->min_price,
                     "departureTime" =>$depTime,
                     "arrivalTime" =>$arrTime,
                     "bookingCloseTime" =>$ticketPriceRecords->actual_time,
