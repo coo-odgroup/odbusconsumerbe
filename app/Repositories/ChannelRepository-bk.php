@@ -31,6 +31,7 @@ use App\Models\Notification;
 use App\Models\UserNotification;
 use App\Models\BusContacts;
 use App\Models\Location;
+use App\Models\PhonePayToken;
 use App\Models\TicketPrice;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Arr;
@@ -40,6 +41,16 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Services\ValueFirstService;
+
+use App\Models\FcmNotification;
+use App\Jobs\TicketConfirmationJob;
+use App\Jobs\ReminderBeforeOneHourJob;
+use App\Jobs\ReminderBefore24HourJob;
+use App\Jobs\SendCancelTicketNotificationJob;
+use App\Jobs\ReminderBeforeDeboardingJob;
+use App\Jobs\SendFeedbackNotificationJob;
+
+use Carbon\Carbon;
 
 class ChannelRepository
 {
@@ -53,8 +64,17 @@ class ChannelRepository
   protected $credentials;
   protected $manageSms;
 
-  public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user)
-  {
+  public function __construct(
+    GatewayInformation $gatewayInformation,
+    Users $users,
+    CustomerPayment $customerPayment,
+    Booking $booking,
+    BusSeats $busSeats,
+    Credentials $credentials,
+    BookingDetail $bookingDetail,
+    ManageSms $manageSms,
+    User $user
+  ) {
     $this->gatewayInformation = $gatewayInformation;
     $this->users = $users;
     $this->user = $user;
@@ -107,51 +127,51 @@ class ChannelRepository
   }
 
 
-  public function sendSmsIndiaHub($data)
-  {
-    // parse the given URL
-    $url = parse_url($url);
-    if ($url['scheme'] != 'http') {
-      die('Only HTTP request are supported !');
-    }
-    // extract host and path:
-    $host = $url['host'];
-    $path = $url['path'];
-    // open a socket connection on port 80
-    $fp = fsockopen($host, 8000);
-    // send the request headers:
-    fputs($fp, "POST $path HTTP/1.1\r\n");
-    fputs($fp, "Host: $host\r\n");
-    fputs($fp, "Referer: $referer\r\n");
-    fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-    fputs($fp, "Content-length: " . strlen($data) . "
-        \r\n");
-    fputs($fp, "Connection: close\r\n\r\n");
-    fputs($fp, $data);
-    $result = "";
-    while (!feof($fp)) {
-      // receive the results of the request
-      $result .= fgets($fp, 128);
-    }
-    // close the socket connection:
-    fclose($fp);
-    // split the result header from the content
-    $result = explode("\r\n\r\n", $result, 2);
-    $header = isset($result[0]) ? $result[0] : ”;
-    $content = isset($result[1]) ? $result[1] : ”;
-    // return as array:
-    //return array($header, $content);
-    $data = array(
-      'user' => "user",
-      'password' => "pwd",
-      'msisdn' => "919898123456",
-      'sid' => "API",
-      'msg' => "Test Message from API",
-      'fl' => "0",
-    );
-    $url = env('TEXT_SMS_INDIA_HUB_URL');
-    list($header, $content) = PostRequest($url, $data);
-  }
+  // public function sendSmsIndiaHub($data)
+  // {
+  //   // parse the given URL
+  //   $url = parse_url($url);
+  //   if ($url['scheme'] != 'http') {
+  //     die('Only HTTP request are supported !');
+  //   }
+  //   // extract host and path:
+  //   $host = $url['host'];
+  //   $path = $url['path'];
+  //   // open a socket connection on port 80
+  //   $fp = fsockopen($host, 8000);
+  //   // send the request headers:
+  //   fputs($fp, "POST $path HTTP/1.1\r\n");
+  //   fputs($fp, "Host: $host\r\n");
+  //   fputs($fp, "Referer: $referer\r\n");
+  //   fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+  //   fputs($fp, "Content-length: " . strlen($data) . "
+  //       \r\n");
+  //   fputs($fp, "Connection: close\r\n\r\n");
+  //   fputs($fp, $data);
+  //   $result = "";
+  //   while (!feof($fp)) {
+  //     // receive the results of the request
+  //     $result .= fgets($fp, 128);
+  //   }
+  //   // close the socket connection:
+  //   fclose($fp);
+  //   // split the result header from the content
+  //   $result = explode("\r\n\r\n", $result, 2);
+  //   $header = isset($result[0]) ? $result[0] : ”;
+  //   $content = isset($result[1]) ? $result[1] : ”;
+  //   // return as array:
+  //   //return array($header, $content);
+  //   $data = array(
+  //     'user' => "user",
+  //     'password' => "pwd",
+  //     'msisdn' => "919898123456",
+  //     'sid' => "API",
+  //     'msg' => "Test Message from API",
+  //     'fl' => "0",
+  //   );
+  //   $url = env('TEXT_SMS_INDIA_HUB_URL');
+  //   list($header, $content) = PostRequest($url, $data);
+  // }
   //Created by Subhasis Mohanty  added on 01-09-2025 for Value First and textLocal SMS Service
   public function sendSms($data, $otp)
   {
@@ -347,12 +367,7 @@ class ChannelRepository
   //Created by Subhasis Mohanty  added on 01-09-2024 for Value First and textLocal SMS Service
   public function sendSmsTicket($payable_amount, $data, $pnr)
   {
-    $SmsGW = config('services.sms.otpservice');
-    if ($SmsGW === 'valuefirst') {
-      return $this->sendSmsTicket_valueFirst($payable_amount, $data, $pnr);
-    } else if ($SmsGW === 'textLocal') {
-      return $this->sendSmsTicket_textLocal($payable_amount, $data, $pnr);
-    }
+    return $this->sendSmsTicket_valueFirst($payable_amount, $data, $pnr);
   }
 
 
@@ -360,6 +375,7 @@ class ChannelRepository
   // Created by Subhasis Mohanty  added on 25-08-2024 for Value First SMS Service
   public function sendSmsTicket_valueFirst($payable_amount, $data, $pnr)
   {
+    // return $data;
 
     $collection = collect($data['seat_no']);
     $seatList = $collection->implode(',');
@@ -422,6 +438,8 @@ class ChannelRepository
       "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, " .
       "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, " .
       "Fare: {$payable_amount}, Conductor Mob: {$data['conductor_number']} - ODBUS";
+
+    // return $message;
 
     // Send SMS using ValueFirst
     $valueFirstService = new \App\Services\ValueFirstService();
@@ -912,6 +930,17 @@ class ChannelRepository
     session(['msgId' => $msgId]);
   }
 
+  public function sendCancelTicketNotification($phone, $pnr, $ticket_cancelled)
+  {
+    $data = [
+      'phone' => $phone,
+      'pnr' => $pnr
+    ];
+
+    // return $data;
+    SendCancelTicketNotificationJob::dispatch($data, $ticket_cancelled);
+  }
+
   public function smsDeliveryStatus($request)
   {
     $phone = $request['phone'];
@@ -1042,12 +1071,16 @@ class ChannelRepository
       ],
     ]);
 
+    log::info($response);
+    exit;
+    // log::info($response); exit;
+
     // Creates customer payment 
     $orderId = $response->payment_session_id; //$order['id']; 
 
     $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId, 'amount' => $amount, 'name' => $name]);
 
-    $result["payment_session_id"] = $sessionId;
+    // $result["payment_session_id"] = $sessionId;
     $result["receipt_id"] = $orderId;
     return $result;
   }
@@ -1095,9 +1128,104 @@ class ChannelRepository
     return $result;
   }
 
+  public function phonpeToken()
+  {
+    $token = PhonePayToken::first();
+
+    return $token;
+  }
+
+  public function CreatePayment($receiptId, $transactionId, $amount, $name, $email, $phone, $bookingId)
+  {
+    $data = [
+      $amount,
+      $name,
+      $email,
+      $phone,
+      $bookingId,
+      $receiptId
+    ];
+
+    // dd($transactionId);
+
+    // return $data;
+
+    $getToken = $this->phonpeToken();
+
+    // return $getToken;
+
+    $transactionId = $transactionId;
+    $mobile = $phone;
+    // $amount = intval(round($amount * 100));
+
+    // $payload = [
+    //   "merchantOrderId" => $transactionId,
+    //   "amount" => $amount * 100,
+    //   "merchantUserId" => "USER" . rand(1000, 9999),
+    //   "metaInfo" => [
+    //     "udf1" => $mobile,
+    //   ],
+    //   "paymentFlow" => [
+    //     "type" => "PG_CHECKOUT",
+    //     "redirectUrl"=> "https://odtesting.odbus.co.in/"
+    //   ]
+    // ];
+
+    $payload = [
+      "merchantOrderId" => $transactionId,
+      "amount" => $amount * 100,
+      "expireAfter" => 1200,
+      "paymentFlow" => [
+        "type" => "PG_CHECKOUT",
+        "message" => "Payment initiation",
+        "merchantUrls" => [
+          "redirectUrl" => Config('constants.PHONPE_REDIRECT_URL')
+        ]
+      ]
+    ];
+
+
+    // return $getToken->access_token;
+
+    $phonpe_url = Config('constants.PHONPE_API_URL');
+    $url = $phonpe_url . "checkout/v2/pay";
+
+    // return $url;exit;
+
+    $resp = Http::withHeaders([
+      'Authorization' => $getToken->token_type . " " . $getToken->access_token,
+      'Content-Type' => 'application/json'
+    ])->post($url, $payload);
+
+
+
+
+
+    $response = json_decode($resp);
+
+    // return $response;
+
+    $pp_orderId = $response->orderId;
+
+
+    $user_pay = new $this->customerPayment();
+    $user_pay->name = $name;
+    $user_pay->booking_id = $bookingId;
+    $user_pay->amount = $amount;
+    $user_pay->order_id = $receiptId;
+    $user_pay->phonepe_status = "PENDING";
+    $user_pay->pp_orderId = $pp_orderId;
+    $user_pay->save();
+
+    return response()->json($resp->json());
+
+    // return $data;
+  }
+
 
   public function UpdateStatus($bookingId, $seatHold)
   {
+    // dd($bookingId);
     DB::transaction(function () use ($bookingId, $seatHold) {
       //$this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
       $this->booking->lockForUpdate()->where('id', $bookingId)->update(['status' => $seatHold]);
@@ -1112,6 +1240,12 @@ class ChannelRepository
   public function GetCustomerPaymentId($razorpay_order_id)
   {
     return $this->customerPayment->where('order_id', $razorpay_order_id)->pluck('id');
+  }
+
+  //Phonpe orderId
+  public function GetCustomerPaymentppId($pp_orderId)
+  {
+    return $this->customerPayment->where('pp_orderId', $pp_orderId)->pluck('id');
   }
 
   public function updateCustomerGST($update_customer_gst, $transationId)
@@ -1164,71 +1298,71 @@ class ChannelRepository
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-    // $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
-    // if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr);
+    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
 
-    //   $msgId = $sendsms->messages[0]->id;
-    //   $status = $sendsms->status;
-    //   $from = $sendsms->message->sender;
-    //   $to = $sendsms->messages[0]->recipient;
-    //   $contents = $sendsms->message->content;
-    //   $response = collect($sendsms);
-    //   /// save sms related things in manage_sms table///////////////
+      $msgId = $sendsms->messages[0]->id;
+      $status = $sendsms->status;
+      $from = $sendsms->message->sender;
+      $to = $sendsms->messages[0]->recipient;
+      $contents = $sendsms->message->content;
+      $response = collect($sendsms);
+      /// save sms related things in manage_sms table///////////////
 
-    //   $sms = new $this->manageSms();
-    //   $sms->pnr = $pnr;
-    //   $sms->booking_id = $bookingId;
-    //   $sms->sms_engine = $SmsGW;
-    //   $sms->type = 'customer';
-    //   $sms->status = $status;
-    //   $sms->from = $from;
-    //   $sms->to = $to;
-    //   $sms->contents = $contents;
-    //   $sms->response = $response;
-    //   $sms->message_id = $msgId;
-    //   $sms->save();
-    // }
+      $sms = new $this->manageSms();
+      $sms->pnr = $pnr;
+      $sms->booking_id = $bookingId;
+      $sms->sms_engine = $SmsGW;
+      $sms->type = 'customer';
+      $sms->status = $status;
+      $sms->from = $from;
+      $sms->to = $to;
+      $sms->contents = $contents;
+      $sms->response = $response;
+      $sms->message_id = $msgId;
+      $sms->save();
+    }
 
 
 
     ///////////////////CMO SMS/////////////////////////////////////////////////
 
-    // if ($origin == 'ODBUS') {
-    //   $busContactDetails = BusContacts::where('bus_id', $busId)
-    //     ->where('status', '1')
-    //     ->where('booking_sms_send', '1')
-    //     ->get('phone');
-    //   if ($busContactDetails->isNotEmpty()) {
-    //     $contact_number = collect($busContactDetails)->implode('phone', ',');
-    //     $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
+    if ($origin == 'ODBUS') {
+      $busContactDetails = BusContacts::where('bus_id', $busId)
+        ->where('status', '1')
+        ->where('booking_sms_send', '1')
+        ->get('phone');
+      if ($busContactDetails->isNotEmpty()) {
+        $contact_number = collect($busContactDetails)->implode('phone', ',');
+        $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
 
-    //     if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+        if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
 
-    //       $msgId = $sendSmsCMO->messages[0]->id;
-    //       $status = $sendSmsCMO->status;
-    //       $from = $sendSmsCMO->message->sender;
-    //       $to = collect($sendSmsCMO->messages)->pluck('recipient');
-    //       $contents = $sendSmsCMO->message->content;
-    //       $response = collect($sendSmsCMO);
+          $msgId = $sendSmsCMO->messages[0]->id;
+          $status = $sendSmsCMO->status;
+          $from = $sendSmsCMO->message->sender;
+          $to = collect($sendSmsCMO->messages)->pluck('recipient');
+          $contents = $sendSmsCMO->message->content;
+          $response = collect($sendSmsCMO);
 
-    //       /// save sms related things in manage_sms table///////////////
+          /// save sms related things in manage_sms table///////////////
 
-    //       $sms = new $this->manageSms();
-    //       $sms->pnr = $pnr;
-    //       $sms->booking_id = $bookingId;
-    //       $sms->sms_engine = $SmsGW;
-    //       $sms->type = 'cmo';
-    //       $sms->status = $status;
-    //       $sms->from = $from;
-    //       $sms->to = $to;
-    //       $sms->contents = $contents;
-    //       $sms->response = $response;
-    //       $sms->message_id = $msgId;
-    //       $sms->save();
-    //     }
-    //     //return $sms;
-    //   }
-    // }
+          $sms = new $this->manageSms();
+          $sms->pnr = $pnr;
+          $sms->booking_id = $bookingId;
+          $sms->sms_engine = $SmsGW;
+          $sms->type = 'cmo';
+          $sms->status = $status;
+          $sms->from = $from;
+          $sms->to = $to;
+          $sms->contents = $contents;
+          $sms->response = $response;
+          $sms->message_id = $msgId;
+          $sms->save();
+        }
+        //return $sms;
+      }
+    }
 
     if ($email) {
       $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
@@ -1249,6 +1383,126 @@ class ChannelRepository
     // }
   }
 
+  public function UpdateCutsomerPaymentppInfo(
+    $customerId,
+    $paymentDone,
+    $totalfare,
+    $discount,
+    $payable_amount,
+    $odbus_charges,
+    $odbus_gst,
+    $owner_fare,
+    $request,
+    $bookingId,
+    $booked,
+    $bookedStatusFailed,
+    $transactionId,
+    $pnr,
+    $busId,
+    $cancellationslabs,
+    $transactionFee,
+    $customer_gst_status,
+    $customer_gst_number,
+    $customer_gst_business_name,
+    $customer_gst_business_email,
+    $customer_gst_business_address,
+    $customer_gst_percent,
+    $customer_gst_amount,
+    $coupon_discount,
+    $smsData,
+    $email,
+    $emailData,
+    $origin
+  ) {
+    // return $smsData;
+    $SmsGW = config('services.sms.otpservice');
+
+    //---------------------------------------------------------------------------------------------------------------
+    //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+
+    // $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
+    $booking = $this->booking->find($bookingId);
+    $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
+
+    // return $booking;
+
+    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
+    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+
+      $msgId = $sendsms->messages[0]->id;
+      $status = $sendsms->status;
+      $from = $sendsms->message->sender;
+      $to = $sendsms->messages[0]->recipient;
+      $contents = $sendsms->message->content;
+      $response = collect($sendsms);
+      /// save sms related things in manage_sms table///////////////
+
+      $sms = new $this->manageSms();
+      $sms->pnr = $pnr;
+      $sms->booking_id = $bookingId;
+      $sms->sms_engine = $SmsGW;
+      $sms->type = 'customer';
+      $sms->status = $status;
+      $sms->from = $from;
+      $sms->to = $to;
+      $sms->contents = $contents;
+      $sms->response = $response;
+      $sms->message_id = $msgId;
+      $sms->save();
+    }
+
+    ///////////////////CMO SMS/////////////////////////////////////////////////
+
+    if ($origin == 'ODBUS') {
+      $busContactDetails = BusContacts::where('bus_id', $busId)
+        ->where('status', '1')
+        ->where('booking_sms_send', '1')
+        ->get('phone');
+      if ($busContactDetails->isNotEmpty()) {
+        $contact_number = collect($busContactDetails)->implode('phone', ',');
+        $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
+
+        if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+
+          $msgId = $sendSmsCMO->messages[0]->id;
+          $status = $sendSmsCMO->status;
+          $from = $sendSmsCMO->message->sender;
+          $to = collect($sendSmsCMO->messages)->pluck('recipient');
+          $contents = $sendSmsCMO->message->content;
+          $response = collect($sendSmsCMO);
+
+          /// save sms related things in manage_sms table///////////////
+
+          $sms = new $this->manageSms();
+          $sms->pnr = $pnr;
+          $sms->booking_id = $bookingId;
+          $sms->sms_engine = $SmsGW;
+          $sms->type = 'cmo';
+          $sms->status = $status;
+          $sms->from = $from;
+          $sms->to = $to;
+          $sms->contents = $contents;
+          $sms->response = $response;
+          $sms->message_id = $msgId;
+          $sms->save();
+        }
+        //return $sms;
+      }
+    }
+
+    if ($email) {
+      $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+    }
+    /////////////////send email to odbus admin////////
+    $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+
+    return "Payment Done";
+
+    //--------------------------------------------------------------------------------------------------------------
+  }
+
+
+
   public function CreateAgentPayment($agentId, $agentName, $amount, $name, $bookingId, $transactionId, $pnr)
   {
     $walletBalance =  $walletBalance = AgentWallet::where('user_id', $agentId)->orderBy('id', 'DESC')->where("status", 1)->limit(1)->get();
@@ -1262,6 +1516,7 @@ class ChannelRepository
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;
     $agetWallet->status = 1;
+
 
     //Log::info($agetWallet);
 
@@ -1310,6 +1565,8 @@ class ChannelRepository
     $tds = 0; // changes on 5th -april-2025 (as per Mandal Bhai Request)
     $afterTdsComission = $totalAgentComission - $tds;
 
+    //return $afterTdsComission;
+
     /// By Lima 10 April,2023, 1:30 PM no commision logic /////////
 
     $AgentData = $this->user->where('id', $agentId)->first();
@@ -1338,14 +1595,15 @@ class ChannelRepository
     $agetWallet->type = 'Commission';
     $agetWallet->booking_id = $bookingId;
     $agetWallet->transaction_type = 'c';
-    $agetWallet->balance = $walletBalance + $afterTdsComission;
+    $agetWallet->balance = $walletBalance; // + $afterTdsComission;  //commented to not to add agent commision into  wallet balance immedietly
+    $agetWallet->balance = $walletBalance;
     $agetWallet->user_id = $agentId;
     $agetWallet->created_by = $agentName;
     $agetWallet->status = 1;
-    $agetWallet->save();
-    //return $agetWallet;
+    //$agetWallet->save();
+    // return $agetWallet;
 
-    $newBalance = $walletBalance + $afterTdsComission;
+    return $newBalance = $walletBalance; // + $afterTdsComission;  //commented to not to add agent commision into wallet balance immedietly 
     $notification = new Notification;
     //New Balance is Rs.00.00 after receive of Comission of Rs.0.00 for PNR 00000000
     $notification->notification_heading = "New Balance is Rs.$newBalance after receive of Comission of Rs.$afterTdsComission for PNR.$pnr";
