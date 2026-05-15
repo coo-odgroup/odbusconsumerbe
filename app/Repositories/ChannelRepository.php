@@ -1020,10 +1020,14 @@ class ChannelRepository
   public function UpdateCustomPayment($receiptId, $amount, $name, $email, $phone, $bookingId)
   {
 
-    $cashfree = DB::table("credentials")->first();
-    $key = $cashfree->cashfree_key;
-    $secretKey = $cashfree->cashfree_secret;
-    $apiUrl = $cashfree->cashfree_apiurl;
+    // $cashfree = DB::table("credentials")->first();
+    // $key = $cashfree->cashfree_key;
+    // $secretKey = $cashfree->cashfree_secret;
+    // $apiUrl = $cashfree->cashfree_apiurl;
+
+    $key = env('CASHFREE_KEY');
+    $secretKey = env('CASHFREE_SECRET');
+    $apiUrl = env('CASHFREE_API_URL');
 
     $response = Http::withHeaders([
       'x-client-id' => $key,
@@ -1056,10 +1060,14 @@ class ChannelRepository
   public function CreateCustomPayment($receiptId, $amount, $name, $email, $phone, $bookingId)
   {
 
-    $cashfree = DB::table("credentials")->first();
-    $key = $cashfree->cashfree_key;
-    $secretKey = $cashfree->cashfree_secret;
-    $apiUrl = $cashfree->cashfree_apiurl;
+    // $cashfree = DB::table("credentials")->first();
+    // $key = $cashfree->cashfree_key;
+    // $secretKey = $cashfree->cashfree_secret;
+    // $apiUrl = $cashfree->cashfree_apiurl;
+
+    $key = env('CASHFREE_KEY');
+    $secretKey = env('CASHFREE_SECRET');
+    $apiUrl = env('CASHFREE_API_URL');
 
     $response = Http::withHeaders([
       'x-client-id' => $key,

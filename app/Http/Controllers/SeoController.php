@@ -30,28 +30,33 @@ class SeoController extends Controller
 
     public function seoContent(Request $request)
     {
+        // return $request->all();
         try {
             $route = DB::table('mst_routes_details')
                 ->where('source_id', $request->sourceId)
                 ->where('destination_id', $request->destinationId)
                 ->first();
 
+                // return $route->id;
+
             if (!$route) {
                 return $this->successResponse(null, 'Route not found', Response::HTTP_OK);
             }
 
-            $seo = DB::table('mst_seo_content')
+            $seoData = DB::table('mst_seo_content')
                 ->where('route_id', $route->id)
                 ->first();
 
+                // return $seo;
+
             $seo = [
-                'id' => $seo->id,
-                'route_id' => $seo->route_id,
-                'meta_title' => $seo->meta_title,
-                'meta_description' => $seo->meta_description,
-                'content' => $seo->content,
-                'faq_schema' => json_decode($route->faq_schema),
-                'breadcrumb_schema' => json_decode($route->breadcrumb_schema),
+                'id' => $seoData->id ?? null,
+                'route_id' => $seoData->route_id ?? $route->id,
+                'meta_title' => $seoData->meta_title ?? '',
+                'meta_description' => $seoData->meta_description ?? '',
+                'content' => $seoData->content ?? '',
+                'faq_schema' => json_decode($route->faq_schema ?? '[]'),
+                'breadcrumb_schema' => json_decode($route->breadcrumb_schema ?? '[]'),
             ];
 
             if (!$seo) {
@@ -94,6 +99,7 @@ class SeoController extends Controller
 
             $url = str_replace('routes/', '', $current_url);
             $url = str_replace('-bus-services', '', $url);
+            $url = trim($url, '/');
 
             $parts = explode('-', $url);
 
@@ -115,7 +121,7 @@ class SeoController extends Controller
         // BLOG SEO
         elseif (strpos($current_url, 'blog/') !== false) {
 
-            $slug = str_replace('blog/', '', $current_url);
+            $slug = trim(str_replace('blog/', '', $current_url), '/');
 
             $blog = Blog::where('slug', $slug)->first();
 
