@@ -135,25 +135,7 @@ class ViewSeatsService
                 $destId=  $this->viewSeatsRepository->getDestinationId($bookingId);
                 $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
                 $bookedRange = Arr::sort($bookedSequence);
-                
-                 //>>1
-                //seat available on requested seq so blocked seats are none.
-                // if((last($reqRange)<=head($bookedRange)) || (last($bookedRange)<=head($reqRange))){
-                //    //$blockedSeats=array();
-                    
-                // }
-                // else{   //seat not available on requested seq so blocked seats are calculated   
-                //     $blockedSeats = array_merge($blockedSeats,$seatsIds);
-                // } 
-
-                //>>2
-                // //seat not available on requested seq so blocked seats are calculated 
-                // if((last($reqRange)>head($bookedRange)) || (last($bookedRange)>head($reqRange))){
-                //     //return $bookedRange;
-                //     $blockedSeats = array_merge($blockedSeats,$seatsIds);
-                //  }
-
-                //>>3 seat available on requested seq so blocked seats are none.
+               
                 if((last($reqRange)<head($bookedRange))){
                     $blockedSeats=array();
                  }
@@ -392,10 +374,10 @@ public function checkBlockedSeats($request)
              $bookedSequence = $this->viewSeatsRepository->bookedSequence($srcId,$destId,$busId);
              $bookedRange = Arr::sort($bookedSequence);
              
-             if((last($reqRange)<=head($bookedRange))){
+             if((last($reqRange)< head($bookedRange))){
                 $blockedSeats=array();
              }
-             elseif((last($bookedRange)<=head($reqRange))){  
+             elseif((last($bookedRange)< head($reqRange))){  
                  $blockedSeats=array(); 
              }else{
                  //seat not available on requested seq so blocked seats are calculated 
