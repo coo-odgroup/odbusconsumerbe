@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\SeoValidator;
+use App\Models\Blog;
+use App\Models\Location;
+use App\Models\Seo;
 use App\Services\SeoService;
 use Illuminate\Support\Facades\DB;
 
@@ -27,25 +30,40 @@ class SeoController extends Controller
 
     public function seoContent(Request $request)
     {
+        // return $request->all();
         try {
             $route = DB::table('mst_routes_details')
                 ->where('source_id', $request->sourceId)
                 ->where('destination_id', $request->destinationId)
                 ->first();
 
+                // return $route->id;
+
             if (!$route) {
                 return $this->successResponse(null, 'Route not found', Response::HTTP_OK);
             }
 
-            $seo = DB::table('mst_seo_content')
+            $seoData = DB::table('mst_seo_content')
                 ->where('route_id', $route->id)
                 ->first();
+
+                // return $seo;
+
+            $seo = [
+                'id' => $seoData->id ?? null,
+                'route_id' => $seoData->route_id ?? $route->id,
+                'meta_title' => $seoData->meta_title ?? '',
+                'meta_description' => $seoData->meta_description ?? '',
+                'content' => $seoData->content ?? '',
+                'faq_schema' => json_decode($route->faq_schema ?? '[]'),
+                'breadcrumb_schema' => json_decode($route->breadcrumb_schema ?? '[]'),
+            ];
 
             if (!$seo) {
                 return $this->successResponse(null, 'SEO content not found', Response::HTTP_OK);
             }
 
-            return $this->successResponse($seo->content, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse($seo, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -69,4 +87,206 @@ class SeoController extends Controller
             }
         }
     }
+
+    public function getSeolist(Request $request)
+    {
+        $current_url = $request->current_url;
+
+        // ROUTE SEO
+        if (strpos($current_url, 'routes/') !== false) {
+
+            $current_url = parse_url($request->current_url, PHP_URL_PATH);
+
+            $url = str_replace('routes/', '', $current_url);
+            $url = str_replace('-bus-services', '', $url);
+            $url = trim($url, '/');
+
+            $parts = explode('-', $url);
+
+            $source = $parts[0] ?? '';
+            $destination = $parts[1] ?? '';
+
+            $sourceId = Location::where('url', $source)->value('id');
+
+            $destinationId = Location::where('url', $destination)->value('id');
+
+            return $this->seoContent(
+                $request->merge([
+                    'sourceId' => $sourceId,
+                    'destinationId' => $destinationId
+                ])
+            );
+        }
+
+        // BLOG SEO
+        elseif (strpos($current_url, 'blog/') !== false) {
+
+            $slug = trim(str_replace('blog/', '', $current_url), '/');
+
+            $blog = Blog::where('slug', $slug)->first();
+
+            if (!$blog) {
+
+                return response()->json([
+                    'message' => 'Blog not found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Decode JSON Schemas
+            $faq_schema = $blog->faq_schema
+                ? json_decode($blog->faq_schema, true)
+                : [];
+
+            $service_schema = $blog->service_schema
+                ? json_decode($blog->service_schema, true)
+                : [];
+
+            $breadcrumb_schema = $blog->breadcrumb_schema
+                ? json_decode($blog->breadcrumb_schema, true)
+                : [];
+
+
+            $seo = [
+                'meta_title' => $blog->meta_title,
+                'meta_description' => $blog->meta_description,
+                'meta_keywords' => $blog->meta_keywords,
+                'canonical_url' => $blog->canonical_url,
+                'og_image' => $blog->og_image,
+                'faq_schema' => $faq_schema,
+                'service_schema' => $service_schema,
+                'breadcrumb_schema' => $breadcrumb_schema,
+            ];
+
+            return $this->successResponse($seo, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } else {
+
+            $seodata = Seo::where('page_url', $current_url)->first();
+
+            if (!$seodata) {
+                return response()->json([
+                    'message' => 'SEO data not found'
+                ]);
+            }
+
+            $seo = [
+                'meta_title' => $seodata->meta_title,
+                'meta_description' => $seodata->meta_description,
+                'meta_keywords' => $seodata->meta_keyword,
+                'canonical_url' => $seodata->canonical_url,
+            ];
+
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+    }
+
+
+
+    public function count(Request $request)
+    {
+        // $bus = DB::table('mst_routes_bus_ids as mrbi')
+        //     ->join('bus as b', 'b.id', '=', 'mrbi.bus_id')
+        //     ->where('mrbi.route_id', $request->route_id)
+        //     ->where('mrbi.active_status', 1)
+        //     ->where('b.status', 1)
+        //     ->distinct()
+        //     // ->count();
+        //     ->pluck('mrbi.bus_id');
+
+
+
+        // $bus_seats = DB::table('bus_seats')
+        //     ->whereIn('bus_id', $bus)
+        //     ->where('status', 1)
+        //     ->whereNull('type')
+        //     ->whereNull('operation_date')
+        //     ->distinct('seats_id')
+        //     ->count('ticket_price_id');
+
+        // return $bus_seats;
+
+        $routes = DB::table('mst_routes_details as rd')
+
+            ->join('mst_routes_bus_ids as mrbi', 'mrbi.route_id', '=', 'rd.id')
+
+            ->join('bus as b', 'b.id', '=', 'mrbi.bus_id')
+
+            ->join('bus_seats as bs', 'bs.bus_id', '=', 'mrbi.bus_id')
+
+            ->where('mrbi.active_status', 1)
+            ->where('b.status', 1)
+            ->where('bs.status', 1)
+
+            ->whereNull('bs.type')
+            ->whereNull('bs.operation_date')
+
+            ->select(
+                'rd.id as route_id',
+                'rd.source',
+                'rd.destination',
+                DB::raw('COUNT(DISTINCT bs.seats_id) as total_seats')
+            )
+
+            ->groupBy(
+                'rd.id',
+                'rd.source',
+                'rd.destination'
+            )
+
+            ->get();
+
+        return $routes;
+    }
 }
+
+
+//-----------------------------------------------------------------------------------------------
+
+//rw query total seats for a route
+
+// SELECT 
+//     rd.id AS route_id,
+//     rd.source,
+//     rd.destination,
+//     COUNT(DISTINCT bs.seats_id) AS total_seats
+ 
+// FROM mst_routes_details rd
+ 
+// JOIN mst_routes_bus_ids mrbi 
+//     ON mrbi.route_id = rd.id
+ 
+// JOIN bus b 
+//     ON b.id = mrbi.bus_id
+ 
+// JOIN bus_seats bs 
+//     ON bs.bus_id = mrbi.bus_id
+ 
+// WHERE mrbi.active_status = 1
+// AND b.status = 1
+// AND bs.status = 1
+// AND bs.type IS NULL
+// AND bs.operation_date IS NULL
+ 
+// GROUP BY 
+//     rd.id,
+//     rd.source,
+//     rd.destination;
+
+
+//-----------------------------------------------------------------------------------------------------------------
+
+// raw sql for status update in mst_routes_operations table
+
+// UPDATE mst_routes_operators mro
+
+// JOIN bus_operator bo 
+//     ON bo.id = mro.operator_id
+
+// SET mro.status = 
+//     CASE
+//         WHEN bo.status = 1 THEN 1
+//         ELSE 0
+//     END;

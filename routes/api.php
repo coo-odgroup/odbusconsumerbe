@@ -53,17 +53,20 @@ Route::post('/PriceOnSeatsSelection', [ViewSeatsController::class, 'getPriceOnSe
 Route::post('/BookTicket', [BookTicketController::class, 'bookTicket']);
 Route::post('/SendSms', [ChannelController::class, 'sendSms']);
 Route::post('/smsDeliveryStatus', [ChannelController::class, 'smsDeliveryStatus']);
-// Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/CheckSeatStatus', [ChannelController::class, 'checkSeatStatus']);
-// Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
 Route::post('/UpdateAdjustStatus', [ChannelController::class, 'UpdateAdjustStatus']);
 Route::post('/BlockDolphinSeat', [ChannelController::class, 'BlockDolphinSeat']);
 Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphinSeat']);
 
+//Cashfree
+Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
+Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
+
+
 //phonpe
-Route::post('/paymentStatus', [PhonpeController::class, 'paymentStatus']);
-Route::post('/MakePayment', [PhonpeController::class, 'makePayment']);
-Route::post('/PhonepeWebhook', [PhonpeController::class, 'Webhook']);
+// Route::post('/paymentStatus', [PhonpeController::class, 'paymentStatus']);
+// Route::post('/MakePayment', [PhonpeController::class, 'makePayment']);
+// Route::post('/PhonepeWebhook', [PhonpeController::class, 'Webhook']);
 
 
 
@@ -207,4 +210,13 @@ Route::post('fetchRefundStatus',[CancelTicketController::class,"fetchRefundStatu
 Route::post('/getfaqs', [FaqController::class, 'getFaqs']);
 
 Route::post('seoContent', [SeoController::class, 'seoContent']);
+Route::post('/allseolist', [SeoController::class, 'getSeolist']);
+
+
+Route::post('count',[SeoController::class,'count']);
 Route::post('get-advantage-details', [PageContentController::class, 'getAdvantageDetails']);
+<<<<<<< HEAD
+=======
+
+Route::post('getallroutes', [PopularController::class, 'getAllRoutes']);
+>>>>>>> ee838c9f3b8ed54656058918a00ab2dadd512c10
