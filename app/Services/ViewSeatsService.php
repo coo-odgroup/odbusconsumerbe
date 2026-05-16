@@ -118,7 +118,6 @@ class ViewSeatsService
          /////// 15-sep-2024 :: date wise fare slab
             //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
             $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
-            
         
         if (sizeof($bookingIds)){
             $blockedSeats=array();
@@ -155,10 +154,10 @@ class ViewSeatsService
                 //  }
 
                 //>>3 seat available on requested seq so blocked seats are none.
-                if((last($reqRange)<=head($bookedRange))){
+                if((last($reqRange)<head($bookedRange))){
                     $blockedSeats=array();
                  }
-                 elseif((last($bookedRange)<=head($reqRange))){  
+                 elseif((last($bookedRange)<head($reqRange))){  
                      $blockedSeats=array(); 
                  }else{
                      //seat not available on requested seq so blocked seats are calculated 
@@ -168,6 +167,7 @@ class ViewSeatsService
         }else{          //no booking on that specific date, so all seats are available
                 $blockedSeats=array();
         }
+
         
            $lowerBerth = Config::get('constants.LOWER_BERTH');
            $upperBerth = Config::get('constants.UPPER_BERTH');
@@ -175,7 +175,7 @@ class ViewSeatsService
             //////////////////////
             $clientRoleId = Config::get('constants.CLIENT_ROLE_ID');
             /////////////////////
-
+           
            // Lower Berth seat Calculation
            $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle);
             //return $viewSeat;
