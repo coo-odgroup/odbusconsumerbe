@@ -446,6 +446,182 @@ class ClientBookingRepository
             $clientId = $request['client_id'];
             $clientName = $request['client_name'];
 
+            // ✅ Lock booking row
+            $booking = $this->booking
+                ->where('transaction_id', $transactionId)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$booking) {
+
+                DB::rollBack();
+
+                return [
+                    'status' => 0,
+                    'message' => 'Invalid transaction_id'
+                ];
+            }
+
+            // ✅ Already processed
+            if ($booking->status == 1) {
+
+                $latestWallet = ClientWallet::where('user_id', $clientId)
+                    ->where('status', 1)
+                    ->orderBy('id', 'DESC')
+                    ->first();
+
+                DB::commit();
+
+                return [
+                    'status' => 1,
+                    'wallet_balance' => $latestWallet
+                        ? $latestWallet->balance
+                        : 0,
+                    'final_pnr' => $booking->pnr
+                ];
+            }
+
+            // ✅ Lock latest wallet row
+            $wallet = ClientWallet::where('user_id', $clientId)
+                ->where('status', 1)
+                ->lockForUpdate()
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if (!$wallet) {
+
+                DB::rollBack();
+
+                return [
+                    'status' => 0,
+                    'message' => 'Wallet not found'
+                ];
+            }
+
+            $currentBalance = $wallet->balance;
+
+            $deductAmount = $booking->total_fare;
+
+            // ✅ Prevent negative balance
+            if ($currentBalance < $deductAmount) {
+
+                DB::rollBack();
+
+                return [
+                    'status' => 0,
+                    'message' => 'Insufficient balance'
+                ];
+            }
+
+            // ✅ Debit calculation
+            $balanceAfterDeduction =
+                $currentBalance - $deductAmount;
+
+            // ✅ Insert debit entry
+            ClientWallet::create([
+
+                'transaction_id' => $transactionId,
+
+                'booking_id' => $booking->id,
+
+                'amount' => $deductAmount,
+
+                'transaction_type' => 'd',
+
+                'balance' => $balanceAfterDeduction,
+
+                'user_id' => $clientId,
+
+                'created_by' => $clientName,
+
+                'status' => 1
+            ]);
+
+            // ✅ Re-fetch latest balance AFTER debit
+            $latestWallet = ClientWallet::where('user_id', $clientId)
+                ->where('status', 1)
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            $latestBalance = $latestWallet->balance;
+
+            // ✅ Commission calculation
+            $commission =
+                $booking->client_comission ?? 0;
+
+            $finalBalance =
+                $latestBalance + $commission;
+
+            // ✅ Insert commission entry
+            ClientWallet::create([
+
+                'transaction_id' =>
+                    now()->timestamp . rand(100,999),
+
+                'booking_id' => $booking->id,
+
+                'amount' => $commission,
+
+                'transaction_type' => 'c',
+
+                'type' => 'Commission',
+
+                'balance' => $finalBalance,
+
+                'user_id' => $clientId,
+
+                'created_by' => $clientName,
+
+                'status' => 1
+            ]);
+
+            // ✅ Update booking
+            $booking->update([
+                'status' => 1
+            ]);
+
+            // ✅ Update booking details
+            $booking->bookingDetail()->update([
+                'status' => 1
+            ]);
+
+            DB::commit();
+
+            return [
+
+                'status' => 1,
+
+                'wallet_balance' => $finalBalance,
+
+                'final_pnr' => $booking->pnr
+            ];
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            \Log::error(
+                'Ticket Confirmation Error: '
+                . $e->getMessage()
+            );
+
+            return [
+                'status' => 0,
+                'message' => 'Something went wrong'
+            ];
+        }
+    }
+
+    public function ticketConfirmation_old19May2026($request)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $transactionId = $request['transaction_id'];
+            $clientId = $request['client_id'];
+            $clientName = $request['client_name'];
+
             // ✅ Lock booking row (prevents duplicate processing)
             $booking = $this->booking
                 ->where('transaction_id', $transactionId)
