@@ -82,6 +82,7 @@ class ChannelController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+
     public function sendSms(Request $request)
     {
         try {
@@ -91,6 +92,7 @@ class ChannelController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+
     public function sendSmsTicket(Request $request)
     {
         try {
@@ -100,6 +102,7 @@ class ChannelController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
+    
     public function smsDeliveryStatus(Request $request)
     {
         try {
@@ -843,9 +846,6 @@ class ChannelController extends Controller
         //return $payment;
     }
 
-
-
-
     public function GSTEmailSend()
     {
 
@@ -854,10 +854,10 @@ class ChannelController extends Controller
         $updated_at = date('Y-m-d H:i:s');
 
         $data = DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name 
-    from booking 
-    join users on booking.users_id=users.id
-    where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc ");
-        $num = 1;
+        from booking 
+        join users on booking.users_id=users.id
+        where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc ");
+            $num = 1;
 
         foreach ($data as $d) {
             ////////////////////// generate gst invoice /////////////              
