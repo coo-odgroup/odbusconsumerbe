@@ -37,7 +37,7 @@ class SeoController extends Controller
                 ->where('destination_id', $request->destinationId)
                 ->first();
 
-                // return $route->id;
+            // return $route->id;
 
             if (!$route) {
                 return $this->successResponse(null, 'Route not found', Response::HTTP_OK);
@@ -47,7 +47,7 @@ class SeoController extends Controller
                 ->where('route_id', $route->id)
                 ->first();
 
-                // return $seo;
+            // return $seo;
 
             $seo = [
                 'id' => $seoData->id ?? null,
@@ -121,7 +121,13 @@ class SeoController extends Controller
         // BLOG SEO
         elseif (strpos($current_url, 'blog/') !== false) {
 
-            $slug = trim(str_replace('blog/', '', $current_url), '/');
+            $path = trim(parse_url($current_url, PHP_URL_PATH), '/');
+
+            // blog/travel/blog-slug
+            $segments = explode('/', $path);
+
+            $category_slug = $segments[1] ?? '';
+            $slug = $segments[2] ?? '';
 
             $blog = Blog::where('slug', $slug)->first();
 
@@ -145,7 +151,6 @@ class SeoController extends Controller
                 ? json_decode($blog->breadcrumb_schema, true)
                 : [];
 
-
             $seo = [
                 'meta_title' => $blog->meta_title,
                 'meta_description' => $blog->meta_description,
@@ -157,7 +162,11 @@ class SeoController extends Controller
                 'breadcrumb_schema' => $breadcrumb_schema,
             ];
 
-            return $this->successResponse($seo, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
         } else {
 
             $seodata = Seo::where('page_url', $current_url)->first();

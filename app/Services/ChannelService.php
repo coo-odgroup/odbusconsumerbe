@@ -1303,15 +1303,22 @@ class ChannelService
             //Log::info('ticket adjust');
 
             $smsData = array(
-                "seat_no" => $seat_no,
-                "passengerDetails" => $passengerDetails,
+                "name" => $name,
+                "pnr" => $pnr,
+                'source' => $source,
+                'boarding_point' => $boarding_point,
+                'destination' => $destination,
+                'dropping_point' => $dropping_point,
                 "busname" => $busname,
                 "busNumber" => $busNumber,
-                "phone" => $phone,
                 "journeydate" => $journeydate,
                 "routedetails" => $source . "-" . $destination,
                 "departureTime" => $departureTime,
+                "seat_no" => $seat_no,
+                "passengerDetails" => $passengerDetails,
+                "phone" => $phone,
                 "conductor_number" => $conductor_number,
+                "fare" => $payable_amount
             );
 
             //Log::info('adjust sms');

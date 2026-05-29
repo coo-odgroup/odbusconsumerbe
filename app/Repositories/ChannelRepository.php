@@ -40,6 +40,8 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Services\ValueFirstService;
+use App\Services\Msg91Service;
+
 
 class ChannelRepository
 {
@@ -52,8 +54,9 @@ class ChannelRepository
   protected $busSeats;
   protected $credentials;
   protected $manageSms;
+  protected $msg91Service;
 
-  public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user)
+  public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user,Msg91Service $msg91Service)
   {
     $this->gatewayInformation = $gatewayInformation;
     $this->users = $users;
@@ -64,6 +67,7 @@ class ChannelRepository
     $this->credentials = $credentials;
     $this->bookingDetail = $bookingDetail;
     $this->manageSms = $manageSms;
+    $this->msg91Service = $msg91Service;
   }
 
   public function storeGWInfo($data)
@@ -1723,31 +1727,35 @@ class ChannelRepository
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
+    //New sms for ticket customer
 
-    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+    $this->msg91Service->customer_ticket_booking($smsData);
 
-      $msgId = $sendsms->messages[0]->id;
-      $status = $sendsms->status;
-      $from = $sendsms->message->sender;
-      $to = $sendsms->messages[0]->recipient;
-      $contents = $sendsms->message->content;
-      $response = collect($sendsms);
-      /// save sms related things in manage_sms table///////////////
+    // $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
 
-      $sms = new $this->manageSms();
-      $sms->pnr = $pnr;
-      $sms->booking_id = $bookingId;
-      $sms->sms_engine = $SmsGW;
-      $sms->type = 'customer';
-      $sms->status = $status;
-      $sms->from = $from;
-      $sms->to = $to;
-      $sms->contents = $contents;
-      $sms->response = $response;
-      $sms->message_id = $msgId;
-      $sms->save();
-    }
+    // if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+
+    //   $msgId = $sendsms->messages[0]->id;
+    //   $status = $sendsms->status;
+    //   $from = $sendsms->message->sender;
+    //   $to = $sendsms->messages[0]->recipient;
+    //   $contents = $sendsms->message->content;
+    //   $response = collect($sendsms);
+    //   /// save sms related things in manage_sms table///////////////
+
+    //   $sms = new $this->manageSms();
+    //   $sms->pnr = $pnr;
+    //   $sms->booking_id = $bookingId;
+    //   $sms->sms_engine = $SmsGW;
+    //   $sms->type = 'customer';
+    //   $sms->status = $status;
+    //   $sms->from = $from;
+    //   $sms->to = $to;
+    //   $sms->contents = $contents;
+    //   $sms->response = $response;
+    //   $sms->message_id = $msgId;
+    //   $sms->save();
+    // }
 
 
 
@@ -1759,32 +1767,33 @@ class ChannelRepository
         ->get('phone');
       if ($busContactDetails->isNotEmpty()) {
         $contact_number = collect($busContactDetails)->implode('phone', ',');
-        $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
+        $this->msg91Service->cmo_ticket_booking($smsData);
+        // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
 
-        if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+        // if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
 
-          $msgId = $sendSmsCMO->messages[0]->id;
-          $status = $sendSmsCMO->status;
-          $from = $sendSmsCMO->message->sender;
-          $to = collect($sendSmsCMO->messages)->pluck('recipient');
-          $contents = $sendSmsCMO->message->content;
-          $response = collect($sendSmsCMO);
+        //   $msgId = $sendSmsCMO->messages[0]->id;
+        //   $status = $sendSmsCMO->status;
+        //   $from = $sendSmsCMO->message->sender;
+        //   $to = collect($sendSmsCMO->messages)->pluck('recipient');
+        //   $contents = $sendSmsCMO->message->content;
+        //   $response = collect($sendSmsCMO);
 
-          /// save sms related things in manage_sms table///////////////
+        //   /// save sms related things in manage_sms table///////////////
 
-          $sms = new $this->manageSms();
-          $sms->pnr = $pnr;
-          $sms->booking_id = $bookingId;
-          $sms->sms_engine = $SmsGW;
-          $sms->type = 'cmo';
-          $sms->status = $status;
-          $sms->from = $from;
-          $sms->to = $to;
-          $sms->contents = $contents;
-          $sms->response = $response;
-          $sms->message_id = $msgId;
-          $sms->save();
-        }
+        //   $sms = new $this->manageSms();
+        //   $sms->pnr = $pnr;
+        //   $sms->booking_id = $bookingId;
+        //   $sms->sms_engine = $SmsGW;
+        //   $sms->type = 'cmo';
+        //   $sms->status = $status;
+        //   $sms->from = $from;
+        //   $sms->to = $to;
+        //   $sms->contents = $contents;
+        //   $sms->response = $response;
+        //   $sms->message_id = $msgId;
+        //   $sms->save();
+        // }
       }
     }
 

@@ -34,28 +34,36 @@ class BlogController extends Controller
                 $blogs = Blog::where('category_id', $cat->id)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                     ->join('authors', 'authors.id', '=', 'blogs.author_id')
-                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
+                    ->where('blogs.active_status', 1)
+                    ->whereNull('blogs.deleted_at')
+                    ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             } elseif ($author) {
                 $blogs = Blog::where('author_id', $author->id)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                     ->join('authors', 'authors.id', '=', 'blogs.author_id')
-                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
+                    ->where('blogs.active_status', 1)
+                    ->whereNull('blogs.deleted_at')
+                    ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             } elseif ($tag->count() != 0) {
                 $blogs = Blog::whereIn('blogs.id', $tag)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                     ->join('authors', 'authors.id', '=', 'blogs.author_id')
-                    ->select('blogs.*', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blog_categories.category_name')
+                    ->where('blogs.active_status', 1)
+                    ->whereNull('blogs.deleted_at')
+                    ->select('blogs.*', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             } else {
                 $blogs = Blog::orderBy('id', 'desc')->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                     ->join('authors', 'authors.id', '=', 'blogs.author_id')
+                    ->where('blogs.active_status', 1)
+                    ->whereNull('blogs.deleted_at')
                     ->limit($limit)
-                    ->select('blogs.*', 'blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug')
+                    ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
                     ->get();
             }
@@ -65,6 +73,8 @@ class BlogController extends Controller
             // Categories with blog count
             $categories = DB::table('blog_categories')
                 ->leftJoin('blogs', 'blogs.category_id', '=', 'blog_categories.id')
+                // ->where('blog_categories.active_status', 1)
+                // ->whereNull('blog_categories.deleted_at')
                 ->select(
                     'blog_categories.id',
                     'blog_categories.category_name',
@@ -94,7 +104,9 @@ class BlogController extends Controller
             $blogs = Blog::where('blogs.slug', $request->slug)
                 ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                 ->join('authors', 'authors.id', '=', 'blogs.author_id')
-                ->select('blog_categories.category_name', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blogs.*')
+                // ->where('blogs.active_status', 1)
+                // ->whereNull('blogs.deleted_at')
+                ->select('blog_categories.category_name','blog_categories.slug as cat_slug', 'blog_categories.slug', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blogs.*')
                 ->with('tags')
                 ->first();
 
@@ -113,6 +125,8 @@ class BlogController extends Controller
             // Categories with blog count
             $categories = DB::table('blog_categories')
                 ->leftJoin('blogs', 'blogs.category_id', '=', 'blog_categories.id')
+                ->where('blog_categories.active_status', 1)
+                ->whereNull('blog_categories.deleted_at')
                 ->select(
                     'blog_categories.id',
                     'blog_categories.category_name',

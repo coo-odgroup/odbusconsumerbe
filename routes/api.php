@@ -215,8 +215,6 @@ Route::post('/allseolist', [SeoController::class, 'getSeolist']);
 
 Route::post('count',[SeoController::class,'count']);
 Route::post('get-advantage-details', [PageContentController::class, 'getAdvantageDetails']);
-<<<<<<< HEAD
-=======
 
 Route::post('getallroutes', [PopularController::class, 'getAllRoutes']);
->>>>>>> ee838c9f3b8ed54656058918a00ab2dadd512c10
+

@@ -83,6 +83,50 @@ class Msg91Service
         return json_decode($response, true);
     }
 
+    public function otpsend($numbers, $variables)
+    {
+        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/sign-and-login-otp/run";
+
+        $to[] = [
+            "mobiles" => "91" . $numbers,
+            "variables" => $variables
+        ];
+
+        $postData = [
+            "data" => [
+                "sendTo" => [
+                    [
+                        "to" => $to,
+                        "variables" => $variables
+                    ]
+                ]
+            ]
+        ];
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => [
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return curl_error($curl);
+        }
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+    }
+
 
     // Customer SMS SEND ON TICKET BOOKING
     public function customer_ticket_booking($data)
