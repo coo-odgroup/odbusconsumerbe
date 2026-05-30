@@ -22,15 +22,6 @@ class InventoryService
                     ->where('journey_date', $journeyDate)
                     ->update([
                         'hold_seat' => DB::raw("hold_seat + {$seatCount}"),
-                        'available_seat' => DB::raw("
-                            GREATEST(
-                                total_seat
-                                - booked_seat
-                                - blocked_seat
-                                - hold_seat,
-                                0
-                            )
-                        "),
                         'updated_by' => 'hold'
                     ]);
     }
@@ -47,15 +38,6 @@ class InventoryService
                     ->where('journey_date', $journeyDate)
                     ->update([
                         'booked_seat' => DB::raw("booked_seat + {$seatCount}"),
-                        'available_seat' => DB::raw("
-                            GREATEST(
-                                total_seat
-                                - booked_seat
-                                - blocked_seat
-                                - hold_seat,
-                                0
-                            )
-                        "),
                         'updated_by' => 'booking'
                     ]);
     }
@@ -72,27 +54,12 @@ class InventoryService
                     ->where('journey_date', $journeyDate)
                     ->update([
                         'booked_seat' => DB::raw("GREATEST(booked_seat - {$seatCount},0)"),
-                        'available_seat' => DB::raw("
-                            GREATEST(
-                                total_seat
-                                - booked_seat
-                                - blocked_seat
-                                - hold_seat,
-                                0
-                            )
-                        "),
                         'updated_by' => 'cancel'
                     ]);
     }
 
   
-    public function releaseHoldSeats(
-        int $busId,        
-        string $journeyDate,
-        int $sourceId,
-        int $destinationId,
-        int $seatCount
-    ) {
+    public function releaseHoldSeats(int $busId, string $journeyDate, int $sourceId, int $destinationId,int $seatCount ) {
 
         $seatCount = (int) $seatCount;
 
@@ -112,24 +79,32 @@ class InventoryService
                         'hold_seat' => DB::raw(
                             "GREATEST(hold_seat - {$seatCount},0)"
                         ),
-
-                        'available_seat' => DB::raw(
-                            "GREATEST(
-                                total_seat
-                                - booked_seat
-                                - blocked_seat
-                                - hold_seat,
-                                0
-                            )"
-                        ),
-
                         'updated_by' => 'hold_release'
                     ]);
 
         return true;
     }
 
-   
+    public function refreshAvailableSeats(
+        array $segmentIds,
+        string $journeyDate
+    )
+    {
+        BusSeatCount::whereIn('ticket_price_id', $segmentIds)
+            ->where('journey_date', $journeyDate)
+            ->update([
+                'available_seat' => DB::raw("
+                    GREATEST(
+                        total_seat
+                        - booked_seat
+                        - blocked_seat
+                        - hold_seat,
+                        0
+                    )
+                ")
+            ]);
+    }
+
     public function openSeats(int $ticketPriceId,string $journeyDate,int $seatCount
     ) {
         BusSeatCount::where('ticket_price_id', $ticketPriceId)
