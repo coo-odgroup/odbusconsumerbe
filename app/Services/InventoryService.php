@@ -27,7 +27,7 @@ class InventoryService
                                 total_seat
                                 - booked_seat
                                 - blocked_seat
-                                - (hold_seat + {$seatCount}),
+                                - hold_seat,
                                 0
                             )
                         "),
@@ -50,7 +50,7 @@ class InventoryService
                         'available_seat' => DB::raw("
                             GREATEST(
                                 total_seat
-                                - (booked_seat + {$seatCount})
+                                - booked_seat
                                 - blocked_seat
                                 - hold_seat,
                                 0
@@ -75,7 +75,7 @@ class InventoryService
                         'available_seat' => DB::raw("
                             GREATEST(
                                 total_seat
-                                - GREATEST(booked_seat - {$seatCount},0)
+                                - booked_seat
                                 - blocked_seat
                                 - hold_seat,
                                 0
@@ -118,7 +118,7 @@ class InventoryService
                                 total_seat
                                 - booked_seat
                                 - blocked_seat
-                                - GREATEST(hold_seat - {$seatCount},0),
+                                - hold_seat,
                                 0
                             )"
                         ),

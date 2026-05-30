@@ -8,6 +8,7 @@ use App\Models\BookingSeized;
 use App\Models\BusCancelled;
 use App\Models\BusCancelledDate;
 use App\Models\ClientFeeSlab;
+use App\Models\BusSeatCount;
 use App\Models\ManageClientOperator;
 use App\Repositories\ListingRepository;
 use App\Repositories\CommonRepository;
@@ -643,14 +644,14 @@ class ListingService
 
 
             /* Seat class = 1 */
-            $seatClassRecords = $filteredSeats
-                ->where('seats.seat_class_id', 1)
-                ->count();
+            // $seatClassRecords = $filteredSeats
+            //     ->where('seats.seat_class_id', 1)
+            //     ->count();
 
-            /* Sleeper class = 2 or 3 */
-            $sleeperClassRecords = $filteredSeats
-                ->whereIn('seats.seat_class_id', [2, 3])
-                ->count();   
+            // /* Sleeper class = 2 or 3 */
+            // $sleeperClassRecords = $filteredSeats
+            //     ->whereIn('seats.seat_class_id', [2, 3])
+            //     ->count();   
 
             $amenityDatas = [];  
 
