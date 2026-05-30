@@ -1125,14 +1125,24 @@ class ChannelRepository
 
                 $seatCount = $booking->bookingDetail->count();
 
-                app(\App\Services\InventoryService::class)
-                    ->holdSeats(
+                $inventory = app(\App\Services\InventoryService::class);
+
+                $inventory->holdSeats(
                         $booking->bus_id,
                         $booking->journey_dt,
                         $booking->source_id,
                         $booking->destination_id,
                         $seatCount
                     );
+
+                  $inventory->refreshAvailableSeats(
+                      $inventory->getOverlapSegmentIds(
+                              $booking->bus_id,
+                              $booking->source_id,
+                              $booking->destination_id
+                          ),
+                      $booking->journey_dt
+                  );
             }
 
         } catch (\Exception $e) {
@@ -1465,14 +1475,24 @@ class ChannelRepository
 
                 $seatCount = $booking->bookingDetail->count();
 
-                app(\App\Services\InventoryService::class)
-                    ->holdSeats(
+                $inventory= app(\App\Services\InventoryService::class);
+                
+                    $inventory->holdSeats(
                         $booking->bus_id,
                         $booking->journey_dt,
                         $booking->source_id,
                         $booking->destination_id,
                         $seatCount
                     );
+
+                   $inventory->refreshAvailableSeats(
+                        $inventory->getOverlapSegmentIds(
+                                $booking->bus_id,
+                                $booking->source_id,
+                                $booking->destination_id
+                            ),
+                        $booking->journey_dt
+                    );  
             }
 
         } catch (\Exception $e) {

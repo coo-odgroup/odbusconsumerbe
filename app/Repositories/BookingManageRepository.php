@@ -706,6 +706,15 @@ class BookingManageRepository
                         $booking->destination_id,
                         $seatCount
                     );
+
+                     $inventory->refreshAvailableSeats(
+                        $inventory->getOverlapSegmentIds(
+                                $booking->bus_id,
+                                $booking->source_id,
+                                $booking->destination_id
+                            ),
+                        $booking->journey_dt
+                    );
                 }
 
             } catch (\Exception $e) {
