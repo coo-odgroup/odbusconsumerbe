@@ -684,7 +684,39 @@ class BookingManageRepository
         $userNotification->created_by= "Agent"; 
         $notification->userNotification()->save($userNotification);
        
-         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'cancel_otp' => null]);             
+         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled,'refund_amount' => $refundAmt, 'deduction_percent' => $percentage, 'cancel_otp' => null]);   
+         
+          ////////////update to bus_seat_count table
+
+            try {
+
+                $booking = Booking::with('bookingDetail')
+                    ->find($bookingId);
+
+                if ($booking) {
+
+                    $seatCount = $booking->bookingDetail->count();
+
+                    $inventory = app(\App\Services\InventoryService::class);
+
+                    $inventory->cancelSeats(
+                        $booking->bus_id,
+                        $booking->journey_dt,
+                        $booking->source_id,
+                        $booking->destination_id,
+                        $seatCount
+                    );
+                }
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'updateCancelTicket() . Inventory Cancel Update Failed. Booking ID: '
+                    .$bookingId.
+                    ' Error: '
+                    .$e->getMessage()
+                );
+            }
         
         //return $agetWallet;
     }

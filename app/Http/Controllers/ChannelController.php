@@ -900,4 +900,41 @@ class ChannelController extends Controller
             echo "Email has been sent to " . $d->name . "(" . $d->email . ") <br><br>";
         }
     }
+
+    public function release_hold_seats()
+    {
+        $expiredBookings = Booking::with('bookingDetail')
+        ->where('status', 4)
+        ->where('created_at', '<=', now()->subMinutes(10))
+        ->get();
+
+        $inventoryService = app(\App\Services\InventoryService::class);
+
+        foreach ($expiredBookings as $booking) {
+
+            $seatCount = $booking->bookingDetail->count();
+
+            $inventoryService->releaseHoldSeats(
+                $booking->bus_id,
+                $booking->journey_dt,
+                $booking->source_id,
+                $booking->destination_id,
+                $seatCount
+            );
+
+            $booking->status = 0;
+            $booking->save();
+        }
+
+        $res=[
+            'success' => true,
+            'released' => $expiredBookings->count()
+        ];
+
+        Log::info("release hold seats");
+        Log::info($res);
+
+        return response()->json($res);
+    }
+
 }

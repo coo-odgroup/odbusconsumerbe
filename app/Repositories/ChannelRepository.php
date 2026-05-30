@@ -1113,6 +1113,38 @@ class ChannelRepository
     DB::transaction(function () use ($bookingId, $seatHold) {
       //$this->booking->where('id', $bookingId)->lockForUpdate()->update(['status' => $seatHold]);
       $this->booking->lockForUpdate()->where('id', $bookingId)->update(['status' => $seatHold]);
+
+      //// update to bus_seat_count table ////////////
+        try {
+
+            $booking = $this->booking
+                ->with('bookingDetail')
+                ->find($bookingId);
+
+            if ($booking) {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                app(\App\Services\InventoryService::class)
+                    ->holdSeats(
+                        $booking->bus_id,
+                        $booking->journey_dt,
+                        $booking->source_id,
+                        $booking->destination_id,
+                        $seatCount
+                    );
+            }
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'Hold Inventory Update Failed. Booking ID: '
+                .$bookingId.
+                ' Error: '
+                .$e->getMessage()
+            );
+        }
+
     });
   }
   //////mantis changes////////
@@ -1249,6 +1281,37 @@ class ChannelRepository
     /////////////////send email to odbus admin////////
 
     $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+     
+    ////// updat5e to bus_seat_count table ///////////////
+
+    try {
+
+      $booking = Booking::with('bookingDetail')
+          ->find($bookingId);
+
+      if ($booking) {
+
+          $seatCount = $booking->bookingDetail->count();
+
+          $inventory = app(\App\Services\InventoryService::class);
+
+          $inventory->bookSeats(
+              $booking->bus_id,
+              $booking->journey_dt,
+              $booking->source_id,
+              $booking->destination_id,
+              $seatCount
+          );
+      }
+
+    } catch (\Exception $e) {
+
+        \Log::error(
+            'Inventory Update Failed. Booking ID: '.$bookingId.
+            ' Error: '.$e->getMessage()
+        );
+
+    }
 
 
     return "Payment Done";
@@ -1371,6 +1434,39 @@ class ChannelRepository
     $userNotification->user_id = $agentId;
     $userNotification->created_by = "Agent";
     $notification->userNotification()->save($userNotification);
+    
+    ///// save to bus_seat_count table//////////
+
+     try {
+
+            $booking = $this->booking
+                ->with('bookingDetail')
+                ->find($bookingId);
+
+            if ($booking) {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                app(\App\Services\InventoryService::class)
+                    ->holdSeats(
+                        $booking->bus_id,
+                        $booking->journey_dt,
+                        $booking->source_id,
+                        $booking->destination_id,
+                        $seatCount
+                    );
+            }
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'Hold Inventory Update Failed. Agent Booking ID: '
+                .$bookingId.
+                ' Error: '
+                .$e->getMessage()
+            );
+        }
+
     return $notification;
   }
   public function UpdateAgentPaymentInfo($paymentDone, $totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $request, $bookingId, $bookedStatusFailed, $transationId, $pnr, $busId, $booked, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount, $smsData, $email, $emailData, $origin)
@@ -1463,6 +1559,39 @@ class ChannelRepository
         }
       }
     }
+
+
+    ////// update to bus_seat_count table ///////////////
+    
+    try {
+
+      $booking = Booking::with('bookingDetail')
+          ->find($bookingId);
+
+      if ($booking) {
+
+          $seatCount = $booking->bookingDetail->count();
+
+          $inventory = app(\App\Services\InventoryService::class);
+
+          $inventory->bookSeats(
+              $booking->bus_id,
+              $booking->journey_dt,
+              $booking->source_id,
+              $booking->destination_id,
+              $seatCount
+          );
+      }
+
+    } catch (\Exception $e) {
+
+        \Log::error(
+            'Inventory Update Failed. Agent Booking ID: '.$bookingId.
+            ' Error: '.$e->getMessage()
+        );
+
+    }
+
 
     return "Payment Done";
   }
@@ -1804,6 +1933,37 @@ class ChannelRepository
     /////////////////send email to odbus admin////////
 
     $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+
+    ////// update to bus_seat_count table ///////////////
+    
+    try {
+
+      $booking = Booking::with('bookingDetail')
+          ->find($bookingId);
+
+      if ($booking) {
+
+          $seatCount = $booking->bookingDetail->count();
+
+          $inventory = app(\App\Services\InventoryService::class);
+
+          $inventory->bookSeats(
+              $booking->bus_id,
+              $booking->journey_dt,
+              $booking->source_id,
+              $booking->destination_id,
+              $seatCount
+          );
+      }
+
+    } catch (\Exception $e) {
+
+        \Log::error(
+            'Inventory Update Failed. Adjust Booking ID: '.$bookingId.
+            ' Error: '.$e->getMessage()
+        );
+
+    }
 
     return "Payment Done";
   }
