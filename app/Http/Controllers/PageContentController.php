@@ -70,10 +70,12 @@ class PageContentController extends Controller
     {
         $page = DB::table('page_content')
             ->where('page_url', $request->page_url)
+            ->where('status', 1)
             ->first();
 
         $faqs = DB::table('faq')
             ->where('page_id', $page->id)
+            ->where('status', 1)
             ->get();
 
         return response()->json([
