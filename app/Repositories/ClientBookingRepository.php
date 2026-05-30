@@ -582,6 +582,33 @@ class ClientBookingRepository
 
             DB::commit();
 
+            ///////update bus_seat_count table
+
+            try {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                $inventory = app(\App\Services\InventoryService::class);
+
+                $inventory->bookSeats(
+                    $booking->bus_id,
+                    $booking->journey_dt,
+                    $booking->source_id,
+                    $booking->destination_id,
+                    $seatCount
+                );
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'ticketConfirmation() Inventory Update Failed . Booking ID: '
+                    .$booking->id.
+                    ' Error: '
+                    .$e->getMessage()
+                );
+            }
+
+
             return [
 
                 'status' => 1,
@@ -605,358 +632,6 @@ class ClientBookingRepository
                 'message' => 'Something went wrong'
             ];
         }
-    }
-
-    public function ticketConfirmation_old19May2026($request)
-    {
-        DB::beginTransaction();
-
-        try {
-
-            $transactionId = $request['transaction_id'];
-            $clientId = $request['client_id'];
-            $clientName = $request['client_name'];
-
-            // ✅ Lock booking row (prevents duplicate processing)
-            $booking = $this->booking
-                ->where('transaction_id', $transactionId)
-                ->first();
-
-            if (!$booking) {
-                return [
-                    'status' => 0,
-                    'message' => 'Invalid transaction_id'
-                ];
-            }
-
-            // ✅ Already processed (idempotent)
-            if ($booking->status == 1) {
-
-                $latestWallet = ClientWallet::where('user_id', $clientId)
-                    ->where('status', 1)
-                    ->latest()
-                    ->first();
-
-                DB::commit();
-
-                return [
-                    'status' => 1,
-                    'wallet_balance' => $latestWallet ? $latestWallet->balance : 0,
-                    'final_pnr' => $booking->pnr
-                ];
-            }
-
-            // ✅ Lock latest wallet row
-            $wallet = ClientWallet::where('user_id', $clientId)
-                ->where('status', 1)
-                ->latest()
-                ->first();
-
-            if (!$wallet) {
-                return [
-                    'status' => 0,
-                    'message' => 'Wallet not found'
-                ];
-            }
-
-            $currentBalance = $wallet->balance;
-            $deductAmount = $booking->total_fare;
-
-            // ✅ Prevent negative balance
-            if ($currentBalance < $deductAmount) {
-                return [
-                    'status' => 0,
-                    'message' => 'Insufficient balance'
-                ];
-            }
-
-            // ✅ Deduct fare
-            $balanceAfterDeduction = $currentBalance - $deductAmount;
-
-            ClientWallet::create([
-                'transaction_id' => $transactionId,
-                'booking_id' => $booking->id,
-                'amount' => $deductAmount,
-                'transaction_type' => 'd',
-                'balance' => $balanceAfterDeduction,
-                'user_id' => $clientId,
-                'created_by' => $clientName,
-                'status' => 1
-            ]);
-
-            // ✅ Add commission
-            $commission = $booking->client_comission ?? 0;
-            $finalBalance = $balanceAfterDeduction + $commission;
-
-            ClientWallet::create([
-                'transaction_id' => now()->timestamp . rand(100, 999),
-                'booking_id' => $booking->id,
-                'amount' => $commission,
-                'transaction_type' => 'c',
-                'type' => 'Commission',
-                'balance' => $finalBalance,
-                'user_id' => $clientId,
-                'created_by' => $clientName,
-                'status' => 1
-            ]);
-
-            // ✅ Update booking
-            $booking->update([
-                'status' => 1
-            ]);
-
-            // ✅ Update booking details
-            $booking->bookingDetail()->update([
-                'status' => 1
-            ]);
-
-            DB::commit();
-
-            return [
-                'status' => 1,
-                'wallet_balance' => $finalBalance,
-                'final_pnr' => $booking->pnr
-            ];
-        } catch (\Exception $e) {
-
-            DB::rollback();
-
-            \Log::error('Ticket Confirmation Error: ' . $e->getMessage());
-
-            return [
-                'status' => 0,
-                'message' => 'Something went wrong'
-            ];
-        }
-    }
-
-    public function ticketConfirmation_old($request)
-    {
-        $SmsGW = config('services.sms.otpservice');
-        $defUserId = Config::get('constants.USER_ID');
-        $seatHold = Config::get('constants.SEAT_HOLD_STATUS');
-        $booked = Config::get('constants.BOOKED_STATUS');
-        $transactionId = $request['transaction_id'];
-
-        $bookingRecord = $this->booking->where('transaction_id', $transactionId)
-            //->where('status', $seatHold)
-            ->with('bookingDetail')
-            ->with(['clientWallet' => function ($cw) {
-                $cw->orderBy('id', 'DESC');
-                $cw->where("status", 1);
-                $cw->limit(1);
-            }])
-            ->get();
-
-        if ($bookingRecord[0]->status == 1) {
-            $bal['wallet_balance'] = $bookingRecord[0]->clientWallet[0]->balance;
-            $bal['final_pnr'] = $bookingRecord[0]->pnr;
-
-            return $bal;
-        }
-
-        // Log::info($transactionId);
-
-        $origin = $bookingRecord[0]->origin;
-        $busId = $bookingRecord[0]->bus_id;
-        $sourceId = $bookingRecord[0]->source_id;
-        $destinationId = $bookingRecord[0]->destination_id;
-        $entry_date = $bookingRecord[0]->journey_dt;
-
-        $bookingId = $bookingRecord[0]->id;
-        $pnr = $bookingRecord[0]->pnr;
-        $comissionAmount = $bookingRecord[0]->client_comission;
-        $amount = $bookingRecord[0]->total_fare;
-        $discount = $bookingRecord[0]->coupon_discount;
-        $payable_amount = $bookingRecord[0]->total_fare;
-        $odbus_charges = $bookingRecord[0]->odbus_charges;
-        $odbus_gst = $bookingRecord[0]->odbus_gst_charges;
-        $owner_fare = $bookingRecord[0]->owner_fare;
-
-        $clientDetails = ClientWallet::where('user_id', $request['client_id'])
-            ->orderBy('id', 'DESC')->where("status", 1)->limit(1)
-            ->get();
-
-        $clientWallet = new ClientWallet();
-        $clientWallet->transaction_id = $transactionId;
-        $clientWallet->booking_id = $bookingId;
-        $clientWallet->amount = $amount;
-        $clientWallet->transaction_type = 'd';
-        $clientWallet->balance = $clientDetails[0]->balance - $amount;
-        $clientWallet->user_id = $request['client_id'];
-        $clientWallet->created_by = $request['client_name'];
-        $clientWallet->status = 1;
-        $clientWallet->save();
-
-        $clientDetails = ClientWallet::where('user_id', $request['client_id'])
-            ->orderBy('id', 'DESC')->where("status", 1)->limit(1)
-            ->get();
-
-        $tranId = date('YmdHis') . gettimeofday()['usec'];
-        $clientWallet = new ClientWallet();
-        $clientWallet->transaction_id = $tranId;
-        $clientWallet->amount = $comissionAmount;
-        $clientWallet->type = 'Commission';
-        $clientWallet->booking_id = $bookingId;
-        $clientWallet->transaction_type = 'c';
-        $clientWallet->balance = $clientDetails[0]->balance + $comissionAmount;
-        $clientWallet->user_id = $request['client_id'];
-        $clientWallet->created_by = $request['client_name'];
-        $clientWallet->status = 1;
-        $clientWallet->save();
-
-        /////////Update booking table as status booked////////////
-
-        $this->booking->where('id', $bookingId)->update(['status' => $booked]);
-        $booking = $this->booking->find($bookingId);
-        $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
-
-        if ($origin == 'ODBUS') {
-
-            $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                ->with('users')
-                ->with(["bus" => function ($bs) {
-                    $bs->with(['cancellationslabs' => function ($c) {
-                        $c->with('cancellationSlabInfo');
-                    }]);
-                    $bs->with(['BusType' => function ($bt) {
-                        $bt->with('busClass');
-                    }]);
-                    $bs->with('BusSitting');
-                    $bs->with('busContacts');
-                }])
-                ->with(["bookingDetail" => function ($bk) {
-                    $bk->with('busSeats');
-                }])
-                ->with(['clientWallet' => function ($cw) {
-                    $cw->orderBy('id', 'DESC');
-                    $cw->where("status", 1);
-                    $cw->limit(1);
-                }])
-                ->get();
-        }
-
-        if ($origin == 'DOLPHIN' || $origin == 'MANTIS') {
-            $bookingDetails = $this->booking->where('transaction_id', $transactionId)
-                ->with('users')
-                ->with('bus')
-                ->with('bookingDetail')
-                ->with(['clientWallet' => function ($cw) {
-                    $cw->orderBy('id', 'DESC');
-                    $cw->where("status", 1);
-                    $cw->limit(1);
-                }])
-                ->get();
-        }
-
-        $srcName = Location::where('id', $bookingDetails[0]->source_id)->first()->name;
-        $destName = Location::where('id', $bookingDetails[0]->destination_id)->first()->name;
-
-        $bookingDetails[0]['src_name'] = $srcName;
-        $bookingDetails[0]['dest_name'] = $destName;
-
-        if ($origin == 'ODBUS') {
-
-            $busSeatsIds = $bookingRecord[0]->bookingDetail->pluck('bus_seats_id');
-            $busSeatsDetails = BusSeats::whereIn('id', $busSeatsIds)->with('seats')->get();
-            $seat_no = $busSeatsDetails->pluck('seats.seatText');
-            $passengerDetails = $bookingRecord[0]->bookingDetail;
-            $busname = $bookingDetails[0]->bus->name;
-            $busNumber = $bookingDetails[0]->bus->bus_number;
-            $conductor_number = $bookingDetails[0]->bus->busContacts->phone;
-            $journeydate = $bookingDetails[0]->journey_dt;
-            $routedetails = $srcName . ' To ' . $destName;
-            $departureTime = $bookingDetails[0]->boarding_time;
-            $departureTime = date("H:i:s", strtotime($departureTime));
-            $arrivalTime = $bookingDetails[0]->dropping_time;
-            $bookingdate = $bookingRecord[0]->created_at;
-            $bookingdate = date("d-m-Y", strtotime($bookingdate));
-            $boarding_point = $bookingDetails[0]->boarding_point;
-            $dropping_point = $bookingDetails[0]->dropping_point;
-            $bustype = $bookingDetails[0]->bus->BusType->busClass->class_name;
-            $busTypeName = $bookingDetails[0]->bus->BusType->name;
-            $sittingType = $bookingDetails[0]->bus->BusSitting->name;
-            $name = $bookingDetails[0]->users->name;
-            $phone = $bookingDetails[0]->users->phone;
-            $email = $bookingDetails[0]->users->email;
-            $cancellationslabs = $bookingDetails[0]->bus->cancellationslabs->cancellationSlabInfo;
-            $transactionFee = $bookingRecord[0]->transactionFee;
-            $customer_gst_status = $bookingRecord[0]->customer_gst_status;
-            $customer_gst_number = $bookingRecord[0]->customer_gst_number;
-            $customer_gst_business_name = $bookingRecord[0]->customer_gst_business_name;
-            $customer_gst_business_email = $bookingRecord[0]->customer_gst_business_email;
-            $customer_gst_business_address = $bookingRecord[0]->customer_gst_business_address;
-            $customer_gst_percent = $bookingRecord[0]->customer_gst_percent;
-            $customer_gst_amount = $bookingRecord[0]->customer_gst_amount;
-            $coupon_discount = $bookingRecord[0]->coupon_discount;
-
-            $smsData = array(
-                "seat_no" => $seat_no,
-                "passengerDetails" => $passengerDetails,
-                "busname" => $busname,
-                "busNumber" => $busNumber,
-                "journeydate" => $journeydate,
-                "routedetails" => $srcName . "-" . $destName,
-                "departureTime" => $departureTime,
-                "phone" => $phone,
-                "conductor_number" => $conductor_number,
-            );
-
-
-
-            $emailData = array(
-                "pnr" => $pnr,
-                "seat_no" => $seat_no,
-                "passengerDetails" => $passengerDetails,
-                "busname" => $busname,
-                "busNumber" => $busNumber,
-                "phone" => $phone,
-                "name" => $name,
-                "email" => $email,
-                "journeydate" => $journeydate,
-                "bookingdate" => $bookingdate,
-                "boarding_point" => $boarding_point,
-                "arrivalTime" => $arrivalTime,
-                "dropping_point" => $dropping_point,
-                "routedetails" => $routedetails,
-                "departureTime" => $departureTime,
-                "conductor_number" => $conductor_number,
-                "source" => $srcName,
-                "destination" => $destName,
-                "bustype" => $bustype,
-                "busTypeName" => $busTypeName,
-                "sittingType" => $sittingType,
-            );
-
-
-            /////////////////send email to odbus admin////////
-
-            $this->channelRepository->sendAdminEmailTicket($amount, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-
-            ///////////////////CMO SMS/////////////////////////////////////////////////
-            $busContactDetails = BusContacts::where('bus_id', $busId)
-                ->where('status', '1')
-                ->where('booking_sms_send', '1')
-                ->get('phone');
-
-            if ($busContactDetails->isNotEmpty()) {
-                $contact_number = collect($busContactDetails)->implode('phone', ',');
-
-                $sms_gateway = OdbusCharges::where('user_id', $defUserId)->first()->sms_gateway;
-
-                if ($sms_gateway == 1) {
-
-                    $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount, $smsData, $pnr, $contact_number);
-                }
-            }
-
-            unset($bookingDetails[0]->bus->cancellationslabs);
-            unset($bookingDetails[0]->bus->cancellationslabs_id);
-        }
-        $bal['wallet_balance'] = $bookingDetails[0]->clientWallet[0]->balance;
-        $bal['final_pnr'] = $bookingRecord[0]->pnr;
-
-        return $bal;
     }
 
     public function DolphinClientCancelTicketInfo($clientId, $pnr, $booked)
@@ -1070,6 +745,38 @@ class ClientBookingRepository
         }
 
         $this->booking->where('id', $bookingId)->update(['status' => $bookingCancelled, 'refund_amount' => $data['refundAmount'], 'deduction_percent' => $data['Percentage'], 'deduction_amount' => $data['deductAmount'], 'odbus_cancel_profit' => $data['OdbusCancelCommission']]);
+
+        ////////////update to bus_seat_count table
+
+        try {
+
+            $booking = Booking::with('bookingDetail')
+                ->find($bookingId);
+
+            if ($booking) {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                $inventory = app(\App\Services\InventoryService::class);
+
+                $inventory->cancelSeats(
+                    $booking->bus_id,
+                    $booking->journey_dt,
+                    $booking->source_id,
+                    $booking->destination_id,
+                    $seatCount
+                );
+            }
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'updateClientCancelTicket() . Inventory Cancel Update Failed. Booking ID: '
+                .$bookingId.
+                ' Error: '
+                .$e->getMessage()
+            );
+        }
 
         return $clientWallet;
     }

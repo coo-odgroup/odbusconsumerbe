@@ -282,6 +282,39 @@ class CancelTicketRepository
             'refundAmount' => 0,
             'paidAmount' => $booking->total_fare,
         );
+
+         ////////////update to bus_seat_count table
+
+        try {
+
+            $booking = Booking::with('bookingDetail')
+                ->find($bookingId);
+
+            if ($booking) {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                $inventory = app(\App\Services\InventoryService::class);
+
+                $inventory->cancelSeats(
+                    $booking->bus_id,
+                    $booking->journey_dt,
+                    $booking->source_id,
+                    $booking->destination_id,
+                    $seatCount
+                );
+            }
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'cancel() . Inventory Cancel Update Failed. Booking ID: '
+                .$bookingId.
+                ' Error: '
+                .$e->getMessage()
+            );
+        }
+
         return $data;
     }
     public function cancelBfrThirtyMinutes($bookingId, $booking, $smsData, $emailData, $busId)
@@ -325,6 +358,39 @@ class CancelTicketRepository
             'refundAmount' => $booking->total_fare,
             'paidAmount' => $booking->total_fare,
         );
+
+         ////////////update to bus_seat_count table
+
+        try {
+
+            $booking = Booking::with('bookingDetail')
+                ->find($bookingId);
+
+            if ($booking) {
+
+                $seatCount = $booking->bookingDetail->count();
+
+                $inventory = app(\App\Services\InventoryService::class);
+
+                $inventory->cancelSeats(
+                    $booking->bus_id,
+                    $booking->journey_dt,
+                    $booking->source_id,
+                    $booking->destination_id,
+                    $seatCount
+                );
+            }
+
+        } catch (\Exception $e) {
+
+            \Log::error(
+                'cancelBfrThirtyMinutes() . Inventory Cancel Update Failed. Booking ID: '
+                .$bookingId.
+                ' Error: '
+                .$e->getMessage()
+            );
+        }
+
         return $data;
     }
     public function MantisCancelUpdate($percentage, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId, $refundAmount)
@@ -489,6 +555,38 @@ class CancelTicketRepository
             if ($busContactDetails->isNotEmpty()) {
                 $contact_number = collect($busContactDetails)->implode('phone', ',');
                 //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+            }
+
+             ////////////update to bus_seat_count table
+
+            try {
+
+                $booking = Booking::with('bookingDetail')
+                    ->find($bookingId);
+
+                if ($booking) {
+
+                    $seatCount = $booking->bookingDetail->count();
+
+                    $inventory = app(\App\Services\InventoryService::class);
+
+                    $inventory->cancelSeats(
+                        $booking->bus_id,
+                        $booking->journey_dt,
+                        $booking->source_id,
+                        $booking->destination_id,
+                        $seatCount
+                    );
+                }
+
+            } catch (\Exception $e) {
+
+                \Log::error(
+                    'refundPolicy() . Inventory Cancel Update Failed. Booking ID: '
+                    .$bookingId.
+                    ' Error: '
+                    .$e->getMessage()
+                );
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////
