@@ -601,6 +601,7 @@ class ChannelService
             $phone = $bookingRecord[0]->users->phone;
             $email = $bookingRecord[0]->users->email;
             $name = $bookingRecord[0]->users->name;
+            $passenger_name = $passengerDetails->passenger_name;
             $journeydate = $bookingRecord[0]->journey_dt;
 
 
@@ -653,7 +654,7 @@ class ChannelService
                 "busId" => $busId,
                 "busNumber" => $busNumber,
                 "phone" => $phone,
-                "name" => $name,
+                "name" => $passenger_name,
                 "email" => $email,
                 "journeydate" => $journeydate,
                 "bookingdate" => $bookingdate,
@@ -678,7 +679,7 @@ class ChannelService
                 "busname" => $busname,
                 "busNumber" => $busNumber,
                 "phone" => $phone,
-                "name" => $name,
+                "name" => $passenger_name,
                 "email" => $email,
                 "journeydate" => $journeydate,
                 "bookingdate" => $bookingdate,

@@ -253,18 +253,23 @@ class CancelTicketService
             } else {
 
                 $booking_detail  = $this->cancelTicketRepository->cancelTicket($phone, $pnr, $booked);
+                // log::info('Booking Detail', ['booking_detail' => $booking_detail]);
                 // Return Remove this line later
-                $this->channelRepository->sendCancelTicketNotification($phone, $pnr, 'ticket_cancelled');
+                // $this->channelRepository->sendCancelTicketNotification($phone, $pnr, 'ticket_cancelled');
 
                 if (isset($booking_detail[0])) {
+
                     if (isset($booking_detail[0]->booking[0]) && !empty($booking_detail[0]->booking[0])) {
                         $jDate = $booking_detail[0]->booking[0]->journey_dt;
-                        $jDate = date("d-m-Y", strtotime($jDate));
+                        // $jDate = date("d-m-Y", strtotime($jDate));
                         $boardTime = $booking_detail[0]->booking[0]->boarding_time;
                         $seat_arr = [];
-                        foreach ($booking_detail[0]->booking[0]->bookingDetail as $bd) {
+                        // foreach ($booking_detail[0]->booking[0]->bookingDetail as $bd) {
 
-                            $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
+                        //     $seat_arr = Arr::prepend($seat_arr, $bd->busSeats->seats->seatText);
+                        // }
+                        foreach ($booking_detail[0]->booking[0]->bookingDetail as $bd) {
+                            $seat_arr[] = (string) $bd->busSeats->seats->seatText;
                         }
                         $busName = $booking_detail[0]->booking[0]->bus->name;
                         $busNumber = $booking_detail[0]->booking[0]->bus->bus_number;
@@ -273,6 +278,8 @@ class CancelTicketService
                         $destinationName = $this->cancelTicketRepository->GetLocationName($booking_detail[0]->booking[0]->destination_id);
                         $route = $sourceName . '-' . $destinationName;
                         $userMailId = $booking_detail[0]->email;
+                        $userName = $booking_detail[0]->name;
+                        $passenger_name = $booking_detail[0]->booking[0]->bookingDetail->first()->passenger_name ?? '';
                         $bookingId = $booking_detail[0]->booking[0]->id;
 
 
@@ -287,14 +294,30 @@ class CancelTicketService
 
                         $interval = $bookingDate->diff($cancelDate);
                         $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+                        // $smsData = array(
+                        //     'phone' => $phone,
+                        //     'PNR' => $pnr,
+                        //     'busdetails' => $busName . '-' . $busNumber,
+                        //     'doj' => $jDate,
+                        //     'route' => $route,
+                        //     'seat' => $seat_arr
+                        // );
                         $smsData = array(
-                            'phone' => $phone,
-                            'PNR' => $pnr,
+                            'name' => $passenger_name,
+                            'contactNo' => $phone,
+                            'busId' => $busId,
+                            // 'PNR' => $pnr,
+                            'pnr' => $pnr,
                             'busdetails' => $busName . '-' . $busNumber,
-                            'doj' => $jDate,
+                            'bus_name' => $busName,
+                            'bus_number' => $busNumber,
+                            'journeydate' => $jDate,
                             'route' => $route,
-                            'seat' => $seat_arr
+                            'from' => $sourceName,
+                            'to' => $destinationName,
+                            'seat_no' => $seat_arr
                         );
+
                         $emailData = array(
                             'email' => $userMailId,
                             'contactNo' => $phone,
@@ -337,6 +360,7 @@ class CancelTicketService
                                 $min = $duration[0];
 
                                 if ($interval > 999) {
+                                    log::info('Interval greater than 999 hours, applying minimum deduction', ['interval' => $interval]);
                                     $deduction = 10; //minimum deduction
                                     $refund =  $this->cancelTicketRepository->refundPolicy($deduction, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId);
                                     $refundAmt =  $refund['refundAmount'];
@@ -346,7 +370,8 @@ class CancelTicketService
                                     $emailData['refundAmount'] = $refundAmt;
                                     $emailData['totalfare'] = $paidAmount;
 
-                                    $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                                    // $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                                    $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
 
 
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL//////////////
@@ -356,7 +381,9 @@ class CancelTicketService
                                         ->get('phone');
                                     if ($busContactDetails->isNotEmpty()) {
                                         $contact_number = collect($busContactDetails)->implode('phone', ',');
-                                        $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
+                                        // $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
+                                        $this->msg91Service->cmo_ticket_cancel($smsData);
+                                        log::info('CMO SMS sent for Ticket Cancellation', ['contact_number' => $contact_number]);
                                     }
 
                                     if ($emailData['email'] != '') {
@@ -376,7 +403,7 @@ class CancelTicketService
                                     $emailData['refundAmount'] = $refundAmt;
                                     $emailData['totalfare'] = $paidAmount;
 
-                                    $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
+                                    $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
 
 
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////
@@ -386,7 +413,8 @@ class CancelTicketService
                                         ->get('phone');
                                     if ($busContactDetails->isNotEmpty()) {
                                         $contact_number = collect($busContactDetails)->implode('phone', ',');
-                                        $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
+                                        // $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
+                                        $this->msg91Service->cmo_ticket_cancel($smsData);
                                     }
 
                                     if ($emailData['email'] != '') {
