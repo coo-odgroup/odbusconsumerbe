@@ -219,11 +219,11 @@ class SeoController extends Controller
 
             // Decode JSON Schemas
             $faq_schema = $advantage->faq_schema
-                ? json_decode($advantage->faq_schema, true)
+                ? $advantage->faq_schema
                 : [];
 
             $breadcrumb_schema = $advantage->breadcrumb_schema
-                ? json_decode($advantage->breadcrumb_schema, true)
+                ? $advantage->breadcrumb_schema
                 : [];
 
             $seo = [
