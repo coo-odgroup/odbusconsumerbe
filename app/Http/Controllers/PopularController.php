@@ -248,11 +248,41 @@ class PopularController extends Controller
         return response()->json(['result' => $result]);
     }
 
+    // public function getAllRoutes(Request $request)
+    // {
+    //     try {
+    //         $page_no = $request->page_no ?? 1;
+    //         $per_page = $request->per_page ?? 30;
+
+    //         $res = DB::table('mst_routes_details as r')
+    //             ->leftJoin('location as s', 's.id', '=', 'r.source_id')
+    //             ->leftJoin('location as d', 'd.id', '=', 'r.destination_id')
+    //             ->select(
+    //                 'r.source_id',
+    //                 'r.destination_id',
+    //                 's.name as source_name',
+    //                 's.url as source_slug',
+    //                 'd.name as destination_name',
+    //                 'd.url as destination_slug'
+    //             )
+    //             ->where('r.active_status', 1)
+    //             ->where('r.is_main_route', 1)
+    //             ->orderBy('r.source_id')
+    //             ->orderBy('r.destination_id')
+    //             ->paginate($per_page, ['*'], 'page', $page_no);
+
+    //         return $this->successResponse($res, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
+
     public function getAllRoutes(Request $request)
     {
         try {
             $page_no = $request->page_no ?? 1;
             $per_page = $request->per_page ?? 30;
+            $search = trim($request->search ?? '');
 
             $res = DB::table('mst_routes_details as r')
                 ->leftJoin('location as s', 's.id', '=', 'r.source_id')
@@ -267,13 +297,30 @@ class PopularController extends Controller
                 )
                 ->where('r.active_status', 1)
                 ->where('r.is_main_route', 1)
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('s.name', 'like', "%{$search}%")
+                            ->orWhere('d.name', 'like', "%{$search}%")
+                            ->orWhereRaw(
+                                "CONCAT(s.name, ' ', d.name) LIKE ?",
+                                ["%{$search}%"]
+                            );
+                    });
+                })
                 ->orderBy('r.source_id')
                 ->orderBy('r.destination_id')
                 ->paginate($per_page, ['*'], 'page', $page_no);
 
-            return $this->successResponse($res, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse(
+                $res,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
         } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->errorResponse(
+                $e->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

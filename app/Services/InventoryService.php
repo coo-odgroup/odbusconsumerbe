@@ -105,7 +105,7 @@ class InventoryService
             ]);
     }
    
-    private function getOverlapSegmentIds(int $busId,int $sourceId,int $destinationId
+    public function getOverlapSegmentIds(int $busId,int $sourceId,int $destinationId
     ): array {
 
         $reqStart = BusLocationSequence::where('bus_id', $busId)

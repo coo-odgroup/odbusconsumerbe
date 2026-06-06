@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\SeoValidator;
 use App\Models\Blog;
 use App\Models\Location;
+use App\Models\OdbusCharges;
 use App\Models\Seo;
+use App\Models\PageContent;
 use App\Services\SeoService;
 use Illuminate\Support\Facades\DB;
 
@@ -92,8 +94,35 @@ class SeoController extends Controller
     {
         $current_url = $request->current_url;
 
+        $path = trim(parse_url($current_url, PHP_URL_PATH), '/');
+
+        if ($path == '') {
+
+            $odbusCharge = OdbusCharges::first();
+
+            if (!$odbusCharge) {
+                return response()->json([
+                    'message' => 'Home page SEO not found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            $seo = [
+                'meta_title' => $odbusCharge->meta_title,
+                'meta_description' => $odbusCharge->meta_description,
+                'meta_keyword' => $odbusCharge->meta_keyword,
+                'canonical_url' => $current_url,
+                'organization_schema' => $odbusCharge->organization_schema,
+            ];
+
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
         // ROUTE SEO
-        if (strpos($current_url, 'routes/') !== false) {
+        elseif (strpos($current_url, 'routes/') !== false) {
 
             $current_url = parse_url($request->current_url, PHP_URL_PATH);
 
@@ -159,6 +188,50 @@ class SeoController extends Controller
                 'og_image' => $blog->og_image,
                 'faq_schema' => $faq_schema,
                 'service_schema' => $service_schema,
+                'breadcrumb_schema' => $breadcrumb_schema,
+            ];
+
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
+        // ADVANTAGE SEO
+        elseif (strpos($current_url, 'advantage/') !== false) {
+
+            $path = trim(parse_url($current_url, PHP_URL_PATH), '/');
+
+            // advantage/travel/advantage-slug
+            $segments = explode('/', $path);
+
+            $category_slug = $segments[1] ?? '';
+            $slug = $segments[2] ?? '';
+
+            $advantage = PageContent::where('page_url', $slug)->first();
+
+            if (!$advantage) {
+                return response()->json([
+                    'message' => 'Advantage not found'
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            // Decode JSON Schemas
+            $faq_schema = $advantage->faq_schema
+                ? $advantage->faq_schema
+                : [];
+
+            $breadcrumb_schema = $advantage->breadcrumb_schema
+                ? $advantage->breadcrumb_schema
+                : [];
+
+            $seo = [
+                'meta_title' => $advantage->meta_title,
+                'meta_description' => $advantage->meta_description,
+                'extra_meta' => $advantage->extra_meta,
+                'canonical_url' => $advantage->canonical_url,
+                'faq_schema' => $faq_schema,
                 'breadcrumb_schema' => $breadcrumb_schema,
             ];
 
@@ -256,30 +329,30 @@ class SeoController extends Controller
 
 //rw query total seats for a route
 
-// SELECT 
+// SELECT
 //     rd.id AS route_id,
 //     rd.source,
 //     rd.destination,
 //     COUNT(DISTINCT bs.seats_id) AS total_seats
- 
+
 // FROM mst_routes_details rd
- 
-// JOIN mst_routes_bus_ids mrbi 
+
+// JOIN mst_routes_bus_ids mrbi
 //     ON mrbi.route_id = rd.id
- 
-// JOIN bus b 
+
+// JOIN bus b
 //     ON b.id = mrbi.bus_id
- 
-// JOIN bus_seats bs 
+
+// JOIN bus_seats bs
 //     ON bs.bus_id = mrbi.bus_id
- 
+
 // WHERE mrbi.active_status = 1
 // AND b.status = 1
 // AND bs.status = 1
 // AND bs.type IS NULL
 // AND bs.operation_date IS NULL
- 
-// GROUP BY 
+
+// GROUP BY
 //     rd.id,
 //     rd.source,
 //     rd.destination;
@@ -291,10 +364,10 @@ class SeoController extends Controller
 
 // UPDATE mst_routes_operators mro
 
-// JOIN bus_operator bo 
+// JOIN bus_operator bo
 //     ON bo.id = mro.operator_id
 
-// SET mro.status = 
+// SET mro.status =
 //     CASE
 //         WHEN bo.status = 1 THEN 1
 //         ELSE 0

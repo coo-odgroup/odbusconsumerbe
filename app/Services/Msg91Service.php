@@ -361,6 +361,8 @@ class Msg91Service
             "body_var_8" => ["type" => "text", "value" => implode(',', $data['seat_no'])],
             "body_var_9" => ["type" => "text", "value" => $data['refundAmount']],
 
+            "button_1" => ["type" => "text", "value" => "https://odbus.in/cancel-ticket/" . $data['pnr']],
+
 
             "var1" => ["type" => "text", "value" => $data['name']],
             "var2" => ["type" => "text", "value" => $data['pnr']],
