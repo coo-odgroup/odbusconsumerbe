@@ -104,30 +104,6 @@ class InventoryService
                 ")
             ]);
     }
-
-    public function openSeats(int $ticketPriceId,string $journeyDate,int $seatCount
-    ) {
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->increment('total_seat', $seatCount);
-
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->increment('available_seat', $seatCount);
-    }
-
-   
-    public function blockSeats(int $ticketPriceId,string $journeyDate,int $seatCount
-    ) {
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->increment('blocked_seat', $seatCount);
-
-        BusSeatCount::where('ticket_price_id', $ticketPriceId)
-            ->where('journey_date', $journeyDate)
-            ->decrement('available_seat', $seatCount);
-    }
-
    
     public function getOverlapSegmentIds(int $busId,int $sourceId,int $destinationId
     ): array {
