@@ -27,7 +27,7 @@ class PopularRepository
    protected $review;
    protected $credentials;
    protected  $booking;
-  
+
 
     public function __construct(Bus $bus,TicketPrice $ticketPrice,Booking $booking,Location $location,Review $review,Credentials $credentials)
     {
@@ -37,8 +37,8 @@ class PopularRepository
         $this->location = $location;
         $this->review = $review;
         $this->credentials = $credentials;
-    } 
-    
+    }
+
     public function getRoutes(){
        return  $this->booking
         ->select('source_id','destination_id',(DB::raw('count(*) as count')))
@@ -48,21 +48,21 @@ class PopularRepository
         ->limit(28)
         ->get();
     }
- 
-    public function getRouteNames($sourceId){ 
+
+    public function getRouteNames($sourceId){
         $sourceName = $this->location->where('id',$sourceId)->first()->name;
         return $sourceName;
     }
 
-    public function getRoute($sourceId){ 
+    public function getRoute($sourceId){
         return $this->location->select('id','state_id','name','url','synonym')->where('id',$sourceId)->get();
     }
 
-    public function getDolphinRoute($id){ 
+    public function getDolphinRoute($id){
         return $this->location->select('id','state_id','name','url','synonym')->where('dolphin_id',$id)->get();
     }
 
-    
+
 
     public function getBusIds(){
         return  $this->booking
@@ -73,14 +73,14 @@ class PopularRepository
         ->get();
     }
 
-    public function getOperator($bus_id){ 
+    public function getOperator($bus_id){
        return $this->bus
         ->with('busOperator')
         ->where('id',$bus_id)->get();
-        
+
     }
 
-    public function getAllRoutes(){ 
+    public function getAllRoutes(){
 
         return $this->ticketPrice
         ->select('bus_id','source_id','destination_id',(DB::raw('count(*) as count')))
@@ -91,10 +91,10 @@ class PopularRepository
         ->groupBy('source_id', 'destination_id')
         ->orderBy('count', 'DESC')
         ->get();
-       
+
     }
 
-    public function getBus($sid,$did){ 
+    public function getBus($sid,$did){
 
         return DB::select("SELECT b.id,b.name,b.bus_number from ticket_price t left join bus b on t.bus_id=b.id where t.status=1 AND t.source_id=$sid AND t.destination_id=$did");
 
@@ -105,13 +105,13 @@ class PopularRepository
         // ])
         // ->where("status",1)
         // ->get();
-       
+
     }
 
 
     public function sendSmsApp_valueFirst($phone)
         {
-            
+
             $message = "Upgrade to the NEW ODBUS App! Quick bookings & secure payments await you. Install today https://tinyurl.com/ODBUS - Team ODBUS";
             $valueFirstService = new ValueFirstService();
             $response = $valueFirstService->sendSms($phone, $message);
@@ -120,17 +120,17 @@ class PopularRepository
 
     public function downloadApp($phone)
         {
-            
-             $SmsGW = config('services.sms.otpservice'); 
+
+             $SmsGW = config('services.sms.otpservice');
             if ($SmsGW === 'valuefirst') {
                 return $this->sendSmsApp_valueFirst($phone);
             } else if ($SmsGW === 'textLocal' ) {
                 return $this->sendSmsApp_textLocal($phone);
             }
         }
-    
 
-    public function sendSmsApp_textLocal($phone){  
+
+    public function sendSmsApp_textLocal($phone){
 
         $SmsGW = config('services.sms.otpservice');
 
@@ -144,15 +144,15 @@ class PopularRepository
             $message = config('services.sms.textlocal.appDownload');
             $apiKey = urlencode( $apiKey);
             $receiver = urlencode($phone);
-          
+
             $message = str_replace("<LINK>",'https://tinyurl.com/ODBUS',$message);
             //return $message;
             $message = rawurlencode($message);
-            $response_type = "json"; 
+            $response_type = "json";
             $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
-            
 
-            $ch = curl_init($textLocalUrl);   
+
+            $ch = curl_init($textLocalUrl);
             curl_setopt($ch, CURLOPT_POST, true);
             //curl_setopt ($ch, CURLOPT_CAINFO, 'D:\ECOSYSTEM\PHP\extras\ssl'."/cacert.pem");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -164,22 +164,22 @@ class PopularRepository
             $response = curl_exec($ch);
             curl_close($ch);
             $response = json_decode($response);
-             
+
             return $response;
             $msgId = $response->messages[0]->id;  // Store msg id in DB
             session(['msgId'=> $msgId]);
 
-         
+
 
         }elseif($SmsGW=='IndiaHUB'){
-                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');              
+                $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
 
         }
 
     }
-    
 
-    public function allOperators($filter){  
+
+    public function allOperators($filter){
 
         if($filter!=''){
             $operators = BusOperator::where('organisation_name','LIKE', $filter.'%')->where('status',1)
@@ -190,24 +190,55 @@ class PopularRepository
 
         }
 
-       
+
         return $operators;
 
     }
 
-    public function GetOperatorDetail($operator_url){
-        return BusOperator::where('operator_url', $operator_url)->with(['bus' => function ($q){ 
+    // Backup by Jagan ( Ask me before any change in this function )
+    public function GetOperatorDetail_bk($operator_url){
+        return BusOperator::where('operator_url', $operator_url)->with(['bus' => function ($q){
             $q->select('bus_operator_id','id','name');
             // $q->with(['busAmenities' => function ($query) {
             //      $query->select('bus_id','amenities_id');
             //          $query->with(['amenities' =>  function ($a){
             //              $a->select('id','name','icon');
             //          }]);
-            //      }]);         
-              }])   
-            ->with('ticketPrice:bus_operator_id,source_id,destination_id') 
+            //      }]);
+              }])
+            ->with('ticketPrice:bus_operator_id,source_id,destination_id')
             ->get();
     }
+    // Backup by Jagan
+
+    // New function by Jagan ( Ask me before any change in this function )
+    public function GetOperatorDetail($operator_url)
+    {
+        return BusOperator::where('operator_url', $operator_url)
+            ->with([
+                'bus' => function ($q) {
+                    $q->select('bus_operator_id', 'id', 'name');
+                },
+                'ticketPrice' => function ($q) {
+                    $q->select('bus_operator_id', 'source_id', 'destination_id')
+                    ->distinct();
+                }
+            ])
+            ->get()
+            ->map(function ($operator) {
+
+                $operator->ticket_price = $operator->ticketPrice
+                    ->unique(function ($item) {
+                        return $item->bus_operator_id . '-' .
+                            $item->source_id . '-' .
+                            $item->destination_id;
+                    })
+                    ->values();
+
+                return $operator;
+            });
+    }
+    // New function by Jagan ( End )
 
     public function GetOperatorReviews($busIds){
         return $this->review->whereIn('bus_id',$busIds)
@@ -218,7 +249,7 @@ class PopularRepository
     }
 
     public function Totalrating($busIds){
-        return $this->review->whereIn('bus_id',$busIds)                            
+        return $this->review->whereIn('bus_id',$busIds)
                             ->where('status',1)
                             ->get()->avg('rating_overall');
     }
@@ -229,24 +260,24 @@ class PopularRepository
         ->whereDate('created_at', '>', Carbon::now()->subDays(30))
         ->groupBy('source_id','destination_id')
         ->orderBy('count', 'DESC')
-        ->get();      
+        ->get();
     }
 
     public function GetDepartureTime($source_id,$destination_id,$busIds){
-        return TicketPrice::where('source_id',$source_id) 
+        return TicketPrice::where('source_id',$source_id)
         ->where('destination_id',$destination_id)
-        ->whereIn('bus_id', $busIds) 
-        ->orderBy('dep_time', 'ASC')  
+        ->whereIn('bus_id', $busIds)
+        ->orderBy('dep_time', 'ASC')
         ->first()->dep_time;
     }
 
     public function GetAllBusAmenities($busIds){
-        
+
       return BusAmenities::whereIn('bus_id',$busIds)
                             ->with(['amenities'  => function ($query) {
                                 $query->select('id','name','amenities_image');
-                            }])  
-                            ->groupBy('amenities_id')                          
+                            }])
+                            ->groupBy('amenities_id')
                             ->get();
 
     }
