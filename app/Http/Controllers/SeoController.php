@@ -276,8 +276,8 @@ class SeoController extends Controller
             // advantage/travel/advantage-slug
             $segments = explode('/', $path);
 
-            $category_slug = $segments[1] ?? '';
-            $slug = $segments[2] ?? '';
+            // $category_slug = $segments[1] ?? '';
+            $slug = $segments[1] ?? '';
 
             $advantage = PageContent::where('page_url', $slug)->first();
 
