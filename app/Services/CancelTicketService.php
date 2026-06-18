@@ -25,14 +25,17 @@ class CancelTicketService
     protected $channelRepository;
     protected $dolphinTransformer;
     protected $mantisTransformer;
+    protected $msg91Service;
 
 
-    public function __construct(CancelTicketRepository $cancelTicketRepository, ChannelRepository $channelRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer)
+    public function __construct(Msg91Service $msg91Service, CancelTicketRepository $cancelTicketRepository, ChannelRepository $channelRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer)
     {
         $this->cancelTicketRepository = $cancelTicketRepository;
         $this->channelRepository = $channelRepository;
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
+        $this->msg91Service = $msg91Service;
+
     }
 
     public function CancelDolphinSeat($request)

@@ -147,6 +147,76 @@ class SeoController extends Controller
             );
         }
 
+        //Blog Category SEO
+        elseif (strpos($current_url, 'blog/category/') !== false) {
+
+            $path = trim(parse_url($current_url, PHP_URL_PATH), '/');
+
+            // blog/travel/blog-slug
+            $segments = explode('/', $path);
+
+            $slug = $segments[2] ?? '';
+
+            // return $slug;
+
+            $seodata = DB::table('blog_categories')->where('slug', $slug)->first();
+            // return $seodata;
+            if (!$seodata) {
+                return response()->json([
+                    'message' => 'SEO data not found'
+                ]);
+            }
+
+            $seo = [
+                'meta_title' => $seodata->meta_title,
+                'meta_description' => $seodata->meta_description,
+                'breadcrumb_schema' => $seodata->breadcrumb_schema,
+            ];
+
+            // return $seo;
+
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
+        //Auther SEO
+        elseif (strpos($current_url, 'blog/author/') !== false) {
+
+            $path = trim(parse_url($current_url, PHP_URL_PATH), '/');
+
+            // blog/travel/blog-slug
+            $segments = explode('/', $path);
+
+            $slug = $segments[2] ?? '';
+
+
+            $seodata = DB::table('authors')->where('author_slug', $slug)->first();
+            // return $seodata;
+            if (!$seodata) {
+                return response()->json([
+                    'message' => 'SEO data not found'
+                ]);
+            }
+
+            $seo = [
+                'meta_title' => $seodata->meta_title,
+                'meta_description' => $seodata->meta_description,
+                'person_schema' => $seodata->person_schema,
+                'breadcrumb_schema' => $seodata->breadcrumb_schema,
+            ];
+
+            // return $seo;
+
+            return $this->successResponse(
+                $seo,
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
         // BLOG SEO
         elseif (strpos($current_url, 'blog/') !== false) {
 
@@ -242,7 +312,11 @@ class SeoController extends Controller
             );
         } else {
 
-            $seodata = Seo::where('page_url', $current_url)->first();
+            // $seodata = Seo::where('page_url', $current_url)->first();
+            $url = str_replace('/', '', $current_url);
+            $seodata = PageContent::where('page_url', $url)->first();
+
+            // return $seodata;
 
             if (!$seodata) {
                 return response()->json([
@@ -255,7 +329,11 @@ class SeoController extends Controller
                 'meta_description' => $seodata->meta_description,
                 'meta_keywords' => $seodata->meta_keyword,
                 'canonical_url' => $seodata->canonical_url,
+                'breadcrumb_schema' => $seodata->breadcrumb_schema,
+                'extra_meta' => $seodata->extra_meta,
             ];
+
+            // return $seo;
 
             return $this->successResponse(
                 $seo,
@@ -321,6 +399,21 @@ class SeoController extends Controller
             ->get();
 
         return $routes;
+    }
+
+    public function organization_schema()
+    {
+        $odbusCharge = OdbusCharges::first();
+        if (!$odbusCharge) {
+            return response()->json([
+                'message' => 'Organization schema not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $organization_schema = $odbusCharge->organization_schema;
+        return response()->json([
+            'organization_schema' => $organization_schema
+        ], Response::HTTP_OK);
     }
 }
 

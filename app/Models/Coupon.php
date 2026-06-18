@@ -12,7 +12,7 @@ class Coupon extends Model
     protected $fillable = ['bus_operator_id','coupon_title','coupon_code','type','amount', 
                             'max_discount_price','min_tran_amount','max_redeem','apply_once',
                             'max_use_limit','category','from_date','to_date','short_desc','full_desc',
-                            'created_by'];
+                            'created_by','unique_id'];
  
     public function couponAssignedBus()
      {

@@ -134,20 +134,15 @@ class Msg91Service
         $formattedDate = Carbon::parse($data['journeydate'])->format('d-M-Y');
         $departureTime = Carbon::parse($data['departureTime'])->format('H:i');
         $passengers = $data['passengerDetails'];
-
         $firstPassenger = $passengers[0]['passenger_name'] ?? '';
-
         $count = count($passengers);
-
         $passengerText = $count > 1 ? $firstPassenger . ' +' . ($count - 1) : $firstPassenger;
-
-        // return implode(',', $data['seat_no']->toArray());
 
         $variables = [
 
             "header_1" => [
                 "type" => "image",
-                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+                "value" => config('msg91.template_image_url')
             ],
 
             "body_var_1" => ["type" => "text",  "value" => $data['name']],
@@ -164,9 +159,9 @@ class Msg91Service
             "body_var_12" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
             "body_var_13" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
             "body_var_14" => ["type" => "text", "value" => $data['conductor_number']],
-            // "button_2" => ["type" => "text", "subtype" => "url", "value" => "https://odbus.in/cancel-ticket/" . $data['pnr']],
             "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
-            "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/" . $data['pnr']],
+            "button_2" => ["type" => "text", "value" => config('msg91.pdf_url') . $data['pnr']],
+            // "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/" . $data['pnr']],
 
 
             "var1" => ["type" => "text", "value" => $data['name']],
@@ -186,7 +181,9 @@ class Msg91Service
 
         // return $variables;
 
-        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-booking/run";
+        $campaignName = config('msg91.campaigns.customer_ticket_booking');
+        $url = config('msg91.campaign_base_url') . $campaignName . '/run';
+        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-booking/run";
         $to = [];
 
         $to[] = [
@@ -256,7 +253,7 @@ class Msg91Service
 
             "header_1" => [
                 "type" => "image",
-                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+                "value" => config('msg91.template_image_url')
             ],
 
             "body_var_1" => ["type" => "text", "value" => $data['pnr']],
@@ -288,7 +285,10 @@ class Msg91Service
 
         $to = [];
 
-        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
+        $campaignName = config('msg91.campaigns.cmo_ticket_booking');
+        $url = config('msg91.campaign_base_url') . $campaignName . '/run';
+
+        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
 
         foreach ($getNumber as $number) {
             if (!empty($number->phone)) {
@@ -348,7 +348,7 @@ class Msg91Service
 
             "header_1" => [
                 "type" => "image",
-                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+                "value" => config('msg91.template_image_url')
             ],
 
             "body_var_1" => ["type" => "text", "value" => $data['name']],
@@ -378,7 +378,9 @@ class Msg91Service
 
         // return $variables;
 
-        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-cancellation-flow/run";
+        $campaignName = config('msg91.campaigns.customer_ticket_cancellation');
+        $url = config('msg91.campaign_base_url') . $campaignName . '/run';
+        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/customer-ticket-cancellation-flow/run";
 
         $to[] = [
             "mobiles" => "91" . $data['contactNo'],
@@ -436,7 +438,7 @@ class Msg91Service
 
             "header_1" => [
                 "type" => "image",
-                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+                "value" => config('msg91.template_image_url')
             ],
 
             "body_var_1" => ["type" => "text", "value" => $data['pnr']],
@@ -462,7 +464,10 @@ class Msg91Service
 
         $to = [];
 
-        $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-cancellation/run";
+        $campaignName = config('msg91.campaigns.cmo_ticket_cancellation');
+        $url = config('msg91.campaign_base_url') . $campaignName . '/run';
+
+        // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-cancellation/run";
 
         foreach ($getNumber as $number) {
             if (!empty($number->phone)) {

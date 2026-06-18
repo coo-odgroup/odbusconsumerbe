@@ -27,7 +27,7 @@ class ContactRepository
         $post->email = $data['email'];
         $post->phone = $data['phone'];
         $post->service = $data['service'];
-        $post->message = $data['message'];      
+        $post->message = json_encode($data['message']);      
         $post->save();
 
         return $post;

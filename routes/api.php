@@ -196,6 +196,9 @@ Route::get('/new-sendsms', [PopularController::class, 'ValueFirstSms']);
 Route::post('bloglist',[BlogController::class,"bloglist"]);
 Route::post('blogdetails',[BlogController::class,"blogdetails"]);
 
+//Blog ck editr image upload
+Route::post('/blogimageupload', [BlogController::class, 'blogImageUpload']);
+
 
 $router->get('/update-phonepay-token', function () {
    Artisan::call('cron:oauth-token');
@@ -211,6 +214,8 @@ Route::post('/getfaqs', [FaqController::class, 'getFaqs']);
 
 Route::post('seoContent', [SeoController::class, 'seoContent']);
 Route::post('/allseolist', [SeoController::class, 'getSeolist']);
+
+Route::post('organization_schema', [SeoController::class, 'organization_schema']);
 
 
 Route::post('count',[SeoController::class,'count']);

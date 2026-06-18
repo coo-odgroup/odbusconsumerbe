@@ -601,7 +601,8 @@ class ChannelService
             $phone = $bookingRecord[0]->users->phone;
             $email = $bookingRecord[0]->users->email;
             $name = $bookingRecord[0]->users->name;
-            $passenger_name = $passengerDetails->passenger_name;
+            // $passenger_name = $passengerDetails->passenger_name;
+            $passenger_name = $passengerDetails->first()->passenger_name;
             $journeydate = $bookingRecord[0]->journey_dt;
 
 

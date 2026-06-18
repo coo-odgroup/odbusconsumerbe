@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -24,6 +25,7 @@ class BlogController extends Controller
 
             $tag = DB::table('blog_tag_map')
                 ->join('blog_tags', 'blog_tags.id', '=', 'blog_tag_map.tag_id')
+                ->whereNull('blog_tag_map.deleted_at')
                 ->where('blog_tags.slug', $request->tag_slug)
                 ->pluck('blog_tag_map.blog_id');
 
@@ -104,9 +106,9 @@ class BlogController extends Controller
             $blogs = Blog::where('blogs.slug', $request->slug)
                 ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                 ->join('authors', 'authors.id', '=', 'blogs.author_id')
-                // ->where('blogs.active_status', 1)
-                // ->whereNull('blogs.deleted_at')
-                ->select('blog_categories.category_name','blog_categories.slug as cat_slug', 'blog_categories.slug', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blogs.*')
+                ->where('blogs.active_status', 1)
+                ->whereNull('blogs.deleted_at')
+                ->select('blog_categories.category_name', 'blog_categories.slug as cat_slug', 'blog_categories.slug', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blogs.*')
                 ->with('tags')
                 ->first();
 
@@ -146,6 +148,36 @@ class BlogController extends Controller
             return ApiResponser::successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
             return ApiResponser::errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+        }
+    }
+
+    public function blogImageUpload(Request $request)
+    {
+        try {
+
+            $file = collect($request->allFiles())->first();
+
+            if (!$file) {
+                return response()->json([
+                    'error' => 'No file uploaded'
+                ], 400);
+            }
+
+            $picture = time() . '_' . Str::random(20) . '.' . $file->getClientOriginalExtension();
+
+            $file->move(
+                public_path('uploads/blogs/blog_image'),
+                $picture
+            );
+
+            return response()->json([
+                'imageUrl' => asset('public/uploads/blogs/blog_image/' . $picture)
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }
