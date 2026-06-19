@@ -187,7 +187,7 @@ class Msg91Service
         $to = [];
 
         $to[] = [
-            "mobiles" => 919692066142,
+            "mobiles" => "91" . $data['phone'],
             "variables" => $variables
         ];
 

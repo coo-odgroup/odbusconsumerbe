@@ -45,7 +45,6 @@ class ChannelService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
-
     }
     public function storeGWInfo($data)
     {
@@ -1250,14 +1249,10 @@ class ChannelService
                 //     $main_source=$main_source->name;
                 //     $main_destination=$main_destination->name;
                 // }
-
-
-
             }
 
-
-
             $passengerDetails = $bookingRecord[0]->bookingDetail;
+            $passenger_name = $passengerDetails->first()->passenger_name;
             $bookingId = $bookingRecord[0]->id;
             $phone = $bookingRecord[0]->users->phone;
             $email = $bookingRecord[0]->users->email;
@@ -1305,10 +1300,11 @@ class ChannelService
             //Log::info('ticket adjust');
 
             $smsData = array(
-                "name" => $name,
+                "name" => $passenger_name,
                 "pnr" => $pnr,
                 'source' => $source,
                 'boarding_point' => $boarding_point,
+                'busId' => $busId,
                 'destination' => $destination,
                 'dropping_point' => $dropping_point,
                 "busname" => $busname,
@@ -1322,10 +1318,6 @@ class ChannelService
                 "conductor_number" => $conductor_number,
                 "fare" => $payable_amount
             );
-
-            //Log::info('adjust sms');
-
-            // Log::info($smsData);                
 
             $emailData = array(
                 "pnr" => $pnr,
