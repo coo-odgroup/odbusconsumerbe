@@ -940,37 +940,37 @@ class ClientBookingRepository
                     $customer_gst_amount = $b->customer_gst_amount;
                     $coupon_discount = $b->coupon_discount;
 
-                    // $smsData = array(
-                    //     "seat_no" => $seat_no,
-                    //     "passengerDetails" => $passengerDetails,
-                    //     "busname" => $busname,
-                    //     "busNumber" => $busNumber,
-                    //     "journeydate" => $journeydate,
-                    //     "routedetails" => $srcName . "-" . $destName,
-                    //     "departureTime" => $departureTime,
-                    //     "phone" => $phone,
-                    //     "conductor_number" => $conductor_number,
-                    // );
-
-
-                    // Added By sahil
                     $smsData = array(
                         "seat_no" => $seat_no,
-                        "pnr" => $pnr,
                         "passengerDetails" => $passengerDetails,
                         "busname" => $busname,
                         "busNumber" => $busNumber,
-                        "busId" => $busId,
                         "journeydate" => $journeydate,
                         "routedetails" => $srcName . "-" . $destName,
                         "departureTime" => $departureTime,
                         "phone" => $phone,
-                        "source" => $srcName,
-                        "boarding_point" => $boarding_point,
-                        "destination" => $destName,
-                        "dropping_point" => $dropping_point,
                         "conductor_number" => $conductor_number,
                     );
+
+
+                    // Added By sahil
+                    // $smsData = array(
+                    //     "seat_no" => $seat_no,
+                    //     "pnr" => $pnr,
+                    //     "passengerDetails" => $passengerDetails,
+                    //     "busname" => $busname,
+                    //     "busNumber" => $busNumber,
+                    //     "busId" => $busId,
+                    //     "journeydate" => $journeydate,
+                    //     "routedetails" => $srcName . "-" . $destName,
+                    //     "departureTime" => $departureTime,
+                    //     "phone" => $phone,
+                    //     "source" => $srcName,
+                    //     "boarding_point" => $boarding_point,
+                    //     "destination" => $destName,
+                    //     "dropping_point" => $dropping_point,
+                    //     "conductor_number" => $conductor_number,
+                    // );
 
 
 
@@ -1019,8 +1019,8 @@ class ClientBookingRepository
                             Log::info($pnr);
                             Log::info($contact_number);
 
-                            // $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount, $smsData, $pnr, $contact_number);
-                            $this->msg91Service->cmo_ticket_booking($smsData);
+                            $sendSmsCMO =  $this->channelRepository->sendSmsCMO($amount, $smsData, $pnr, $contact_number);
+                            // $this->msg91Service->cmo_ticket_booking($smsData);
                         }
                     }
 

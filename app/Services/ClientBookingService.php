@@ -28,6 +28,7 @@ use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use App\Services\Msg91Service;
 
 class ClientBookingService
 {
@@ -39,9 +40,10 @@ class ClientBookingService
     protected $cancelTicketRepository;
     protected $dolphinTransformer;
     protected $bookingManageRepository;  
-    protected $mantisTransformer;  
+    protected $mantisTransformer; 
+    protected $msg91Service;
 
-    public function __construct(ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
+    public function __construct(Msg91Service $msg91Service,ClientBookingRepository $clientBookingRepository,ViewSeatsService $viewSeatsService,ChannelRepository $channelRepository,CommonRepository $commonRepository,CancelTicketRepository $cancelTicketRepository,BookingManageRepository $bookingManageRepository,DolphinTransformer $dolphinTransformer,MantisTransformer $mantisTransformer)
     {
         $this->clientBookingRepository = $clientBookingRepository;
         $this->viewSeatsService = $viewSeatsService;
@@ -51,6 +53,7 @@ class ClientBookingService
         $this->bookingManageRepository = $bookingManageRepository;
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
+        $this->msg91Service = $msg91Service;
 
     }
     public function clientBooking($request,$clientRole,$clientId)
@@ -924,16 +927,39 @@ class ClientBookingService
                        $cancelDate = new DateTime($current_date_time);
                        $interval = $bookingDate->diff($cancelDate);
                        $interval = ($interval->format("%a") * 24) + $interval->format(" %h");
+
+                       $passenger_name = $booking_detail[0]->toArray()['booking_detail'][0]['passenger_name'];
+
+                    //    return $booking_detail[0];exit;
                        
                        $cancelPolicies = $booking_detail[0]->bus->cancellationslabs->cancellationSlabInfo;
+                    //    $smsData = array(
+                    //        'phone' => $phone,
+                    //        'PNR' => $pnr,
+                    //        'busdetails' => $busName.'-'.$busNumber,
+                    //        'doj' => $jDate, 
+                    //        'route' => $route,
+                    //        'seat' => $seat_arr
+                    //    );
+
                        $smsData = array(
-                           'phone' => $phone,
-                           'PNR' => $pnr,
-                           'busdetails' => $busName.'-'.$busNumber,
-                           'doj' => $jDate, 
-                           'route' => $route,
-                           'seat' => $seat_arr
-                       );
+                            'name' => $passenger_name,
+                            'contactNo' => $phone,
+                            'busId' => $busId,
+                            'pnr' => $pnr,
+                            'busdetails' => $busName . '-' . $busNumber,
+                            'bus_name' => $busName,
+                            'bus_number' => $busNumber,
+                            'journeydate' => $jDate,
+                            'route' => $route,
+                            'from' => $sourceName,
+                            'to' => $destinationName,
+                            'seat_no' => $seat_arr
+                        );
+
+
+                        // return $smsData;exit;
+
                        $emailData = array(
                            'email' => $userMailId,
                            'contactNo' => $phone,
@@ -1018,7 +1044,8 @@ class ClientBookingService
 
             
                          if($sms_gateway ==1){
-                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            // $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            $this->msg91Service->cmo_ticket_cancel($smsData);
                          }
                             }  
                             unset($data['bookingDetails'][0]->bus->cancellationslabs); 
@@ -1072,7 +1099,8 @@ class ClientBookingService
 
             
                          if($sms_gateway ==1){
-                            $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            // $this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
+                            $this->msg91Service->cmo_ticket_cancel($smsData);
                          }
                              
                              }
