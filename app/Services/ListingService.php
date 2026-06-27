@@ -467,7 +467,25 @@ class ListingService
             $miscfares = $this->viewSeatsRepository->miscFares($busId,$entry_date);
             $totalMiscfares = $miscfares[0]+$miscfares[2]+$miscfares[4];
             $misBaseFare = $baseFare + $totalMiscfares; 
-         
+             
+            /////// 15-sep-2024 :: date wise fare slab
+            //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);           
+            $ticketFareSlabs = getTicketFareslab($busId,$entry_date); // common.php
+            
+            $odbusServiceCharges = 0;
+            
+
+           
+            foreach($ticketFareSlabs as $ticketFareSlab){
+
+                $startingFare = $ticketFareSlab->starting_fare;
+                $uptoFare = $ticketFareSlab->upto_fare;
+                if($startingFare <= $misBaseFare && $uptoFare >= $misBaseFare){
+                    $percentage = $ticketFareSlab->odbus_commision;
+                    $odbusServiceCharges = nbf($misBaseFare * ($percentage/100)); // changed to nuber format (common.php) :: 12-Apr-2025
+                    $startingFromPrice = nbf($misBaseFare + $odbusServiceCharges); // changed to nuber format (common.php) :: 12-Apr-2025
+                }     
+            }
            
             $departureTime = $ticketPriceRecords->dep_time;
             $arrivalTime = $ticketPriceRecords->arr_time;
@@ -791,6 +809,27 @@ class ListingService
                 
 
             if($clientRole == $clientRoleId){
+
+             /////client extra service charge added to seatfare////////////////
+                $clientCommissions = ClientFeeSlab::where('user_id', $clientId)
+                                                ->where('status', '1')
+                                                ->get(); 
+                    
+                $client_service_charges = 0;
+                $addCharge = 0;
+                if($clientCommissions){
+                    foreach($clientCommissions as $clientCom){
+                        $startFare = $clientCom->starting_fare;
+                        $uptoFare = $clientCom->upto_fare;
+                        if($startingFromPrice >= $startFare && $startingFromPrice <= $uptoFare){
+                            $addCharge = $clientCom->addationalcharges;
+                            break;
+                        }  
+                    }   
+                } 
+                $client_service_charges = ($addCharge/100 * $startingFromPrice);
+                $newSeatFare = $startingFromPrice + $client_service_charges;
+
                 /////////hide buses wrt operator block////////////
                  $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
                 $Contains=0;
@@ -829,7 +868,7 @@ class ListingService
                         "totalSeats" => $totalSeats,
                         "seaters" => 0,//$seatClassRecords,
                         "sleepers" =>0, //$sleeperClassRecords,
-                        "startingFromPrice" => $record->min_price,
+                        "startingFromPrice" => $newSeatFare,
                         "departureTime" =>$depTime,
                         "arrivalTime" =>$arrTime,
                         "bookingCloseTime" =>$ticketPriceRecords->actual_time,
@@ -877,7 +916,7 @@ class ListingService
                     "totalSeats" => $totalSeats,
                     "seaters" => 0,//$seatClassRecords,
                     "sleepers" =>0, //$sleeperClassRecords,
-                    "startingFromPrice" => $record->min_price,
+                    "startingFromPrice" => $startingFromPrice,
                     "departureTime" =>$depTime,
                     "arrivalTime" =>$arrTime,
                     "bookingCloseTime" =>$ticketPriceRecords->actual_time,
