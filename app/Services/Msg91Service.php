@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BusContacts;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class Msg91Service
 {
@@ -136,7 +137,22 @@ class Msg91Service
         $passengers = $data['passengerDetails'];
         $firstPassenger = $passengers[0]['passenger_name'] ?? '';
         $count = count($passengers);
-        $passengerText = $count > 1 ? $firstPassenger . ' +' . ($count - 1) : $firstPassenger;
+
+        $maleCount = collect($passengers)->where('passenger_gender', 'M')->count();
+        $femaleCount = collect($passengers)->where('passenger_gender', 'F')->count();
+
+        $parts = [];
+
+        if ($maleCount > 0) {
+            $parts[] = $maleCount . 'M';
+        }
+
+        if ($femaleCount > 0) {
+            $parts[] = $femaleCount . 'F';
+        }
+        $totalCount = implode(',', $parts);
+
+        $passengerText = $firstPassenger . '(' . $totalCount . ')';
 
         $variables = [
 
@@ -157,8 +173,8 @@ class Msg91Service
             "body_var_10" => ["type" => "text", "value" => $departureTime],
             "body_var_11" => ["type" => "text", "value" => $passengerText],
             "body_var_12" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
-            "body_var_13" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
-            "body_var_14" => ["type" => "text", "value" => $data['conductor_number']],
+            // "body_var_13" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
+            "body_var_13" => ["type" => "text", "value" => $data['conductor_number']],
             "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
             "button_2" => ["type" => "text", "value" => config('msg91.pdf_url') . $data['pnr']],
             // "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/" . $data['pnr']],
@@ -172,7 +188,7 @@ class Msg91Service
             "var6" => ["type" => "text", "value" => $data['busNumber']],
             "var7" => ["type" => "text", "value" => $formattedDate],
             "var8" => ["type" => "text", "value" => $departureTime],
-            "var9" => ["type" => "text", "value" => $data['passengerDetails'][0]['passenger_name']],
+            "var9" => ["type" => "text", "value" => $passengerText],
             "var10" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
             "var11" => ["type" => "text", "value" => $data['fare']],
             "var12" => ["type" => "text", "value" => $data['conductor_number']],
@@ -245,7 +261,23 @@ class Msg91Service
 
         $count = count($passengers);
 
-        $passengerText = $count > 1 ? $firstPassenger . ' +' . ($count - 1) : $firstPassenger;
+        $maleCount = collect($passengers)->where('passenger_gender', 'M')->count();
+        $femaleCount = collect($passengers)->where('passenger_gender', 'F')->count();
+
+        $parts = [];
+
+        if ($maleCount > 0) {
+            $parts[] = $maleCount . 'M';
+        }
+
+        if ($femaleCount > 0) {
+            $parts[] = $femaleCount . 'F';
+        }
+        $totalCount = implode(',', $parts);
+
+        $passengerText = $firstPassenger . '(' . $totalCount . ')';
+
+        Log::info($passengerText);
         $formattedDate = Carbon::parse($data['journeydate'])->format('d-M-Y');
         $departureTime = Carbon::parse($data['departureTime'])->format('H:i');
 

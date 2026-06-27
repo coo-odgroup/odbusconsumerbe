@@ -75,8 +75,8 @@ class BlogController extends Controller
             // Categories with blog count
             $categories = DB::table('blog_categories')
                 ->leftJoin('blogs', 'blogs.category_id', '=', 'blog_categories.id')
-                // ->where('blog_categories.active_status', 1)
-                // ->whereNull('blog_categories.deleted_at')
+                ->where('blog_categories.active_status', 1)
+                ->whereNull('blog_categories.deleted_at')
                 ->select(
                     'blog_categories.id',
                     'blog_categories.category_name',
