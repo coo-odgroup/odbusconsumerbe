@@ -831,16 +831,25 @@ class ListingService
                 $newSeatFare = $startingFromPrice + $client_service_charges;
 
                 /////////hide buses wrt operator block////////////
-                 $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
-                $Contains=0;
-                if(isset($operatorBlockId)){
-                  $Contains = $operatorBlockId->contains($operatorId);
-                }
+                $Contains = ManageClientOperator::where('user_id', $clientId)
+                    ->where('bus_operator_id', $operatorId)
+                    ->where('status', 1)
+                    ->where(function ($q) use ($entry_date) {
+
+                        $q->where('restriction_type', 'permanent')
+
+                        ->orWhere(function ($subQ) use ($entry_date) {
+
+                            $subQ->where('restriction_type', 'datewise')
+                                ->whereDate('journey_date', $entry_date);
+                        });
+
+                    })
+                    ->exists();
 
                 
 
-                if($Contains==0){
-           
+               if (!$Contains) {           
                     $arr= array(
                         "origin" => 'ODBUS',
                         "CompanyID" => '',
@@ -1255,7 +1264,23 @@ class ListingService
         $dropingPoints = $this->listingRepository->getdropingPoints($destinationID,$busIds);
         $busOperator = $this->listingRepository->getbusOperator($busIds);
 
-        $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
+        $operatorBlockId = ManageClientOperator::where('user_id', $clientId)
+                            ->where('status', 1)
+                            ->where(function ($q) use ($journey_date) {
+
+                                $q->where('restriction_type', 'permanent')
+
+                                ->orWhere(function ($subQ) use ($journey_date) {
+
+                                    $subQ->where('restriction_type', 'datewise')
+                                        ->whereDate('journey_date', $journey_date);
+                                });
+
+                            })
+                            ->pluck('bus_operator_id');
+
+
+      //  $operatorBlockId = ManageClientOperator::where('user_id',$clientId)->pluck('bus_operator_id');
         $amenities = $this->listingRepository->getamenities($busIds);
 
         /////// to get dolphin operator , calling buslist function again
@@ -1298,6 +1323,7 @@ class ListingService
             if(isset($operatorBlockId)){
             $filteredOperators = ($busOperator->whereNotIn('id',$operatorBlockId))->flatten();
             }
+
             $filterOptions[] = array(
             "busTypes" => $busTypes,
             "seatTypes" => $seatTypes,  
