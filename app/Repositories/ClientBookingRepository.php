@@ -364,7 +364,10 @@ class ClientBookingRepository
                         $busSeatsId[] = $this->busSeats
                             ->where('bus_id', $busId)
                             ->where('ticket_price_id', $ticketPriceId)
-                            ->where('seats_id', $seatId)->first()->id;
+                            ->where('seats_id', $seatId)
+                            ->where('status','1')
+                            ->orderBy('id','DESC')
+                            ->first()->id;
                     }
                 }
                 $bookingDetailModels = [];

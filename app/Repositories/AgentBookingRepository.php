@@ -239,16 +239,19 @@ class AgentBookingRepository
 
         //Update Booking Details >>>>>>>>>>
 
-    if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+    if($bookingInfo['origin'] == 'ODBUS'){
   
         $ticketPriceId = $ticketPriceDetails[0]->id;
         $bookingDetail = $request['bookingInfo']['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  ////////in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
             $busSeatsId[] = $this->busSeats
-                ->where('bus_id',$busId)
-                ->where('ticket_price_id',$ticketPriceId)
-                ->where('seats_id',$seatId)->first()->id;
+                        ->where('bus_id',$busId)
+                        ->where('ticket_price_id',$ticketPriceId)
+                        ->where('seats_id',$seatId)
+                        ->where('status','1')
+                        ->orderBy('id','DESC')
+                        ->first()->id;
         }  
     }
         $bookingDetailModels = [];  

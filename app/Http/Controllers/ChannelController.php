@@ -922,8 +922,8 @@ class ChannelController extends Controller
                 $seatCount
             );
 
-            $inventory->refreshAvailableSeats(
-                $inventory->getOverlapSegmentIds(
+            $inventoryService->refreshAvailableSeats(
+                $inventoryService->getOverlapSegmentIds(
                         $booking->bus_id,
                         $booking->source_id,
                         $booking->destination_id

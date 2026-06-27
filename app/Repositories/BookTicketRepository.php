@@ -233,6 +233,7 @@ class BookTicketRepository
                 ->where('ticket_price_id',$ticketPriceId)
                 ->where('seats_id',$seatId)
                 ->where('status','1')
+                ->orderBy('id','DESC')
                 ->first()->id;
         }  
       }
@@ -248,37 +249,38 @@ class BookTicketRepository
 
             $bDetail['passenger_gender']='M';
         }
-            if($bookingInfo['origin'] == 'ODBUS'){ // dolphin related changes
+       
+        if($bookingInfo['origin'] == 'ODBUS'){
+            unset($bDetail['bus_seats_id']);
+            $collection= collect($bDetail);
+            $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
+            $bookingDetailModels[] = new BookingDetail($merged);
 
-                unset($bDetail['bus_seats_id']);
-                $collection= collect($bDetail);
-                $merged = ($collection->merge(['bus_seats_id' => $busSeatsId[$i]]))->toArray();
-                $bookingDetailModels[] = new BookingDetail($merged);
+        }
+        elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
+            // get real seat name from dolphin transformer
+            $ReferenceNumber=$bookingInfo['ReferenceNumber'];
+            //Log::info($ReferenceNumber.",".$bDetail['bus_seats_id'].",".$clientRole,$clientId);
+            $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
+            //Log::info($seat_name);
+            unset($bDetail['bus_seats_id']);
+            $bDetail['seat_name']= $seat_name; 
+            $collection= collect($bDetail);
+            $bookingDetailModels[] = new BookingDetail($collection->toArray());
 
-            }elseif($bookingInfo['origin'] == 'DOLPHIN'){ // dolphin related changes{
-                // get real seat name from dolphin transformer
-                $ReferenceNumber=$bookingInfo['ReferenceNumber'];
-                //Log::info($ReferenceNumber.",".$bDetail['bus_seats_id'].",".$clientRole,$clientId);
-                $seat_name= $this->dolphinTransformer->GetseatLayoutName($ReferenceNumber,$bDetail['bus_seats_id'],$clientRole,$clientId);
-                //Log::info($seat_name);
-                unset($bDetail['bus_seats_id']);
-                $bDetail['seat_name']= $seat_name; 
-                $collection= collect($bDetail);
-                $bookingDetailModels[] = new BookingDetail($collection->toArray());
+        }
+        elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
 
-            }
-            elseif($bookingInfo['origin'] == 'MANTIS'){ // MANTIS related changes
-
-                $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
-                
-                $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
-                unset($bDetail['bus_seats_id']);
-                $bDetail['seat_name'] = $seat_name; 
-                $bDetail['seat_fare'] = $seat_fare;
-                $collection = collect($bDetail);
-                $bookingDetailModels[] = new BookingDetail($collection->toArray());
-            }
-            $i++;
+            $seat_name = $this->mantisTransformer->GetseatText($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+            
+            $seat_fare = $this->mantisTransformer->GetseatFare($bookingInfo['source_id'],$bookingInfo['destination_id'],$bookingInfo['journey_date'],$bookingInfo['bus_id'],$bDetail['bus_seats_id'],$clientRole,$clientId);
+            unset($bDetail['bus_seats_id']);
+            $bDetail['seat_name'] = $seat_name; 
+            $bDetail['seat_fare'] = $seat_fare;
+            $collection = collect($bDetail);
+            $bookingDetailModels[] = new BookingDetail($collection->toArray());
+        }
+        $i++;
         }  
         $booking->bookingDetail()->saveMany($bookingDetailModels);       
         return $booking; 
