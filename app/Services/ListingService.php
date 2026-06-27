@@ -847,7 +847,7 @@ class ListingService
                     })
                     ->exists();
 
-                
+                Log::info($clientId.'-'.$operatorId.'-'.$entry_date);
 
                if (!$Contains) {           
                     $arr= array(
