@@ -1018,6 +1018,8 @@ class ChannelService
             if ($origin == 'ODBUS') {
                 $bookingRecord = $this->channelRepository->getBookingData($transationId);
 
+                log::info($bookingRecord);
+
                 $bustype = $bookingRecord[0]->bus->BusType->busClass->class_name;
                 $busTypeName = $bookingRecord[0]->bus->BusType->name;
                 $sittingType = $bookingRecord[0]->bus->BusSitting->name;
@@ -1027,6 +1029,7 @@ class ChannelService
                 $busSeatsDetails = BusSeats::whereIn('id', $busSeatsIds)->with('seats')->get();
                 $seat_no = $busSeatsDetails->pluck('seats.seatText');
                 $busname = $bookingRecord[0]->bus->name;
+                $busId = $bookingRecord[0]->bus->id;
                 $busNumber = $bookingRecord[0]->bus->bus_number;
                 $busId = $bookingRecord[0]->bus->id;
                 $cancellationslabs = $bookingRecord[0]->bus->cancellationslabs->cancellationSlabInfo;
@@ -1097,18 +1100,81 @@ class ChannelService
             $customer_gst_amount = $bookingRecord[0]->customer_gst_amount;
             $coupon_discount = $bookingRecord[0]->coupon_discount;
 
+            // $passengerDetails = $data['passengerDetails'];
+            $i = 0;
+            $m = 0;
+            $f = 0;
+            $O = 0;
+            $nameList = "";
+
+            foreach ($passengerDetails as $pDetail) {
+                if ($i == 0) {
+                    $nameList = "{$nameList},{$pDetail['passenger_name']}";
+                }
+                $i++;
+
+                switch ($pDetail['passenger_gender']) {
+                    case "M":
+                        $m++;
+                        break;
+                    case "F":
+                        $f++;
+                        break;
+                    case "O":
+                        $O++;
+                        break;
+                }
+            }
+
+
+            if ($m > 0 && $f > 0 && $O > 0) $genderList = "{$m}M,{$f}F,{$O}O";
+            else if ($m > 0 && $f > 0) $genderList = "{$m}M,{$f}F";
+            else if ($m > 0 && $O > 0) $genderList = "{$m}M,{$O}O";
+            else if ($f > 0 && $O > 0) $genderList = "{$f}F,{$O}O";
+            else if ($m > 0) $genderList = "{$m}M";
+            else if ($f > 0) $genderList = "{$f}F";
+            else if ($O > 0) $genderList = "{$O}O";
+            else $genderList = "";
+
+
+            if (count($passengerDetails) > 1) {
+                $restNo = count($passengerDetails) - 1;
+                $nameList = "{$nameList}+{$restNo}";
+            }
+            $nameList = substr($nameList, 1);
+
+            $passenger_name = $passengerDetails->first()->passenger_name;
+
+            $agentDetails = json_decode($data['agentdetails'], true);
+
+            $agentName = $agentDetails['name'] ?? '';
+            $agentNumber = $agentDetails['phone'] ?? '';
+
             $smsData = array(
+                "pnr" => $pnr,
                 "seat_no" => $seat_no,
+                "name" => $passenger_name,
                 "passengerDetails" => $passengerDetails,
+                "busId" => $busId,
                 "busname" => $busname,
                 "busNumber" => $busNumber,
                 "phone" => $phone,
+                "source" => $source,
+                "destination" => $destination,
+                "boarding_point" => $boarding_point,
+                "dropping_point" => $dropping_point,
                 "journeydate" => $journeydate,
                 "routedetails" => $source . "-" . $destination,
                 "departureTime" => $departureTime,
                 "conductor_number" => $conductor_number,
-                "customer_comission" => $customer_comission
+                "customer_comission" => $customer_comission,
+                'agent_name' => $agentName,
+                'agent_Number' => $agentNumber,
+                'fare' => $totalfare
             );
+
+            log::info($smsData);
+
             $emailData = array(
                 "pnr" => $pnr,
                 "seat_no" => $seat_no,
