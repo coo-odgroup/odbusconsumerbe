@@ -56,7 +56,7 @@ class ChannelRepository
   protected $manageSms;
   protected $msg91Service;
 
-  public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user,Msg91Service $msg91Service)
+  public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user, Msg91Service $msg91Service)
   {
     $this->gatewayInformation = $gatewayInformation;
     $this->users = $users;
@@ -1115,46 +1115,44 @@ class ChannelRepository
       $this->booking->lockForUpdate()->where('id', $bookingId)->update(['status' => $seatHold]);
 
       //// update to bus_seat_count table ////////////
-        try {
+      try {
 
-            $booking = $this->booking
-                ->with('bookingDetail')
-                ->find($bookingId);
+        $booking = $this->booking
+          ->with('bookingDetail')
+          ->find($bookingId);
 
-            if ($booking) {
+        if ($booking) {
 
-                $seatCount = $booking->bookingDetail->count();
+          $seatCount = $booking->bookingDetail->count();
 
-                $inventory = app(\App\Services\InventoryService::class);
+          $inventory = app(\App\Services\InventoryService::class);
 
-                $inventory->holdSeats(
-                        $booking->bus_id,
-                        $booking->journey_dt,
-                        $booking->source_id,
-                        $booking->destination_id,
-                        $seatCount
-                    );
+          $inventory->holdSeats(
+            $booking->bus_id,
+            $booking->journey_dt,
+            $booking->source_id,
+            $booking->destination_id,
+            $seatCount
+          );
 
-                  $inventory->refreshAvailableSeats(
-                      $inventory->getOverlapSegmentIds(
-                              $booking->bus_id,
-                              $booking->source_id,
-                              $booking->destination_id
-                          ),
-                      $booking->journey_dt
-                  );
-            }
-
-        } catch (\Exception $e) {
-
-            \Log::error(
-                'Hold Inventory Update Failed. Booking ID: '
-                .$bookingId.
-                ' Error: '
-                .$e->getMessage()
-            );
+          $inventory->refreshAvailableSeats(
+            $inventory->getOverlapSegmentIds(
+              $booking->bus_id,
+              $booking->source_id,
+              $booking->destination_id
+            ),
+            $booking->journey_dt
+          );
         }
+      } catch (\Exception $e) {
 
+        \Log::error(
+          'Hold Inventory Update Failed. Booking ID: '
+            . $bookingId .
+            ' Error: '
+            . $e->getMessage()
+        );
+      }
     });
   }
   //////mantis changes////////
@@ -1291,54 +1289,51 @@ class ChannelRepository
     /////////////////send email to odbus admin////////
 
     $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-     
+
     ////// updat5e to bus_seat_count table ///////////////
 
     try {
 
       $booking = Booking::with('bookingDetail')
-          ->find($bookingId);
+        ->find($bookingId);
 
       if ($booking) {
 
-          $seatCount = $booking->bookingDetail->count();
+        $seatCount = $booking->bookingDetail->count();
 
-          $inventory = app(\App\Services\InventoryService::class);
+        $inventory = app(\App\Services\InventoryService::class);
 
-          $inventory->releaseHoldSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
-
-          $inventory->bookSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
-
-         $inventory->refreshAvailableSeats(
-            $inventory->getOverlapSegmentIds(
-                $booking->bus_id,
-                $booking->source_id,
-                $booking->destination_id
-            ),
-            $booking->journey_dt
+        $inventory->releaseHoldSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
         );
 
-      }
+        $inventory->bookSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
+        $inventory->refreshAvailableSeats(
+          $inventory->getOverlapSegmentIds(
+            $booking->bus_id,
+            $booking->source_id,
+            $booking->destination_id
+          ),
+          $booking->journey_dt
+        );
+      }
     } catch (\Exception $e) {
 
-        \Log::error(
-            'Inventory Update Failed. Booking ID: '.$bookingId.
-            ' Error: '.$e->getMessage()
-        );
-
+      \Log::error(
+        'Inventory Update Failed. Booking ID: ' . $bookingId .
+          ' Error: ' . $e->getMessage()
+      );
     }
 
 
@@ -1462,48 +1457,47 @@ class ChannelRepository
     $userNotification->user_id = $agentId;
     $userNotification->created_by = "Agent";
     $notification->userNotification()->save($userNotification);
-    
+
     ///// save to bus_seat_count table//////////
 
-     try {
+    try {
 
-            $booking = $this->booking
-                ->with('bookingDetail')
-                ->find($bookingId);
+      $booking = $this->booking
+        ->with('bookingDetail')
+        ->find($bookingId);
 
-            if ($booking) {
+      if ($booking) {
 
-                $seatCount = $booking->bookingDetail->count();
+        $seatCount = $booking->bookingDetail->count();
 
-                $inventory= app(\App\Services\InventoryService::class);
-                
-                    $inventory->holdSeats(
-                        $booking->bus_id,
-                        $booking->journey_dt,
-                        $booking->source_id,
-                        $booking->destination_id,
-                        $seatCount
-                    );
+        $inventory = app(\App\Services\InventoryService::class);
 
-                   $inventory->refreshAvailableSeats(
-                        $inventory->getOverlapSegmentIds(
-                                $booking->bus_id,
-                                $booking->source_id,
-                                $booking->destination_id
-                            ),
-                        $booking->journey_dt
-                    );  
-            }
+        $inventory->holdSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
-        } catch (\Exception $e) {
+        $inventory->refreshAvailableSeats(
+          $inventory->getOverlapSegmentIds(
+            $booking->bus_id,
+            $booking->source_id,
+            $booking->destination_id
+          ),
+          $booking->journey_dt
+        );
+      }
+    } catch (\Exception $e) {
 
-            \Log::error(
-                'Hold Inventory Update Failed. Agent Booking ID: '
-                .$bookingId.
-                ' Error: '
-                .$e->getMessage()
-            );
-        }
+      \Log::error(
+        'Hold Inventory Update Failed. Agent Booking ID: '
+          . $bookingId .
+          ' Error: '
+          . $e->getMessage()
+      );
+    }
 
     return $notification;
   }
@@ -1517,31 +1511,33 @@ class ChannelRepository
 
     $SmsGW = config('services.sms.otpservice');
 
-    $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); //sms to customer
+    $sms91 = $this->msg91Service->agent_ticket_booking($smsData);
 
-    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+    // $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); //sms to customer
 
-      $msgId = $sendsms->messages[0]->id;
-      $status = $sendsms->status;
-      $from = $sendsms->message->sender;
-      $to = $sendsms->messages[0]->recipient;
-      $contents = $sendsms->message->content;
-      $response = collect($sendsms);
-      /// save sms related things in manage_sms table///////////////
+    // if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
 
-      $sms = new $this->manageSms();
-      $sms->pnr = $pnr;
-      $sms->booking_id = $bookingId;
-      $sms->sms_engine = $SmsGW;
-      $sms->type = 'customer';
-      $sms->status = $status;
-      $sms->from = $from;
-      $sms->to = $to;
-      $sms->contents = $contents;
-      $sms->response = $response;
-      $sms->message_id = $msgId;
-      $sms->save();
-    }
+    //   $msgId = $sendsms->messages[0]->id;
+    //   $status = $sendsms->status;
+    //   $from = $sendsms->message->sender;
+    //   $to = $sendsms->messages[0]->recipient;
+    //   $contents = $sendsms->message->content;
+    //   $response = collect($sendsms);
+    //   /// save sms related things in manage_sms table///////////////
+
+    //   $sms = new $this->manageSms();
+    //   $sms->pnr = $pnr;
+    //   $sms->booking_id = $bookingId;
+    //   $sms->sms_engine = $SmsGW;
+    //   $sms->type = 'customer';
+    //   $sms->status = $status;
+    //   $sms->from = $from;
+    //   $sms->to = $to;
+    //   $sms->contents = $contents;
+    //   $sms->response = $response;
+    //   $sms->message_id = $msgId;
+    //   $sms->save();
+    // }
 
     if ($email) {
       $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
@@ -1567,84 +1563,83 @@ class ChannelRepository
 
 
         if ($sms_gateway == 1) {
-          $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
+          $this->msg91Service->cmo_ticket_booking($smsData);
+          // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
 
 
-          if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+          // if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
 
-            $msgId = $sendSmsCMO->messages[0]->id;
-            $status = $sendSmsCMO->status;
-            $from = $sendSmsCMO->message->sender;
-            $to = collect($sendSmsCMO->messages)->pluck('recipient');
-            $contents = $sendSmsCMO->message->content;
-            $response = collect($sendSmsCMO);
+          //   $msgId = $sendSmsCMO->messages[0]->id;
+          //   $status = $sendSmsCMO->status;
+          //   $from = $sendSmsCMO->message->sender;
+          //   $to = collect($sendSmsCMO->messages)->pluck('recipient');
+          //   $contents = $sendSmsCMO->message->content;
+          //   $response = collect($sendSmsCMO);
 
-            /// save sms related things in manage_sms table///////////////
+          //   /// save sms related things in manage_sms table///////////////
 
-            $sms = new $this->manageSms();
-            $sms->pnr = $pnr;
-            $sms->booking_id = $bookingId;
-            $sms->sms_engine = $SmsGW;
-            $sms->type = 'cmo';
-            $sms->status = $status;
-            $sms->from = $from;
-            $sms->to = $to;
-            $sms->contents = $contents;
-            $sms->response = $response;
-            $sms->message_id = $msgId;
-            $sms->save();
-          }
+          //   $sms = new $this->manageSms();
+          //   $sms->pnr = $pnr;
+          //   $sms->booking_id = $bookingId;
+          //   $sms->sms_engine = $SmsGW;
+          //   $sms->type = 'cmo';
+          //   $sms->status = $status;
+          //   $sms->from = $from;
+          //   $sms->to = $to;
+          //   $sms->contents = $contents;
+          //   $sms->response = $response;
+          //   $sms->message_id = $msgId;
+          //   $sms->save();
+          // }
         }
       }
     }
 
 
     ////// update to bus_seat_count table ///////////////
-    
+
     try {
 
       $booking = Booking::with('bookingDetail')
-          ->find($bookingId);
+        ->find($bookingId);
 
       if ($booking) {
 
-          $seatCount = $booking->bookingDetail->count();
+        $seatCount = $booking->bookingDetail->count();
 
-          $inventory = app(\App\Services\InventoryService::class);
+        $inventory = app(\App\Services\InventoryService::class);
 
-          $inventory->releaseHoldSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
+        $inventory->releaseHoldSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
-          $inventory->bookSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
+        $inventory->bookSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
-         $inventory->refreshAvailableSeats(
-            $inventory->getOverlapSegmentIds(
-                $booking->bus_id,
-                $booking->source_id,
-                $booking->destination_id
-            ),
-            $booking->journey_dt
+        $inventory->refreshAvailableSeats(
+          $inventory->getOverlapSegmentIds(
+            $booking->bus_id,
+            $booking->source_id,
+            $booking->destination_id
+          ),
+          $booking->journey_dt
         );
       }
-
     } catch (\Exception $e) {
 
-        \Log::error(
-            'Inventory Update Failed. Agent Booking ID: '.$bookingId.
-            ' Error: '.$e->getMessage()
-        );
-
+      \Log::error(
+        'Inventory Update Failed. Agent Booking ID: ' . $bookingId .
+          ' Error: ' . $e->getMessage()
+      );
     }
 
 
@@ -1990,51 +1985,49 @@ class ChannelRepository
     $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
 
     ////// update to bus_seat_count table ///////////////
-    
+
     try {
 
       $booking = Booking::with('bookingDetail')
-          ->find($bookingId);
+        ->find($bookingId);
 
       if ($booking) {
 
-          $seatCount = $booking->bookingDetail->count();
+        $seatCount = $booking->bookingDetail->count();
 
-          $inventory = app(\App\Services\InventoryService::class);
+        $inventory = app(\App\Services\InventoryService::class);
 
-         $inventory->releaseHoldSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
+        $inventory->releaseHoldSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
-          $inventory->bookSeats(
-              $booking->bus_id,
-              $booking->journey_dt,
-              $booking->source_id,
-              $booking->destination_id,
-              $seatCount
-          );
+        $inventory->bookSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
 
-         $inventory->refreshAvailableSeats(
-            $inventory->getOverlapSegmentIds(
-                $booking->bus_id,
-                $booking->source_id,
-                $booking->destination_id
-            ),
-            $booking->journey_dt
+        $inventory->refreshAvailableSeats(
+          $inventory->getOverlapSegmentIds(
+            $booking->bus_id,
+            $booking->source_id,
+            $booking->destination_id
+          ),
+          $booking->journey_dt
         );
       }
-
     } catch (\Exception $e) {
 
-        \Log::error(
-            'Inventory Update Failed. Adjust Booking ID: '.$bookingId.
-            ' Error: '.$e->getMessage()
-        );
-
+      \Log::error(
+        'Inventory Update Failed. Adjust Booking ID: ' . $bookingId .
+          ' Error: ' . $e->getMessage()
+      );
     }
 
     return "Payment Done";
