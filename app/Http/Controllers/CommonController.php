@@ -29,8 +29,8 @@ class CommonController extends Controller
      */
     public function __construct(CommonService $commonService, CommonValidator $commonValidator)
     {
-        $this->commonService = $commonService;      
-        $this->commonValidator = $commonValidator;      
+        $this->commonService = $commonService;
+        $this->commonValidator = $commonValidator;
     }
     /**
      * @OA\Post(
@@ -61,27 +61,27 @@ class CommonController extends Controller
      *       {"apiAuth": {}}
      *     }
      * )
-     * 
+     *
      */
-    public function getAll(Request $request) {        
+    public function getAll(Request $request)
+    {
 
         $data = $request->all();
         $commonValidation = $this->commonValidator->validate($data);
 
         if ($commonValidation->fails()) {
-        $errors = $commonValidation->errors();
-        return $this->errorResponse($errors->toJson(),Response::HTTP_PARTIAL_CONTENT);
-        } 
+            $errors = $commonValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
 
-         try {
-          $response =  $this->commonService->getAll($request);
-           return $this->successResponse($response,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
-       }
-       catch (Exception $e) {
-           return $this->errorResponse($e->getMessage(),Response::HTTP_NOT_FOUND);
-         }      
-   } 
-/**
+        try {
+            $response =  $this->commonService->getAll($request);
+            return $this->successResponse($response, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
+        }
+    }
+    /**
      * @OA\Get(
      *     path="/api/Appversion",
      *     tags={"App Version"},
@@ -100,14 +100,68 @@ class CommonController extends Controller
      *       {"apiAuth": {}}
      *     }
      * )
-     * 
+     *
      */
-   public function Appversion(){
+    public function Appversion()
+    {
+        $version = DB::table('app_version')->where("id", 1)->get();
 
-         $version = DB::table('app_version')->where("id",1)->get();
+        return $this->successResponse($version, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
 
-         return $this->successResponse($version,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
- 
+    public function getSchemaUrls()
+    {
+        $routes = DB::table('mst_routes_details as r')
+            ->leftJoin('location as s', 's.id', '=', 'r.source_id')
+            ->leftJoin('location as d', 'd.id', '=', 'r.destination_id')
+            ->select(
+                'r.source_id',
+                'r.destination_id',
+                's.name as source_name',
+                's.url as source_slug',
+                'd.name as destination_name',
+                'd.url as destination_slug'
+            )
+            ->where('r.active_status', 1)
+            ->where('r.is_main_route', 1)
+            ->orderBy('r.source_id')
+            ->orderBy('r.destination_id')
+            ->get();
 
-   }
+        $operators = DB::table('bus_operator')
+            ->select('id', 'operator_name', 'operator_url', 'organisation_name')
+            ->where('status', 1)
+            ->get();
+
+        $data['routes'] = $routes;
+        $data['operators'] = $operators;
+        return response()->json([
+            'status' => true,
+            'message' => 'Success',
+            'data' => $data
+        ], 200);
+    }
+
+    public function homeData(Request $request)
+    {
+        // Banner
+        $data = [];
+        $path = $this->commonRepository->getPathurls();
+        $path = $path[0];
+        $today = date('Y-m-d');
+        $banner_image = '';
+        $banner = $this->commonRepository->getBanners($request['user_id'], $today);
+        if ($banner && isset($banner[0]) && $banner[0]->banner_image) {
+            $banner = $banner[0];
+            $banner_image =  $path->banner_url . $banner->banner_image;
+        }
+        // Banner End
+
+        $data['banner_image'] = $banner_image;
+        return response()->json([
+            'status' => true,
+            'message' => 'Success',
+            'data' => $data
+        ], 200);
+    }
 }

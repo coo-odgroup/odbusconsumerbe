@@ -223,3 +223,6 @@ Route::post('get-advantage-details', [PageContentController::class, 'getAdvantag
 
 Route::post('getallroutes', [PopularController::class, 'getAllRoutes']);
 
+Route::post('/getFAQ', [TestimonialController::class, 'getFAQ']);
+Route::get('getSchemaUrls', [CommonController::class, 'getSchemaUrls']);
+Route::post('/homedata', [CommonController::class, 'homeData']);
