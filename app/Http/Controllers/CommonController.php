@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\AppValidator\CommonValidator;
 use App\Services\CommonService;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\CommonRepository;
 
 class CommonController extends Controller
 {
@@ -21,16 +22,18 @@ class CommonController extends Controller
      */
     protected $commonService;
     protected $commonValidator;
+    protected $commonRepository;
     /**
      * cancelTicketController Constructor
      *
      * @param commonService $commonService
      *
      */
-    public function __construct(CommonService $commonService, CommonValidator $commonValidator)
+    public function __construct(CommonService $commonService, CommonValidator $commonValidator, CommonRepository $commonRepository)
     {
         $this->commonService = $commonService;
         $this->commonValidator = $commonValidator;
+        $this->commonRepository = $commonRepository;
     }
     /**
      * @OA\Post(
