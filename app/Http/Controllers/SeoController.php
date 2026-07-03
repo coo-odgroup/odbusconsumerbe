@@ -411,8 +411,14 @@ class SeoController extends Controller
         }
 
         $organization_schema = $odbusCharge->organization_schema;
+        $meta_title = $odbusCharge->meta_title;
+        $meta_keyword = $odbusCharge->meta_keyword;
+        $meta_description = $odbusCharge->meta_description;
         return response()->json([
-            'organization_schema' => $organization_schema
+            'organization_schema' => $organization_schema,
+            'meta_title' => $meta_title,
+            'meta_keyword' => $meta_keyword,
+            'meta_description' => $meta_description
         ], Response::HTTP_OK);
     }
 }
