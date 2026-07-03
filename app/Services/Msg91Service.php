@@ -176,7 +176,8 @@ class Msg91Service
             // "body_var_13" => ["type" => "text", "value" => implode(',', $data['seat_no']->toArray())],
             "body_var_13" => ["type" => "text", "value" => $data['conductor_number']],
             "button_1" => ["type" => "text", "value" => "https://play.google.com/store/apps/details?id=com.od.odbus&pli=1"],
-            "button_2" => ["type" => "text", "value" => config('msg91.pdf_url') . $data['pnr']],
+            "button_2" => ["type" => "text", "value" => $data['pnr']],
+            // "button_2" => ["type" => "text", "value" => config('msg91.pdf_url') . $data['pnr']],
             // "button_2" => ["type" => "text", "value" => "https://www.odbus.in/pnr/" . $data['pnr']],
 
 
@@ -277,7 +278,6 @@ class Msg91Service
 
         $passengerText = $firstPassenger . '(' . $totalCount . ')';
 
-        Log::info($passengerText);
         $formattedDate = Carbon::parse($data['journeydate'])->format('d-M-Y');
         $departureTime = Carbon::parse($data['departureTime'])->format('H:i');
 
@@ -322,12 +322,25 @@ class Msg91Service
 
         // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-booking-flow/run";
 
-        foreach ($getNumber as $number) {
-            if (!empty($number->phone)) {
-                $to[] = [
-                    "mobiles" => "91" . trim($number->phone),
-                    "variables" => $variables
-                ];
+        // foreach ($getNumber as $number) {
+        //     if (!empty($number->phone)) {
+        //         $to[] = [
+        //             "mobiles" => "91" . trim($number->phone),
+        //             "variables" => $variables
+        //         ];
+        //     }
+        // }
+
+        foreach ($getNumber as $record) {
+            $phones = explode(',', $record->phone);
+            foreach ($phones as $phone) {
+                $phone = trim($phone);
+                if (!empty($phone)) {
+                    $to[] = [
+                        "mobiles" => "91" . $phone,
+                        "variables" => $variables
+                    ];
+                }
             }
         }
 
@@ -501,12 +514,17 @@ class Msg91Service
 
         // $url = "https://control.msg91.com/api/v5/campaign/api/campaigns/cmo-ticket-cancellation/run";
 
-        foreach ($getNumber as $number) {
-            if (!empty($number->phone)) {
-                $to[] = [
-                    "mobiles" => "91" . trim($number->phone),
-                    "variables" => $variables
-                ];
+
+        foreach ($getNumber as $record) {
+            $phones = explode(',', $record->phone);
+            foreach ($phones as $phone) {
+                $phone = trim($phone);
+                if (!empty($phone)) {
+                    $to[] = [
+                        "mobiles" => "91" . $phone,
+                        "variables" => $variables
+                    ];
+                }
             }
         }
 
@@ -729,8 +747,6 @@ class Msg91Service
 
         // return $postData;
 
-        log::info($postData);
-
 
         $curl = curl_init();
 
@@ -752,8 +768,6 @@ class Msg91Service
         }
 
         curl_close($curl);
-
-        log::info($response);
 
         return json_decode($response, true);
     }
