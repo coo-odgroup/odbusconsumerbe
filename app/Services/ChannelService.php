@@ -1173,8 +1173,6 @@ class ChannelService
                 'fare' => $totalfare
             );
 
-            log::info($smsData);
-
             $emailData = array(
                 "pnr" => $pnr,
                 "seat_no" => $seat_no,
