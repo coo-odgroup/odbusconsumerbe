@@ -228,13 +228,74 @@ class BookTicketRepository
         $bookingDetail = $bookingInfo['bookingDetail'];
         $seatIds = Arr::pluck($bookingDetail, 'bus_seats_id');  //in request passing seats_id with key as bus_seats_id
         foreach ($seatIds as $seatId){
-            $busSeatsId[] = $this->busSeats
-                ->where('bus_id',$busId)
-                ->where('ticket_price_id',$ticketPriceId)
-                ->where('seats_id',$seatId)
-                ->where('status','1')
-                ->orderBy('id','DESC')
-                ->first()->id;
+            // $busSeatsId[] = $this->busSeats
+            //     ->where('bus_id',$busId)
+            //     ->where('ticket_price_id',$ticketPriceId)
+            //     ->where('seats_id',$seatId)
+            //     ->where('status','1')
+            //     ->orderBy('id','DESC')
+            //     ->first()->id;
+
+            
+            $busSeat = $this->busSeats
+                ->where('bus_id', $busId)
+                ->where('ticket_price_id', $ticketPriceId)
+                ->where('seats_id', $seatId)
+                ->where('status', 1)
+                ->where(function ($q) {
+                    $q->where('type', 1)
+                    ->orWhereNull('type');
+                })
+                ->whereDate('operation_date', $bookingInfo['journey_date'])
+                ->orderByDesc('id')
+                ->first();
+
+            if (!$busSeat) {
+
+               $journeyDate=$bookingInfo['journey_date'];
+
+                $busSeat = $this->busSeats
+                    ->where('bus_id', $busId)
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('seats_id', $seatId)
+                    ->where('status', 1)
+                    ->where(function ($q) {
+                        $q->where('type', 1)
+                        ->orWhereNull('type');
+                    })
+                    ->whereNull('operation_date')
+                    ->where('duration', '>', 0)
+                    ->whereRaw(
+                        'DATE_ADD(created_at, INTERVAL duration DAY) >= ?',
+                        [$journeyDate->toDateString()]
+                    )
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
+
+            if (!$busSeat) {
+
+                $busSeat = $this->busSeats
+                    ->where('bus_id', $busId)
+                    ->where('ticket_price_id', $ticketPriceId)
+                    ->where('seats_id', $seatId)
+                    ->where('status', 1)
+                    ->where(function ($q) {
+                        $q->where('type', 1)
+                        ->orWhereNull('type');
+                    })
+                    ->whereNull('operation_date')
+                    ->where(function ($q) {
+                        $q->whereNull('duration')
+                        ->orWhere('duration', 0);
+                    })
+                    ->orderByDesc('id')
+                    ->first();
+            }
+
+            $busSeatsId[] = $busSeat->id;
+
         }  
       }
         $bookingDetailModels = [];  
