@@ -160,7 +160,35 @@ class CommonController extends Controller
         }
         // Banner End
 
+        $popular_routes = DB::table('mst_routes_details as rd')
+            ->join('location as s', 'rd.source_id', '=', 's.id')
+            ->join('location as d', 'rd.destination_id', '=', 'd.id')
+            ->select(
+                'rd.source',
+                'rd.destination',
+                's.url as source_url',
+                'd.url as destination_url'
+            )
+            ->where('rd.is_popular_routes', 1)
+            ->where('rd.active_status', 1)
+            ->get();
+
+        $top_routes = DB::table('mst_routes_details as rd')
+            ->join('location as s', 'rd.source_id', '=', 's.id')
+            ->join('location as d', 'rd.destination_id', '=', 'd.id')
+            ->select(
+                'rd.source',
+                'rd.destination',
+                's.url as source_url',
+                'd.url as destination_url'
+            )
+            ->where('rd.is_top_routes', 1)
+            ->where('rd.active_status', 1)
+            ->get();
+
         $data['banner_image'] = $banner_image;
+        $data['popular_routes'] = $popular_routes;
+        $data['top_routes'] = $top_routes;
         return response()->json([
             'status' => true,
             'message' => 'Success',
