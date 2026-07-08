@@ -267,7 +267,7 @@ class BookTicketRepository
                     ->where('duration', '>', 0)
                     ->whereRaw(
                         'DATE_ADD(created_at, INTERVAL duration DAY) >= ?',
-                        [$journeyDate->toDateString()]
+                        [$journeyDate]
                     )
                     ->orderByDesc('id')
                     ->first();
