@@ -147,8 +147,11 @@ class CommonController extends Controller
 
     public function homeData(Request $request)
     {
-        // Banner
+        $is_top_routes = $request->is_top_routes ?? null;
+        $is_popular_routes = $request->is_popular_routes ?? null;
         $data = [];
+
+        // Banner
         $path = $this->commonRepository->getPathurls();
         $path = $path[0];
         $today = date('Y-m-d');
@@ -156,7 +159,7 @@ class CommonController extends Controller
         $banner = $this->commonRepository->getBanners($request['user_id'], $today);
         if ($banner && isset($banner[0]) && $banner[0]->banner_image) {
             $banner = $banner[0];
-            $banner_image =  $path->banner_url . $banner->banner_image;
+            $banner_image = $path->banner_url . $banner->banner_image;
         }
         // Banner End
 
@@ -169,8 +172,11 @@ class CommonController extends Controller
                 's.url as source_url',
                 'd.url as destination_url'
             )
-            ->where('rd.is_popular_routes', 1)
+            ->when($is_popular_routes !== null, function ($query) use ($is_popular_routes) {
+                $query->where('rd.is_popular_routes', $is_popular_routes);
+            })
             ->where('rd.active_status', 1)
+            ->orderBy('rd.sequence', 'ASC')
             ->get();
 
         $top_routes = DB::table('mst_routes_details as rd')
@@ -182,8 +188,11 @@ class CommonController extends Controller
                 's.url as source_url',
                 'd.url as destination_url'
             )
-            ->where('rd.is_top_routes', 1)
+            ->when($is_top_routes !== null, function ($query) use ($is_top_routes) {
+                $query->where('rd.is_top_routes', $is_top_routes);
+            })
             ->where('rd.active_status', 1)
+            ->orderBy('rd.sequence', 'ASC')
             ->get();
 
         $data['banner_image'] = $banner_image;
