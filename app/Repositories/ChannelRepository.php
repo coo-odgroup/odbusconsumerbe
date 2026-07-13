@@ -1650,12 +1650,10 @@ class ChannelRepository
   ////////////generateFailedTicket///////////////////////////
   public function generateFailedTicket($request)
   {
-
-
-
     $bookingId = $request['booking_id'];
     $razorpay_payment_id = $request['razorpay_payment_id'];
     $createdBy = $request['created_by'];
+    
 
     $customerPaymentDatas = $this->customerPayment->where('booking_id', $bookingId)->get();
 
@@ -1707,6 +1705,7 @@ class ChannelRepository
     $email = $bookingDetails[0]->users->email;
     $name = $bookingDetails[0]->users->name;
     $busname = $bookingDetails[0]->bus->name;
+    $busId = $bookingDetails[0]->bus->id;
     $busNumber = $bookingDetails[0]->bus->bus_number;
     $journeydate = $bookingDetails[0]->journey_dt;
     $source = Location::where('id', $bookingDetails[0]->source_id)->first()->name;
@@ -1753,9 +1752,18 @@ class ChannelRepository
     $coupon_discount = $bookingDetails[0]->coupon_discount;
     $cancellationslabs = $bookingDetails[0]->bus->cancellationslabs->cancellationSlabInfo;
 
+    $passegerName = $passengerDetails[0]->passenger_name;
+
     $data = array(
+      "name" => $passegerName,
+      "pnr" => $pnr,
       "seat_no" => $seat_no,
       "passengerDetails" => $passengerDetails,
+      "source" => $source,
+      "boarding_point" => $boarding_point,
+      "destination" => $destination,
+      "dropping_point" => $dropping_point,
+      "busId" => $busId,
       "busname" => $busname,
       "busNumber" => $busNumber,
       "phone" => $phone,
@@ -1763,7 +1771,9 @@ class ChannelRepository
       "routedetails" => $routedetails,
       "departureTime" => $departureTime,
       "conductor_number" => $conductor_number,
+      "fare" => $totalfare,
     );
+
     $emailData = array(
       "pnr" => $pnr,
       "seat_no" => $seat_no,
@@ -1802,34 +1812,33 @@ class ChannelRepository
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
-    $sendsms = $this->sendSmsTicket($payable_amount, $data, $pnr); ////send sms ticket to customer
+    // $sendsms = $this->sendSmsTicket($payable_amount, $data, $pnr); ////send sms ticket to customer
 
-    if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
+    // if (isset($sendsms->messages[0]) && isset($sendsms->messages[0]->id)) {
 
-      $msgId = $sendsms->messages[0]->id;
-      $status = $sendsms->status;
-      $from = $sendsms->message->sender;
-      $to = $sendsms->messages[0]->recipient;
-      $contents = $sendsms->message->content;
-      $response = collect($sendsms);
-      /// save sms related things in manage_sms table///////////////
-      $sms = new $this->manageSms();
-      $sms->pnr = $pnr;
-      $sms->booking_id = $bookingId;
-      $sms->sms_engine = $SmsGW;
-      $sms->type = 'customer';
-      $sms->status = $status;
-      $sms->from = $from;
-      $sms->to = $to;
-      $sms->contents = $contents;
-      $sms->response = $response;
-      $sms->message_id = $msgId;
-      $sms->save();
-    }
+    //   $msgId = $sendsms->messages[0]->id;
+    //   $status = $sendsms->status;
+    //   $from = $sendsms->message->sender;
+    //   $to = $sendsms->messages[0]->recipient;
+    //   $contents = $sendsms->message->content;
+    //   $response = collect($sendsms);
+    //   /// save sms related things in manage_sms table///////////////
+    //   $sms = new $this->manageSms();
+    //   $sms->pnr = $pnr;
+    //   $sms->booking_id = $bookingId;
+    //   $sms->sms_engine = $SmsGW;
+    //   $sms->type = 'customer';
+    //   $sms->status = $status;
+    //   $sms->from = $from;
+    //   $sms->to = $to;
+    //   $sms->contents = $contents;
+    //   $sms->response = $response;
+    //   $sms->message_id = $msgId;
+    //   $sms->save();
+    // }
 
-
-
-
+    $this->msg91Service->customer_ticket_booking($data);
+    
     $busId = $bookingDetails[0]->bus->id;
 
     ///////////////////CMO SMS/////////////////////////////////////////////////
@@ -1839,32 +1848,32 @@ class ChannelRepository
       ->get('phone');
     if ($busContactDetails->isNotEmpty()) {
       $contact_number = collect($busContactDetails)->implode('phone', ',');
-      $sendSmsCMO = $this->sendSmsCMO($payable_amount, $data, $pnr, $contact_number);
+      $this->msg91Service->cmo_ticket_booking($data);
+      // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $data, $pnr, $contact_number);
 
-      if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
+      // if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
 
-        $msgId = $sendSmsCMO->messages[0]->id;
-        $status = $sendSmsCMO->status;
-        $from = $sendSmsCMO->message->sender;
-        $to = collect($sendSmsCMO->messages)->pluck('recipient');
-        $contents = $sendSmsCMO->message->content;
-        $response = collect($sendSmsCMO);
+      //   $msgId = $sendSmsCMO->messages[0]->id;
+      //   $status = $sendSmsCMO->status;
+      //   $from = $sendSmsCMO->message->sender;
+      //   $contents = $sendSmsCMO->message->content;
+      //   $response = collect($sendSmsCMO);
 
-        /// save sms related things in manage_sms table///////////////
+      //   /// save sms related things in manage_sms table///////////////
 
-        $sms = new $this->manageSms();
-        $sms->pnr = $pnr;
-        $sms->booking_id = $bookingId;
-        $sms->sms_engine = $SmsGW;
-        $sms->type = 'cmo';
-        $sms->status = $status;
-        $sms->from = $from;
-        $sms->to = $to;
-        $sms->contents = $contents;
-        $sms->response = $response;
-        $sms->message_id = $msgId;
-        $sms->save();
-      }
+      //   $sms = new $this->manageSms();
+      //   $sms->pnr = $pnr;
+      //   $sms->booking_id = $bookingId;
+      //   $sms->sms_engine = $SmsGW;
+      //   $sms->type = 'cmo';
+      //   $sms->status = $status;
+      //   $sms->from = $from;
+      //   $sms->to = $to;
+      //   $sms->contents = $contents;
+      //   $sms->response = $response;
+      //   $sms->message_id = $msgId;
+      //   $sms->save();
+      // }
     }
 
 
