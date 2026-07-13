@@ -97,9 +97,9 @@ class UsersService
 
         $query = $this->usersRepository->GetUserData($request['phone'], $request['email']);
 
-        $guestUser = $query->latest()->exists();
+        // $guestUser = $query->latest()->first();
 
-        if (!$guestUser) {
+        if (!$query) {
             return $this->usersRepository->saveUser($request);
         } else {
             $verifiedUser = $query->latest()->first()->is_verified;
