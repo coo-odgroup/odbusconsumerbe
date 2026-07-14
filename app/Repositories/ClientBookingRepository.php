@@ -53,7 +53,7 @@ class ClientBookingRepository
     protected $msg91Service;
 
 
-    public function __construct(Bus $bus, TicketPrice $ticketPrice, Location $location, User $user, BusSeats $busSeats, Booking $booking, BusLocationSequence $busLocationSequence, ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, ListingService $listingService, DolphinTransformer $dolphinTransformer, Users $users, MantisTransformer $mantisTransformer,Msg91Service $msg91Service)
+    public function __construct(Bus $bus, TicketPrice $ticketPrice, Location $location, User $user, BusSeats $busSeats, Booking $booking, BusLocationSequence $busLocationSequence, ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, ListingService $listingService, DolphinTransformer $dolphinTransformer, Users $users, MantisTransformer $mantisTransformer, Msg91Service $msg91Service)
     {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -360,14 +360,74 @@ class ClientBookingRepository
                 //Update Booking Details >>>>>>>>>>
                 if ($bookingInfo['origin'] == 'ODBUS') { // dolphin related changes
                     $ticketPriceId = $ticketPriceDetails[0]->id;
-                    foreach ($seatIds as $seatId) {
-                        $busSeatsId[] = $this->busSeats
+                    // foreach ($seatIds as $seatId) {
+                    //     $busSeatsId[] = $this->busSeats
+                    //         ->where('bus_id', $busId)
+                    //         ->where('ticket_price_id', $ticketPriceId)
+                    //         ->where('seats_id', $seatId)
+                    //         ->where('status','1')
+                    //         ->orderBy('id','DESC')
+                    //         ->first()->id;
+                    // }
+                    foreach ($seatIds as $seatId) { //Newly added
+                        $busSeat = $this->busSeats
                             ->where('bus_id', $busId)
                             ->where('ticket_price_id', $ticketPriceId)
                             ->where('seats_id', $seatId)
-                            ->where('status','1')
-                            ->orderBy('id','DESC')
-                            ->first()->id;
+                            ->where('status', 1)
+                            ->where(function ($q) {
+                                $q->where('type', 1)
+                                    ->orWhereNull('type');
+                            })
+                            ->whereDate('operation_date', $bookingInfo['journey_dt'])
+                            ->orderByDesc('id')
+                            ->first();
+
+                        if (!$busSeat) {
+
+                            $journeyDate = $bookingInfo['journey_dt'];
+
+                            $busSeat = $this->busSeats
+                                ->where('bus_id', $busId)
+                                ->where('ticket_price_id', $ticketPriceId)
+                                ->where('seats_id', $seatId)
+                                ->where('status', 1)
+                                ->where(function ($q) {
+                                    $q->where('type', 1)
+                                        ->orWhereNull('type');
+                                })
+                                ->whereNull('operation_date')
+                                ->where('duration', '>', 0)
+                                ->whereRaw(
+                                    'DATE_ADD(created_at, INTERVAL duration DAY) >= ?',
+                                    [$journeyDate]
+                                )
+                                ->orderByDesc('id')
+                                ->first();
+                        }
+
+
+                        if (!$busSeat) {
+
+                            $busSeat = $this->busSeats
+                                ->where('bus_id', $busId)
+                                ->where('ticket_price_id', $ticketPriceId)
+                                ->where('seats_id', $seatId)
+                                ->where('status', 1)
+                                ->where(function ($q) {
+                                    $q->where('type', 1)
+                                        ->orWhereNull('type');
+                                })
+                                ->whereNull('operation_date')
+                                ->where(function ($q) {
+                                    $q->whereNull('duration')
+                                        ->orWhere('duration', 0);
+                                })
+                                ->orderByDesc('id')
+                                ->first();
+                        }
+
+                        $busSeatsId[] = $busSeat->id;
                     }
                 }
                 $bookingDetailModels = [];
@@ -554,7 +614,7 @@ class ClientBookingRepository
             ClientWallet::create([
 
                 'transaction_id' =>
-                    now()->timestamp . rand(100,999),
+                now()->timestamp . rand(100, 999),
 
                 'booking_id' => $booking->id,
 
@@ -593,13 +653,13 @@ class ClientBookingRepository
 
                 $inventory = app(\App\Services\InventoryService::class);
 
-                 $inventory->releaseHoldSeats(
-                        $booking->bus_id,
-                        $booking->journey_dt,
-                        $booking->source_id,
-                        $booking->destination_id,
-                        $seatCount
-                    );
+                $inventory->releaseHoldSeats(
+                    $booking->bus_id,
+                    $booking->journey_dt,
+                    $booking->source_id,
+                    $booking->destination_id,
+                    $seatCount
+                );
 
                 $inventory->bookSeats(
                     $booking->bus_id,
@@ -617,14 +677,13 @@ class ClientBookingRepository
                     ),
                     $booking->journey_dt
                 );
-
             } catch (\Exception $e) {
 
                 \Log::error(
                     'ticketConfirmation() Inventory Update Failed . Booking ID: '
-                    .$booking->id.
-                    ' Error: '
-                    .$e->getMessage()
+                        . $booking->id .
+                        ' Error: '
+                        . $e->getMessage()
                 );
             }
 
@@ -637,14 +696,13 @@ class ClientBookingRepository
 
                 'final_pnr' => $booking->pnr
             ];
-
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             \Log::error(
                 'Ticket Confirmation Error: '
-                . $e->getMessage()
+                    . $e->getMessage()
             );
 
             return [
@@ -787,7 +845,7 @@ class ClientBookingRepository
                     $seatCount
                 );
 
-                 $inventory->refreshAvailableSeats(
+                $inventory->refreshAvailableSeats(
                     $inventory->getOverlapSegmentIds(
                         $booking->bus_id,
                         $booking->source_id,
@@ -795,16 +853,14 @@ class ClientBookingRepository
                     ),
                     $booking->journey_dt
                 );
-                
             }
-
         } catch (\Exception $e) {
 
             \Log::error(
                 'updateClientCancelTicket() . Inventory Cancel Update Failed. Booking ID: '
-                .$bookingId.
-                ' Error: '
-                .$e->getMessage()
+                    . $bookingId .
+                    ' Error: '
+                    . $e->getMessage()
             );
         }
 
