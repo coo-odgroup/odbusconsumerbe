@@ -414,11 +414,13 @@ class SeoController extends Controller
         $meta_title = $odbusCharge->meta_title;
         $meta_keyword = $odbusCharge->meta_keyword;
         $meta_description = $odbusCharge->meta_description;
+        $storage_version = $odbusCharge->storage_version;
         return response()->json([
             'organization_schema' => $organization_schema,
             'meta_title' => $meta_title,
             'meta_keyword' => $meta_keyword,
-            'meta_description' => $meta_description
+            'meta_description' => $meta_description,
+            'storage_version' => $storage_version
         ], Response::HTTP_OK);
     }
 }
