@@ -106,5 +106,8 @@ return [
         'key' => env('RAZORPAY_KEY'),
         'secret' => env('RAZORPAY_SECRET')
     ],
+    'firebase' =>[
+        'key_path' => public_path(env('FIREBASE_CREDENTIAL'))
+    ]
 
 ];
