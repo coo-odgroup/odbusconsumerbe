@@ -41,7 +41,7 @@ trait PushNotificationTrait
 
             $projectId = env('FIREBASE_PROJECT_ID', 'odbus-c581f');
 
-            $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";           
+            $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
             $imageUrl = "https://www.odbus.in/assets/img/bus-stop.png";
 
@@ -74,13 +74,13 @@ trait PushNotificationTrait
 
             $responseBody = $response->json();
 
-           $messageId = explode('/messages/', $responseBody['name'])[1] ?? null;
+            $messageId = explode('/messages/', $responseBody['name'])[1] ?? null;
 
             Log::info('FCM Notification Response', [
                 'device_token' => $deviceToken,
                 'title' => $title,
                 // 'response' => $response->json(),
-                'message_id' =>$messageId
+                'message_id' => $messageId
             ]);
 
             if (!$response->successful()) {
@@ -101,7 +101,6 @@ trait PushNotificationTrait
                 'message' => 'Notification sent successfully.',
                 'response' => $response->json(),
             ];
-
         } catch (\Throwable $e) {
 
             Log::error('Push Notification Exception', [
