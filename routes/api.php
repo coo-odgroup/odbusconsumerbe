@@ -35,6 +35,7 @@ use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PhonpeController;
+use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Artisan;
 
@@ -226,3 +227,4 @@ Route::post('getallroutes', [PopularController::class, 'getAllRoutes']);
 Route::post('/getFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('getSchemaUrls', [CommonController::class, 'getSchemaUrls']);
 Route::post('/homedata', [CommonController::class, 'homeData']);
+Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBooking']);
