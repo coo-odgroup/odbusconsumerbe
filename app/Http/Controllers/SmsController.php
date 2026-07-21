@@ -7,25 +7,23 @@ use Illuminate\Http\Request;
 
 class SmsController extends Controller
 {
-    public function send(Request $request, Msg91Service $msg91)
+    public function send(Request $request, Msg91Service $msg91Service)
     {
         $mobile = 9692066142;
 
         $data = [
-            'var1'  => 'sk sahil',
-            'var2'  => 'ODCL1689894',
-            'var3'  => 'Bhubaneswar',
-            'var4'  => 'Raj Khariar',
-            'var5'  => 'NILKANTHESWAR',
-            'var6'  => 'OR 02 B 2525',
-            'var7'  => '15-12-2020, 20:55',
-            'var8'  => 'sk sahil',
-            'var9'  => '14,15,16,17 SL 13,14',
-            'var10' => '2560.32',
-            'var11' => '9348249712',
+            'var1' => 'Sk Sahil',
+            'var2' => 'ODCL1689894',
+            'var3' => 'Bhubaneswar',
+            'var4' => 'Raj Khariar',
+            'var5' => '15-12-2020 20:55',
+            'var6' => 'NILKANTHESWAR Bus Stand',
+            'var7' => 'Sk Sahil',
+            'var8' => '14,15,16,17 SL 13,14',
+            'var9' => '9876543210',
         ];
 
-        $response = $msg91->sendBookingSms($mobile, $data);
+        $response = $msg91Service->dolphinBookingSms($mobile, $data);
 
         return response()->json($response);
     }

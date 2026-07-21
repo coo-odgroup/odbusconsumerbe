@@ -5,6 +5,7 @@ return [
     'MSG91_SENDER_ID' => env('MSG91_SENDER_ID'),
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
+        'Dolphin_Booking_msg' => '6a5604cc57b6b8b9630b1502',
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',

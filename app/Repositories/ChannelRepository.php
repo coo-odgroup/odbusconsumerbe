@@ -1023,15 +1023,13 @@ class ChannelRepository
 
   public function UpdateCustomPayment($receiptId, $amount, $name, $email, $phone, $bookingId)
   {
+    // $key = env('CASHFREE_KEY');
+    // $secretKey = env('CASHFREE_SECRET');
+    // $apiUrl = env('CASHFREE_API_URL');
 
-    // $cashfree = DB::table("credentials")->first();
-    // $key = $cashfree->cashfree_key;
-    // $secretKey = $cashfree->cashfree_secret;
-    // $apiUrl = $cashfree->cashfree_apiurl;
-
-    $key = env('CASHFREE_KEY');
-    $secretKey = env('CASHFREE_SECRET');
-    $apiUrl = env('CASHFREE_API_URL');
+    $key = Config::get('constants.CASHFREE_KEY');
+    $secretKey = Config::get('constants.CASHFREE_SECRET');
+    $apiUrl = Config::get('constants.CASHFREE_API_URL');
 
     $response = Http::withHeaders([
       'x-client-id' => $key,
@@ -1069,9 +1067,9 @@ class ChannelRepository
     // $secretKey = $cashfree->cashfree_secret;
     // $apiUrl = $cashfree->cashfree_apiurl;
 
-    $key = env('CASHFREE_KEY');
-    $secretKey = env('CASHFREE_SECRET');
-    $apiUrl = env('CASHFREE_API_URL');
+    $key = Config::get('constants.CASHFREE_KEY');
+    $secretKey = Config::get('constants.CASHFREE_SECRET');
+    $apiUrl = Config::get('constants.CASHFREE_API_URL');
 
     $response = Http::withHeaders([
       'x-client-id' => $key,
@@ -1653,7 +1651,7 @@ class ChannelRepository
     $bookingId = $request['booking_id'];
     $razorpay_payment_id = $request['razorpay_payment_id'];
     $createdBy = $request['created_by'];
-    
+
 
     $customerPaymentDatas = $this->customerPayment->where('booking_id', $bookingId)->get();
 
@@ -1838,7 +1836,7 @@ class ChannelRepository
     // }
 
     $this->msg91Service->customer_ticket_booking($data);
-    
+
     $busId = $bookingDetails[0]->bus->id;
 
     ///////////////////CMO SMS/////////////////////////////////////////////////

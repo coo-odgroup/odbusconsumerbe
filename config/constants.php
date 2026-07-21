@@ -95,25 +95,14 @@ return [
     'BUS_NOT_RUNNING' => "Bus not running in this route",
     'NO_RECORD_FOUND' => "No record found",
 
+    //Test Environment
+    'CASHFREE_KEY' => env('CASHFREE_KEY','TEST108577409ff7eb8e2b1cb161978f04775801'),
+    'CASHFREE_SECRET'=> env('CASHFREE_SECRET','cfsk_ma_test_c0f4b0bd0ccd2731dfb130a93c1edc8b_2f49aced'),
+    'CASHFREE_API_URL' => env('CASHFREE_API_URL','https://sandbox.cashfree.com/pg/orders'),
 
-    #PhonePe
-    // 'MID' => env('MID', 'ODBUSUAT'),
-    // 'CLIENT_ID' => env('CLIENT_ID', 'ODBUSUAT_251114164525072'),
-    // 'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
-    // 'CLIENT_SECRET' => env('CLIENT_SECRET', 'NGYyMjVmYTAtMjU2My00NWIxLTg1MzItZjhjNjRjZDQwNDRk'),
-    // 'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
-    // 'PHONPE_API_URL' => env('PHONPE_API_URL','https://api-preprod.phonepe.com/apis/pg-sandbox/'),  //test
-    // // 'PHONPE_API_URL' => env('PHONPE_API_URL','https://api.phonepe.com/apis/hermes/pg/v1/'),
-    // 'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','http://localhost:4200/payment-status')
-
-    #PhonePe Live
-    'MID' => env('MID', 'ODBUSONLINE'),
-    'CLIENT_ID' => env('CLIENT_ID', 'SU2602201330348595959341'),
-    'CLIENT_VERSION' => env('CLIENT_VERSION', 1),
-    'CLIENT_SECRET' => env('CLIENT_SECRET', 'eada605f-e1c5-4f3d-bef3-b7550cb7ec5e'),
-    'GRANT_TYPE' => env('GRANT_TYPE', 'client_credentials'),
-    'PHONPE_API_URL' => env('PHONPE_API_URL','https://api.phonepe.com/apis/pg/'),
-    'PHONPE_TOKEN_URL' => env('PHONPE_TOKEN_URL','https://api.phonepe.com/apis/identity-manager/v1/oauth/token'),
-    'PHONPE_REDIRECT_URL' => env('PHONPE_REDIRECT_URL','https://odtesting.odbus.co.in/payment-status')
+    //Live Environment
+    // 'CASHFREE_KEY' => env('CASHFREE_KEY','1113683e1dcf93c8bec738e78f13863111'),
+    // 'CASHFREE_SECRET'=> env('CASHFREE_SECRET','cfsk_ma_prod_1f6a44b064ab331b10e7484aae27f1fe_d8b8195b'),
+    // 'CASHFREE_API_URL' => env('CASHFREE_API_URL','https://api.cashfree.com/pg/orders'),
    
 ];

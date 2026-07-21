@@ -771,4 +771,35 @@ class Msg91Service
 
         return json_decode($response, true);
     }
+
+
+
+    //Dolphin
+    public function dolphinBookingSms($mobile, $data)
+    {
+        // return config('msg91.templates.Dolphin_Booking_msg');
+        $postData = array_merge([
+            "flow_id" => config('msg91.templates.Dolphin_Booking_msg'),
+            "mobiles" => "91" . $mobile,
+        ], $data);
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.msg91.com/api/v5/flow/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => array(
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+    }
 }

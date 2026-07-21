@@ -37,7 +37,7 @@ class BookingManageService
     protected $msg91Service;
 
 
-    public function __construct(Msg91Service $msg91Service,BookingManageRepository $bookingManageRepository, CancelTicketRepository $cancelTicketRepository, User $user, ChannelRepository $channelRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer)
+    public function __construct(Msg91Service $msg91Service, BookingManageRepository $bookingManageRepository, CancelTicketRepository $cancelTicketRepository, User $user, ChannelRepository $channelRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer)
     {
         $this->bookingManageRepository = $bookingManageRepository;
         $this->cancelTicketRepository = $cancelTicketRepository;
@@ -397,7 +397,43 @@ class BookingManageService
                         'routedetails' => $source_data[0]->name . ' To ' . $dest_data[0]->name
                     ];
 
-                    //  return $body;
+                    //Dolphin sms
+                    $passengerDetails = $b->booking[0]->bookingDetail;
+                    $passenger_name = $passengerDetails->first()->passenger_name;
+
+                    $passengers = $passengerDetails;
+                    $firstPassenger = $passengers[0]['passenger_name'] ?? '';
+
+                    $maleCount = collect($passengers)->where('passenger_gender', 'M')->count();
+                    $femaleCount = collect($passengers)->where('passenger_gender', 'F')->count();
+
+                    $parts = [];
+
+                    if ($maleCount > 0) {
+                        $parts[] = $maleCount . 'M';
+                    }
+
+                    if ($femaleCount > 0) {
+                        $parts[] = $femaleCount . 'F';
+                    }
+                    $totalCount = implode(',', $parts);
+                    $passengerText = $firstPassenger . '(' . $totalCount . ')';
+
+                    $mobile = $b->phone;
+
+                    $data = [
+                        'var1' => $passenger_name,
+                        'var2' => $pnr,
+                        'var3' => $source_data[0]->name,
+                        'var4' => $dest_data[0]->name,
+                        'var5' => $b->booking[0]->boarding_time,
+                        'var6' => $b->booking[0]->boarding_point,
+                        'var7' => $passengerText,
+                        'var8' => implode(',', $seat_arr),
+                        'var9' => '9876543210',
+                    ];
+
+                    $this->msg91Service->dolphinBookingSms($mobile, $data);
 
                     $cancellation_slab_info = [];
 
@@ -506,6 +542,37 @@ class BookingManageService
                         'owner_fare' => $b->booking[0]->owner_fare,
                         'routedetails' => $routedetails
                     ];
+
+                    $agentDetails = $this->user->where('id', $b->booking[0]->user_id)->first();
+
+                    $agentName = $agentDetails->name;
+                    $agentNumber = $agentDetails->phone;
+
+                    $passengerDetails = $b->booking[0]->bookingDetail;
+                    $passenger_name = $passengerDetails->first()->passenger_name;
+
+                    $smsData = [
+                        "pnr" => $pnr,
+                        "seat_no" => collect($seat_arr),
+                        "name" => $passenger_name,
+                        "passengerDetails" => $passengerDetails,
+                        "busId" => $b->booking[0]->bus->id,
+                        "busname" => $b->booking[0]->bus->name,
+                        "busNumber" => $b->booking[0]->bus->bus_number,
+                        "phone" => $b->phone,
+                        "source" => $source_data[0]->name,
+                        "destination" => $dest_data[0]->name,
+                        "boarding_point" => $b->booking[0]->boarding_point,
+                        "dropping_point" => $b->booking[0]->dropping_point,
+                        "journeydate" => $b->booking[0]->journey_dt,
+                        "departureTime" => $b->booking[0]->boarding_time,
+                        "conductor_number" => $b->booking[0]->bus->busContacts->phone,
+                        'agent_name' => $agentName,
+                        'agent_Number' => $agentNumber,
+                        'fare' => $b->booking[0]->total_fare,
+                    ];
+
+                    $this->msg91Service->agent_ticket_booking($smsData);
 
                     $cancellationslabs = $b->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
 
