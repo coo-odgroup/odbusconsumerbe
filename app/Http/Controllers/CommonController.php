@@ -126,7 +126,7 @@ class CommonController extends Controller
                 'd.url as destination_slug'
             )
             ->where('r.active_status', 1)
-            ->where('r.is_main_route', 1)
+            // ->where('r.is_main_route', 1)
             ->orderBy('r.source_id')
             ->orderBy('r.destination_id')
             ->get();
@@ -195,9 +195,19 @@ class CommonController extends Controller
             ->orderBy('rd.sequence', 'ASC')
             ->get();
 
+        $mPopup = DB::table('odbus_charges')
+            ->select('maintenance_popup', 'maintenance_start', 'maintenance_end')
+            ->where('id', 1)
+            ->first();
+
+        if ($mPopup) {
+            $mPopup->maintenance_popup = (bool) $mPopup->maintenance_popup;
+        }
+
         $data['banner_image'] = $banner_image;
         $data['popular_routes'] = $popular_routes;
         $data['top_routes'] = $top_routes;
+        $data['maintenance'] = $mPopup;
         return response()->json([
             'status' => true,
             'message' => 'Success',
