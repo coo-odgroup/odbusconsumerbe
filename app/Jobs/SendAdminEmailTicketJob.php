@@ -219,7 +219,7 @@ class SendAdminEmailTicketJob implements ShouldQueue
         $this->subject = str_replace("<PNR>",$this->email_pnr,$this->subject);
 
 
-        Mail::send('AdminemailTicket', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('AdminemailTicket', $data, function ($messageNew) {
             $messageNew->to('booking@odbus.in')
             ->subject($this->subject);
         });

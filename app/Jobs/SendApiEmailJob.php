@@ -41,7 +41,7 @@ class SendApiEmailJob implements ShouldQueue
 
         $this->subject = "ODBUS: New Lead For API Reference - ".$this->name;
        
-        Mail::send('emailApi', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('emailApi', $data, function ($messageNew) {
             $messageNew->to("support@odbus.in")
             ->subject($this->subject);
         });

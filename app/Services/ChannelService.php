@@ -697,8 +697,8 @@ class ChannelService
             );
 
             //For send sms Msg91
-            $this->msg91Service->customer_ticket_booking($smsData);
-            $this->msg91Service->cmo_ticket_booking($smsData);
+            // $this->msg91Service->customer_ticket_booking($smsData);
+            // $this->msg91Service->cmo_ticket_booking($smsData);
 
             return $this->channelRepository->UpdateCutsomerPaymentInfo(
                 $razorpay_order_id,

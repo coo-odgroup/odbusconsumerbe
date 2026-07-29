@@ -302,7 +302,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->subject = str_replace("<PNR>", $this->email_pnr, $this->subject);
         //dd($this->subject);
         if ($this->customer_gst_status == 0) {
-            Mail::send('emailTicket', $data, function ($messageNew) {
+            Mail::mailer('msg91email')->send('emailTicket', $data, function ($messageNew) {
                 $messageNew->attach($this->email_pdf)->to($this->to)
                     ->subject($this->subject);
             });
@@ -315,7 +315,7 @@ class SendEmailTicketJob implements ShouldQueue
             // });
 
 
-            Mail::send('emailTicket', $data, function ($messageNew) {
+            Mail::mailer('msg91email')->send('emailTicket', $data, function ($messageNew) {
                 $messageNew->attach($this->email_pdf)->to($this->to)
                     ->subject($this->subject);
             });

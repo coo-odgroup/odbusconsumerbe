@@ -45,7 +45,7 @@ class SendEmailJob implements ShouldQueue
             'otp' => $this->email_otp,
         ];
        
-        Mail::send('email', $data, function ($messageNew) {
+        Mail::mailer('msg91email')->send('email', $data, function ($messageNew) {
             //$messageNew->from(config('mail.contact.address'))
             $messageNew->to($this->to)
             ->subject(config('services.email.subject'));

@@ -890,7 +890,7 @@ class ChannelController extends Controller
             $subject = "GST INVOICE FOR PNR -" . $d->pnr;
             $email = $d->email;
 
-            Mail::send('Gstbody', $data, function ($messageNew) use ($gst, $subject, $email) {
+            Mail::mailer('msg91email')->send('Gstbody', $data, function ($messageNew) use ($gst, $subject, $email) {
                 $messageNew->attach($gst)->to($email)
                     ->subject($subject);
             });

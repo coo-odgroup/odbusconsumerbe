@@ -1210,7 +1210,27 @@ class ChannelRepository
 
     //Update  Booking Ticket Status in booking Change status to 1(Booked)  
 
-    $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
+    // $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
+
+
+    $updated = $this->booking
+      ->where('id', $bookingId)
+      ->where('email_sms_status', 0)
+      ->update([
+        'status' => $booked,
+        'payable_amount' => $payable_amount,
+        'email_sms_status' => 1
+      ]);
+
+    if ($updated == 1) {
+      // First webhook only
+      $this->msg91Service->customer_ticket_booking($smsData);
+      $this->msg91Service->cmo_ticket_booking($smsData);
+    } else {
+      // Already processed
+      Log::info('SMS already sent for booking ' . $bookingId);
+    }
+
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
