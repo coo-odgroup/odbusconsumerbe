@@ -882,7 +882,7 @@ class ChannelController extends Controller
 
             $CONSUMER_API_URL = Config::get('constants.CONSUMER_API_URL');
 
-            $gst = $CONSUMER_API_URL . 'public/gst/' . $gst_invoice_no;
+            $gst = $CONSUMER_API_URL . 'gst/' . $gst_invoice_no;
 
             $data['journeydate'] = $d->journey_dt;
             $data['pnr'] = $d->pnr;

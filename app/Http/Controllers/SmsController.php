@@ -56,7 +56,7 @@ class SmsController extends Controller
             // ✅ Header Image
             "header_1" => [
                 "type" => "image",
-                "value" => "https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
+                "value" => "https://provider.odbus.co.in/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg"
             ],
 
             // ✅ WhatsApp body

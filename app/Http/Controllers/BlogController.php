@@ -171,7 +171,7 @@ class BlogController extends Controller
             );
 
             return response()->json([
-                'imageUrl' => asset('public/uploads/blogs/blog_image/' . $picture)
+                'imageUrl' => asset('uploads/blogs/blog_image/' . $picture)
             ]);
         } catch (\Exception $e) {
 

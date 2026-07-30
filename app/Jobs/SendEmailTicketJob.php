@@ -171,7 +171,7 @@ class SendEmailTicketJob implements ShouldQueue
             ->generate($this->qrCodeText, public_path('qrcode/' . $pnr . '.png'));
 
         $this->subject = '';
-        $this->qrcode_image_path = url('public/qrcode/' . $pnr . '.png');
+        $this->qrcode_image_path = url('qrcode/' . $pnr . '.png');
 
 
         $p_name = [];
@@ -191,7 +191,7 @@ class SendEmailTicketJob implements ShouldQueue
         $this->ticketpdf = public_path('ticketpdf/' . $pnr . '.pdf');
 
         $CONSUMER_API_URL = Config::get('constants.CONSUMER_API_URL');
-        $this->email_pdf = $CONSUMER_API_URL . 'public/ticketpdf/' . $pnr . '.pdf';
+        $this->email_pdf = $CONSUMER_API_URL . 'ticketpdf/' . $pnr . '.pdf';
 
         $this->gst_name = '';
 
@@ -217,7 +217,7 @@ class SendEmailTicketJob implements ShouldQueue
 
         // $this->gst_name=$gst_name;
 
-        // $this->gstpdf=CONSUMER_API_URL.'public/gst/'.$gst_name;
+        // $this->gstpdf=CONSUMER_API_URL.'gst/'.$gst_name;
         //}
 
     }

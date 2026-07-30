@@ -681,7 +681,7 @@ border: 0;
         <table style="width:100%">
         <tr>
           <td style="width:86%;"><div style="padding-left: 15px; width:90%; float: left;  text-align: left;">
-                <img src="{{url('public/template/logo.png')}}" style="margin-top:15px;" class="od-logo"/><br/>
+                <img src="{{url('template/logo.png')}}" style="margin-top:15px;" class="od-logo"/><br/>
                 <span style="color:#ffffff;"><strong>ODBus Ticket Information</strong></span>
                </div> </td>
           <td style="width:80px; padding-top: 15px; padding-bottom:10px;" > <img src="{{$qrcode_image_path}}" style="width:70px;"/></td>

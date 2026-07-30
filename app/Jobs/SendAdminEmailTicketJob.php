@@ -235,7 +235,7 @@ class SendAdminEmailTicketJob implements ShouldQueue
 
         // else{
 
-        //     $gst='https://consumer.odbus.co.in/public/gst/'.$bk_dtl->gst_invoice_no;
+        //     $gst='https://consumer.odbus.co.in/gst/'.$bk_dtl->gst_invoice_no;
 
         //     Mail::send('AdminemailTicket', $data, function ($messageNew) use($gst)  {
         //         $messageNew->attach($gst)->to('booking@odbus.in')

@@ -5,9 +5,9 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="{{url('public/images/favicon.png')}}" rel="icon" />
+<link href="{{url('images/favicon.png')}}" rel="icon" />
 <title>ODBUS</title>
-<meta name="author" content="harnishdesign.net">
+<meta name="author" content="ODBUS">
 
 
 <!-- Stylesheet
@@ -607,7 +607,7 @@
   <!-- Main Content -->
   <header class="mb-2">
     <div class="row align-items-center gy-3">
-      <div class="col-sm-7 text-center text-sm-start"> <img id="logo" src="{{url('public/images/logo.png')}}" title="ODBUS" alt="ODBUS"> </div>
+      <div class="col-sm-7 text-center text-sm-start"> <img id="logo" src="{{url('images/logo.png')}}" title="ODBUS" alt="ODBUS"> </div>
       <div class="col-sm-5 text-center text-sm-end">
         <h4 class="mb-0">Invoice</h4>
         <p class="mb-0">Invoice Number - #{{$gst_name}}</p>

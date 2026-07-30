@@ -29,7 +29,7 @@ class HTMLPDFController extends Controller
        // $pdf = PDF::loadView('htmlPdf');
        // return $pdf->download($pnr.'.pdf');
 
-       $path = 'public/ticketpdf/';
+       $path = 'ticketpdf/';
       $pdf->save($path  . $pnr.'.pdf');
       return url($path.$fileName);
 

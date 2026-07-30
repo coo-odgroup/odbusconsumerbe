@@ -9,7 +9,7 @@ return [
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',
-    'template_image_url' => 'https://provider.odbus.co.in/public/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg',
+    'template_image_url' => 'https://provider.odbus.co.in/uploads/logo/ODBUS_YELLOW_BG_LOGOWHATSAPP-1.jpg',
     'pdf_url' => 'https://odtestingssr.odbus.co.in/pnr/',
 
     'campaigns' => [

@@ -11,7 +11,7 @@
   <table style="text-align: center; background: #014; max-width: 700px; margin:0 auto; margin-top:20px; width: 100%; border-collapse: collapse; " >
     <tr>
       <td style="text-align: left;">
-        <img class="fix" src="{{url('public/template/logo.png')}}" style="padding:10px 15px; width:140px;" alt="">
+        <img class="fix" src="{{url('template/logo.png')}}" style="padding:10px 15px; width:140px;" alt="">
       </td>
       <td style="color:#fff; padding: 5px 25px; line-height:25px; text-align: right;">
         <p><strong style="font-weight: 400;">Phone No:<a href="tel:9583918888" style="color:#fff; text-decoration:none;"> 95839 18888</a></strong><br/>
@@ -60,10 +60,10 @@
       <td style="width:230px;"></td>
 
       <td><span style="font-size: 16px;line-height: 32px;text-align: left;"><strong style="font-size:16px; font-weight: 400; color: #fff;">Follow us:</strong></span></td>
-      <td><a href="https://www.facebook.com/odbus/" target="_blank"><img style="width:30px" src="{{url('public/template/facebook.png')}}"></a></td>
-      <td><a href="https://www.instagram.com/od_bus/" target="_blank"><img style="width:30px"src="{{url('public/template/instagram.png')}}"></a></td>
-      <td><a href="https://www.linkedin.com/company/odbus" target="_blank"><img style="width:30px" src="{{url('public/template/linkedin.png')}}"></a></td>
-      <td><a href="https://twitter.com/od_bus/" target="_blank"><img style="width:30px" src="{{url('public/template/twitter.png')}}"></a></td>
+      <td><a href="https://www.facebook.com/odbus/" target="_blank"><img style="width:30px" src="{{url('template/facebook.png')}}"></a></td>
+      <td><a href="https://www.instagram.com/od_bus/" target="_blank"><img style="width:30px"src="{{url('template/instagram.png')}}"></a></td>
+      <td><a href="https://www.linkedin.com/company/odbus" target="_blank"><img style="width:30px" src="{{url('template/linkedin.png')}}"></a></td>
+      <td><a href="https://twitter.com/od_bus/" target="_blank"><img style="width:30px" src="{{url('template/twitter.png')}}"></a></td>
       <td style="width:230px;"></td>
     </tr>
     <tr style="height: 10px"></tr>
