@@ -802,4 +802,42 @@ class Msg91Service
 
         return json_decode($response, true);
     }
+
+    //Agent cancel otp
+    public function agent_pnr_cancel_otp($data)
+    {
+        $smsData = [
+            "var1" => $data['passanger_name'],
+            "var2" => $data['otp'],
+            "var3" => $data['pnr']
+        ];
+
+        // return $variables;
+
+        $postData = array_merge([
+            "flow_id" => config('msg91.templates.OTP_PNR_Cancel_Agent'),
+            "mobiles" => "91" . $data['mobile_no'],
+        ], $smsData);
+
+        // return $postData;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.msg91.com/api/v5/flow/',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($postData),
+            CURLOPT_HTTPHEADER => array(
+                'authkey: ' . config('msg91.MSG91_AUTH_KEY'),
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        return json_decode($response, true);
+    }
 }

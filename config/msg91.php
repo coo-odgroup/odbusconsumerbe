@@ -6,6 +6,7 @@ return [
     'templates' => [
         'booking' => env('MSG91_BOOKING_TEMPLATE'),
         'Dolphin_Booking_msg' => '6a5604cc57b6b8b9630b1502',
+        'OTP_PNR_Cancel_Agent' => '69ba5339cd0c37d47405ea92',
     ],
 
     'campaign_base_url' => 'https://control.msg91.com/api/v5/campaign/api/campaigns/',

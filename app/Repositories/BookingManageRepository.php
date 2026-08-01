@@ -23,6 +23,7 @@ use App\Models\Credentials;
 use App\Models\AgentWallet;
 use App\Models\Notification;
 use App\Models\UserNotification;
+use App\Services\Msg91Service;
 use Razorpay\Api\Api;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
@@ -51,6 +52,7 @@ class BookingManageRepository
     protected $credentials;
     protected $customerPayment;
     protected $mantisTransformer;
+    protected $msg91Service;
 
     public function __construct(
         Bus $bus,
@@ -66,7 +68,8 @@ class BookingManageRepository
         Credentials $credentials,
         CustomerPayment $customerPayment,
         DolphinTransformer $dolphinTransformer,
-        MantisTransformer $mantisTransformer
+        MantisTransformer $mantisTransformer,
+        Msg91Service $msg91Service
     ) {
         $this->bus = $bus;
         $this->ticketPrice = $ticketPrice;
@@ -82,6 +85,7 @@ class BookingManageRepository
         $this->customerPayment = $customerPayment;
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
+        $this->msg91Service = $msg91Service;
     }
 
     public function getJourneyDetails($mobile, $pnr)
@@ -595,6 +599,14 @@ class BookingManageRepository
         }])->get();
     }
     //created by Subhasis mohanty on 2-09-2025 for Value First OTP Service and textlocal otp service
+
+    public function SendOTP($smsData, $bookingId)
+    {
+        $response = $this->msg91Service->agent_pnr_cancel_otp($smsData);
+        $this->booking->where('id', $bookingId)->update(['cancel_otp' => $smsData['otp']]);
+
+        return $response;
+    }
 
     public function OTP($phone, $pnr, $otp, $bookingId)
     {

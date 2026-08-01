@@ -1246,7 +1246,16 @@ class BookingManageService
                             return 'Ticket_already_cancelled';
                         }
                         $otp = rand(10000, 99999);
-                        $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
+                        $passanger_name = $booking_detail[0]->booking[0]->bookingDetail[0]->passenger_name;
+
+                        $smsData = [
+                            "passanger_name"=> $passanger_name,
+                            "mobile_no" => $phone,
+                            "otp" => $otp,
+                            "pnr" => $pnr
+                        ];
+                        $sendOTP = $this->bookingManageRepository->SendOTP($smsData, $booking_detail[0]->booking[0]->id);
+                        // $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
 
                         $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
                         $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
@@ -1272,7 +1281,16 @@ class BookingManageService
                         $res = $this->mantisTransformer->isCancellable($pnr, $tktNo, $seatNos);
                         if ($res["success"]) {
                             $otp = rand(10000, 99999);
-                            $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
+                            $passanger_name = $booking_detail[0]->booking[0]->bookingDetail[0]->passenger_name;
+
+                            $smsData = [
+                                "passanger_name" => $passanger_name,
+                                "mobile_no" => $phone,
+                                "otp" => $otp,
+                                "pnr" => $pnr
+                            ];
+                            $sendOTP = $this->bookingManageRepository->SendOTP($smsData, $booking_detail[0]->booking[0]->id);
+                            // $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
                             $emailData['refundAmount'] = $res['data']['RefundAmount'];
                             $emailData['deductAmount'] = $deductAmount =  round($res['data']['TotalFare'] - $res['data']['RefundAmount'], 2);
                             $emailData['totalfare'] = $totalfare = $res['data']['TotalFare'];
@@ -1312,9 +1330,18 @@ class BookingManageService
                         // }
                         $paidAmount = $booking_detail[0]->booking[0]->payable_amount;
                         $customer_comission = $booking_detail[0]->booking[0]->customer_comission;
+                        $passanger_name = $booking_detail[0]->booking[0]->bookingDetail[0]->passenger_name;
+
 
                         $otp = rand(10000, 99999);
-                        $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
+                        $smsData = [
+                            "passanger_name" => $passanger_name,
+                            "mobile_no" => $phone,
+                            "otp" => $otp,
+                            "pnr" => $pnr
+                        ];
+                        $sendOTP = $this->bookingManageRepository->SendOTP($smsData, $booking_detail[0]->booking[0]->id);
+                        // $sendOTP = $this->bookingManageRepository->OTP($phone, $pnr, $otp, $booking_detail[0]->booking[0]->id);
 
                         $cancelPolicies = $booking_detail[0]->booking[0]->bus->cancellationslabs->cancellationSlabInfo;
 
