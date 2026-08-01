@@ -1159,6 +1159,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
+                                 $baseFare=$tkt->new_fare;
                                 $ownerFare += $baseFare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
@@ -1392,6 +1393,9 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                                 $totalSplFare +=$miscfares[1];
                                 $totalOwnFare +=$miscfares[3];
                                 $totalFestiveFare +=$miscfares[5];
+
+                                $baseFare =$tkt->new_fare;
+
                                 $ownerFare += $baseFare+$miscfares[3];
                                 $tkt->new_fare +=$miscfares[1]+$miscfares[3]+$miscfares[5]; 
                             }
