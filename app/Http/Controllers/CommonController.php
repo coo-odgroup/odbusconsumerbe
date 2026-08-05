@@ -204,10 +204,25 @@ class CommonController extends Controller
             $mPopup->maintenance_popup = (bool) $mPopup->maintenance_popup;
         }
 
+        $websitePopup = DB::table('odbus_charges')
+            ->select('popup_status', 'popup_heading', 'popup_description', 'popup_start_date', 'popup_start_time', 'popup_end_date', 'popup_end_time', 'popup_url', 'popup_image')
+            ->where('id', 1)
+            ->first();
+
+        if ($websitePopup) {
+            $websitePopup->popup_status = (bool) $websitePopup->popup_status;
+            $websitePopup->popup_image = $path->og_image_url . $websitePopup->popup_image;
+        }
+
         $data['banner_image'] = $banner_image;
         $data['popular_routes'] = $popular_routes;
         $data['top_routes'] = $top_routes;
         $data['maintenance'] = $mPopup;
+
+        if ($websitePopup->popup_status) {
+            $data['website_popup'] = $websitePopup;
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'Success',
