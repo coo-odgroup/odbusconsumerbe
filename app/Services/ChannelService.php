@@ -24,6 +24,7 @@ use App\Transformers\MantisTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Services\Msg91Service;
+use App\Services\NotificationCampaignService;
 
 
 
@@ -35,9 +36,10 @@ class ChannelService
     protected $dolphinTransformer;
     protected $mantisTransformer;
     protected $msg91Service;
+    protected $notificationCampaignService;
 
 
-    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service)
+    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service, NotificationCampaignService $notificationCampaignService)
     {
         $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
@@ -45,6 +47,7 @@ class ChannelService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
+        $this->notificationCampaignService = $notificationCampaignService;
     }
     public function storeGWInfo($data)
     {
@@ -700,7 +703,7 @@ class ChannelService
             // $this->msg91Service->customer_ticket_booking($smsData);
             // $this->msg91Service->cmo_ticket_booking($smsData);
 
-            return $this->channelRepository->UpdateCutsomerPaymentInfo(
+            $paymentResult = $this->channelRepository->UpdateCutsomerPaymentInfo(
                 $razorpay_order_id,
                 $razorpay_signature,
                 $razorpay_payment_id,
@@ -734,6 +737,15 @@ class ChannelService
                 $emailData,
                 $origin
             );
+
+            if ($paymentResult) {
+                $bookingModel = $this->channelRepository->getBookingData($transationId);
+                if (isset($bookingModel[0])) {
+                    $this->notificationCampaignService->scheduleBookingConfirmationNotification($bookingModel[0]);
+                }
+            }
+
+            return $paymentResult;
         } catch (Exception $e) {
             Log::info($e->getMessage());
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));

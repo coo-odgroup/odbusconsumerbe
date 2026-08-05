@@ -38,7 +38,7 @@ use App\Http\Controllers\PhonpeController;
 use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Artisan;
-
+use Illuminate\Support\Facades\Mail;
 //Route::group(['middleware' => ['checkIp']], function() {
 
 Route::group(['middleware' => ['jwt.verify']], function() {
@@ -117,6 +117,7 @@ Route::post('/GetPageData',[PageContentController::class,'getAllpagecontent']);
 //Route::post('/AgentLogin', [UserController::class, 'login']);
 Route::post('/AgentBooking', [AgentBookingController::class, 'agentBooking']);
 Route::post('/AgentWalletPayment', [ChannelController::class, 'walletPayment']);
+Route::post('/CreateNotificationCampaign', [NotificationController::class, 'createCampaign']);
 //subhais mohanty
 Route::post('/AgentPaymentStatus', [ChannelController::class, 'agentPaymentStatus']);
 Route::get('/AllPathUrls', [OfferController::class, 'getPathUrls']);
@@ -228,3 +229,14 @@ Route::post('/getFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('getSchemaUrls', [CommonController::class, 'getSchemaUrls']);
 Route::post('/homedata', [CommonController::class, 'homeData']);
 Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBooking']);
+
+Route::get('/test-mail', function () {
+
+    Mail::raw('Testing some MSG91 awesomeness!', function ($message) {
+
+        $message->to('chakradhar@odbus.in')
+                ->subject('Welcome to MSG91');
+    });
+
+    return "Mail Sent";
+});

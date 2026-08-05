@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
        Commands\PhonePayCron::class,
        Commands\PhonePeStatusCheck::class,
+       Commands\ProcessNotificationCampaignQueue::class,
     ];
 
     /**
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
         $schedule->command('cron:oauth-token')->everyMinute();
         $schedule->command('phonepe:check')->everyMinute();
+        $schedule->command('notification:process-queue')->everyTwoMinutes();
     }
 
     /**

@@ -16,7 +16,7 @@ trait PushNotificationTrait
     ) {
         try {
 
-            $credentialsPath = public_path(env('FIREBASE_CREDENTIAL'));
+            $credentialsPath = public_path(env('FIREBASE_CREDENTIAL','firebase.json'));
 
             if (!file_exists($credentialsPath)) {
                 throw new \Exception(
@@ -43,28 +43,23 @@ trait PushNotificationTrait
 
             $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
-            $imageUrl = "https://www.odbus.in/assets/img/bus-stop.png";
-
             $payload = [
                 'message' => [
                     'token' => $deviceToken,
 
                     'notification' => [
-                        'title' => 'Summer Offer',
-                        'body'  => 'Get ₹100 Cashback on your next booking',
-                        'image' => $imageUrl
+                        'title' => $title,
+                        'body'  => $body,
+                        'image' => $data['image'] ?? null,
                     ],
 
                     'android' => [
                         'notification' => [
-                            'image' => $imageUrl
+                            'image' => $data['image'] ?? null,
                         ]
                     ],
 
-                    'data' => [
-                        'type' => 'offer',
-                        'offer_id' => '123'
-                    ]
+                    'data' => $data,
                 ]
             ];
 
