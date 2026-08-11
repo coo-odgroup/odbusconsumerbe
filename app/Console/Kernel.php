@@ -13,9 +13,11 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-       Commands\PhonePayCron::class,
-       Commands\PhonePeStatusCheck::class,
-       Commands\ProcessNotificationCampaignQueue::class,
+        //    Commands\PhonePayCron::class,
+        //    Commands\PhonePeStatusCheck::class,
+        Commands\ProcessNotificationCampaignQueue::class,
+        Commands\PrepareAbandonedBookingNotifications::class,
+
     ];
 
     /**
@@ -27,9 +29,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
-        $schedule->command('cron:oauth-token')->everyMinute();
-        $schedule->command('phonepe:check')->everyMinute();
-        $schedule->command('notification:process-queue')->everyTwoMinutes();
+        // $schedule->command('cron:oauth-token')->everyMinute();
+        // $schedule->command('phonepe:check')->everyMinute();
+        $schedule->command('notification:prepare-abandoned')->everyMinute();
+        $schedule->command('notification:process-queue')->everyMinute();
     }
 
     /**
@@ -39,7 +42,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -24,6 +24,10 @@ class ProcessNotificationCampaignQueue extends Command
 
     public function handle()
     {
+        Log::info('Notification Queue Job Started', [
+            'time' => Carbon::now()->toDateTimeString()
+        ]);
+
         $queueItems = NotificationCampaignQueue::where('status', 'PENDING')
             ->where('scheduled_time', '<=', Carbon::now())
             ->orderBy('scheduled_time')
@@ -35,61 +39,141 @@ class ProcessNotificationCampaignQueue extends Command
             return 0;
         }
 
+        Log::info('Pending notifications fetched', [
+            'count' => $queueItems->count()
+        ]);
+
         foreach ($queueItems as $item) {
+
             $campaign = $item->campaign;
+
+            Log::info('Processing queue item', [
+                'queue_id'       => $item->id,
+                'campaign_id'    => $item->campaign_id,
+                'user_id'        => $item->user_id,
+                'booking_id'     => $item->booking_id,
+                'scheduled_time' => $item->scheduled_time,
+                'status'         => $item->status,
+                'image_url'      => $item->image_url,
+            ]);
+
             if (!$campaign) {
+
+                Log::warning('Campaign not found', [
+                    'queue_id'    => $item->id,
+                    'campaign_id' => $item->campaign_id,
+                ]);
+
                 $item->update([
-                    'status' => 'FAILED',
-                    'processed_at' => Carbon::now(),
+                    'status'        => 'FAILED',
+                    'processed_at'  => Carbon::now(),
                     'error_message' => 'Missing campaign record',
                 ]);
+
                 continue;
             }
 
             if (empty($item->fcm_token)) {
+
+                Log::warning('FCM token missing', [
+                    'queue_id' => $item->id,
+                    'user_id'  => $item->user_id,
+                ]);
+
                 $item->update([
-                    'status' => 'FAILED',
-                    'processed_at' => Carbon::now(),
+                    'status'        => 'FAILED',
+                    'processed_at'  => Carbon::now(),
                     'error_message' => 'Missing FCM token',
                 ]);
+
                 $campaign->increment('processed_users');
                 $campaign->increment('failed_users');
+
                 continue;
             }
 
-            $response = $this->sendPushNotification(
-                $item->fcm_token,
-                $campaign->title,
-                $campaign->message,
-                [
-                    'campaign_id' => $campaign->id,
-                    'booking_id' => $item->user_id,
-                    'type' => $campaign->type,
-                ]
-            );
+            Log::info('Sending Push Notification', [
+                'queue_id' => $item->id,
+                'title'    => $item->title,
+                'message'  => $item->message,
+                'image_url' => $item->image_url,
+                'token'    => substr($item->fcm_token, 0, 25) . '...'
+            ]);
+
+            try {
+
+                /*
+                 * Send notification with image URL
+                 *
+                 * 5th parameter = image URL
+                 */
+                $response = $this->sendPushNotification(
+                    $item->fcm_token,
+                    $item->title,
+                    $item->message,
+                    [
+                        'campaign_id' => $item->campaign_id,
+                        'booking_id'  => $item->booking_id,
+                        'user_id'     => $item->user_id,
+                    ],
+                    $item->image_url
+                );
+            } catch (\Throwable $e) {
+
+                Log::error('Push Notification Exception', [
+                    'queue_id' => $item->id,
+                    'error'    => $e->getMessage(),
+                    'trace'    => $e->getTraceAsString(),
+                ]);
+
+                $item->update([
+                    'status'        => 'FAILED',
+                    'processed_at'  => now(),
+                    'error_message' => $e->getMessage(),
+                ]);
+
+                $campaign->increment('processed_users');
+                $campaign->increment('failed_users');
+
+                continue;
+            }
 
             $status = $response['status'] ? 'SUCCESS' : 'FAILED';
-            $errorMessage = $response['status'] ? null : ($response['message'] ?? 'Push notification failed');
+
+            $errorMessage = $response['status']
+                ? null
+                : ($response['message'] ?? 'Push notification failed');
 
             if (!$response['status'] && $this->isInvalidTokenResponse($response)) {
                 $status = 'INVALID_TOKEN';
             }
 
+            Log::info('Push Notification Response', [
+                'queue_id' => $item->id,
+                'response' => $response
+            ]);
+
             $item->update([
-                'status' => $status,
-                'processed_at' => Carbon::now(),
+                'status'        => $status,
+                'processed_at'  => Carbon::now(),
                 'error_message' => $errorMessage,
             ]);
 
             $campaign->increment('processed_users');
+
             if ($status === 'SUCCESS') {
                 $campaign->increment('success_users');
-            } elseif ($status === 'INVALID_TOKEN') {
-                $campaign->increment('failed_users');
             } else {
                 $campaign->increment('failed_users');
             }
+
+            Log::info('Queue Updated', [
+                'queue_id' => $item->id,
+                'status'   => $status
+            ]);
         }
+
+        Log::info('Notification Queue Job Finished');
 
         return 0;
     }

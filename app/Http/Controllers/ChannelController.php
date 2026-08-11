@@ -28,6 +28,7 @@ use JWTAuth;
 use App\Mail\SendPdfEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use App\Events\PaymentSuccessful;
 
 use PDF;
 
@@ -102,7 +103,7 @@ class ChannelController extends Controller
             return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         }
     }
-    
+
     public function smsDeliveryStatus(Request $request)
     {
         try {
@@ -578,9 +579,16 @@ class ChannelController extends Controller
 
                         $razorpay_status_updated_at = date("Y-m-d H:i:s");
 
-                        $this->customerPayment->where('order_id', $order_id)->update(['razorpay_id' => $payment_id, 'payment_done' => 1, 'razorpay_status' => $status, 'razorpay_status_updated_at' => $razorpay_status_updated_at]);
+                        $this->customerPayment->where('order_id', $order_id)->update([
+                            'razorpay_id' => $payment_id,
+                            'payment_done' => 1,
+                            'razorpay_status' => $status,
+                            'razorpay_status_updated_at' => $razorpay_status_updated_at
+                        ]);    
 
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
+
+                         $this->processSuccessfulPaymentNotification($booking_det->id);
 
                         $request['transaction_id'] = $booking_det->transaction_id;
                         $request['razorpay_payment_id'] = $payment_id;
@@ -857,7 +865,7 @@ class ChannelController extends Controller
         from booking 
         join users on booking.users_id=users.id
         where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc ");
-            $num = 1;
+        $num = 1;
 
         foreach ($data as $d) {
             ////////////////////// generate gst invoice /////////////              
@@ -904,9 +912,9 @@ class ChannelController extends Controller
     public function release_hold_seats()
     {
         $expiredBookings = Booking::with('bookingDetail')
-        ->where('status', 4)
-        ->where('created_at', '<=', now()->subMinutes(10))
-        ->get();
+            ->where('status', 4)
+            ->where('created_at', '<=', now()->subMinutes(10))
+            ->get();
 
         $inventoryService = app(\App\Services\InventoryService::class);
 
@@ -924,19 +932,19 @@ class ChannelController extends Controller
 
             $inventoryService->refreshAvailableSeats(
                 $inventoryService->getOverlapSegmentIds(
-                        $booking->bus_id,
-                        $booking->source_id,
-                        $booking->destination_id
-                    ),
+                    $booking->bus_id,
+                    $booking->source_id,
+                    $booking->destination_id
+                ),
                 $booking->journey_dt
             );
-            
+
 
             $booking->status = 0;
             $booking->save();
         }
 
-        $res=[
+        $res = [
             'success' => true,
             'released' => $expiredBookings->count()
         ];
@@ -947,4 +955,12 @@ class ChannelController extends Controller
         return response()->json($res);
     }
 
+    public function processSuccessfulPaymentNotification($bookingId)
+    {
+        $booking = Booking::find($bookingId);
+
+        if ($booking) {
+            event(new PaymentSuccessful($booking));
+        }
+    }
 }
