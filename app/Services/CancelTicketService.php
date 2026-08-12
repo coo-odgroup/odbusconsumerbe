@@ -35,7 +35,6 @@ class CancelTicketService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
-
     }
 
     public function CancelDolphinSeat($request)
@@ -366,6 +365,7 @@ class CancelTicketService
                                     log::info('Interval greater than 999 hours, applying minimum deduction', ['interval' => $interval]);
                                     $deduction = 10; //minimum deduction
                                     $refund =  $this->cancelTicketRepository->refundPolicy($deduction, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId);
+                                    $this->markBookingCancelled($bookingId);
                                     $refundAmt =  $refund['refundAmount'];
                                     $smsData['refundAmount'] = $refundAmt;
 
@@ -399,6 +399,7 @@ class CancelTicketService
                                 } elseif ($min <= $interval && $interval <= $max) {
 
                                     $refund = $this->cancelTicketRepository->refundPolicy($deduction, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId);
+                                    $this->markBookingCancelled($bookingId);
                                     $refundAmt =  $refund['refundAmount'];
                                     $smsData['refundAmount'] = $refundAmt;
 
@@ -445,4 +446,18 @@ class CancelTicketService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
     }
+
+    private function markBookingCancelled($bookingId)
+    {
+        DB::table('notification_campaign_queue')
+            ->where('booking_id', $bookingId)
+            ->where('status', 'PENDING')
+            ->update([
+                'status' => 'BOOKING_CANCELLED',
+                'booking_status' => 2,
+                'updated_at' => Carbon::now(),
+            ]);
+    }
+
+   
 }
