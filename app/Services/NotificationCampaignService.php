@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Factory;
+use App\Models\NotificationLogs;
 
 class NotificationCampaignService
 {
@@ -83,7 +84,7 @@ class NotificationCampaignService
         }
 
         if ($campaign->schedule_type === 'IMMEDIATE') {
-              return Carbon::now()->addMinutes(2);
+            return Carbon::now()->addMinutes(2);
         }
 
         if ($campaign->schedule_minutes && $campaign->schedule_minutes > 0) {
@@ -142,10 +143,10 @@ class NotificationCampaignService
 
 
         /*
-     * ---------------------------------------------------------
-     * 2. GET SOURCE
-     * ---------------------------------------------------------
-     */
+            * ---------------------------------------------------------
+            * 2. GET SOURCE
+            * ---------------------------------------------------------
+            */
 
         $sourceName = '';
 
@@ -160,10 +161,10 @@ class NotificationCampaignService
 
 
         /*
-     * ---------------------------------------------------------
-     * 3. GET DESTINATION
-     * ---------------------------------------------------------
-     */
+            * ---------------------------------------------------------
+            * 3. GET DESTINATION
+            * ---------------------------------------------------------
+            */
 
         $destinationName = '';
 
@@ -178,15 +179,15 @@ class NotificationCampaignService
 
 
         /*
-     * ---------------------------------------------------------
-     * 4. GET BUS NAME + BUS NUMBER
-     *
-     * booking.bus_id
-     *      -> bus.id
-     *      -> bus_name
-     *      -> bus_number
-     * ---------------------------------------------------------
-     */
+            * ---------------------------------------------------------
+            * 4. GET BUS NAME + BUS NUMBER
+            *
+            * booking.bus_id
+            *      -> bus.id
+            *      -> bus_name
+            *      -> bus_number
+            * ---------------------------------------------------------
+            */
 
         $busName = '';
         $busNumber = '';
@@ -210,10 +211,10 @@ class NotificationCampaignService
 
 
         /*
-     * ---------------------------------------------------------
-     * 5. JOURNEY DATE
-     * ---------------------------------------------------------
-     */
+        * ---------------------------------------------------------
+        * 5. JOURNEY DATE
+        * ---------------------------------------------------------
+        */
 
         $journeyDate = '';
 
@@ -261,8 +262,8 @@ class NotificationCampaignService
 
 
         /*
- * DEBUG: Check all values before replacing placeholders
- */
+    * DEBUG: Check all values before replacing placeholders
+    */
         Log::info('Booking Notification Placeholder Values', [
             'booking_id'      => $booking->id,
             'pnr'             => $booking->pnr,
@@ -299,8 +300,8 @@ class NotificationCampaignService
 
 
         /*
- * DEBUG: Check final notification message
- */
+    * DEBUG: Check final notification message
+    */
         Log::info('Booking Notification Final Message', [
             'booking_id' => $booking->id,
             'message'    => $finalText,
@@ -316,22 +317,22 @@ class NotificationCampaignService
         }
 
         /*
-     * Booking must still be abandoned.
-     *
-     * 0 = Not booked / abandoned
-     * 1 = Successfully booked
-     * 2 = Cancelled
-     * 4 = Seat/payment hold
-     */
+        * Booking must still be abandoned.
+        *
+        * 0 = Not booked / abandoned
+        * 1 = Successfully booked
+        * 2 = Cancelled
+        * 4 = Seat/payment hold
+        */
         if ((int) $booking->status !== 0) {
             return false;
         }
 
         /*
-     * Get user.
-     *
-     * Your booking table contains users_id.
-     */
+        * Get user.
+        *
+        * Your booking table contains users_id.
+        */
         $user = null;
 
         if (!empty($booking->users_id)) {
@@ -339,8 +340,8 @@ class NotificationCampaignService
         }
 
         /*
-     * Fallback to relationship if available.
-     */
+        * Fallback to relationship if available.
+        */
         if (!$user && isset($booking->users)) {
             $user = $booking->users;
         }
@@ -356,8 +357,8 @@ class NotificationCampaignService
         }
 
         /*
-     * User must have FCM token.
-     */
+        * User must have FCM token.
+        */
         if (empty($user->fcm_id)) {
 
             Log::warning('FCM token missing for abandoned booking', [
@@ -369,10 +370,10 @@ class NotificationCampaignService
         }
 
         /*
-     * Get active abandoned booking campaigns.
-     *
-     * notification_category_id = 2
-     */
+        * Get active abandoned booking campaigns.
+        *
+        * notification_category_id = 2
+        */
         $campaigns = NotificationCampaign::active()
             ->where('notification_category_id', 2)
             ->where('type', 'PROMOTIONAL')
@@ -517,7 +518,52 @@ class NotificationCampaignService
 
             if (!$booking) {
                 DB::rollBack();
+
+                Log::warning('Booking not found for confirmation notification', [
+                    'booking_id' => $bookingId
+                ]);
+
                 return false;
+            }
+
+            /**
+             * IMPORTANT:
+             *
+             * Only status = 1 should receive
+             * successful booking confirmation notifications.
+             *
+             * 0 = Abandoned
+             * 1 = Successfully Booked
+             * 2 = Cancelled
+             * 4 = Hold
+             */
+            if ((int) $booking->status !== 1) {
+
+                Log::info('Skipping confirmation notification - booking is not active', [
+                    'booking_id' => $booking->id,
+                    'pnr'        => $booking->pnr,
+                    'status'     => $booking->status,
+                    'app_type'   => $booking->app_type,
+                ]);
+
+                DB::commit();
+
+                return true;
+            }
+
+            /**
+             * User must exist
+             */
+            if (!$booking->users) {
+
+                Log::warning('Skipping confirmation notification - user not found', [
+                    'booking_id' => $booking->id,
+                    'users_id'   => $booking->users_id,
+                ]);
+
+                DB::commit();
+
+                return true;
             }
 
             /**
@@ -539,6 +585,7 @@ class NotificationCampaignService
                 ]);
 
                 DB::commit();
+
                 return true;
             }
 
@@ -575,6 +622,34 @@ class NotificationCampaignService
 
             foreach ($campaigns as $campaign) {
 
+                /**
+                 * Prevent duplicate confirmation notifications
+                 *
+                 * If the PaymentSuccessful event is fired twice,
+                 * don't create the same campaign again.
+                 */
+                $alreadyQueued = NotificationCampaignQueue::where(
+                    'campaign_id',
+                    $campaign->id
+                )
+                    ->where('booking_id', $booking->id)
+                    ->whereIn('status', [
+                        'PENDING',
+                        'PROCESSING',
+                        'SUCCESS',
+                    ])
+                    ->exists();
+
+                if ($alreadyQueued) {
+
+                    Log::info('Confirmation notification already queued', [
+                        'booking_id' => $booking->id,
+                        'campaign_id' => $campaign->id,
+                    ]);
+
+                    continue;
+                }
+
                 $message = $this->replacePlaceholders(
                     $campaign->message,
                     $booking
@@ -586,12 +661,12 @@ class NotificationCampaignService
                 );
 
                 Log::info('Confirmation Notification Prepared', [
-                    'booking_id'   => $booking->id,
-                    'campaign_id'  => $campaign->id,
-                    'title'        => $title,
-                    'message'      => $message,
-                    'fcm_token'    => $booking->users->fcm_id ?? null,
-                    'schedule_type' => $campaign->schedule_type,
+                    'booking_id'      => $booking->id,
+                    'campaign_id'     => $campaign->id,
+                    'title'           => $title,
+                    'message'         => $message,
+                    'fcm_token'       => $booking->users->fcm_id ?? null,
+                    'schedule_type'   => $campaign->schedule_type,
                     'schedule_minutes' => $campaign->schedule_minutes,
                 ]);
 
@@ -602,7 +677,8 @@ class NotificationCampaignService
 
                     case 'IMMEDIATE':
 
-                        $scheduledTime = now();
+                        // Give command enough time to pick it up
+                        $scheduledTime = now()->addMinutes(2);
 
                         break;
 
@@ -628,7 +704,7 @@ class NotificationCampaignService
 
                     default:
 
-                        $scheduledTime = now();
+                        $scheduledTime = now()->addMinutes(2);
 
                         break;
                 }
@@ -649,8 +725,8 @@ class NotificationCampaignService
                     'message'        => $message,
 
                     // Get image from notification_campaigns.image
-                    // and store it in notification_campaign_queue.image_url
                     'image_url'      => $campaign->image,
+
                     'booking_status' => $booking->status,
                     'retry_count'    => 0,
                     'scheduled_time' => $scheduledTime,
@@ -678,7 +754,6 @@ class NotificationCampaignService
     }
 
 
-
     public function processNotificationQueue()
     {
         try {
@@ -688,56 +763,174 @@ class NotificationCampaignService
                 ->orderBy('scheduled_time')
                 ->get();
 
+            Log::info('Notification Queue Processing Started', [
+                'count' => $notifications->count(),
+                'time' => now()->toDateTimeString()
+            ]);
+
             foreach ($notifications as $notification) {
+
+                $startTime = microtime(true);
+
+                Log::info('Processing notification queue item', [
+                    'queue_id'       => $notification->id,
+                    'campaign_id'    => $notification->campaign_id,
+                    'user_id'        => $notification->user_id,
+                    'booking_id'     => $notification->booking_id,
+                    'scheduled_time' => $notification->scheduled_time,
+                    'status'         => $notification->status,
+                ]);
 
                 try {
 
+                    /*
+                 * FCM TOKEN MISSING
+                 */
                     if (empty($notification->fcm_token)) {
+
+                        Log::warning('Notification failed - FCM token missing', [
+                            'queue_id'    => $notification->id,
+                            'campaign_id' => $notification->campaign_id,
+                            'user_id'     => $notification->user_id,
+                        ]);
 
                         $notification->update([
                             'status' => 'FAILED',
+                            'error_code' => 'FCM_TOKEN_MISSING',
                             'error_message' => 'FCM Token Missing',
                             'processed_at' => now()
                         ]);
 
+                        $this->createNotificationLog(
+                            $notification,
+                            null,
+                            'FAILED',
+                            $startTime,
+                            'FCM_TOKEN_MISSING',
+                            'FCM Token Missing'
+                        );
+
                         continue;
                     }
 
-                    $this->sendPushNotification(
+                    /*
+                 * SEND FCM
+                 */
+                    Log::info('Sending notification through FCM', [
+                        'queue_id' => $notification->id,
+                        'campaign_id' => $notification->campaign_id,
+                        'user_id' => $notification->user_id,
+                        'title' => $notification->title,
+                    ]);
+
+                    $firebaseResponse = $this->sendPushNotification(
                         $notification->fcm_token,
                         $notification->title,
                         $notification->message
                     );
 
+                    Log::info('FCM SEND COMPLETED - BEFORE LOG INSERT', [
+                        'queue_id' => $notification->id,
+                        'campaign_id' => $notification->campaign_id,
+                        'user_id' => $notification->user_id,
+                        'response' => $firebaseResponse,
+                    ]);
+
+                    /*
+                 * FCM SUCCESS
+                 */
+                    Log::info('FCM send completed successfully', [
+                        'queue_id' => $notification->id,
+                        'firebase_response' => $firebaseResponse
+                    ]);
+
+                    /*
+                 * CREATE SUCCESS LOG
+                 * Immediately after FCM response
+                 */
+                    $this->createNotificationLog(
+                        $notification,
+                        $firebaseResponse,
+                        'SUCCESS',
+                        $startTime,
+                        null,
+                        null
+                    );
+
+                    /*
+                 * UPDATE QUEUE
+                 */
                     $notification->update([
-                        'status' => 'SENT',
+                        'status' => 'SUCCESS',
                         'processed_at' => now(),
                         'retry_count' => $notification->retry_count + 1,
                         'error_message' => null,
                         'error_code' => null
                     ]);
-                } catch (\Exception $e) {
 
+                    Log::info('Notification queue updated successfully', [
+                        'queue_id' => $notification->id,
+                        'status' => 'SUCCESS'
+                    ]);
+                } catch (\Throwable $e) {
+
+                    $responseTime = round(
+                        (microtime(true) - $startTime) * 1000,
+                        2
+                    );
+
+                    Log::error('Notification sending failed', [
+                        'queue_id' => $notification->id,
+                        'campaign_id' => $notification->campaign_id,
+                        'user_id' => $notification->user_id,
+                        'error_code' => (string) $e->getCode(),
+                        'error_message' => $e->getMessage(),
+                        'response_time_ms' => $responseTime,
+                        'trace' => $e->getTraceAsString()
+                    ]);
+
+                    /*
+                 * UPDATE QUEUE
+                 */
                     $notification->update([
                         'status' => 'FAILED',
                         'retry_count' => $notification->retry_count + 1,
                         'processed_at' => now(),
+                        'error_code' => (string) $e->getCode(),
                         'error_message' => $e->getMessage()
                     ]);
 
-                    Log::error($e);
+                    /*
+                 * CREATE FAILED LOG
+                 */
+                    $this->createNotificationLog(
+
+                        $notification,
+                        null,
+                        'FAILED',
+                        $startTime,
+                        (string) $e->getCode(),
+                        $e->getMessage()
+                    );
                 }
             }
-        } catch (\Exception $e) {
 
-            Log::error($e);
+            Log::info('Notification Queue Processing Finished');
+        } catch (\Throwable $e) {
+
+            Log::error('Notification queue processing crashed', [
+                'error_code' => (string) $e->getCode(),
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
+
 
     public function sendPushNotification($token, $title, $message)
     {
         $factory = (new Factory)
-            ->withServiceAccount(base_path('firebase.json')); // change filename if needed
+            ->withServiceAccount(base_path('firebase.json'));
 
         $messaging = $factory->createMessaging();
 
@@ -749,5 +942,90 @@ class NotificationCampaignService
         )->withNotification($notification);
 
         return $messaging->send($cloudMessage);
+    }
+
+    private function createNotificationLog(
+        $notification,
+        $firebaseResponse,
+        $status,
+        $startTime,
+        $errorCode = null,
+        $errorMessage = null
+    ) {
+
+    Log::info("Test Log 12333");
+        try {
+
+            $responseTime = round(
+                (microtime(true) - $startTime) * 1000,
+                2
+            );
+
+            Log::info('NOTIFICATION LOG - INSERT START', [
+                'queue_id' => $notification->id,
+                'campaign_id' => $notification->campaign_id,
+                'user_id' => $notification->user_id,
+                'status' => $status,
+                'fcm_token_exists' => !empty($notification->fcm_token),
+                'firebase_response' => $firebaseResponse,
+                'error_code' => $errorCode,
+                'error_message' => $errorMessage,
+                'response_time_ms' => $responseTime,
+            ]);
+
+            $firebaseMessageId = null;
+
+            if (is_array($firebaseResponse)) {
+                $firebaseMessageId =
+                    data_get($firebaseResponse, 'response.name')
+                    ?? data_get($firebaseResponse, 'name');
+            }
+
+            $logData = [
+                'campaign_id'      => $notification->campaign_id,
+                'queue_id'         => $notification->id,
+                'user_id'          => $notification->user_id,
+                'fcm_token'        => $notification->fcm_token,
+                'fcm_message_id'   => $firebaseMessageId,
+                'status'           => $status,
+                'error_code'       => $errorCode,
+                'error_message'    => $errorMessage,
+                'firebase_response' => is_array($firebaseResponse)
+                    ? json_encode($firebaseResponse)
+                    : $firebaseResponse,
+                'sent_at'          => $status === 'SUCCESS' ? now() : null,
+                'response_time_ms' => $responseTime,
+                'created_at'       => now(),
+            ];
+
+            Log::info('NOTIFICATION LOG - DATA READY', [
+                'log_data' => $logData
+            ]);
+
+            $log = \App\Models\NotificationLogs::create($logData);
+
+            Log::info('NOTIFICATION LOG - INSERT SUCCESS', [
+                'log_id' => $log->id,
+                'queue_id' => $notification->id,
+                'campaign_id' => $notification->campaign_id,
+                'status' => $status,
+            ]);
+
+            return $log;
+        } catch (\Throwable $e) {
+
+            Log::error('NOTIFICATION LOG - INSERT FAILED', [
+                'queue_id' => $notification->id ?? null,
+                'campaign_id' => $notification->campaign_id ?? null,
+                'user_id' => $notification->user_id ?? null,
+                'error_code' => $e->getCode(),
+                'error_message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return null;
+        }
     }
 }

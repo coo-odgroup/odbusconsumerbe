@@ -8,6 +8,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Events\PaymentSuccessful;
 use App\Listeners\QueueBookingNotification;
+use App\Events\BookingCancelled;
+use App\Listeners\QueueBookingCancelledNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,9 @@ class EventServiceProvider extends ServiceProvider
 
         PaymentSuccessful::class => [
             QueueBookingNotification::class,
+        ],
+        BookingCancelled::class => [
+            QueueBookingCancelledNotification::class,
         ],
     ];
 
