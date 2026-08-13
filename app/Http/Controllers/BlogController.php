@@ -18,7 +18,7 @@ class BlogController extends Controller
     public function bloglist(Request $request)
     {
         try {
-            $limit = $request->limit ?? null;
+            $limit = 12;
             $cat = DB::table('blog_categories')->where('slug', $request->cat_slug)->first();
             $author = DB::table('authors')->where('author_slug', $request->author_slug)->first();
             // return $request->tag_slug;
@@ -40,7 +40,7 @@ class BlogController extends Controller
                     ->whereNull('blogs.deleted_at')
                     ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
-                    ->get();
+                    ->paginate($limit);
             } elseif ($author) {
                 $blogs = Blog::where('author_id', $author->id)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
@@ -49,7 +49,7 @@ class BlogController extends Controller
                     ->whereNull('blogs.deleted_at')
                     ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
-                    ->get();
+                    ->paginate($limit);
             } elseif ($tag->count() != 0) {
                 $blogs = Blog::whereIn('blogs.id', $tag)
                     ->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
@@ -58,16 +58,15 @@ class BlogController extends Controller
                     ->whereNull('blogs.deleted_at')
                     ->select('blogs.*', 'authors.author_name as author', 'authors.author_slug as author_slug', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug')
                     ->orderBy('blogs.id', 'desc')
-                    ->get();
+                    ->paginate($limit);
             } else {
                 $blogs = Blog::orderBy('id', 'desc')->join('blog_categories', 'blog_categories.id', '=', 'blogs.category_id')
                     ->join('authors', 'authors.id', '=', 'blogs.author_id')
                     ->where('blogs.active_status', 1)
                     ->whereNull('blogs.deleted_at')
-                    ->limit($limit)
                     ->select('blogs.*', 'blog_categories.category_name', 'blog_categories.slug as blog_cat_slug', 'authors.author_name as author', 'authors.author_slug as author_slug')
                     ->orderBy('blogs.id', 'desc')
-                    ->get();
+                    ->paginate($limit);
             }
 
             // return $blogs;
