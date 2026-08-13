@@ -768,6 +768,13 @@ class NotificationCampaignService
                 'time' => now()->toDateTimeString()
             ]);
 
+            /*
+         * Store notification logs here.
+         * We will insert all logs into notification_logs
+         * together after processing the queue.
+         */
+            $notificationLogs = [];
+
             foreach ($notifications as $notification) {
 
                 $startTime = microtime(true);
@@ -781,37 +788,46 @@ class NotificationCampaignService
                     'status'         => $notification->status,
                 ]);
 
+                /*
+             * FCM TOKEN MISSING
+             */
+                if (empty($notification->fcm_token)) {
+
+                    Log::warning('Notification failed - FCM token missing', [
+                        'queue_id'    => $notification->id,
+                        'campaign_id' => $notification->campaign_id,
+                        'user_id'     => $notification->user_id,
+                    ]);
+
+                    $notification->update([
+                        'status' => 'FAILED',
+                        'error_code' => 'FCM_TOKEN_MISSING',
+                        'error_message' => 'FCM Token Missing',
+                        'processed_at' => now()
+                    ]);
+
+                    $notificationLogs[] = [
+                        'campaign_id'       => $notification->campaign_id,
+                        'queue_id'          => $notification->id,
+                        'user_id'           => $notification->user_id,
+                        'fcm_token'         => $notification->fcm_token,
+                        'fcm_message_id'    => null,
+                        'status'            => 'FAILED',
+                        'error_code'        => 'FCM_TOKEN_MISSING',
+                        'error_message'     => 'FCM Token Missing',
+                        'firebase_response' => null,
+                        'sent_at'           => null,
+                        'response_time_ms'  => round(
+                            (microtime(true) - $startTime) * 1000,
+                            2
+                        ),
+                        'created_at'        => now(),
+                    ];
+
+                    continue;
+                }
+
                 try {
-
-                    /*
-                 * FCM TOKEN MISSING
-                 */
-                    if (empty($notification->fcm_token)) {
-
-                        Log::warning('Notification failed - FCM token missing', [
-                            'queue_id'    => $notification->id,
-                            'campaign_id' => $notification->campaign_id,
-                            'user_id'     => $notification->user_id,
-                        ]);
-
-                        $notification->update([
-                            'status' => 'FAILED',
-                            'error_code' => 'FCM_TOKEN_MISSING',
-                            'error_message' => 'FCM Token Missing',
-                            'processed_at' => now()
-                        ]);
-
-                        $this->createNotificationLog(
-                            $notification,
-                            null,
-                            'FAILED',
-                            $startTime,
-                            'FCM_TOKEN_MISSING',
-                            'FCM Token Missing'
-                        );
-
-                        continue;
-                    }
 
                     /*
                  * SEND FCM
@@ -823,39 +839,64 @@ class NotificationCampaignService
                         'title' => $notification->title,
                     ]);
 
+                    Log::info('FCM SEND SUBHASIS 123', $firebaseResponse);
                     $firebaseResponse = $this->sendPushNotification(
                         $notification->fcm_token,
                         $notification->title,
                         $notification->message
                     );
 
-                    Log::info('FCM SEND COMPLETED - BEFORE LOG INSERT', [
+
+
+
+                    $responseTime = round(
+                        (microtime(true) - $startTime) * 1000,
+                        2
+                    );
+
+                    Log::info('FCM SEND COMPLETED', [
+                        'queue_id' => $notification->id,
+                        'firebase_response' => $firebaseResponse,
+                        'response_time_ms' => $responseTime,
+                    ]);
+
+                    /*
+                 * Extract Firebase message ID
+                 */
+                    $firebaseMessageId = null;
+
+                    if (is_array($firebaseResponse)) {
+
+                        $firebaseMessageId =
+                            data_get($firebaseResponse, 'response.name')
+                            ?? data_get($firebaseResponse, 'name');
+                    }
+
+                    /*
+                 * Prepare log for batch insert
+                 */
+                    $notificationLogs[] = [
+                        'campaign_id'       => $notification->campaign_id,
+                        'queue_id'          => $notification->id,
+                        'user_id'           => $notification->user_id,
+                        'fcm_token'         => $notification->fcm_token,
+                        'fcm_message_id'    => $firebaseMessageId,
+                        'status'            => 'SUCCESS',
+                        'error_code'        => null,
+                        'error_message'     => null,
+                        'firebase_response' => is_array($firebaseResponse)
+                            ? json_encode($firebaseResponse)
+                            : $firebaseResponse,
+                        'sent_at'           => now(),
+                        'response_time_ms'  => $responseTime,
+                        'created_at'        => now(),
+                    ];
+
+                    Log::info('Notification log prepared for batch insert', [
                         'queue_id' => $notification->id,
                         'campaign_id' => $notification->campaign_id,
-                        'user_id' => $notification->user_id,
-                        'response' => $firebaseResponse,
+                        'firebase_message_id' => $firebaseMessageId,
                     ]);
-
-                    /*
-                 * FCM SUCCESS
-                 */
-                    Log::info('FCM send completed successfully', [
-                        'queue_id' => $notification->id,
-                        'firebase_response' => $firebaseResponse
-                    ]);
-
-                    /*
-                 * CREATE SUCCESS LOG
-                 * Immediately after FCM response
-                 */
-                    $this->createNotificationLog(
-                        $notification,
-                        $firebaseResponse,
-                        'SUCCESS',
-                        $startTime,
-                        null,
-                        null
-                    );
 
                     /*
                  * UPDATE QUEUE
@@ -886,8 +927,25 @@ class NotificationCampaignService
                         'error_code' => (string) $e->getCode(),
                         'error_message' => $e->getMessage(),
                         'response_time_ms' => $responseTime,
-                        'trace' => $e->getTraceAsString()
                     ]);
+
+                    /*
+                 * Add FAILED notification to batch
+                 */
+                    $notificationLogs[] = [
+                        'campaign_id'       => $notification->campaign_id,
+                        'queue_id'          => $notification->id,
+                        'user_id'           => $notification->user_id,
+                        'fcm_token'         => $notification->fcm_token,
+                        'fcm_message_id'    => null,
+                        'status'            => 'FAILED',
+                        'error_code'        => (string) $e->getCode(),
+                        'error_message'     => $e->getMessage(),
+                        'firebase_response' => null,
+                        'sent_at'           => null,
+                        'response_time_ms'  => $responseTime,
+                        'created_at'        => now(),
+                    ];
 
                     /*
                  * UPDATE QUEUE
@@ -899,20 +957,41 @@ class NotificationCampaignService
                         'error_code' => (string) $e->getCode(),
                         'error_message' => $e->getMessage()
                     ]);
-
-                    /*
-                 * CREATE FAILED LOG
-                 */
-                    $this->createNotificationLog(
-
-                        $notification,
-                        null,
-                        'FAILED',
-                        $startTime,
-                        (string) $e->getCode(),
-                        $e->getMessage()
-                    );
                 }
+            }
+
+
+            Log::info('Notification log batch preparation completed', [
+                'log_count' => count($notificationLogs),
+            ]);
+
+            if (!empty($notificationLogs)) {
+
+                Log::info('Notification log batch insert START', [
+                    'count' => count($notificationLogs),
+                ]);
+
+                try {
+
+                    NotificationLogs::insert($notificationLogs);
+
+                    Log::info('Notification log batch insert SUCCESS', [
+                        'inserted_count' => count($notificationLogs),
+                    ]);
+                } catch (\Throwable $e) {
+
+                    Log::error('Notification log batch insert FAILED', [
+                        'count' => count($notificationLogs),
+                        'error_code' => (string) $e->getCode(),
+                        'error_message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                }
+            } else {
+
+                Log::info('Notification log insert SKIPPED - no logs prepared');
             }
 
             Log::info('Notification Queue Processing Finished');
@@ -921,111 +1000,11 @@ class NotificationCampaignService
             Log::error('Notification queue processing crashed', [
                 'error_code' => (string) $e->getCode(),
                 'error_message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
         }
     }
 
-
-    public function sendPushNotification($token, $title, $message)
-    {
-        $factory = (new Factory)
-            ->withServiceAccount(base_path('firebase.json'));
-
-        $messaging = $factory->createMessaging();
-
-        $notification = Notification::create($title, $message);
-
-        $cloudMessage = CloudMessage::withTarget(
-            'token',
-            $token
-        )->withNotification($notification);
-
-        return $messaging->send($cloudMessage);
-    }
-
-    private function createNotificationLog(
-        $notification,
-        $firebaseResponse,
-        $status,
-        $startTime,
-        $errorCode = null,
-        $errorMessage = null
-    ) {
-
-    Log::info("Test Log 12333");
-        try {
-
-            $responseTime = round(
-                (microtime(true) - $startTime) * 1000,
-                2
-            );
-
-            Log::info('NOTIFICATION LOG - INSERT START', [
-                'queue_id' => $notification->id,
-                'campaign_id' => $notification->campaign_id,
-                'user_id' => $notification->user_id,
-                'status' => $status,
-                'fcm_token_exists' => !empty($notification->fcm_token),
-                'firebase_response' => $firebaseResponse,
-                'error_code' => $errorCode,
-                'error_message' => $errorMessage,
-                'response_time_ms' => $responseTime,
-            ]);
-
-            $firebaseMessageId = null;
-
-            if (is_array($firebaseResponse)) {
-                $firebaseMessageId =
-                    data_get($firebaseResponse, 'response.name')
-                    ?? data_get($firebaseResponse, 'name');
-            }
-
-            $logData = [
-                'campaign_id'      => $notification->campaign_id,
-                'queue_id'         => $notification->id,
-                'user_id'          => $notification->user_id,
-                'fcm_token'        => $notification->fcm_token,
-                'fcm_message_id'   => $firebaseMessageId,
-                'status'           => $status,
-                'error_code'       => $errorCode,
-                'error_message'    => $errorMessage,
-                'firebase_response' => is_array($firebaseResponse)
-                    ? json_encode($firebaseResponse)
-                    : $firebaseResponse,
-                'sent_at'          => $status === 'SUCCESS' ? now() : null,
-                'response_time_ms' => $responseTime,
-                'created_at'       => now(),
-            ];
-
-            Log::info('NOTIFICATION LOG - DATA READY', [
-                'log_data' => $logData
-            ]);
-
-            $log = \App\Models\NotificationLogs::create($logData);
-
-            Log::info('NOTIFICATION LOG - INSERT SUCCESS', [
-                'log_id' => $log->id,
-                'queue_id' => $notification->id,
-                'campaign_id' => $notification->campaign_id,
-                'status' => $status,
-            ]);
-
-            return $log;
-        } catch (\Throwable $e) {
-
-            Log::error('NOTIFICATION LOG - INSERT FAILED', [
-                'queue_id' => $notification->id ?? null,
-                'campaign_id' => $notification->campaign_id ?? null,
-                'user_id' => $notification->user_id ?? null,
-                'error_code' => $e->getCode(),
-                'error_message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return null;
-        }
-    }
 }

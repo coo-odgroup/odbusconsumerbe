@@ -8,11 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class NotificationLogs extends Model
 {
     use HasFactory;
-
     protected $table = 'notification_logs';
-
     public $timestamps = false;
-
     protected $fillable = [
         'campaign_id',
         'queue_id',

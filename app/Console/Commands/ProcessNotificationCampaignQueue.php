@@ -8,6 +8,7 @@ use App\Traits\PushNotificationTrait;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use App\Models\NotificationLogs;
 
 class ProcessNotificationCampaignQueue extends Command
 {
@@ -138,9 +139,9 @@ class ProcessNotificationCampaignQueue extends Command
                 continue;
             }
 
-            $status = $response['status'] ? 'SUCCESS' : 'FAILED';
+            $status = !empty($response['status']) ? 'SUCCESS' : 'FAILED';
 
-            $errorMessage = $response['status']
+            $errorMessage = !empty($response['status'])
                 ? null
                 : ($response['message'] ?? 'Push notification failed');
 
@@ -152,6 +153,69 @@ class ProcessNotificationCampaignQueue extends Command
                 'queue_id' => $item->id,
                 'response' => $response
             ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | CREATE NOTIFICATION LOG
+            |--------------------------------------------------------------------------
+            */
+
+            try {
+
+                $firebaseMessageId = null;
+
+                if (is_array($response)) {
+                    $fullMessageName = data_get($response, 'response.name')
+                        ?? data_get($response, 'name');
+
+                    if ($fullMessageName) {
+                        $firebaseMessageId = str_replace(
+                            'projects/odbus-c581f/messages/',
+                            '',
+                            $fullMessageName
+                        );
+                    }
+                }
+
+                $logData = [
+                    'campaign_id'       => $item->campaign_id,
+                    'queue_id'          => $item->id,
+                    'user_id'           => $item->user_id,
+                    'fcm_token'         => $item->fcm_token,
+                    'fcm_message_id'    => $firebaseMessageId,
+                    'status'            => $status,
+                    'error_code'        => null,
+                    'error_message'     => $errorMessage,
+                    'firebase_response' => json_encode($response),
+                    'sent_at'           => $status === 'SUCCESS' ? now() : null,
+                    'response_time_ms'  => null,
+                    'created_at'        => now(),
+                ];
+
+                Log::info('NOTIFICATION LOG DATA BEFORE INSERT', [
+                    'queue_id' => $item->id,
+                    'log_data' => $logData
+                ]);
+
+                $notificationLog = NotificationLogs::create($logData);
+
+                Log::info('NOTIFICATION LOG INSERTED SUCCESSFULLY', [
+                    'log_id'   => $notificationLog->id,
+                    'queue_id' => $item->id,
+                    'status'   => $status
+                ]);
+            } catch (\Throwable $e) {
+
+                Log::error('NOTIFICATION LOG INSERT FAILED', [
+                    'queue_id'       => $item->id,
+                    'campaign_id'    => $item->campaign_id,
+                    'user_id'        => $item->user_id,
+                    'error'          => $e->getMessage(),
+                    'file'            => $e->getFile(),
+                    'line'            => $e->getLine(),
+                    'trace'           => $e->getTraceAsString(),
+                ]);
+            }
 
             $item->update([
                 'status'        => $status,

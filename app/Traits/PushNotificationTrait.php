@@ -5,6 +5,7 @@ namespace App\Traits;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\NotificationLogs;
 
 trait PushNotificationTrait
 {
@@ -137,12 +138,17 @@ trait PushNotificationTrait
                 ];
             }
 
-            return [
+            $fcmResponse = [
                 'status'   => true,
                 'message'  => 'Notification sent successfully.',
                 'response' => $response->json(),
             ];
 
+            Log::info('FCM SEND RETURNING RESPONSE', [
+                'response' => $fcmResponse
+            ]);
+
+            return $fcmResponse;
         } catch (\Throwable $e) {
 
             Log::error('Push Notification Exception', [
