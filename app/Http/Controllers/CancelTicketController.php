@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\CancelTicketService;
 use App\AppValidator\CancelTicketValidator;
 use App\Models\CustomerPaymentLog;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Repositories\ChannelRepository;
 
 
@@ -88,10 +91,12 @@ class CancelTicketController extends Controller
   {
     try {
       $bookingId = $request->booking_id;
-      $response = CustomerPaymentLog::where('booking_id', $bookingId)->get(['refund_status','created_at']);
+      $response = CustomerPaymentLog::where('booking_id', $bookingId)->get(['refund_status', 'created_at']);
       return $this->successResponse($response, Response::HTTP_OK);
     } catch (Exception $e) {
       return $this->errorResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
     }
   }
+
+
 }
