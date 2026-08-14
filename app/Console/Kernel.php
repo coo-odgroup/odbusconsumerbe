@@ -7,39 +7,24 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
     protected $commands = [
-        //    Commands\PhonePayCron::class,
-        //    Commands\PhonePeStatusCheck::class,
         Commands\ProcessNotificationCampaignQueue::class,
         Commands\PrepareAbandonedBookingNotifications::class,
-
+        Commands\ScheduleCampaignNotifications::class,
     ];
 
-    /**
-     * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('cron:oauth-token')->cron('*/50 * * * *');
-        // $schedule->command('cron:oauth-token')->everyMinute();
-        // $schedule->command('phonepe:check')->everyMinute();
-        $schedule->command('notification:prepare-abandoned')->everyMinute();
-        $schedule->command('notification:process-queue')->everyMinute();
+        $schedule->command('notification:prepare-abandoned')
+            ->everyMinute();
+
+        $schedule->command('notification:process-queue')
+            ->everyMinute();
+
+        $schedule->command('notifications:schedule-campaigns')
+            ->dailyAt('00:00');
     }
 
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
     protected function commands()
     {
         $this->load(__DIR__ . '/Commands');
