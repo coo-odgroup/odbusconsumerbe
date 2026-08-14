@@ -268,7 +268,7 @@ class PopularRepository
         ->where('destination_id',$destination_id)
         ->whereIn('bus_id', $busIds)
         ->orderBy('dep_time', 'ASC')
-        ->first()->dep_time;
+        ->first();
     }
 
     public function GetAllBusAmenities($busIds){
