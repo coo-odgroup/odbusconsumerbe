@@ -48,6 +48,7 @@ class OfferRepository
 
         return $allOffers;
     }
+    
 
 
 
