@@ -48,7 +48,38 @@ class OfferService
             throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
         }
        
+    }  
+    
+    
+    public function listingOffers($request)
+    {
+
+        $path= $this->commonRepository->getPathurls();
+        $path= $path[0];
+
+        try {
+            $offer = $this->offerRepository->listingOffers($request);
+            if($offer){
+                foreach($offer as $o){
+                    $o->slider_photo= $path->sliderphoto_url.$o->slider_photo;
+
+                    if($o->android_image){
+                        $o->android_image= $path->sliderphoto_url.$o->android_image;
+                    }else{
+                        $o->android_image='';
+                    }
+                    
+                }
+            }
+            return $offer;
+
+        } catch (Exception $e) {
+            Log::info($e->getMessage());
+            throw new InvalidArgumentException(Config::get('constants.INVALID_ARGUMENT_PASSED'));
+        }
+       
     }   
+
     public function coupons($request)
     {
         return $this->offerRepository->coupons($request);

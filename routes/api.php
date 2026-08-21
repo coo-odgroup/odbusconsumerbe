@@ -59,6 +59,12 @@ Route::post('/UpdateAdjustStatus', [ChannelController::class, 'UpdateAdjustStatu
 Route::post('/BlockDolphinSeat', [ChannelController::class, 'BlockDolphinSeat']);
 Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphinSeat']);
 
+//Add by sahil
+//-----------------------
+//Api for web/mobile bus search listing
+Route::get('/v1/busListing', [ListingController::class, 'busSearchListing']);
+Route::get('/v1/busfacilities/{id}', [ListingController::class, 'busFacilities']);
+
 //Cashfree
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
 Route::post('/PaymentStatus', [ChannelController::class, 'pay']);
@@ -229,6 +235,9 @@ Route::post('/getFAQ', [TestimonialController::class, 'getFAQ']);
 Route::get('getSchemaUrls', [CommonController::class, 'getSchemaUrls']);
 Route::post('/homedata', [CommonController::class, 'homeData']);
 Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBooking']);
+
+//Offer Listing
+Route::post('/Listing-Offers', [OfferController::class, 'listingOffers']);
 
 Route::get('/test-mail', function () {
 

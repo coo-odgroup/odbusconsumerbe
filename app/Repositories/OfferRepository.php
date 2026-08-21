@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use JWTAuth;
 
 class OfferRepository
@@ -47,6 +48,83 @@ class OfferRepository
 
         return $allOffers;
     }
+    
+
+
+
+    public function listingOffers($request)
+    {
+        $busOffer = Config::get('constants.Bus_Offers');
+        $festiveOffer = Config::get('constants.Festive_Offers');
+        $user_id = $request['user_id'];
+        $source_id = $request['source_id'];
+        $destination_id = $request['destination_id'];
+
+        $assign_coupon = DB::table('coupon_assigned_routes')
+            ->where('source_id', $source_id)
+            ->where('destination_id', $destination_id)
+            ->distinct()
+            ->pluck('coupon_unique_id')
+            ->toArray();
+
+        // return $assign_coupon;
+
+
+        $currentDate = date('Y-m-d');
+        $currentTime = date('H:i:s');
+        $allOffers = $this->slider->where('user_id', $user_id)
+            ->where('start_date', '<=', $currentDate)
+            ->where('end_date', '>=', $currentDate)
+            ->whereIn('coupon_unique_id', $assign_coupon)
+            ->where('status', 1)
+            ->where('slider_photo', '!=', '')
+            ->with(['coupon' => function ($q) {
+                $q->select(
+                    'id',
+                    'coupon_title',
+                    'coupon_code',
+                    'category',
+                )->where('status', 1);
+            }])
+            ->get(['id', 'coupon_unique_id', 'coupon_id', 'slider_photo', 'alt_tag', 'android_image']);
+
+        $defaultCoupon = DB::table('coupon')->where('category', 'General')->pluck('unique_id')->toArray();
+
+        $defaultOffers = $this->slider
+            ->where('user_id', $user_id)
+            ->where('start_date', '<=', $currentDate)
+            ->where('end_date', '>=', $currentDate)
+            ->whereIn('coupon_unique_id', $defaultCoupon)
+            ->where('status', 1)
+            ->where('slider_photo', '!=', '')
+            ->with(['coupon' => function ($q) {
+                $q->select(
+                    'id',
+                    'coupon_title',
+                    'coupon_code',
+                    'category',
+                )->where('status', 1);
+            }])
+            ->get([
+                'id',
+                'coupon_unique_id',
+                'coupon_id',
+                'slider_photo',
+                'alt_tag',
+                'android_image',
+                'coupon_id'
+            ]);
+
+        $offers = $allOffers
+            ->merge($defaultOffers)
+            ->unique('coupon_unique_id')
+            ->values();
+
+        return $offers;
+    }
+
+
+
     public function coupons($request)
     {
 
