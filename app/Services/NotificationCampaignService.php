@@ -96,19 +96,19 @@ class NotificationCampaignService
 
     protected function replacePlaceholders($text, $booking)
     {
-        /*
-     * ---------------------------------------------------------
-     * 1. GET SEAT NUMBERS
-     *
-     * booking.id
-     *     -> booking_detail.booking_id
-     *     -> booking_detail.bus_seats_id
-     *     -> bus_seats.id
-     *     -> bus_seats.seats_id
-     *     -> seats.id
-     *     -> seats.seatText
-     * ---------------------------------------------------------
-     */
+            /*
+        * ---------------------------------------------------------
+        * 1. GET SEAT NUMBERS
+        *
+        * booking.id
+        *     -> booking_detail.booking_id
+        *     -> booking_detail.bus_seats_id
+        *     -> bus_seats.id
+        *     -> bus_seats.seats_id
+        *     -> seats.id
+        *     -> seats.seatText
+        * ---------------------------------------------------------
+        */
 
         $seatNos = '';
 
@@ -262,8 +262,8 @@ class NotificationCampaignService
 
 
         /*
-    * DEBUG: Check all values before replacing placeholders
-    */
+        * DEBUG: Check all values before replacing placeholders
+        */
         Log::info('Booking Notification Placeholder Values', [
             'booking_id'      => $booking->id,
             'pnr'             => $booking->pnr,
@@ -300,8 +300,8 @@ class NotificationCampaignService
 
 
         /*
-    * DEBUG: Check final notification message
-    */
+        * DEBUG: Check final notification message
+        */
         Log::info('Booking Notification Final Message', [
             'booking_id' => $booking->id,
             'message'    => $finalText,
@@ -504,7 +504,6 @@ class NotificationCampaignService
     public function queueBookingNotifications(int $bookingId): bool
     {
         DB::beginTransaction();
-
         try {
 
             /**
@@ -518,11 +517,7 @@ class NotificationCampaignService
 
             if (!$booking) {
                 DB::rollBack();
-
-                Log::warning('Booking not found for confirmation notification', [
-                    'booking_id' => $bookingId
-                ]);
-
+                Log::warning('Booking not found for confirmation notification', ['booking_id' => $bookingId]);
                 return false;
             }
 
@@ -545,9 +540,7 @@ class NotificationCampaignService
                     'status'     => $booking->status,
                     'app_type'   => $booking->app_type,
                 ]);
-
                 DB::commit();
-
                 return true;
             }
 
@@ -560,9 +553,7 @@ class NotificationCampaignService
                     'booking_id' => $booking->id,
                     'users_id'   => $booking->users_id,
                 ]);
-
                 DB::commit();
-
                 return true;
             }
 
@@ -580,12 +571,8 @@ class NotificationCampaignService
 
             if (!$category) {
 
-                Log::warning('CONFIRM_BOOKING notification category not found', [
-                    'booking_id' => $bookingId
-                ]);
-
+                Log::warning('CONFIRM_BOOKING notification category not found', ['booking_id' => $bookingId]);
                 DB::commit();
-
                 return true;
             }
 
@@ -607,9 +594,7 @@ class NotificationCampaignService
                     'booking_id' => $bookingId,
                     'category_id' => $category->id
                 ]);
-
                 DB::commit();
-
                 return true;
             }
 
