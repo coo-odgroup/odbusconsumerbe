@@ -28,34 +28,35 @@ class OfferRepository
     }
 
     public function offers($request)
-    {
-        $busOffer = Config::get('constants.Bus_Offers');
-        $festiveOffer = Config::get('constants.Festive_Offers');
+    {       
         $user_id = $request['user_id'];
-
         $currentDate = date('Y-m-d');
-        $currentTime = date('H:i:s');
-        $allOffers = $this->slider->where('user_id', $user_id)
+
+         $allOffers = $this->slider->where('user_id', $user_id)
             ->where('start_date', '<=', $currentDate)
             ->where('end_date', '>=', $currentDate)
             ->where('status', 1)
             ->where('slider_photo', '!=', '')
             ->with(['coupon' => function ($a) {
-                $a->where('status', 1);
+                $a->where('status', 1)
+                ->select([
+                      'id',
+                      'coupon_title',
+                      'coupon_code',
+                      'short_desc',
+                      'full_desc'
+                  ]);
             }])
-            ->get(['id', 'unique_id', 'coupon_id', 'user_id', 'occassion', 'category', 'url', 'slider_photo', 'alt_tag', 'start_date', 'start_time', 'end_date', 'end_time', 'slider_description', 'android_image']);
-
+            ->get(['id','unique_id', 'coupon_id', 'slider_photo', 'alt_tag','slider_description', 'android_image']);
 
         return $allOffers;
-    }
-    
+    }   
 
 
 
-    public function listingOffers($request)
-    {
-        $busOffer = Config::get('constants.Bus_Offers');
-        $festiveOffer = Config::get('constants.Festive_Offers');
+    public function listingOffers($request){
+        
+       
         $user_id = $request['user_id'];
         $source_id = $request['source_id'];
         $destination_id = $request['destination_id'];
@@ -67,11 +68,7 @@ class OfferRepository
             ->pluck('coupon_unique_id')
             ->toArray();
 
-        // return $assign_coupon;
-
-
         $currentDate = date('Y-m-d');
-        $currentTime = date('H:i:s');
         $allOffers = $this->slider->where('user_id', $user_id)
             ->where('start_date', '<=', $currentDate)
             ->where('end_date', '>=', $currentDate)
