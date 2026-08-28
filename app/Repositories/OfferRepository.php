@@ -177,7 +177,7 @@ class OfferRepository
             ->where('status', '1')
             ->where('from_date', '<=', $jDate)
             ->where('to_date', '>=', $jDate)
-            ->where('all_route_check', 1)
+            // ->where('all_route_check', 1)
             ->get();
         if (isset($AllrouteCoupon[0])) {
             $routeCouponCode = $AllrouteCoupon[0]->coupon_code;
