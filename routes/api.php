@@ -63,7 +63,8 @@ Route::post('/CancelDolphinSeat', [CancelTicketController::class, 'CancelDolphin
 //-----------------------
 //Api for web/mobile bus search listing
 Route::get('/v1/busListing', [ListingController::class, 'busSearchListing']);
-Route::get('/v1/busfacilities/{id}', [ListingController::class, 'busFacilities']);
+Route::post('/v1/busfacilities', [ListingController::class, 'busFacilities']);
+Route::post('/v1/Filter', [ListingController::class, 'Busfilter']);
 
 //Cashfree
 Route::post('/MakePayment', [ChannelController::class, 'makePayment']);

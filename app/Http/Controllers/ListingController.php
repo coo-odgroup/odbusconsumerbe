@@ -105,7 +105,7 @@ class ListingController extends Controller
             'entry_date',
             'bus_operator_id',
         ]);
-        // return $data = $request->all();
+        // return $data ;
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $clientRole = $user->role_id;
@@ -122,16 +122,41 @@ class ListingController extends Controller
         return $this->successResponse($listingData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
-    public function busFacilities($id,Request $request)
+    public function busFacilities(Request $request)
     {
         $token = JWTAuth::getToken();
         $user = JWTAuth::toUser($token);
         $clientRole = $user->role_id;
         $clientId = $user->id;
         $entry_date = $request->entry_date;
+        $id = $request->id;
 
-        return $listingData = $this->listingRepository->busFacilities($id, $entry_date);
+        $listingData = $this->listingRepository->busFacilities($id, $entry_date);
         return $this->successResponse($listingData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function Busfilter(Request $request)
+    {
+        $data = $request->only([
+            'price',
+            'sourceID',
+            'destinationID',
+            'entry_date',
+            'bus_operator_id',
+        ]);
+        $token = JWTAuth::getToken();
+        $user = JWTAuth::toUser($token);
+        $clientRole = $user->role_id;
+        $clientId = $user->id;
+
+        $filterValidation = $this->filterValidator->validate($data);
+
+        if ($filterValidation->fails()) {
+            $errors = $filterValidation->errors();
+            return $this->errorResponse($errors->toJson(), Response::HTTP_PARTIAL_CONTENT);
+        }
+        $filterData = $this->listingService->Busfilter($request, $clientRole, $clientId);
+        return $this->successResponse($filterData, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function filter(Request $request)

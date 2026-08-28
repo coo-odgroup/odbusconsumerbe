@@ -265,6 +265,11 @@ class ListingRepository
 
     public function busFacilities($busId, $entry_date)
     {
+        $path = $this->commonRepository->getPathurls();
+        $path = $path[0];
+
+        // return $path;
+
         $bus = $this->bus
             ->with('busContacts')
             ->with([
@@ -298,6 +303,7 @@ class ListingRepository
                 'review' => function ($query) {
                     $query->where('status', 1)
                         ->select(
+                            'id',
                             'bus_id',
                             'users_id',
                             'title',
@@ -324,13 +330,106 @@ class ListingRepository
             return [];
         }
 
+        $amenities = [];
+
+        foreach ($bus->busAmenities as $item) {
+
+            if ($item->amenities) {
+
+                $amenities[] = [
+                    'id' => $item->amenities->id,
+                    'name' => $item->amenities->name,
+                    'amenities_image' => !empty($item->amenities->amenities_image)
+                        ? $path->amenity_url . $item->amenities->amenities_image
+                        : '',
+                    'amenity_android_image' => !empty($item->amenities->android_image)
+                        ? $path->amenity_url . $item->amenities->android_image
+                        : '',
+                ];
+            }
+        }
+
+
+        $safety = [];
+
+        foreach ($bus->busSafety as $item) {
+
+            if ($item->safety) {
+
+                $safety[] = [
+                    'id' => $item->safety->id,
+                    'name' => $item->safety->name,
+                    'safety_image' => !empty($item->safety->safety_image)
+                        ? $path->safety_url . $item->safety->safety_image
+                        : '',
+                    'safety_android_image' => !empty($item->safety->android_image)
+                        ? $path->safety_url . $item->safety->android_image
+                        : '',
+                ];
+            }
+        }
+
+
+        $gallery = [];
+
+        foreach ($bus->busGallery as $key => $item) {
+
+            $gallery[$key] = [];
+
+            if (!empty($item->bus_image_1)) {
+                $gallery[$key]['bus_image_1'] =
+                    $path->busphoto_url . $item->bus_image_1;
+            }
+
+            if (!empty($item->bus_image_2)) {
+                $gallery[$key]['bus_image_2'] =
+                    $path->busphoto_url . $item->bus_image_2;
+            }
+
+            if (!empty($item->bus_image_3)) {
+                $gallery[$key]['bus_image_3'] =
+                    $path->busphoto_url . $item->bus_image_3;
+            }
+
+            if (!empty($item->bus_image_4)) {
+                $gallery[$key]['bus_image_4'] =
+                    $path->busphoto_url . $item->bus_image_4;
+            }
+
+            if (!empty($item->bus_image_5)) {
+                $gallery[$key]['bus_image_5'] =
+                    $path->busphoto_url . $item->bus_image_5;
+            }
+        }
+
+
+        $reviews = [];
+
+        foreach ($bus->review as $review) {
+
+            $reviews[] = [
+                'bus_id' => $review->bus_id,
+                'users_id' => $review->users_id,
+                'title' => $review->title,
+                'rating_overall' => $review->rating_overall,
+                'comments' => $review->comments,
+                'name' => $review->users->name ?? '',
+                'profile_image' => (
+                    !empty($review->users) &&
+                    !empty($review->users->profile_image)
+                )
+                    ? $path->profile_url . $review->users->profile_image
+                    : '',
+            ];
+        }
+
         return [
-            'amenities' => $bus->busAmenities->pluck('amenities')->filter()->values(),
-            'safety' => $bus->busSafety->pluck('safety')->filter()->values(),
+            'amenities' => $amenities,
+            'safety' => $safety,
             'sitting_type' => $bus->BusSitting,
-            'gallery' => $bus->busGallery,
+            'gallery' => $gallery,
             'cancellation_policy' => $bus->cancellationslabs,
-            'reviews' => $bus->review,
+            'reviews' => $reviews,
         ];
     }
 
