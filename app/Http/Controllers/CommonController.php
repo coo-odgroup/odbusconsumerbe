@@ -205,13 +205,14 @@ class CommonController extends Controller
         }
 
         $websitePopup = DB::table('odbus_charges')
-            ->select('popup_status', 'popup_heading', 'popup_description', 'popup_start_date', 'popup_start_time', 'popup_end_date', 'popup_end_time', 'popup_url', 'popup_image')
+            ->select('popup_status', 'popup_heading', 'popup_description', 'popup_start_date', 'popup_start_time', 'popup_end_date', 'popup_end_time', 'popup_url', 'popup_image','advance_days_show')
             ->where('id', 1)
             ->first();
 
         if ($websitePopup) {
             $websitePopup->popup_status = (bool) $websitePopup->popup_status;
             $websitePopup->popup_image = $path->og_image_url . $websitePopup->popup_image;
+            $websitePopup->advance_days_show = (int) $websitePopup->advance_days_show;
         }
 
         $data['banner_image'] = $banner_image;
