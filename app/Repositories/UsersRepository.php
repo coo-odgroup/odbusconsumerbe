@@ -181,13 +181,15 @@ class UsersRepository
     if ($token != Null) {
       $this->users->where('id', $userId)->update(array(
         'is_verified' => '1',
-        'otp' => Null
+        'otp' => Null,
+        'login_status' => '1'
       ));
     } else {
       $this->users->where('id', $userId)->update(array(
         'is_verified' => '1',
         'token' => Str::random('10'),
-        'otp' => Null
+        'otp' => Null,
+        'login_status' => '1'
       ));
     }
     //   $this->users->where('id', $userId)->update(array(

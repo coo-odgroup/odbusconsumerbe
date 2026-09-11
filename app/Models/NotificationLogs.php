@@ -15,6 +15,7 @@ class NotificationLogs extends Model
         'queue_id',
         'user_id',
         'fcm_token',
+        'notification_type',
         'fcm_message_id',
         'status',
         'error_code',

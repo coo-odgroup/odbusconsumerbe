@@ -96,7 +96,7 @@ class NotificationCampaignService
 
     protected function replacePlaceholders($text, $booking)
     {
-            /*
+        /*
         * ---------------------------------------------------------
         * 1. GET SEAT NUMBERS
         *
@@ -762,6 +762,12 @@ class NotificationCampaignService
 
             foreach ($notifications as $notification) {
 
+                // Get notification type from campaign
+                $notificationType = DB::table('notification_campaigns')
+                    ->where('id', $notification->campaign_id)
+                    ->value('type');
+
+                $notification->notification_type = $notificationType;
                 $startTime = microtime(true);
 
                 Log::info('Processing notification queue item', [
@@ -793,6 +799,7 @@ class NotificationCampaignService
 
                     $notificationLogs[] = [
                         'campaign_id'       => $notification->campaign_id,
+                        'notification_type' => $notification->notification_type,
                         'queue_id'          => $notification->id,
                         'user_id'           => $notification->user_id,
                         'fcm_token'         => $notification->fcm_token,
@@ -824,15 +831,14 @@ class NotificationCampaignService
                         'title' => $notification->title,
                     ]);
 
-                    Log::info('FCM SEND SUBHASIS 123', $firebaseResponse);
+                    
                     $firebaseResponse = $this->sendPushNotification(
                         $notification->fcm_token,
                         $notification->title,
                         $notification->message
                     );
 
-
-
+                    Log::info('Fire Base  Response', $firebaseResponse);
 
                     $responseTime = round(
                         (microtime(true) - $startTime) * 1000,
@@ -862,6 +868,7 @@ class NotificationCampaignService
                  */
                     $notificationLogs[] = [
                         'campaign_id'       => $notification->campaign_id,
+                        'notification_type' => $notification->notification_type,
                         'queue_id'          => $notification->id,
                         'user_id'           => $notification->user_id,
                         'fcm_token'         => $notification->fcm_token,
@@ -919,6 +926,7 @@ class NotificationCampaignService
                  */
                     $notificationLogs[] = [
                         'campaign_id'       => $notification->campaign_id,
+                        'notification_type' => $notification->notification_type,
                         'queue_id'          => $notification->id,
                         'user_id'           => $notification->user_id,
                         'fcm_token'         => $notification->fcm_token,
@@ -991,5 +999,4 @@ class NotificationCampaignService
             ]);
         }
     }
-
 }

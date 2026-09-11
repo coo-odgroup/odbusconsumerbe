@@ -15,9 +15,7 @@ class ProcessNotificationCampaignQueue extends Command
     use PushNotificationTrait;
 
     protected $signature = 'notification:process-queue';
-
     protected $description = 'Process pending notification campaign queue items in batches of 200';
-
     public function __construct()
     {
         parent::__construct();

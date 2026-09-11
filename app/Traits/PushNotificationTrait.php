@@ -5,7 +5,7 @@ namespace App\Traits;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Models\NotificationLogs;
+
 
 trait PushNotificationTrait
 {

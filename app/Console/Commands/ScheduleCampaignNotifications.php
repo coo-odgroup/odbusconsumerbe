@@ -38,7 +38,8 @@ class ScheduleCampaignNotifications extends Command
             ->whereNotNull('active_user_duration')
             ->whereIn('target_type', [
                 'ACTIVE',
-                'CUSTOM'
+                'CUSTOM',
+                'SELECTED'
             ])
             ->get();
 
@@ -110,6 +111,53 @@ class ScheduleCampaignNotifications extends Command
 
                 /*
                 |--------------------------------------------------------------------------
+                | SELECTED TARGET
+                |--------------------------------------------------------------------------
+                |
+                | Get only the users explicitly selected for this campaign.
+                |
+                | notification_campaign_selected_users
+                |
+                | campaign_id
+                | selected_users
+                | user_name
+                | time_duration
+                | mobile
+                | email
+                | fcm_id
+                |
+                */
+
+                if ($campaign->target_type === 'SELECTED') {
+
+                    $users = $this->getSelectedUsers($campaign);
+
+                    if ($users->isEmpty()) {
+
+                        Log::warning('No selected users found', [
+                            'campaign_id' => $campaign->id
+                        ]);
+
+                        continue;
+                    }
+
+                    Log::info('Selected campaign users found', [
+                        'campaign_id' => $campaign->id,
+                        'users' => $users->count(),
+                        'duration_days' => $campaign->active_user_duration
+                    ]);
+
+                    $this->createQueue(
+                        $campaign,
+                        $schedules,
+                        $users
+                    );
+
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
                 | CUSTOM TARGET
                 |--------------------------------------------------------------------------
                 */
@@ -131,9 +179,6 @@ class ScheduleCampaignNotifications extends Command
 
                     switch ((int) $custom->custom_type) {
 
-                        /*
-                        | Route
-                        */
                         case 1:
 
                             $this->scheduleRouteCampaign(
@@ -144,9 +189,6 @@ class ScheduleCampaignNotifications extends Command
 
                             break;
 
-                        /*
-                        | New User
-                        */
                         case 2:
 
                             $this->scheduleNewUserCampaign(
@@ -157,9 +199,6 @@ class ScheduleCampaignNotifications extends Command
 
                             break;
 
-                        /*
-                        | Operator
-                        */
                         case 3:
 
                             $this->scheduleOperatorCampaign(
@@ -170,9 +209,6 @@ class ScheduleCampaignNotifications extends Command
 
                             break;
 
-                        /*
-                        | Special Offer
-                        */
                         case 4:
 
                             Log::info('Special offer custom campaign not implemented yet', [
@@ -191,7 +227,6 @@ class ScheduleCampaignNotifications extends Command
                             break;
                     }
                 }
-
             } catch (\Throwable $e) {
 
                 Log::error('Campaign scheduling failed', [
@@ -209,11 +244,6 @@ class ScheduleCampaignNotifications extends Command
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVE USERS
-    |--------------------------------------------------------------------------
-    */
 
     private function getActiveUsers($campaign)
     {
@@ -655,8 +685,8 @@ class ScheduleCampaignNotifications extends Command
         */
 
         $alreadyQueued = DB::table(
-                'notification_campaign_queue'
-            )
+            'notification_campaign_queue'
+        )
             ->where(
                 'campaign_id',
                 $campaign->id
@@ -709,7 +739,7 @@ class ScheduleCampaignNotifications extends Command
 
                 $slotIndex = (int) floor(
                     ($index * $totalSlots)
-                    / $totalUsers
+                        / $totalUsers
                 );
 
                 if (
@@ -724,24 +754,24 @@ class ScheduleCampaignNotifications extends Command
                     $slots[$slotIndex];
 
                 $queueRows[] = [
-                    'campaign_id' =>$campaign->id,
-                    'user_id' =>$user->id,
-                    'email' =>$user->email,
-                    'mobile' =>$user->phone,
-                    'fcm_token' =>$user->fcm_id,
-                    'status' =>'PENDING',
-                    'title' =>$campaign->title,
-                    'message' =>$campaign->message,
-                    'image_url' =>$campaign->image,
-                    'booking_status' =>null,
-                    'booking_id' =>null,
-                    'retry_count' =>0,
-                    'scheduled_time' =>$scheduledTime,
-                    'processed_at' =>null,
-                    'error_code' =>null,
-                    'error_message' =>null,
-                    'created_at' =>now(),
-                    'updated_at' =>now(),
+                    'campaign_id' => $campaign->id,
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'mobile' => $user->phone,
+                    'fcm_token' => $user->fcm_id,
+                    'status' => 'PENDING',
+                    'title' => $campaign->title,
+                    'message' => $campaign->message,
+                    'image_url' => $campaign->image,
+                    'booking_status' => null,
+                    'booking_id' => null,
+                    'retry_count' => 0,
+                    'scheduled_time' => $scheduledTime,
+                    'processed_at' => null,
+                    'error_code' => null,
+                    'error_message' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
 
@@ -764,24 +794,48 @@ class ScheduleCampaignNotifications extends Command
 
         DB::table('notification_campaigns')
             ->where(
-                'id',$campaign->id
+                'id',
+                $campaign->id
             )
             ->update([
-                'total_users' =>$totalUsers,
-                'started_at' =>null,
-                'is_completed' =>0,
-                'updated_at' =>now(),
+                'total_users' => $totalUsers,
+                'started_at' => null,
+                'is_completed' => 0,
+                'updated_at' => now(),
             ]);
 
         Log::info(
             'Campaign notification queue created',
             [
-                'campaign_id' =>$campaign->id,
-                'users' =>$totalUsers,
-                'slots' =>$totalSlots,
-                'first_schedule' =>$slots[0]->toDateTimeString(),
+                'campaign_id' => $campaign->id,
+                'users' => $totalUsers,
+                'slots' => $totalSlots,
+                'first_schedule' => $slots[0]->toDateTimeString(),
                 'last_schedule' => $slots[$totalSlots - 1]->toDateTimeString(),
             ]
         );
+    }
+
+    /*
+        |--------------------------------------------------------------------------
+        | SELECTED USERS
+        |--------------------------------------------------------------------------
+        */
+
+    private function getSelectedUsers($campaign)
+    {
+        return DB::table('notification_campaign_selected_users')
+            ->select([
+                'selected_users as id',
+                'user_name as name',
+                'email',
+                'mobile as phone',
+                'fcm_id',
+            ])
+            ->where('campaign_id', $campaign->id)
+            ->whereNotNull('fcm_id')
+            ->where('fcm_id', '!=', '')
+            ->orderBy('id')
+            ->get();
     }
 }
