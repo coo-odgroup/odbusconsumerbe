@@ -64,7 +64,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
    //-----------------------
    //Api for web/mobile bus search listing
    Route::get('/v1/busListing', [ListingController::class, 'busSearchListing']);
-   Route::get('/v1/busfacilities/{id}', [ListingController::class, 'busFacilities']);
+   Route::post('/v1/busfacilities', [ListingController::class, 'busFacilities']);
+   Route::post('/v1/Filter', [ListingController::class, 'Busfilter']);
 
    //Cashfree
    Route::post('/MakePayment', [ChannelController::class, 'makePayment']);
@@ -228,6 +229,7 @@ Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBookin
 
 //Offer Listing
 Route::post('/Listing-Offers', [OfferController::class, 'listingOffers']);
+Route::post('/CouponCode', [OfferController::class, 'couponCode']);
 
 Route::get('/test-mail', function () {
 

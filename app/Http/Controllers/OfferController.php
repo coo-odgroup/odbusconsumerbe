@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\OfferService;
 use App\AppValidator\CouponValidator;
+use App\Models\Coupon;
 
 class OfferController extends Controller
 {
@@ -41,8 +42,6 @@ class OfferController extends Controller
         $allOffers = $this->offerService->listingOffers($request);
         return $this->successResponse($allOffers, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
-
-
 
     public function coupons(Request $request)
     {
@@ -81,11 +80,30 @@ class OfferController extends Controller
     }
 
 
-
-
     public function getPathUrls(Request $request)
     {
         $allUrls = $this->offerService->getPathUrls($request);
         return $this->successResponse($allUrls, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    }
+
+    public function couponCode(Request $request)
+    {
+        $busId = $request->bus_id;
+        $entry_date = date('Y-m-d');
+
+        // return $entry_date;
+        $CouponDetails = Coupon::where('bus_id', $busId)
+            ->where('status', 1)
+            ->where('from_date', '<=', $entry_date)
+            ->where('to_date', '>=', $entry_date)
+            ->select(
+                'id',
+                'coupon_code',
+                'short_desc',
+                'status'
+            )->get();
+
+
+        return $this->successResponse($CouponDetails, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 }

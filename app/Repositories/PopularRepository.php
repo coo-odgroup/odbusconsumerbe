@@ -215,6 +215,7 @@ class PopularRepository
     public function GetOperatorDetail($operator_url)
     {
         return BusOperator::where('operator_url', $operator_url)
+            ->where('status', 1)
             ->with([
                 'bus' => function ($q) {
                     $q->select('bus_operator_id', 'id', 'name');
