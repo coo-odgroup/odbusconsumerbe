@@ -89,19 +89,34 @@ class OfferController extends Controller
     public function couponCode(Request $request)
     {
         $busId = $request->bus_id;
-        $entry_date = date('Y-m-d');
 
-        // return $entry_date;
+        $bookingDate = date('Y-m-d');
+        $journeyDate = $request->date;
+
         $CouponDetails = Coupon::where('bus_id', $busId)
             ->where('status', 1)
-            ->where('from_date', '<=', $entry_date)
-            ->where('to_date', '>=', $entry_date)
+            ->where(function ($query) use ($bookingDate, $journeyDate) {
+
+                $query->where(function ($q) use ($bookingDate) {
+                    $q->where('valid_by', 1)
+                        ->whereDate('from_date', '<=', $bookingDate)
+                        ->whereDate('to_date', '>=', $bookingDate);
+                })
+                    ->orWhere(function ($q) use ($journeyDate) {
+                        $q->where('valid_by', 2)
+                            ->whereDate('from_date', '<=', $journeyDate)
+                            ->whereDate('to_date', '>=', $journeyDate);
+                    });
+            })
             ->select(
                 'id',
                 'coupon_code',
                 'short_desc',
-                'status'
-            )->get();
+                'status',
+                'valid_by'
+            )
+            ->distinct()
+            ->get();
 
 
         return $this->successResponse($CouponDetails, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
