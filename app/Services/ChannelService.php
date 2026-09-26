@@ -298,9 +298,9 @@ class ChannelService
                 //         $update_customer_gst['customer_gst_business_name']=null;
                 //         $update_customer_gst['customer_gst_business_email']=null;
                 //         $update_customer_gst['customer_gst_business_address']=null;
-                //         $update_customer_gst['customer_gst_percent']=0;                    
+                //         $update_customer_gst['customer_gst_percent']=0;
                 //         $update_customer_gst['customer_gst_amount']=0;
-                //         $update_customer_gst['payable_amount']=$amount;    
+                //         $update_customer_gst['payable_amount']=$amount;
                 // }
 
                 $this->channelRepository->updateCustomerGST($update_customer_gst, $transationId);
@@ -325,7 +325,7 @@ class ChannelService
                 } elseif (count($intersect)) {
                     return "SEAT UN-AVAIL";
                 } else {
-                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
+                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)
                     $bookingId = $records[0]->id;
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
@@ -522,7 +522,7 @@ class ChannelService
                 } else {
                     return 'Failed';
                 }
-                //Log::info('dolphin seat booking');  
+                //Log::info('dolphin seat booking');
             }
             //////Mantis changes///////
             if ($origin == 'MANTIS') {
@@ -913,7 +913,7 @@ class ChannelService
 
                 /////mantis holdId updated to booking table////////
                 if ($origin == 'MANTIS') {
-                    /////      
+                    /////
                     $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
                     $update_customer_gst['customer_gst_percent'] = 5.00; //as discussed with Santosh
                     $update_customer_gst['customer_gst_status'] = 1;
