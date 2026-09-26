@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\OfferService;
 use App\AppValidator\CouponValidator;
 use App\Models\Coupon;
+use Carbon\Carbon;
 
 class OfferController extends Controller
 {
@@ -86,24 +87,41 @@ class OfferController extends Controller
         return $this->successResponse($allUrls, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
+
     public function couponCode(Request $request)
     {
         $busId = $request->bus_id;
 
         $bookingDate = date('Y-m-d');
-        $journeyDate = $request->date;
+        $journeyDate = Carbon::createFromFormat(
+            'd-m-Y',
+            $request->date
+        )->format('Y-m-d');
 
-        $CouponDetails = Coupon::where('bus_id', $busId)
+        $CouponDetails = Coupon::where(function ($q) use ($busId) {
+
+            // Coupon for specific bus
+            $q->where('bus_id', $busId)
+
+                // OR coupon applicable for all routes/buses
+                ->orWhere(function ($q2) {
+                    $q2->whereNull('bus_id')
+                        ->where('all_route_check', 1);
+                });
+        })
             ->where('status', 1)
             ->where(function ($query) use ($bookingDate, $journeyDate) {
 
+                // Valid based on booking date
                 $query->where(function ($q) use ($bookingDate) {
-                    $q->where('valid_by', 1)
+                    $q->where('valid_by', 2)
                         ->whereDate('from_date', '<=', $bookingDate)
                         ->whereDate('to_date', '>=', $bookingDate);
                 })
+
+                    // Valid based on journey date
                     ->orWhere(function ($q) use ($journeyDate) {
-                        $q->where('valid_by', 2)
+                        $q->where('valid_by', 1)
                             ->whereDate('from_date', '<=', $journeyDate)
                             ->whereDate('to_date', '>=', $journeyDate);
                     });
@@ -113,12 +131,17 @@ class OfferController extends Controller
                 'coupon_code',
                 'short_desc',
                 'status',
-                'valid_by'
+                'valid_by',
+                'bus_id',
+                'all_route_check'
             )
             ->distinct()
             ->get();
 
-
-        return $this->successResponse($CouponDetails, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+        return $this->successResponse(
+            $CouponDetails,
+            Config::get('constants.RECORD_FETCHED'),
+            Response::HTTP_OK
+        );
     }
 }

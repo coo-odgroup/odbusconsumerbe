@@ -172,7 +172,7 @@ class ViewSeatsRepository
         return $this->bus->where('id',$busId)->get(); //['id','name','bus_seat_layout_id']
     }
 
-    public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId,$running_cycle){
+    public function getBerth($bus_seat_layout_id,$Berth,$busId,$bookedSeatIDs,$entry_date,$sourceId,$destinationId,$running_cycle,$clientId){
 //         $ticketPriceData = TicketPrice::where('bus_id',$busId)
 //                                     ->where('source_id',$sourceId)
 //                                     ->where('destination_id',$destinationId)
@@ -326,12 +326,34 @@ class ViewSeatsRepository
 
         $diff_in_minutes = $depDateTime >= $CurrentDateTime
         ? $depDateTime->diffInMinutes($CurrentDateTime)
-        : 0;     
+        : 0;  
         
-        $blockSeats = $busSeats
-                    ->where('operation_date', $entry_date)
-                    ->where('type', 2)
-                    ->pluck('seats_id');
+    
+
+          $blockSeats = $busSeats
+                        ->where('operation_date', $entry_date)
+                        ->where('type', 2)
+                        // ->where('vendor_id',null)
+                        ->filter(function ($seat) use ($clientId) {
+
+                                // Global block
+                                if (is_null($seat->vendor_id)) {
+                                    return true;
+                                }
+
+                                // Convert "559,486" into [559, 486]
+                                $vendorIds = array_map(
+                                    'trim',
+                                    explode(',', (string) $seat->vendor_id)
+                                );
+
+                                // Check current vendor
+                                return in_array((string) $clientId, $vendorIds, true);
+
+                            })
+                        ->pluck('seats_id');
+
+                    // return 
 
         $prevDay_blockSeats = collect();
 
@@ -395,7 +417,8 @@ class ViewSeatsRepository
             }]) 
             ->get();
         
-        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats))->concat(collect($prevDay_blockSeats));           
+        $totalHideSeats = collect($blockSeats)->concat(collect($seatsHide))->concat(collect($bookedSeatIDs))->concat(collect($noMoreavailableSeats))->concat(collect($prevDay_blockSeats));
+                   
 
         /////////////Check existence of Extra seat closed not in  Permanet seat list/////////
         $oldExtraSeatsBlock = collect($oldExtraSeatsBlock)->diff(collect($permanentSeats));

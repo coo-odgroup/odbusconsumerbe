@@ -1199,6 +1199,15 @@ class ListingService
             $via = $record->via;
             $busOperatorId = $record->bus_operator_id;
 
+            //All route wise Coupon Created On : 26-Sept-2026 By: Sahil
+            $allrouteCoupon = $this->listingRepository->getallrouteCoupon($entry_date);
+
+            if (isset($allrouteCoupon[0])) {
+                $allrouteCouponCode = $allrouteCoupon[0]->coupon_code; //route wise coupon
+            } else {
+                $allrouteCouponCode = [];
+            }
+
 
             $routeCoupon = $this->listingRepository->getrouteCoupon($sourceID, $destinationID, $busId, $entry_date);
 
@@ -1222,7 +1231,7 @@ class ListingService
                 $opRouteCouponCode = [];
             }
 
-            $CouponRecords = collect([$opRouteCouponCode, $opCouponCode, $routeCouponCode]);
+            $CouponRecords = collect([$opRouteCouponCode, $opCouponCode, $routeCouponCode,$allrouteCouponCode]);
             $CouponRecords = $CouponRecords->flatten()->unique()->values()->all();
 
             ///Coupon applicable for specific date range
@@ -1255,7 +1264,13 @@ class ListingService
                         if (isset($selCouponRecords)) {
                             $CouponDetails = $selCouponRecords[0]
                                 ->where('coupon_code', $coupon)
-                                ->where('bus_id', $busId)
+                                ->where(function ($query) use ($busId) {
+                                    $query->where('bus_id', $busId)
+                                        ->orWhere(function ($query) {
+                                            $query->where('all_route_check', 1)
+                                                ->whereNull('bus_id');
+                                        });
+                                })
                                 ->whereIn('via', $coupon_via)
                                 ->where('status', 1)
                                 ->where('from_date', '<=', $entry_date)
@@ -1281,7 +1296,13 @@ class ListingService
                         if (isset($selCouponRecords)) {
                             $CouponDetails = $selCouponRecords[0]
                                 ->where('coupon_code', $coupon)
-                                ->where('bus_id', $busId)
+                                ->where(function ($query) use ($busId) {
+                                    $query->where('bus_id', $busId)
+                                        ->orWhere(function ($query) {
+                                            $query->where('all_route_check', 1)
+                                                ->whereNull('bus_id');
+                                        });
+                                })
                                 ->where('status', 1)
                                 ->whereIn('via', $coupon_via)
                                 ->where('from_date', '<=', $bookingDate)

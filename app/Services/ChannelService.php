@@ -211,6 +211,7 @@ class ChannelService
                     ->where('status', 1)
                     ->where('ticket_price_id', $ticketPriceId)
                     ->whereIn('seats_id', $seatIds)
+                    ->whereNull('vendor_id')
                     ->get();
 
                 if (isset($blockSeats) && $blockSeats->isNotEmpty()) {
@@ -1182,7 +1183,7 @@ class ChannelService
                 "customer_comission" => $customer_comission,
                 'agent_name' => $agentName,
                 'agent_Number' => $agentNumber,
-                'fare' => $totalfare
+                'fare' => $totalfare + $customer_comission
             );
 
             $emailData = array(
