@@ -11,8 +11,10 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\OfferService;
 use App\AppValidator\CouponValidator;
+use App\Models\Booking;
 use App\Models\Coupon;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class OfferController extends Controller
 {
@@ -130,6 +132,7 @@ class OfferController extends Controller
                 'id',
                 'coupon_code',
                 'short_desc',
+                'full_desc',
                 'status',
                 'valid_by',
                 'bus_id',
@@ -141,6 +144,33 @@ class OfferController extends Controller
         return $this->successResponse(
             $CouponDetails,
             Config::get('constants.RECORD_FETCHED'),
+            Response::HTTP_OK
+        );
+    }
+
+    public function removeCoupons(Request $request)
+    {
+        $booking = Booking::where('transaction_id', $request->transaction_id)->first();
+
+        if (!$booking) {
+            return $this->successResponse(
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
+        if ($booking->coupon_code !== null) {
+            DB::table('booking')->where('transaction_id', $request->transaction_id)->where('users_id', $booking->users_id)
+                ->update([
+                    'coupon_code'     => null,
+                    'coupon_discount' => 0,
+                    'payable_amount'  => $booking->total_fare,
+                ]);
+        }
+
+        return $this->successResponse(
+            [],
+            Config::get('constants.RECORD_UPDATED'),
             Response::HTTP_OK
         );
     }
