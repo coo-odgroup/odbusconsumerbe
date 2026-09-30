@@ -149,7 +149,7 @@ class ChannelController extends Controller
      *              type="integer",
      *              example="254"
      *          )
-     *      ),  
+     *      ),
      *     @OA\Parameter(
      *          name="sourceId",
      *          description="sourceId",
@@ -159,7 +159,7 @@ class ChannelController extends Controller
      *              type="integer",
      *              example="82"
      *          )
-     *      ), 
+     *      ),
      *     @OA\Parameter(
      *          name="destinationId",
      *          description="destinationId",
@@ -169,7 +169,7 @@ class ChannelController extends Controller
      *              type="integer",
      *              example="53"
      *          )
-     *      ),        
+     *      ),
      *     @OA\Parameter(
      *          name="transaction_id",
      *          description="customer transaction id against booking",
@@ -266,7 +266,7 @@ class ChannelController extends Controller
      *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
-     * 
+     *
      */
 
     public function makePayment(Request $request)
@@ -439,7 +439,7 @@ class ChannelController extends Controller
         }
         try {
             $response = $this->channelService->pay($request, $clientRole);
-            //return $response; 
+            //return $response;
             if ($response == 'Payment Done') {
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'), Response::HTTP_OK);
             } else {
@@ -469,7 +469,7 @@ class ChannelController extends Controller
         try {
 
             $response = $this->channelService->UpdateAdjustStatus($request, $clientRole);
-            //return $response; 
+            //return $response;
             if ($response == 'Payment Done') {
                 return $this->successResponse(Config::get('constants.PAYMENT_DONE'), Response::HTTP_OK);
             } else {
@@ -584,11 +584,11 @@ class ChannelController extends Controller
                             'payment_done' => 1,
                             'razorpay_status' => $status,
                             'razorpay_status_updated_at' => $razorpay_status_updated_at
-                        ]);    
+                        ]);
 
                         $this->booking->where('id', $booking_det->id)->update(['status' => 1]);
 
-                         $this->processSuccessfulPaymentNotification($booking_det->id);
+                        $this->processSuccessfulPaymentNotification($booking_det->id);
 
                         $request['transaction_id'] = $booking_det->transaction_id;
                         $request['razorpay_payment_id'] = $payment_id;
@@ -619,7 +619,7 @@ class ChannelController extends Controller
      *          @OA\Schema(
      *              type="integer"
      *          )
-     *      ), 
+     *      ),
      *     @OA\Parameter(
      *          name="user_name",
      *          description="user name",
@@ -628,7 +628,7 @@ class ChannelController extends Controller
      *          @OA\Schema(
      *              type="string"
      *          )
-     *      ), 
+     *      ),
      *     @OA\Parameter(
      *          name="busId",
      *          description="BusId",
@@ -637,7 +637,7 @@ class ChannelController extends Controller
      *          @OA\Schema(
      *              type="integer"
      *          )
-     *      ),  
+     *      ),
      *     @OA\Parameter(
      *          name="sourceId",
      *          description="sourceId",
@@ -646,7 +646,7 @@ class ChannelController extends Controller
      *          @OA\Schema(
      *              type="integer"
      *          )
-     *      ), 
+     *      ),
      *     @OA\Parameter(
      *          name="destinationId",
      *          description="destinationId",
@@ -655,7 +655,7 @@ class ChannelController extends Controller
      *          @OA\Schema(
      *              type="integer"
      *          )
-     *      ),        
+     *      ),
      *     @OA\Parameter(
      *          name="transaction_id",
      *          description="customer transaction id against booking",
@@ -709,7 +709,7 @@ class ChannelController extends Controller
      *  @OA\Response(response=504, description="Gateway timeout"),
      *     security={{ "apiAuth": {} }}
      * )
-     * 
+     *
      */
 
     public function walletPayment(Request $request)
@@ -728,7 +728,6 @@ class ChannelController extends Controller
             $response = $this->channelService->walletPayment($request, $clientRole);
 
             if (isset($response['notifications'])) {
-
                 return $this->successResponse($response, Config::get('constants.WALLET_PAYMENT_SUCESS'), Response::HTTP_CREATED);
             } elseif ($response == 'BUS_SEIZED') {
 
@@ -861,14 +860,14 @@ class ChannelController extends Controller
         //$firstApril=date('Y-04-01');
         $updated_at = date('Y-m-d H:i:s');
 
-        $data = DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name 
-        from booking 
+        $data = DB::select("select booking.id,customer_gst_status,pnr,journey_dt,boarding_time,users_id,gst_invoice_no,users.email,users.name
+        from booking
         join users on booking.users_id=users.id
         where  status=1 and gst_email_status=0  and gst_invoice_no IS NULL and  DATE(journey_dt) <=  '$yesterday'   and customer_gst_status=1 order by booking.id asc ");
         $num = 1;
 
         foreach ($data as $d) {
-            ////////////////////// generate gst invoice /////////////              
+            ////////////////////// generate gst invoice /////////////
             $gst_invoice_no = generateGSTId($num, $d->journey_dt);
             $chk_exist = DB::table('booking')->where("gst_invoice_no", $gst_invoice_no)->first();
             if ($chk_exist) {

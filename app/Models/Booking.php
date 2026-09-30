@@ -38,7 +38,11 @@ class Booking extends Model
             'owner_gst_charges',
             'owner_gst_amount',
             'created_by',
-            'status'
+            'status',
+            'agent_cancel_commission',
+            'odbus_cancel_commission',
+            'commission_type',
+            'commission_slab_id'
       ];
 
       public function users()

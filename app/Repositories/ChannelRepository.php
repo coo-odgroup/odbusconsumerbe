@@ -55,6 +55,7 @@ class ChannelRepository
   protected $credentials;
   protected $manageSms;
   protected $msg91Service;
+  protected $SMS_ENABLED;
 
   public function __construct(GatewayInformation $gatewayInformation, Users $users, CustomerPayment $customerPayment, Booking $booking, BusSeats $busSeats, Credentials $credentials, BookingDetail $bookingDetail, ManageSms $manageSms, User $user, Msg91Service $msg91Service)
   {
@@ -68,6 +69,8 @@ class ChannelRepository
     $this->bookingDetail = $bookingDetail;
     $this->manageSms = $manageSms;
     $this->msg91Service = $msg91Service;
+
+    $this->SMS_ENABLED = Config::get('constants.SMS_ENABLED');
   }
 
   public function storeGWInfo($data)
@@ -224,9 +227,9 @@ class ChannelRepository
       // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       // $err = curl_error($ch);
 
-      // if ($err) { 
+      // if ($err) {
       //     return "cURL Error #:" . $err;
-      // } 
+      // }
 
     } elseif ($SmsGW == 'indiaHub') {
       $IndiaHubApiKey = config('services.sms.indiaHub.key');
@@ -319,9 +322,9 @@ class ChannelRepository
       // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       // $err = curl_error($ch);
 
-      // if ($err) { 
+      // if ($err) {
       //     return "cURL Error #:" . $err;
-      // } 
+      // }
 
     } elseif ($SmsGW == 'IndiaHUB') {
       $IndiaHubApiKey = urlencode('0Z6jDmBiAE2YBcD9kD4hVg');
@@ -540,7 +543,7 @@ class ChannelRepository
       $response_type = "json";
       $data = array('apikey' => $apiKey, 'numbers' => $receiver, "sender" => $sender, "message" => $message);
 
-      // Log::info($data);            
+      // Log::info($data);
 
       $ch = curl_init($textLocalUrl);
       curl_setopt($ch, CURLOPT_POST, true);
@@ -625,7 +628,7 @@ class ChannelRepository
     $data['journeydate'] = date('d-m-Y', strtotime($data['journeydate']));
     $busDetails = $data['busname'] . ' ' . $data['busNumber'];
 
-    // Construct the SMS message 
+    // Construct the SMS message
     $message = "PNR: {$pnr}, Bus Details: {$busDetails}, DOJ: {$data['journeydate']}, " .
       "Route: {$data['routedetails']}, Dep: {$data['departureTime']}, " .
       "Name: {$nameList}, Gender: {$genderList}, Seat: {$seatList}, " .
@@ -712,7 +715,7 @@ class ChannelRepository
     // foreach($passengerDetails as $pDetail){
     //     $nameList = "{$nameList},{$pDetail['passenger_name']}";
     //     $genderList = "{$genderList},{$pDetail['passenger_gender']}";
-    // } 
+    // }
 
     //$genderList = substr($genderList,1);
     $busDetails = $data['busname'] . '-' . $data['busNumber'];
@@ -762,9 +765,9 @@ class ChannelRepository
 
       // $curlhttpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       // $err = curl_error($ch);
-      // if ($err) { 
+      // if ($err) {
       //     return "cURL Error #:" . $err;
-      // } 
+      // }
 
     }
   }
@@ -925,7 +928,7 @@ class ChannelRepository
     $textLocalUrl = config('services.sms.textlocal.url_status');
     $msgTemplate = config('services.sms.textlocal.message');
 
-    //return $textLocalUrl; 
+    //return $textLocalUrl;
 
     $ch = curl_init($textLocalUrl);
     //$msgId = $request->messages[0]['id'];
@@ -1048,8 +1051,8 @@ class ChannelRepository
       ],
     ]);
 
-    // Creates customer payment 
-    $orderId = $response->payment_session_id; //$order['id']; 
+    // Creates customer payment
+    $orderId = $response->payment_session_id; //$order['id'];
 
     $this->customerPayment->where('booking_id', $bookingId)->update(['order_id' => $orderId, 'amount' => $amount, 'name' => $name]);
 
@@ -1089,9 +1092,9 @@ class ChannelRepository
     ]);
 
     $response = json_decode($response);
-    // Creates customer payment 
-    $sessionId = $response->payment_session_id; //$order['id']; 
-    $orderId = $response->order_id; //$order['id']; 
+    // Creates customer payment
+    $sessionId = $response->payment_session_id; //$order['id'];
+    $orderId = $response->order_id; //$order['id'];
 
     $user_pay = new $this->customerPayment();
     $user_pay->name = $name;
@@ -1208,7 +1211,7 @@ class ChannelRepository
         'payment_done' => $paymentDone
       ]);
 
-    //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+    //Update  Booking Ticket Status in booking Change status to 1(Booked)
 
     // $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount, 'email_sms_status' => 1]);
 
@@ -1224,8 +1227,10 @@ class ChannelRepository
 
     if ($updated == 1) {
       // First webhook only
-      $this->msg91Service->customer_ticket_booking($smsData);
-      $this->msg91Service->cmo_ticket_booking($smsData);
+      if ($this->SMS_ENABLED) {
+        $this->msg91Service->customer_ticket_booking($smsData);
+        $this->msg91Service->cmo_ticket_booking($smsData);
+      }
     } else {
       // Already processed
       Log::info('SMS already sent for booking ' . $bookingId);
@@ -1357,11 +1362,11 @@ class ChannelRepository
 
     return "Payment Done";
     // }
-    // else{ 
+    // else{
     //     $this->booking->where('id', $bookingId)
     //                 ->where('transaction_id', $transationId)
-    //                 ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]); 
-    //     return "Payment Failed"; 
+    //                 ->update(['status' => $bookedStatusFailed,'status' => $bookedStatusFailed]);
+    //     return "Payment Failed";
     // }
   }
 
@@ -1396,8 +1401,320 @@ class ChannelRepository
     $userNotification->created_by = "Agent";
     $notification->userNotification()->save($userNotification);
   }
+  public function FetchAgentBookedSeats(
+    $agentId,
+    $agentName,
+    $seatIds,
+    $bookingId,
+    $seatHold,
+    $appliedComission,
+    $pnr
+  ) {
+    $bookingRecord = $this->booking
+      ->with('bookingDetail')
+      ->where('id', $bookingId)
+      ->where('user_id', $agentId)
+      ->first();
 
-  public function FetchAgentBookedSeats($agentId, $agentName, $seatIds, $bookingId, $seatHold, $appliedComission, $pnr)
+    if (!$bookingRecord) {
+      return response()->json([
+        'status' => false,
+        'message' => 'Booking not found'
+      ], 200);
+    }
+
+    $agentData = $this->user
+      ->where('id', $agentId)
+      ->first();
+
+    if (!$agentData) {
+      return response()->json([
+        'status' => false,
+        'message' => 'Agent not found'
+      ], 200);
+    }
+
+    // Total booking fare
+    // $ticketFare = (float) $bookingRecord->total_fare;
+
+    // Total seats
+    // $totalSeats = $bookingRecord->bookingDetail->count();
+
+    // Initialize commission totals
+    $totalCommission = 0;
+    $agentCommission = 0;
+    $odbusCommission = 0;
+
+    // Check agent-specific slab first
+    $bookingDate = now();
+
+    $agentSlab = DB::table('assigned_comm_slab_agent')
+      ->where('agent_id', $agentId)
+      ->where('status', 1)
+      ->whereDate('from_date', '<=', $bookingDate)
+      ->whereDate('to_date', '>=', $bookingDate)
+      ->first();
+
+    if ($agentSlab) {
+
+      $slab = $agentSlab;
+      $commission_type = 'SPECIFIC';
+      $slab_id = $agentSlab->agent_comm_id;
+    } else {
+
+      $slab = DB::table('agent_comm_slab_name')
+        ->where('is_default', 1)
+        ->whereNull('deleted_at')
+        ->first();
+      $commission_type = 'DEFAULT';
+      $slab_id = $slab->id;
+    }
+
+    if (!$slab) {
+
+      Log::warning('No commission slab found', [
+        'agent_id' => $agentId
+      ]);
+    } else {
+
+      $slabId = $slab_id;
+
+      foreach ($bookingRecord->bookingDetail as $seat) {
+
+        $busSeats = DB::table('bus_seats')
+          ->join(
+            'ticket_price',
+            'bus_seats.ticket_price_id',
+            '=',
+            'ticket_price.id'
+          )
+          ->join(
+            'seats',
+            'bus_seats.seats_id',
+            '=',
+            'seats.id'
+          )
+          ->where('bus_seats.id', $seat->bus_seats_id)
+          ->select(
+            'bus_seats.*',
+            'ticket_price.id as ticket_price_id',
+            'ticket_price.base_seat_fare',
+            'ticket_price.base_sleeper_fare',
+            'seats.id as seats_id',
+            'seats.seat_class_id',
+            'seats.seatText'
+          )
+          ->first();
+
+        if (!$busSeats) {
+
+          Log::warning('Bus seat not found', [
+            'bus_seats_id' => $seat->bus_seats_id
+          ]);
+
+          continue;
+        }
+
+        if ($busSeats->seat_class_id == 1) {
+
+          $fare = (float) $busSeats->base_seat_fare;
+        } else {
+
+          $fare = (float) $busSeats->base_sleeper_fare;
+        }
+
+        $commissionSlab = DB::table('agent_commission_slab')
+          ->where('slab_id', $slabId)
+          ->where('range_from', '<=', $fare)
+          ->where('range_to', '>=', $fare)
+          ->where('status', 1)
+          ->orderBy('range_from')
+          ->first();
+
+        $commission_slab_id = $commissionSlab->id;
+
+        if (!$commissionSlab) {
+
+          Log::warning('Commission slab not found for fare', [
+            'fare' => $fare,
+            'slab_id' => $slabId,
+            'bus_seats_id' => $seat->bus_seats_id
+          ]);
+
+          continue;
+        }
+
+        $totalCommissionPercent =
+          (float) $commissionSlab->total_comm;
+
+        $agentSharePercent =
+          (float) $commissionSlab->agent_comm;
+
+        $odbusSharePercent =
+          (float) $commissionSlab->odbus_comm;
+
+        $seatTotalCommission = round(
+          $fare * ($totalCommissionPercent / 100),
+          2
+        );
+
+        $seatAgentCommission = round(
+          $seatTotalCommission * ($agentSharePercent / 100),
+          2
+        );
+
+        $seatOdbusCommission = round(
+          $seatTotalCommission * ($odbusSharePercent / 100),
+          2
+        );
+
+        $totalCommission += $seatTotalCommission;
+
+        $agentCommission += $seatAgentCommission;
+
+        $odbusCommission += $seatOdbusCommission;
+
+        Log::info('Seat commission calculated', [
+          'bus_seats_id' => $seat->bus_seats_id,
+          'fare' => $fare,
+          'seatTotalCommission' => $seatTotalCommission,
+          'seatAgentCommission' => $seatAgentCommission,
+          'seatOdbusCommission' => $seatOdbusCommission
+        ]);
+      }
+    }
+
+    $totalCommission = round($totalCommission, 2);
+
+    $agentCommission = round($agentCommission, 2);
+
+    $odbusCommission = round($odbusCommission, 2);
+
+    $tds = 0;
+
+    $afterTdsComission = $agentCommission - $tds;
+
+    if ($agentData->agent_type == 3) {
+
+      $agentCommission = 0;
+
+      $afterTdsComission = 0;
+
+      $tds = 0;
+    }
+
+    DB::transaction(function () use (
+      $bookingId,
+      $seatHold,
+      $appliedComission,
+      $agentCommission,
+      $tds,
+      $afterTdsComission,
+      $commission_type,
+      $commission_slab_id
+    ) {
+
+      $this->booking
+        ->where('id', $bookingId)
+        ->lockForUpdate()
+        ->update([
+          'customer_comission' => $appliedComission,
+          'status' => $seatHold,
+          'agent_commission' => $agentCommission,
+          'tds' => $tds,
+          'with_tds_commission' => $afterTdsComission,
+          'commission_type' => $commission_type,
+          'commission_slab_id' => $commission_slab_id
+        ]);
+    });
+
+    $wallet = AgentWallet::where('user_id', $agentId)
+      ->latest()
+      ->first();
+
+    $walletBalance = $wallet ? (float) $wallet->balance : 0;
+
+    $transactionId = date('YmdHis') . gettimeofday()['usec'];
+
+    $agetWallet = new AgentWallet();
+
+    $agetWallet->transaction_id = $transactionId;
+    $agetWallet->amount = $afterTdsComission;
+    $agetWallet->type = 'Commission';
+    $agetWallet->booking_id = $bookingId;
+    $agetWallet->transaction_type = 'c';
+    $agetWallet->balance = $walletBalance + $afterTdsComission;
+    $agetWallet->user_id = $agentId;
+    $agetWallet->created_by = $agentName;
+    $agetWallet->status = 1;
+
+    $agetWallet->save();
+
+    $newBalance = $walletBalance + $afterTdsComission;
+
+    $notification = new Notification();
+
+    $notification->notification_heading =
+      "New Balance is Rs.$newBalance after receive of Comission of Rs.$afterTdsComission for PNR.$pnr";
+
+    $notification->notification_details =
+      "New Balance is Rs.$newBalance after receive Comission of Rs.$afterTdsComission for PNR.$pnr";
+
+    $notification->created_by = 'Agent';
+
+    $notification->save();
+
+    $userNotification = new UserNotification();
+
+    $userNotification->user_id = $agentId;
+    $userNotification->created_by = "Agent";
+
+    $notification->userNotification()->save($userNotification);
+
+    try {
+
+      $booking = $this->booking
+        ->with('bookingDetail')
+        ->find($bookingId);
+
+      if ($booking) {
+
+        $seatCount = $booking->bookingDetail->count();
+
+        $inventory = app(
+          \App\Services\InventoryService::class
+        );
+
+        $inventory->holdSeats(
+          $booking->bus_id,
+          $booking->journey_dt,
+          $booking->source_id,
+          $booking->destination_id,
+          $seatCount
+        );
+
+        $inventory->refreshAvailableSeats(
+          $inventory->getOverlapSegmentIds(
+            $booking->bus_id,
+            $booking->source_id,
+            $booking->destination_id
+          ),
+          $booking->journey_dt
+        );
+      }
+    } catch (\Exception $e) {
+
+      \Log::error(
+        'Hold Inventory Update Failed. Agent Booking ID: '
+          . $bookingId
+          . ' Error: '
+          . $e->getMessage()
+      );
+    }
+
+    return $notification;
+  }
+  public function FetchAgentBookedSeats_bk($agentId, $agentName, $seatIds, $bookingId, $seatHold, $appliedComission, $pnr)
   {
     $seatRecords =  Booking::with('bookingDetail')->where('user_id', $agentId)
       ->where('status', '1')->get();
@@ -1528,8 +1845,9 @@ class ChannelRepository
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
     $SmsGW = config('services.sms.otpservice');
-
-    $sms91 = $this->msg91Service->agent_ticket_booking($smsData);
+    if ($this->SMS_ENABLED) {
+      $sms91 = $this->msg91Service->agent_ticket_booking($smsData);
+    }
 
     // $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); //sms to customer
 
@@ -1558,14 +1876,16 @@ class ChannelRepository
     // }
 
     if ($email) {
-      $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+      if ($this->SMS_ENABLED) {
+        $sendEmailTicket = $this->sendEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+      }
     }
 
 
     /////////////////send email to odbus admin////////
-
-    $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
-
+    if ($this->SMS_ENABLED) {
+      $this->sendAdminEmailTicket($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $emailData, $pnr, $cancellationslabs, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount);
+    }
 
     if ($origin == 'ODBUS') {
 
@@ -1581,7 +1901,9 @@ class ChannelRepository
 
 
         if ($sms_gateway == 1) {
-          $this->msg91Service->cmo_ticket_booking($smsData);
+          if ($this->SMS_ENABLED) {
+            $this->msg91Service->cmo_ticket_booking($smsData);
+          }
           // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
 
 
@@ -1682,7 +2004,7 @@ class ChannelRepository
     $paymentDone = Config::get('constants.PAYMENT_DONE');
     $bookingType = Config::get('constants.BOOKING_TYPE');
 
-    // $api = new Api($key, $secretKey); 
+    // $api = new Api($key, $secretKey);
 
     // $res = $api->order->fetch($customerPaymentDatas[0]->order_id)->payments();
 
@@ -1690,13 +2012,13 @@ class ChannelRepository
     // $razorpay_payment_id ='';
 
     // if($res->items){
-    //     foreach ($res->items as $value){               
+    //     foreach ($res->items as $value){
     //       if($value->status == 'captured'){ //captured(Live), authorized(testing)
     //         $flag=true;
     //         $razorpay_payment_id = $value->id;
     //         break;
-    //       } 
-    //     }                  
+    //       }
+    //     }
     // }
 
     // if($flag == false){
@@ -1821,7 +2143,7 @@ class ChannelRepository
         'payment_done' => $paymentDone,
         'razorpay_id' => $razorpay_payment_id,
       ]);
-    //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+    //Update  Booking Ticket Status in booking Change status to 1(Booked)
     $this->booking->where('id', $bookingId)->update([
       'status' => $booked,
       'created_by' => $createdBy,
@@ -1854,8 +2176,9 @@ class ChannelRepository
     //   $sms->message_id = $msgId;
     //   $sms->save();
     // }
-
-    $this->msg91Service->customer_ticket_booking($data);
+    if ($this->SMS_ENABLED) {
+      $this->msg91Service->customer_ticket_booking($data);
+    }
 
     $busId = $bookingDetails[0]->bus->id;
 
@@ -1866,7 +2189,9 @@ class ChannelRepository
       ->get('phone');
     if ($busContactDetails->isNotEmpty()) {
       $contact_number = collect($busContactDetails)->implode('phone', ',');
-      $this->msg91Service->cmo_ticket_booking($data);
+      if ($this->SMS_ENABLED) {
+        $this->msg91Service->cmo_ticket_booking($data);
+      }
       // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $data, $pnr, $contact_number);
 
       // if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
@@ -1925,17 +2250,18 @@ class ChannelRepository
         'payment_done' => $paymentDone
       ]);
 
-    // Log::info('adjust ticket: '.$bookingId);                   
+    // Log::info('adjust ticket: '.$bookingId);
 
-    //Update  Booking Ticket Status in booking Change status to 1(Booked)  
+    //Update  Booking Ticket Status in booking Change status to 1(Booked)
 
     $this->booking->where('id', $bookingId)->update(['status' => $booked, 'payable_amount' => $payable_amount]);
     $booking = $this->booking->find($bookingId);
     $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $booked));
 
     //New sms for ticket customer
-
-    $this->msg91Service->customer_ticket_booking($smsData);
+    if ($this->SMS_ENABLED) {
+      $this->msg91Service->customer_ticket_booking($smsData);
+    }
 
     // $sendsms = $this->sendSmsTicket($payable_amount, $smsData, $pnr); ////send sms ticket customer
 
@@ -1973,7 +2299,9 @@ class ChannelRepository
         ->get('phone');
       if ($busContactDetails->isNotEmpty()) {
         $contact_number = collect($busContactDetails)->implode('phone', ',');
-        $this->msg91Service->cmo_ticket_booking($smsData);
+        if ($this->SMS_ENABLED) {
+          $this->msg91Service->cmo_ticket_booking($smsData);
+        }
         // $sendSmsCMO = $this->sendSmsCMO($payable_amount, $smsData, $pnr, $contact_number);
 
         // if (isset($sendSmsCMO->messages[0]) && isset($sendSmsCMO->messages[0]->id)) {
