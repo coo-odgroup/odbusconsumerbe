@@ -90,6 +90,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
    Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
    Route::post('/Offers', [OfferController::class, 'offers']);
    Route::post('/Coupons', [OfferController::class, 'coupons']);
+   Route::post('/RemoveCoupons', [OfferController::class, 'removeCoupons']);
    Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
    Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
    Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
