@@ -231,6 +231,7 @@ Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBookin
 //Offer Listing
 Route::post('/Listing-Offers', [OfferController::class, 'listingOffers']);
 Route::post('/CouponCode', [OfferController::class, 'couponCode']);
+Route::get('/redis-test', [OfferController::class, 'testRedis']);
 
 Route::get('/test-mail', function () {
 

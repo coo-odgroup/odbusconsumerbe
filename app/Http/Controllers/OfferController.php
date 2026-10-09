@@ -15,6 +15,7 @@ use App\Models\Booking;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class OfferController extends Controller
 {
@@ -173,5 +174,14 @@ class OfferController extends Controller
             Config::get('constants.RECORD_UPDATED'),
             Response::HTTP_OK
         );
+    }
+
+
+    public function testRedis()
+    {
+        Redis::set('odbus_test', 'Redis is working');
+        Redis::set('hello', 'Hello World');
+
+        return Redis::get('hello');
     }
 }
