@@ -24,7 +24,6 @@ use App\Transformers\MantisTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Services\Msg91Service;
-use App\Services\NotificationCampaignService;
 
 
 
@@ -36,10 +35,9 @@ class ChannelService
     protected $dolphinTransformer;
     protected $mantisTransformer;
     protected $msg91Service;
-    protected $notificationCampaignService;
 
 
-    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service, NotificationCampaignService $notificationCampaignService)
+    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service)
     {
         $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
@@ -47,7 +45,6 @@ class ChannelService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
-        $this->notificationCampaignService = $notificationCampaignService;
     }
     public function storeGWInfo($data)
     {
@@ -742,7 +739,7 @@ class ChannelService
             if ($paymentResult) {
                 $bookingModel = $this->channelRepository->getBookingData($transationId);
                 if (isset($bookingModel[0])) {
-                    $this->notificationCampaignService->scheduleBookingConfirmationNotification($bookingModel[0]);
+                    // $this->notificationCampaignService->scheduleBookingConfirmationNotification($bookingModel[0]);
                 }
             }
 
