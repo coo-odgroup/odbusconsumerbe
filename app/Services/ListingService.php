@@ -2789,6 +2789,7 @@ class ListingService
                         $startJourneydt
                     )
                     ->where('type', 2)
+                    ->whereNull('vendor_id')
                     ->pluck('seats_id');
             }
 
@@ -2804,6 +2805,7 @@ class ListingService
                     $entry_date
                 )
                 ->where('type', 2)
+                ->whereNull('vendor_id')
                 ->pluck('seats_id');
 
             /*
