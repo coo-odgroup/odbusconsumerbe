@@ -13,7 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Services\PopularService;
 use App\AppValidator\DownloadAppValidator;
 use App\Services\ValueFirstService;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class PopularController extends Controller
 {
@@ -277,48 +278,178 @@ class PopularController extends Controller
     //     }
     // }
 
+    // public function getAllRoutes(Request $request)
+    // {
+    //     try {
+    //         $page_no = $request->page_no ?? 1;
+    //         $per_page = $request->per_page ?? 30;
+    //         $search = trim($request->search ?? '');
+
+    //         $res = DB::table('mst_routes_details as r')
+    //             ->leftJoin('location as s', 's.id', '=', 'r.source_id')
+    //             ->leftJoin('location as d', 'd.id', '=', 'r.destination_id')
+    //             ->select(
+    //                 'r.source_id',
+    //                 'r.destination_id',
+    //                 's.name as source_name',
+    //                 's.url as source_slug',
+    //                 'd.name as destination_name',
+    //                 'd.url as destination_slug'
+    //             )
+    //             ->where('r.active_status', 1)
+    //             ->where('r.is_main_route', 1)
+    //             ->when($search, function ($query) use ($search) {
+    //                 $query->where(function ($q) use ($search) {
+    //                     $q->where('s.name', 'like', "%{$search}%")
+    //                         ->orWhere('d.name', 'like', "%{$search}%")
+    //                         ->orWhereRaw(
+    //                             "CONCAT(s.name, ' ', d.name) LIKE ?",
+    //                             ["%{$search}%"]
+    //                         );
+    //                 });
+    //             })
+    //             ->orderBy('r.source_id')
+    //             ->orderBy('r.destination_id')
+    //             ->paginate($per_page, ['*'], 'page', $page_no);
+
+    //         return $this->successResponse(
+    //             $res,
+    //             Config::get('constants.RECORD_FETCHED'),
+    //             Response::HTTP_OK
+    //         );
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse(
+    //             $e->getMessage(),
+    //             Response::HTTP_INTERNAL_SERVER_ERROR
+    //         );
+    //     }
+    // }
+
+
     public function getAllRoutes(Request $request)
     {
         try {
-            $page_no = $request->page_no ?? 1;
-            $per_page = $request->per_page ?? 30;
-            $search = trim($request->search ?? '');
+            $page_no = max(1, (int) $request->input('page_no', 1));
+            $per_page = min(100, max(1, (int) $request->input('per_page', 30)));
+            $search = trim($request->input('search', ''));
 
-            $res = DB::table('mst_routes_details as r')
-                ->leftJoin('location as s', 's.id', '=', 'r.source_id')
-                ->leftJoin('location as d', 'd.id', '=', 'r.destination_id')
-                ->select(
-                    'r.source_id',
-                    'r.destination_id',
-                    's.name as source_name',
-                    's.url as source_slug',
-                    'd.name as destination_name',
-                    'd.url as destination_slug'
-                )
-                ->where('r.active_status', 1)
-                ->where('r.is_main_route', 1)
-                ->when($search, function ($query) use ($search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('s.name', 'like', "%{$search}%")
-                            ->orWhere('d.name', 'like', "%{$search}%")
-                            ->orWhereRaw(
-                                "CONCAT(s.name, ' ', d.name) LIKE ?",
-                                ["%{$search}%"]
-                            );
-                    });
-                })
-                ->orderBy('r.source_id')
-                ->orderBy('r.destination_id')
-                ->paginate($per_page, ['*'], 'page', $page_no);
+            $cacheKey = 'allroutes';
+
+            $cachedRoutes = Redis::get($cacheKey);
+
+            if ($cachedRoutes !== null) {
+                $routes = json_decode($cachedRoutes, true);
+
+                if (!is_array($routes)) {
+                    Redis::del($cacheKey);
+                    $routes = null;
+                }
+            } else {
+                $routes = null;
+            }
+
+            if ($routes === null) {
+                $routes = DB::table('mst_routes_details as r')
+                    ->leftJoin('location as s', 's.id', '=', 'r.source_id')
+                    ->leftJoin('location as d', 'd.id', '=', 'r.destination_id')
+                    ->select(
+                        'r.source_id',
+                        'r.destination_id',
+                        's.name as source_name',
+                        's.url as source_slug',
+                        'd.name as destination_name',
+                        'd.url as destination_slug'
+                    )
+                    ->where('r.active_status', 1)
+                    ->where('r.is_main_route', 1)
+                    ->orderBy('r.source_id')
+                    ->orderBy('r.destination_id')
+                    ->get()
+                    ->toArray();
+
+                $routes = array_map(function ($route) {
+                    return (array) $route;
+                }, $routes);
+
+                Redis::setex(
+                    $cacheKey,
+                    43200, // 12 hours in seconds
+                    json_encode($routes)
+                );
+            }
+
+            if ($search !== '') {
+                $searchLower = mb_strtolower($search);
+
+                $routes = array_values(array_filter(
+                    $routes,
+                    function ($route) use ($searchLower) {
+                        $source = mb_strtolower(
+                            (string) ($route['source_name'] ?? '')
+                        );
+
+                        $destination = mb_strtolower(
+                            (string) ($route['destination_name'] ?? '')
+                        );
+
+                        $combined = $source . ' ' . $destination;
+
+                        return
+                            mb_strpos($source, $searchLower) !== false ||
+                            mb_strpos($destination, $searchLower) !== false ||
+                            mb_strpos($combined, $searchLower) !== false;
+                    }
+                ));
+            }
+
+            // STEP 4: Paginate the Redis data
+            $total = count($routes);
+            $lastPage = max(1, (int) ceil($total / $per_page));
+            $items = array_slice(
+                $routes,
+                ($page_no - 1) * $per_page,
+                $per_page
+            );
+
+            $result = [
+                'current_page' => $page_no,
+                'data' => $items,
+                'first_page_url' => $request->url()
+                    . '?page_no=1&per_page=' . $per_page,
+                'from' => $total > 0
+                    ? (($page_no - 1) * $per_page) + 1
+                    : null,
+                'last_page' => $lastPage,
+                'last_page_url' => $request->url()
+                    . '?page_no=' . $lastPage . '&per_page=' . $per_page,
+                'next_page_url' => $page_no < $lastPage
+                    ? $request->url() . '?page_no='
+                    . ($page_no + 1) . '&per_page=' . $per_page
+                    : null,
+                'path' => $request->url(),
+                'per_page' => $per_page,
+                'prev_page_url' => $page_no > 1
+                    ? $request->url() . '?page_no='
+                    . ($page_no - 1) . '&per_page=' . $per_page
+                    : null,
+                'to' => $total > 0
+                    ? (($page_no - 1) * $per_page) + count($items)
+                    : null,
+                'total' => $total,
+            ];
 
             return $this->successResponse(
-                $res,
+                $result,
                 Config::get('constants.RECORD_FETCHED'),
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
+            Log::error('getAllRoutes error', [
+                'message' => $e->getMessage(),
+            ]);
+
             return $this->errorResponse(
-                $e->getMessage(),
+                'Unable to fetch routes.',
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }

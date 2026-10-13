@@ -13,8 +13,7 @@ use App\Services\DolphinService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-
-
+use Illuminate\Support\Facades\Redis;
 use InvalidArgumentException;
 
 class PopularService
@@ -206,23 +205,98 @@ class PopularService
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
+    // public function allOperators(Request $request)
+    // {
+
+    //     $paginate = $request['paginate'];
+    //     $filter = $request['filter'];
+
+    //     $list = $this->popularRepository->allOperators($filter);
+
+    //     $list =  $list->paginate($paginate);
+
+    //     $response = array(
+    //         "count" => $list->count(),
+    //         "total" => $list->total(),
+    //         "data" => $list
+    //     );
+
+    //     return $response;
+    // }
     public function allOperators(Request $request)
     {
+        $cacheKey = 'Alloperators';
 
-        $paginate = $request['paginate'];
-        $filter = $request['filter'];
+        $paginate = max(1, (int) $request->input('paginate', 30));
+        $page = max(1, (int) $request->input('page', 1));
+        $filter = trim((string) $request->input('filter', ''));
 
-        $list = $this->popularRepository->allOperators($filter);
+        // STEP 1: Get ALL operators from Redis
+        $cachedOperators =Redis::get($cacheKey);
 
-        $list =  $list->paginate($paginate);
+        $operators = $cachedOperators !== null
+            ? json_decode($cachedOperators, true)
+            : null;
 
-        $response = array(
-            "count" => $list->count(),
-            "total" => $list->total(),
-            "data" => $list
+        // STEP 2: Only on the first call/cache miss, fetch ALL active operators from DB
+        if (!is_array($operators)) {
+            $operators = \App\Models\BusOperator::where('status', 1)
+                ->select([
+                    'id',
+                    'operator_name',
+                    'organisation_name',
+                    'operator_url',
+                    'operator_info',
+                ])
+                ->orderBy('id')
+                ->get()
+                ->toArray();
+
+            // Store the complete operator list in ONE Redis key for 12 hours
+           Redis::setex(
+                $cacheKey,
+                43200, // 12 hours in seconds
+                json_encode($operators)
+            );
+        }
+
+        // STEP 3: Filter operators from Redis data only
+        if ($filter !== '') {
+            $filterLower = mb_strtolower($filter);
+
+            $operators = array_values(array_filter(
+                $operators,
+                function ($operator) use ($filterLower) {
+                    $organisation = mb_strtolower(
+                        (string) ($operator['organisation_name'] ?? '')
+                    );
+
+                    // Same behavior as SQL LIKE 'filter%'
+                    return strpos($organisation, $filterLower) === 0;
+                }
+            ));
+        }
+
+        $total = count($operators);
+        $lastPage = max(1, (int) ceil($total / $paginate));
+
+        $items = array_slice(
+            $operators,
+            ($page - 1) * $paginate,
+            $paginate
         );
 
-        return $response;
+        return [
+            'count' => count($items),
+            'total' => $total,
+            'data' => [
+                'current_page' => $page,
+                'data' => $items,
+                'per_page' => $paginate,
+                'total' => $total,
+                'last_page' => $lastPage,
+            ],
+        ];
     }
     public function operatorDetails(Request $request)
     {
