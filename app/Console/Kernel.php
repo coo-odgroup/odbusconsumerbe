@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         //$schedule->command('notification:process-queue')->everyMinute();
         //$schedule->command('notifications:schedule-campaigns')->everyMinute();
         //$schedule->command('notifications:delete-old-queue')->everyMinute(); // Delets the 3 month old notifiocation from notification_campaign_queue table
+
+        $schedule->command('route-search:store-daily')->everyFiveMinutes()->withoutOverlapping();
         
     }
 

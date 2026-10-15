@@ -243,3 +243,7 @@ Route::get('/test-mail', function () {
 
    return "Mail Sent";
 });
+
+Route::get('/route-search/store-daily', function () {
+   Artisan::call('route-search:store-daily');
+});
