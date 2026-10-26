@@ -46,6 +46,7 @@ class NotificationCampaignService
             'mobile' => $user->phone,
             'fcm_token' => $user->fcm_id,
             'status' => 'PENDING',
+            'notification_class' => 'CRITICAL',
             'retry_count' => 0,
             'scheduled_time' => $scheduledTime,
             'error_code' => null,
@@ -469,6 +470,7 @@ class NotificationCampaignService
                 'image_url'      => $campaign->image,
                 'booking_status' => $booking->status,
                 'retry_count'    => 0,
+                'notification_class' => 'CRITICAL',
                 'scheduled_time' => $scheduledTime,
                 'processed_at'   => null,
                 'error_code'     => null,
@@ -708,10 +710,8 @@ class NotificationCampaignService
                     'status'         => 'PENDING',
                     'title'          => $title,
                     'message'        => $message,
-
-                    // Get image from notification_campaigns.image
+                    'notification_class' => 'CRITICAL',
                     'image_url'      => $campaign->image,
-
                     'booking_status' => $booking->status,
                     'retry_count'    => 0,
                     'scheduled_time' => $scheduledTime,
@@ -831,7 +831,7 @@ class NotificationCampaignService
                         'title' => $notification->title,
                     ]);
 
-                    
+
                     $firebaseResponse = $this->sendPushNotification(
                         $notification->fcm_token,
                         $notification->title,
