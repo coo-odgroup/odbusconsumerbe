@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Location;
 use App\Models\Users;
-use Illuminate\Support\FacadesLog;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
