@@ -25,6 +25,7 @@ use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use App\Models\OdbusCharges;
+use Illuminate\Support\Facades\Redis;
 use JWTAuth;
 
 class ListingService
@@ -2069,6 +2070,8 @@ class ListingService
 
     public function getBusList($request, $clientRole, $clientId)
     {
+        // Store bus search details in Redis
+        $this->storeBusSearchInRedis($request);
 
         $config = OdbusCharges::where('user_id', '1')->first();
 
@@ -2308,6 +2311,26 @@ class ListingService
         }
 
         return $ListingRecords;
+    }
+
+    public function storeBusSearchInRedis($request)
+    {
+        $searchData = [
+            'search_date' => date(
+                'Y-m-d',
+                strtotime($request->input('entry_date'))
+            ),
+            'source'      => $request->input('source'),
+            'destination' => $request->input('destination'),
+            'ip_address'  => $request->ip(),
+            "created_at" => date('Y-m-d H:i:s'),
+        ];
+
+        $redisKey = 'route_search_daily';
+
+        Redis::rpush($redisKey, json_encode($searchData));
+
+        return $searchData;
     }
 
     public function processBusListRecords($records, $sourceID, $destinationID, $entry_date, $path, $selCouponRecords, $busOperatorId, $busId, $flag, $clientRole, $clientId)
