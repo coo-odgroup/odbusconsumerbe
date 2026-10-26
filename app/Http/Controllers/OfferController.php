@@ -11,7 +11,11 @@ use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\OfferService;
 use App\AppValidator\CouponValidator;
+use App\Models\Booking;
 use App\Models\Coupon;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class OfferController extends Controller
 {
@@ -86,24 +90,98 @@ class OfferController extends Controller
         return $this->successResponse($allUrls, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
+
     public function couponCode(Request $request)
     {
         $busId = $request->bus_id;
-        $entry_date = date('Y-m-d');
 
-        // return $entry_date;
-        $CouponDetails = Coupon::where('bus_id', $busId)
+        $bookingDate = date('Y-m-d');
+        $journeyDate = Carbon::createFromFormat(
+            'd-m-Y',
+            $request->date
+        )->format('Y-m-d');
+
+        $CouponDetails = Coupon::where(function ($q) use ($busId) {
+
+            // Coupon for specific bus
+            $q->where('bus_id', $busId)
+
+                // OR coupon applicable for all routes/buses
+                ->orWhere(function ($q2) {
+                    $q2->whereNull('bus_id')
+                        ->where('all_route_check', 1);
+                });
+        })
             ->where('status', 1)
-            ->where('from_date', '<=', $entry_date)
-            ->where('to_date', '>=', $entry_date)
+            ->where(function ($query) use ($bookingDate, $journeyDate) {
+
+                // Valid based on booking date
+                $query->where(function ($q) use ($bookingDate) {
+                    $q->where('valid_by', 2)
+                        ->whereDate('from_date', '<=', $bookingDate)
+                        ->whereDate('to_date', '>=', $bookingDate);
+                })
+
+                    // Valid based on journey date
+                    ->orWhere(function ($q) use ($journeyDate) {
+                        $q->where('valid_by', 1)
+                            ->whereDate('from_date', '<=', $journeyDate)
+                            ->whereDate('to_date', '>=', $journeyDate);
+                    });
+            })
             ->select(
                 'id',
                 'coupon_code',
                 'short_desc',
-                'status'
-            )->get();
+                'full_desc',
+                'status',
+                'valid_by',
+                'bus_id',
+                'all_route_check'
+            )
+            ->distinct()
+            ->get();
+
+        return $this->successResponse(
+            $CouponDetails,
+            Config::get('constants.RECORD_FETCHED'),
+            Response::HTTP_OK
+        );
+    }
+
+    public function removeCoupons(Request $request)
+    {
+        $booking = Booking::where('transaction_id', $request->transaction_id)->first();
+
+        if (!$booking) {
+            return $this->successResponse(
+                Config::get('constants.RECORD_FETCHED'),
+                Response::HTTP_OK
+            );
+        }
+
+        if ($booking->coupon_code !== null) {
+            DB::table('booking')->where('transaction_id', $request->transaction_id)->where('users_id', $booking->users_id)
+                ->update([
+                    'coupon_code'     => null,
+                    'coupon_discount' => 0,
+                    'payable_amount'  => $booking->total_fare,
+                ]);
+        }
+
+        return $this->successResponse(
+            [],
+            Config::get('constants.RECORD_UPDATED'),
+            Response::HTTP_OK
+        );
+    }
 
 
-        return $this->successResponse($CouponDetails, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+    public function testRedis()
+    {
+        Redis::set('odbus_test', 'Redis is working');
+        Redis::set('hello', 'Hello World');
+
+        return Redis::get('hello');
     }
 }

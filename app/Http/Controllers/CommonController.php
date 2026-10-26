@@ -136,8 +136,32 @@ class CommonController extends Controller
             ->where('status', 1)
             ->get();
 
+        $blogCategories = DB::table('blog_categories')
+            ->select('id', 'slug')
+            ->where('active_status', 1)
+            ->whereNull('deleted_at')
+            ->get();
+
+        $author = DB::table('authors')
+            ->select('id', 'author_name', 'author_slug')
+            ->where('status', 1)
+            ->get();
+
+        $blog = DB::table('blogs')
+            ->join('blog_categories', 'blogs.category_id', '=', 'blog_categories.id')
+            ->select(
+                'blogs.id',
+                DB::raw("CONCAT(blog_categories.slug, '/', blogs.slug) as slug_url")
+            )
+            ->where('blogs.active_status', 1)
+            ->whereNull('blogs.deleted_at')
+            ->get();
+
         $data['routes'] = $routes;
         $data['operators'] = $operators;
+        $data['blogCategories'] = $blogCategories;
+        $data['authors'] = $author;
+        $data['blogs'] = $blog;
         return response()->json([
             'status' => true,
             'message' => 'Success',
@@ -205,7 +229,7 @@ class CommonController extends Controller
         }
 
         $websitePopup = DB::table('odbus_charges')
-            ->select('popup_status', 'popup_heading', 'popup_description', 'popup_start_date', 'popup_start_time', 'popup_end_date', 'popup_end_time', 'popup_url', 'popup_image','advance_days_show')
+            ->select('popup_status', 'popup_heading', 'popup_description', 'popup_start_date', 'popup_start_time', 'popup_end_date', 'popup_end_time', 'popup_url', 'popup_image', 'advance_days_show')
             ->where('id', 1)
             ->first();
 

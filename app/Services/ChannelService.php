@@ -24,7 +24,6 @@ use App\Transformers\MantisTransformer;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Services\Msg91Service;
-use App\Services\NotificationCampaignService;
 
 
 
@@ -36,10 +35,9 @@ class ChannelService
     protected $dolphinTransformer;
     protected $mantisTransformer;
     protected $msg91Service;
-    protected $notificationCampaignService;
 
 
-    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service, NotificationCampaignService $notificationCampaignService)
+    public function __construct(ChannelRepository $channelRepository, ViewSeatsService $viewSeatsService, CommonRepository $commonRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer, Msg91Service $msg91Service)
     {
         $this->viewSeatsService = $viewSeatsService;
         $this->channelRepository = $channelRepository;
@@ -47,7 +45,6 @@ class ChannelService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
-        $this->notificationCampaignService = $notificationCampaignService;
     }
     public function storeGWInfo($data)
     {
@@ -211,6 +208,7 @@ class ChannelService
                     ->where('status', 1)
                     ->where('ticket_price_id', $ticketPriceId)
                     ->whereIn('seats_id', $seatIds)
+                    ->whereNull('vendor_id')
                     ->get();
 
                 if (isset($blockSeats) && $blockSeats->isNotEmpty()) {
@@ -298,9 +296,9 @@ class ChannelService
                 //         $update_customer_gst['customer_gst_business_name']=null;
                 //         $update_customer_gst['customer_gst_business_email']=null;
                 //         $update_customer_gst['customer_gst_business_address']=null;
-                //         $update_customer_gst['customer_gst_percent']=0;                    
+                //         $update_customer_gst['customer_gst_percent']=0;
                 //         $update_customer_gst['customer_gst_amount']=0;
-                //         $update_customer_gst['payable_amount']=$amount;    
+                //         $update_customer_gst['payable_amount']=$amount;
                 // }
 
                 $this->channelRepository->updateCustomerGST($update_customer_gst, $transationId);
@@ -325,7 +323,7 @@ class ChannelService
                 } elseif (count($intersect)) {
                     return "SEAT UN-AVAIL";
                 } else {
-                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)  
+                    //Update Booking Ticket Status in booking Change status to 4(Seat on hold)
                     $bookingId = $records[0]->id;
                     $this->channelRepository->UpdateStatus($bookingId, $seatHold);
 
@@ -522,7 +520,7 @@ class ChannelService
                 } else {
                     return 'Failed';
                 }
-                //Log::info('dolphin seat booking');  
+                //Log::info('dolphin seat booking');
             }
             //////Mantis changes///////
             if ($origin == 'MANTIS') {
@@ -741,7 +739,7 @@ class ChannelService
             if ($paymentResult) {
                 $bookingModel = $this->channelRepository->getBookingData($transationId);
                 if (isset($bookingModel[0])) {
-                    $this->notificationCampaignService->scheduleBookingConfirmationNotification($bookingModel[0]);
+                    // $this->notificationCampaignService->scheduleBookingConfirmationNotification($bookingModel[0]);
                 }
             }
 
@@ -913,7 +911,7 @@ class ChannelService
 
                 /////mantis holdId updated to booking table////////
                 if ($origin == 'MANTIS') {
-                    /////      
+                    /////
                     $update_customer_gst['owner_fare'] = $priceDetails[0]['baseFare'];
                     $update_customer_gst['customer_gst_percent'] = 5.00; //as discussed with Santosh
                     $update_customer_gst['customer_gst_status'] = 1;
@@ -1182,7 +1180,7 @@ class ChannelService
                 "customer_comission" => $customer_comission,
                 'agent_name' => $agentName,
                 'agent_Number' => $agentNumber,
-                'fare' => $totalfare
+                'fare' => $totalfare + $customer_comission
             );
 
             $emailData = array(

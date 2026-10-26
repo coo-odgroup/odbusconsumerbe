@@ -114,7 +114,7 @@ class ViewSeatsService
 
         $reqRange = Arr::sort($requestedSeq);
         $bookingIds = $this->viewSeatsRepository->bookingIds($busId,$journeyDate,$booked,$seatHold,$sourceId,$destinationId);
-       
+
          /////// 15-sep-2024 :: date wise fare slab
             //$ticketFareSlabs = $this->viewSeatsRepository->ticketFareSlab($user_id);
             $ticketFareSlabs = getTicketFareslab($busId,$journeyDate); // common.php
@@ -146,7 +146,7 @@ class ViewSeatsService
                      $blockedSeats = array_merge($blockedSeats,$seatIDsPerbooking);
                  } 
             }
-        }else{          //no booking on that specific date, so all seats are available
+        }else{         //no booking on that specific date, so all seats are available
                 $blockedSeats=array();
         }
 
@@ -159,7 +159,7 @@ class ViewSeatsService
             /////////////////////
            
            // Lower Berth seat Calculation
-           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle);
+           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle,$clientId);
             //return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
@@ -170,7 +170,7 @@ class ViewSeatsService
                $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
            } 
           // Upper Berth seat Calculation
-           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle);
+           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle,$clientId);
         
            if(($viewSeat['upper_berth'])->isEmpty()){
                unset($viewSeat['upper_berth']); 
@@ -1501,7 +1501,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
     
     
            // Lower Berth seat Calculation
-           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle);
+           $viewSeat['lower_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$lowerBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle,$clientId);
             //return $viewSeat;
            if(($viewSeat['lower_berth'])->isEmpty()){
                unset($viewSeat['lower_berth']);  
@@ -1512,7 +1512,7 @@ public function getBoardingDroppingPoints(Request $request,$clientRole,$clientId
                $viewSeat['lowerBerth_totalColumns']=$rowsColumns->max('colNumber')+1; 
            } 
           // Upper Berth seat Calculation
-           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle);
+           $viewSeat['upper_berth']=$this->viewSeatsRepository->getBerth($busRecord[0]->bus_seat_layout_id,$upperBerth,$busId,$blockedSeats,$journeyDate,$sourceId,$destinationId,$busRecord[0]->running_cycle,$clientId);
         
            if(($viewSeat['upper_berth'])->isEmpty()){
                unset($viewSeat['upper_berth']); 

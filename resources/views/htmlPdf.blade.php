@@ -790,7 +790,7 @@ border: 0;
                     <tbody>
                       <tr>
                         <td>Base Fare</td>
-                        <td>Rs {{$owner_fare + $odbus_charges + $customer_comission}}</td>
+                        <td>Rs {{$owner_fare + $odbus_charges + $customer_comission + $additional_owner_fare + $add_festival_fare + $add_special_fare}}</td>
                       </tr>
                       @if($coupon_discount > 0)
                     <tr>
@@ -808,10 +808,10 @@ border: 0;
                     @endif
 
                     @if($add_festival_fare > 0 || $add_special_fare > 0)
-                    <tr>
+                    <!-- <tr>
                       <td class="text-left">Convenience Fee</td>
                       <td class="text-right"><b>+Rs {{$add_festival_fare + $add_special_fare}}</b></td>
-                      </tr>
+                      </tr> -->
                       @else
                     @endif
 

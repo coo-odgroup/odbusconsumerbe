@@ -141,6 +141,20 @@ class ListingRepository
             ->where('status', '1')
             ->get();
     }
+
+
+    //Allroute wise coupon Created On : 26-Sept-2026 By: Sahil
+    public function getallrouteCoupon($entry_date)
+    {
+        return Coupon::where('coupon_type_id', 2)
+            ->where('status', 1)
+            ->where('from_date', '<=', $entry_date)
+            ->where('to_date', '>=', $entry_date)
+            ->where('all_route_check', 1)
+            ->get();
+    }
+
+
     public function getrouteCoupon($sourceID, $destinationID, $busId, $entry_date)
     {
         return Coupon::where('source_id', $sourceID)

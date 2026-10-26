@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Services\PageContentService;
 use Illuminate\Support\Facades\Validator;
@@ -9,6 +11,7 @@ use Illuminate\Support\Facades\Config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Symfony\Component\HttpFoundation\Response;
 
 class PageContentController extends Controller
@@ -19,69 +22,57 @@ class PageContentController extends Controller
     {
         $this->pagecontentService = $pagecontentService;
     }
-    /**
-     * @OA\Post(
-     *     path="/api/GetPageData",
-     *     tags={"Get Page descriptions on about-us,terms-conditions,privacy-policy"},
-     *     description="Get Page descriptions on about-us,terms-conditions,privacy-policy",
-     *     summary="Get Page descriptions on about-us,terms-conditions,privacy-policy",
-     *     @OA\Parameter(
-     *          name="user_id",
-     *          description="user Id",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(
-     *              type="integer",
-     *              default=1,
-     *          )
-     *      ),
-     *     @OA\Parameter(
-     *          name="page_url",
-     *          description="page url",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(
-     *              type="string",
-     *              default="about-us",
-     *          )
-     *      ),
-     *  @OA\Response(response="200", description="Get all Page descriptions"),
-     *  @OA\Response(response=206, description="validation error"),
-     *  @OA\Response(response=400, description="Bad request"),
-     *  @OA\Response(response=401, description="Unauthorized access"),
-     *  @OA\Response(response=404, description="No record found"),
-     *  @OA\Response(response=500, description="Internal server error"),
-     *  @OA\Response(response=502, description="Bad gateway"),
-     *  @OA\Response(response=503, description="Service unavailable"),
-     *  @OA\Response(response=504, description="Gateway timeout"),
-     *     security={
-     *       {"apiAuth": {}}
-     *     }
-     * )
-     *
-     */
+
     public function getAllpagecontent(Request $request)
     {
         $pagecontent = $this->pagecontentService->getAll($request);
-        return $this->successResponse($pagecontent,Config::get('constants.RECORD_FETCHED'),Response::HTTP_OK);
+        return $this->successResponse($pagecontent, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
     }
 
     public function getAdvantageDetails(Request $request)
     {
+        $pageUrl = $request->page_url;
+
+        if (empty($pageUrl)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'page_url is required'
+            ], 400);
+        }
+
+        $cacheKey = 'advantage_details:' . $pageUrl;
+
+        $cachedData = Redis::get($cacheKey);
+
+        if ($cachedData !== null) {
+            return response()->json(json_decode($cachedData, true));
+        }
+
         $page = DB::table('page_content')
-            ->where('page_url', $request->page_url)
+            ->where('page_url', $pageUrl)
             ->where('status', 1)
             ->first();
+
+        if (!$page) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Page not found'
+            ], 404);
+        }
 
         $faqs = DB::table('faq')
             ->where('page_id', $page->id)
             ->where('status', 1)
             ->get();
 
-        return response()->json([
+        $responseData = [
             'status' => true,
             'page' => $page,
             'faqs' => $faqs
-        ]);
+        ];
+
+        Redis::setex($cacheKey, 86400, json_encode($responseData));
+
+        return response()->json($responseData);
     }
 }

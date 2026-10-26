@@ -83,6 +83,7 @@ class SendEmailTicketJob implements ShouldQueue
     protected $gst_name;
     protected $bus_sitting;
     protected $bus_type;
+    protected $additional_owner_fare;
 
 
     public function __construct($totalfare, $discount, $payable_amount, $odbus_charges, $odbus_gst, $owner_fare, $request, $pnr, $cancelation_policy, $transactionFee, $customer_gst_status, $customer_gst_number, $customer_gst_business_name, $customer_gst_business_email, $customer_gst_business_address, $customer_gst_percent, $customer_gst_amount, $coupon_discount)
@@ -100,6 +101,7 @@ class SendEmailTicketJob implements ShouldQueue
 
         $this->add_festival_fare = $bk_dtl->additional_festival_fare;
         $this->add_special_fare = $bk_dtl->additional_special_fare;
+        $this->additional_owner_fare = $bk_dtl->additional_owner_fare;
 
         ////////////////////////////////////////////////////////////////////////////////////////////
         $this->name = $request['name'];
@@ -280,6 +282,7 @@ class SendEmailTicketJob implements ShouldQueue
             'p_names' => $this->p_names,
             'add_festival_fare' => $this->add_festival_fare,
             'add_special_fare' => $this->add_special_fare,
+            'additional_owner_fare' => $this->additional_owner_fare,
             'bus_type' => $this->bus_type,
             'bus_sitting' => $this->bus_sitting
             // 'gst_name' => str_replace('.pdf','',$this->gst_name),

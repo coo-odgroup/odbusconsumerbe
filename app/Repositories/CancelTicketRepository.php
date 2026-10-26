@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Location;
 use App\Models\Users;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\FacadesLog;
 use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\BusSeats;
@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Config;
 use DateTime;
 use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
-
+use Illuminate\Support\Facades\Log;
 
 class CancelTicketRepository
 {
@@ -225,7 +225,7 @@ class CancelTicketRepository
                 ['booking.pnr', '=', $pnr],
                 ['status', '=', $booked],
             ]);
-            //$u->where('booking.pnr', '=', $pnr); 
+            //$u->where('booking.pnr', '=', $pnr);
             $u->with(["customerPayment" => function ($b) {
                 $b->where('payment_done', 1);
             }]);
@@ -283,7 +283,7 @@ class CancelTicketRepository
             'paidAmount' => $booking->total_fare,
         );
 
-         ////////////update to bus_seat_count table
+        ////////////update to bus_seat_count table
 
         try {
 
@@ -304,23 +304,22 @@ class CancelTicketRepository
                     $seatCount
                 );
 
-                 $inventory->refreshAvailableSeats(
-                        $inventory->getOverlapSegmentIds(
-                                $booking->bus_id,
-                                $booking->source_id,
-                                $booking->destination_id
-                            ),
-                        $booking->journey_dt
-                    );
+                $inventory->refreshAvailableSeats(
+                    $inventory->getOverlapSegmentIds(
+                        $booking->bus_id,
+                        $booking->source_id,
+                        $booking->destination_id
+                    ),
+                    $booking->journey_dt
+                );
             }
-
         } catch (\Exception $e) {
 
-            \Log::error(
+            Log::error(
                 'cancel() . Inventory Cancel Update Failed. Booking ID: '
-                .$bookingId.
-                ' Error: '
-                .$e->getMessage()
+                    . $bookingId .
+                    ' Error: '
+                    . $e->getMessage()
             );
         }
 
@@ -368,7 +367,7 @@ class CancelTicketRepository
             'paidAmount' => $booking->total_fare,
         );
 
-         ////////////update to bus_seat_count table
+        ////////////update to bus_seat_count table
 
         try {
 
@@ -389,23 +388,22 @@ class CancelTicketRepository
                     $seatCount
                 );
 
-                 $inventory->refreshAvailableSeats(
-                        $inventory->getOverlapSegmentIds(
-                                $booking->bus_id,
-                                $booking->source_id,
-                                $booking->destination_id
-                            ),
-                        $booking->journey_dt
-                    );
+                $inventory->refreshAvailableSeats(
+                    $inventory->getOverlapSegmentIds(
+                        $booking->bus_id,
+                        $booking->source_id,
+                        $booking->destination_id
+                    ),
+                    $booking->journey_dt
+                );
             }
-
         } catch (\Exception $e) {
 
-            \Log::error(
+            Log::error(
                 'cancelBfrThirtyMinutes() . Inventory Cancel Update Failed. Booking ID: '
-                .$bookingId.
-                ' Error: '
-                .$e->getMessage()
+                    . $bookingId .
+                    ' Error: '
+                    . $e->getMessage()
             );
         }
 
@@ -466,7 +464,7 @@ class CancelTicketRepository
         $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
         $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
         $baseFare = $payableAmount - $transactionFees;
-        //$baseFare = $ownerFare + $odbusCharges; 
+        //$baseFare = $ownerFare + $odbusCharges;
 
         // if($paymentStatus == 'captured'){
         // if($refundStatus != null){
@@ -485,7 +483,7 @@ class CancelTicketRepository
         $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
         $this->customerPayment->where('razorpay_id', $razorpay_payment_id)->update(['payment_done' => $refunded]);
         return $data;
-        // } 
+        // }
     }
 
     public function refundPolicy($percentage, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId)
@@ -510,7 +508,7 @@ class CancelTicketRepository
         $payableAmount = $this->booking->where('id', $bookingId)->first()->payable_amount;
         $transactionFees = $this->booking->where('id', $bookingId)->first()->transactionFee;
         $baseFare = $payableAmount - $transactionFees;
-        //$baseFare = $ownerFare + $odbusCharges; 
+        //$baseFare = $ownerFare + $odbusCharges;
 
         $paidAmount = $payableAmount;
 
@@ -545,7 +543,7 @@ class CancelTicketRepository
 
             $booking->bookingDetail()->where('booking_id', $bookingId)->update(array('status' => $bookingCancelled));
 
-            $customerPaymentdata = $this->customerPayment->where('booking_id',$bookingId)->first();
+            $customerPaymentdata = $this->customerPayment->where('booking_id', $bookingId)->first();
 
             $logdata = [
                 "customer_payment_id" => $customerPaymentdata->id,
@@ -563,8 +561,8 @@ class CancelTicketRepository
             // $emailData['deductionPercentage'] = $percentage;
             // $emailData['totalfare'] = $paidAmount;
             // if($emailData['email'] != ''){
-            //     $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);  
-            // } 
+            //     $sendEmailTicketCancel = $this->channelRepository->sendEmailTicketCancel($emailData);
+            // }
             ////////////////////////////CMO SMS SEND ON TICKET CANCEL/////////////////////////////////
             $busContactDetails = BusContacts::where('bus_id', $busId)
                 ->where('status', '1')
@@ -575,7 +573,7 @@ class CancelTicketRepository
                 //$this->channelRepository->sendSmsTicketCancelCMO($smsData,$contact_number);
             }
 
-             ////////////update to bus_seat_count table
+            ////////////update to bus_seat_count table
 
             try {
 
@@ -596,23 +594,22 @@ class CancelTicketRepository
                         $seatCount
                     );
 
-                     $inventory->refreshAvailableSeats(
+                    $inventory->refreshAvailableSeats(
                         $inventory->getOverlapSegmentIds(
-                                $booking->bus_id,
-                                $booking->source_id,
-                                $booking->destination_id
-                            ),
+                            $booking->bus_id,
+                            $booking->source_id,
+                            $booking->destination_id
+                        ),
                         $booking->journey_dt
                     );
                 }
-
             } catch (\Exception $e) {
 
-                \Log::error(
+                Log::error(
                     'refundPolicy() . Inventory Cancel Update Failed. Booking ID: '
-                    .$bookingId.
-                    ' Error: '
-                    .$e->getMessage()
+                        . $bookingId .
+                        ' Error: '
+                        . $e->getMessage()
                 );
             }
 

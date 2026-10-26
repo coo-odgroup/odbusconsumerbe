@@ -26,7 +26,7 @@ class CancelTicketService
     protected $dolphinTransformer;
     protected $mantisTransformer;
     protected $msg91Service;
-
+    protected $SMS_ENABLED;
 
     public function __construct(Msg91Service $msg91Service, CancelTicketRepository $cancelTicketRepository, ChannelRepository $channelRepository, DolphinTransformer $dolphinTransformer, MantisTransformer $mantisTransformer)
     {
@@ -35,6 +35,7 @@ class CancelTicketService
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
+        $this->SMS_ENABLED = Config::get('constants.SMS_ENABLED');
     }
 
     public function CancelDolphinSeat($request)
@@ -126,19 +127,23 @@ class CancelTicketService
                                 return 'Ticket_already_cancelled';
                             }
                             $emailData['refundAmount'] = $dolphin_cancel_det['RefundAmount'];
-                            //$emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];  
+                            //$emailData['deductAmount'] =$deductAmount = $booking_detail[0]->booking[0]->total_fare - $dolphin_cancel_det['RefundAmount'];
                             $emailData['deductAmount'] = $deductAmount = $dolphin_cancel_det['TotalFare'] - $dolphin_cancel_det['RefundAmount'];
                             $emailData['totalfare'] = $totalfare = $dolphin_cancel_det['TotalFare'];
-                            // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;  
+                            // $emailData['totalfare'] = $totalfare =  $booking_detail[0]->booking[0]->total_fare;
                             $emailData['deductionPercentage'] = $deduction = round((($deductAmount / $totalfare) * 100), 1);
                             $smsData['refundAmount'] = $refundAmount = $dolphin_cancel_det['RefundAmount'];
                             $refund =  $this->cancelTicketRepository->DolphinCancelUpdate($deduction, $razorpay_payment_id, $bookingId, $booking, $smsData, $emailData, $busId, $refundAmount);
 
                             $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
                             if ($emailData['email'] != '') {
+                                if ($this->SMS_ENABLED) {
                                 $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);
+                                }
                             }
+                            if ($this->SMS_ENABLED) {
                             $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
+                            }
                             return $refund;
                         } else {
                             $refund = $this->cancelTicketRepository->cancel($bookingId, $booking, $smsData, $emailData, $busId);
@@ -336,13 +341,13 @@ class CancelTicketService
 
 
                         /////// 30 mins before booking time no deduction//////////
-                        // $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at; 
+                        // $bookingInitiatedDate = $booking_detail[0]->booking[0]->updated_at;
                         // $difference = $bookingInitiatedDate->diff($current_date_time);
                         // $difference = ($difference->format("%a") * 24) + $difference->format(" %i");
 
                         // if($difference < 30){
                         //     $refund = $this->cancelTicketRepository->cancelBfrThirtyMinutes($bookingId,$booking,$smsData,$emailData,$busId);
-                        //     return $refund;        
+                        //     return $refund;
                         // }
                         //////////
                         if ($cancelDate >= $bookingDate || $interval < 12) {
@@ -374,7 +379,9 @@ class CancelTicketService
                                     $emailData['totalfare'] = $paidAmount;
 
                                     // $sendsms = $this->cancelTicketRepository->sendSmsTicketCancel($smsData);
-                                    $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
+                                    if ($this->SMS_ENABLED) {
+                                        $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
+                                    }
 
 
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL//////////////
@@ -385,15 +392,21 @@ class CancelTicketService
                                     if ($busContactDetails->isNotEmpty()) {
                                         $contact_number = collect($busContactDetails)->implode('phone', ',');
                                         // $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
-                                        $this->msg91Service->cmo_ticket_cancel($smsData);
+                                        if ($this->SMS_ENABLED) {
+                                            $this->msg91Service->cmo_ticket_cancel($smsData);
+                                        }
                                         log::info('CMO SMS sent for Ticket Cancellation', ['contact_number' => $contact_number]);
                                     }
 
                                     if ($emailData['email'] != '') {
+                                        if ($this->SMS_ENABLED) {
                                         $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);
+                                        }
                                     }
 
+                                    if ($this->SMS_ENABLED) {
                                     $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
+                                    }
 
                                     return $refund;
                                 } elseif ($min <= $interval && $interval <= $max) {
@@ -406,8 +419,9 @@ class CancelTicketService
                                     $emailData['deductionPercentage'] = $deduction;
                                     $emailData['refundAmount'] = $refundAmt;
                                     $emailData['totalfare'] = $paidAmount;
-
-                                    $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
+                                    if ($this->SMS_ENABLED) {
+                                        $sendsms = $this->msg91Service->sendSmsTicketCancel($smsData);
+                                    }
 
 
                                     ////////////////////////////CMO SMS SEND ON TICKET CANCEL////////////
@@ -418,14 +432,20 @@ class CancelTicketService
                                     if ($busContactDetails->isNotEmpty()) {
                                         $contact_number = collect($busContactDetails)->implode('phone', ',');
                                         // $this->channelRepository->sendSmsTicketCancelCMO($smsData, $contact_number);
-                                        $this->msg91Service->cmo_ticket_cancel($smsData);
+                                        if ($this->SMS_ENABLED) {
+                                            $this->msg91Service->cmo_ticket_cancel($smsData);
+                                        }
                                     }
 
                                     if ($emailData['email'] != '') {
+                                        if ($this->SMS_ENABLED) {
                                         $sendEmailTicketCancel = $this->cancelTicketRepository->sendEmailTicketCancel($emailData);
+                                        }
                                     }
 
+                                    if ($this->SMS_ENABLED) {
                                     $this->cancelTicketRepository->sendAdminEmailTicketCancel($emailData);
+                                    }
 
                                     return $refund;
                                 }
@@ -458,6 +478,4 @@ class CancelTicketService
                 'updated_at' => Carbon::now(),
             ]);
     }
-
-   
 }

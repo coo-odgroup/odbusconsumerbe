@@ -47,7 +47,7 @@ class OfferRepository
                       'full_desc'
                   ]);
             }])
-            ->orderBy('id', 'DESC')
+            ->orderBy('sequence', 'ASC')
             ->get(['id','unique_id', 'coupon_id', 'slider_photo', 'alt_tag','slider_description', 'android_image']);
 
         return $allOffers;

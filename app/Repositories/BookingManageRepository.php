@@ -32,8 +32,7 @@ use App\Transformers\DolphinTransformer;
 use App\Transformers\MantisTransformer;
 use Illuminate\Support\Str;
 use App\Services\ValueFirstService;
-
-
+use Illuminate\Support\Facades\DB;
 
 class BookingManageRepository
 {
@@ -53,6 +52,7 @@ class BookingManageRepository
     protected $customerPayment;
     protected $mantisTransformer;
     protected $msg91Service;
+    protected $SMS_ENABLED;
 
     public function __construct(
         Bus $bus,
@@ -86,6 +86,7 @@ class BookingManageRepository
         $this->dolphinTransformer = $dolphinTransformer;
         $this->mantisTransformer = $mantisTransformer;
         $this->msg91Service = $msg91Service;
+        $this->SMS_ENABLED = Config::get('constants.SMS_ENABLED');
     }
 
     public function getJourneyDetails($mobile, $pnr)
@@ -602,8 +603,17 @@ class BookingManageRepository
 
     public function SendOTP($smsData, $bookingId)
     {
-        $response = $this->msg91Service->agent_pnr_cancel_otp($smsData);
-        $this->booking->where('id', $bookingId)->update(['cancel_otp' => $smsData['otp']]);
+        $response = null;
+
+        if ($this->SMS_ENABLED) {
+            $response = $this->msg91Service->agent_pnr_cancel_otp($smsData);
+        }
+
+        $this->booking
+            ->where('id', $bookingId)
+            ->update([
+                'cancel_otp' => $smsData['otp']
+            ]);
 
         return $response;
     }
@@ -674,6 +684,133 @@ class BookingManageRepository
 
     public function updateCancelTicket($bookingId, $userId, $refundAmt, $percentage, $pnr)
     {
+        // Get booking record
+        $bookingRecord = $this->booking
+            ->with('bookingDetail')
+            ->where('id', $bookingId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$bookingRecord) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Booking not found'
+            ], 200);
+        }
+
+        // Initialize commission totals
+        $totalCommission = 0.00;
+        $agentCommission = 0.00;
+        $odbusCommission = 0.00;
+
+        // Set timezone
+        date_default_timezone_set(config('app.timezone'));
+
+        // Journey start date and time
+        $journeyStart = new DateTime(
+            $bookingRecord->journey_dt . ' ' . $bookingRecord->boarding_time
+        );
+
+        // Current date and time
+        $currentTime = new DateTime();
+
+        // Check if journey has already started
+        if ($currentTime >= $journeyStart) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Cancellation time has expired'
+            ], 200);
+        }
+
+        // Calculate time difference
+        $timeDifference = $currentTime->diff($journeyStart);
+
+        // Convert remaining time into total hours (decimal)
+        $remainingHours =
+            ($timeDifference->days * 24)
+            + $timeDifference->h
+            + ($timeDifference->i / 60)
+            + ($timeDifference->s / 3600);
+
+        // Get applicable cancellation slab
+        $slab = DB::table('agent_cancel_slab')
+            ->where('status', 1)
+            ->where('range_from', '<=', $remainingHours)
+            ->where('range_to', '>', $remainingHours)
+            ->orderBy('range_from', 'desc')
+            ->first();
+
+        Log::info('Cancellation slab', [
+            'remainingHours' => $remainingHours,
+            'slab' => $slab
+        ]);
+
+        if (!$slab) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No cancellation slab found'
+            ], 200);
+        }
+
+        // Calculate total fare
+        $fare = round(
+            (float) $bookingRecord->owner_fare
+                + (float) $bookingRecord->odbus_charges,
+            2
+        );
+
+        // Get slab percentages
+        $totalCommissionPercent = (float) $slab->total_deduct;
+        $agentSharePercent = (float) $slab->agent_deduct;
+        $odbusSharePercent = (float) $slab->odus_deduct;
+
+        Log::info('slab percentages', [
+            'totalCommissionPercent' => $totalCommissionPercent,
+            'agentSharePercent' => $agentSharePercent,
+            'odbusSharePercent' => $odbusSharePercent
+        ]);
+
+        // Calculate total cancellation commission
+        $seatTotalCommission = round(
+            $fare * ($totalCommissionPercent / 100),
+            2
+        );
+
+        // Calculate agent commission
+        $seatAgentCommission = round(
+            $seatTotalCommission * ($agentSharePercent / 100),
+            2
+        );
+
+        // Calculate ODBUS commission
+        $seatOdbusCommission = round(
+            $seatTotalCommission * ($odbusSharePercent / 100),
+            2
+        );
+
+        // Assign totals
+        $totalCommission = $seatTotalCommission;
+        $agentCommission = $seatAgentCommission;
+        $odbusCommission = $seatOdbusCommission;
+
+        Log::info('Final res', [
+            'totalCommission' => $totalCommission,
+            'agentCommission' => $agentCommission,
+            'odbusCommission' => $odbusCommission
+        ]);
+
+        $bookingRecUpd = [
+            'agent_cancel_commission' => $agentCommission,
+            'odbus_cancel_commission' => $odbusCommission
+        ];
+
+        DB::table('booking')
+            ->where('id', $bookingId)
+            ->update($bookingRecUpd);
+
+        // New code
+
         $bookingCancelled = Config::get('constants.BOOKED_CANCELLED');
         $agentDetails =  AgentWallet::where('user_id', $userId)->orderBy('id', 'DESC')->where("status", 1)->limit(1)->get(); //AgentWallet::where('user_id', $userId)->latest()->first();
         $agentDetails = $agentDetails[0];
@@ -690,6 +827,21 @@ class BookingManageRepository
         $agetWallet->created_by = $agentDetails->created_by;
         $agetWallet->status = 1;
         $agetWallet->save();
+
+        // Commission
+        $transactionId = date('YmdHis') . gettimeofday()['usec'];
+        $agetWallet_comm = new AgentWallet();
+        $agetWallet_comm->transaction_id = $transactionId;
+        $agetWallet_comm->amount = $agentCommission;
+        $agetWallet_comm->type = 'CancelCommission';
+        $agetWallet_comm->booking_id = $bookingId;
+        $agetWallet_comm->transaction_type = 'c';
+        $agetWallet_comm->balance = $agentDetails->balance + $agentCommission;
+        $agetWallet_comm->user_id = $userId;
+        $agetWallet_comm->created_by = $agentDetails->created_by;
+        $agetWallet_comm->status = 1;
+        $agetWallet_comm->save();
+        // Commission
 
         $newBalance = $agentDetails->balance + $refundAmt;
         $notification = new Notification;
@@ -738,7 +890,7 @@ class BookingManageRepository
             }
         } catch (\Exception $e) {
 
-            \Log::error(
+            Log::error(
                 'updateCancelTicket() . Inventory Cancel Update Failed. Booking ID: '
                     . $bookingId .
                     ' Error: '

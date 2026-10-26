@@ -56,6 +56,7 @@ class SeoController extends Controller
                 'route_id' => $seoData->route_id ?? $route->id,
                 'meta_title' => $seoData->meta_title ?? '',
                 'meta_description' => $seoData->meta_description ?? '',
+                'meta_keyword' => "bus routes, bus booking, online bus ticket booking, bus tickets, Odisha bus routes, Odisha bus booking, bus ticket booking Odisha, bus services, bus travel",
                 'content' => $seoData->content ?? '',
                 'faq_schema' => json_decode($route->faq_schema ?? '[]'),
                 'breadcrumb_schema' => json_decode($route->breadcrumb_schema ?? '[]'),
@@ -253,7 +254,7 @@ class SeoController extends Controller
             $seo = [
                 'meta_title' => $blog->meta_title,
                 'meta_description' => $blog->meta_description,
-                'meta_keywords' => $blog->meta_keywords,
+                'meta_keyword' => $blog->meta_keywords,
                 'canonical_url' => $blog->canonical_url,
                 'og_image' => $blog->og_image,
                 'faq_schema' => $faq_schema,
@@ -327,7 +328,7 @@ class SeoController extends Controller
             $seo = [
                 'meta_title' => $seodata->meta_title,
                 'meta_description' => $seodata->meta_description,
-                'meta_keywords' => $seodata->meta_keyword,
+                'meta_keyword' => $seodata->meta_keyword,
                 'canonical_url' => $seodata->canonical_url,
                 'breadcrumb_schema' => $seodata->breadcrumb_schema,
                 'extra_meta' => $seodata->extra_meta,

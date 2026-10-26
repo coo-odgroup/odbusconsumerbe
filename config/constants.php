@@ -104,5 +104,6 @@ return [
     // 'CASHFREE_KEY' => env('CASHFREE_KEY','1113683e1dcf93c8bec738e78f13863111'),
     // 'CASHFREE_SECRET'=> env('CASHFREE_SECRET','cfsk_ma_prod_1f6a44b064ab331b10e7484aae27f1fe_d8b8195b'),
     // 'CASHFREE_API_URL' => env('CASHFREE_API_URL','https://api.cashfree.com/pg/orders'),
-   
+
+    'SMS_ENABLED' => env('SMS_ENABLED', true),
 ];

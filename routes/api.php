@@ -90,6 +90,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
    Route::post('/CancelTicket', [CancelTicketController::class, 'cancelTicket']);
    Route::post('/Offers', [OfferController::class, 'offers']);
    Route::post('/Coupons', [OfferController::class, 'coupons']);
+   Route::post('/RemoveCoupons', [OfferController::class, 'removeCoupons']);
    Route::post('/JourneyDetails', [BookingManageController::class, 'getJourneyDetails']);
    Route::post('/PassengerDetails', [BookingManageController::class, 'getPassengerDetails']);
    Route::post('/BookingDetails', [BookingManageController::class, 'getBookingDetails']);
@@ -230,6 +231,7 @@ Route::get('/confirmBooking', [PushNotificationController::class, 'confirmBookin
 //Offer Listing
 Route::post('/Listing-Offers', [OfferController::class, 'listingOffers']);
 Route::post('/CouponCode', [OfferController::class, 'couponCode']);
+Route::get('/redis-test', [OfferController::class, 'testRedis']);
 
 Route::get('/test-mail', function () {
 
@@ -240,4 +242,8 @@ Route::get('/test-mail', function () {
    });
 
    return "Mail Sent";
+});
+
+Route::get('/route-search/store-daily', function () {
+   Artisan::call('route-search:store-daily');
 });
