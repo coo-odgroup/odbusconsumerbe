@@ -167,14 +167,27 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
 Route::match(['get', 'post'], 'botman', [BotManController::class, 'handle']);
 Route::post('/ClientLogin', [UserController::class, 'clientLogin']);
+// Route::post('/Auth', function (Request $request) {
+
+//    $arrParam = json_decode(decryptRequest($request['REQUEST_DATA']));
+//    $request = new Request([
+//       'client_id' => $arrParam->client_id,
+//       'password' => $arrParam->password,
+//    ]);
+//    return UserController::clientLogin($request);
+// });
+
 Route::post('/Auth', function (Request $request) {
 
-   $arrParam = json_decode(decryptRequest($request['REQUEST_DATA']));
-   $request = new Request([
-      'client_id' => $arrParam->client_id,
-      'password' => $arrParam->password,
-   ]);
-   return UserController::clientLogin($request);
+$arrParam = json_decode(decryptRequest($request['REQUEST_DATA']));
+
+$request = new Request([
+    'client_id' => $arrParam->client_id,
+    'password'  => $arrParam->password,
+]);
+
+return app(UserController::class)->clientLogin($request);
+
 });
 
 

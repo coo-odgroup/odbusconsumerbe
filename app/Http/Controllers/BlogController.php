@@ -91,9 +91,9 @@ class BlogController extends Controller
                 'categories' => $categories,
             ];
 
-            return ApiResponser::successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
-            return ApiResponser::errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
 
@@ -144,9 +144,9 @@ class BlogController extends Controller
                 'related_blogs' => $relatedBlogs
             ];
 
-            return ApiResponser::successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
+            return $this->successResponse($data, Config::get('constants.RECORD_FETCHED'), Response::HTTP_OK);
         } catch (Exception $e) {
-            return ApiResponser::errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
+            return $this->errorResponse($e->getMessage(), Response::HTTP_PARTIAL_CONTENT);
         }
     }
 
