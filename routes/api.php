@@ -34,6 +34,7 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\MantisController;
 use App\Http\Controllers\ApiReferenceController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BookingAttributionController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\PhonpeController;
 use App\Http\Controllers\PushNotificationController;
@@ -247,3 +248,5 @@ Route::get('/test-mail', function () {
 Route::get('/route-search/store-daily', function () {
    Artisan::call('route-search:store-daily');
 });
+
+Route::post('save-attribution', [BookingAttributionController::class, 'saveAttribution']);
