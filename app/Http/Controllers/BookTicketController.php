@@ -284,7 +284,7 @@ class BookTicketController extends Controller
             }
             
             else{
-                return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_CREATED);
+                return $this->successResponse($response,Config::get('constants.RECORD_ADDED'),Response::HTTP_OK);
             }
         }
         catch (Exception $e) {
